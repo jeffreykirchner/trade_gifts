@@ -32,7 +32,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             'hosts': [(os.environ['REDIS'])],
-            'prefix' : 'multi_user_socket_template',
+            'prefix' : 'trade_gifts',
             'capacity': 1500,
         },
     },

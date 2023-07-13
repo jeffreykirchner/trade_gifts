@@ -1,4 +1,4 @@
-# multi_user_socket_template
+# trade_gifts
 Template for multi user Django Channels experiment.
 
 Setup Guide:
@@ -16,8 +16,8 @@ Update Python installers:
 	sudo apt-get install python3.11-distutils
 
 Activate virtual environment and install requirments:
-    virtualenv --python=python3.11 _multi_user_socket_template_env
-    source _multi_user_socket_template_env/bin/activate
+    virtualenv --python=python3.11 _trade_gifts_env
+    source _trade_gifts_env/bin/activate
     pip install -U -r requirements.txt
 
 Setup Environment:
