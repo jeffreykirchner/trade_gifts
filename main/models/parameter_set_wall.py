@@ -9,19 +9,18 @@ from main.models import ParameterSet
 
 import main
 
-class ParameterSetPlayer(models.Model):
+class ParameterSetWall(models.Model):
     '''
-    parameter set player parameters 
+    parameter set wall
     '''
 
-    parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_players")
+    parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_walls")
 
-    id_label = models.CharField(verbose_name='ID Label', max_length=2, default="1")      #id label shown on screen to subjects
-    player_number = models.IntegerField(verbose_name='Player number', default=0)         #player number, from 1 to N 
-
-    start_x = models.IntegerField(verbose_name='Start Location X', default=50)                #starting location x and y
+    start_x = models.IntegerField(verbose_name='Start Location X', default=50)            #starting location x and y
     start_y = models.IntegerField(verbose_name='Start Location Y', default=50)
-    hex_color = models.CharField(verbose_name='Hex Color', max_length = 8, default="0x000000") #color of player
+    
+    end_x = models.IntegerField(verbose_name='End Location X', default=50)                #ending location x and y
+    end_y = models.IntegerField(verbose_name='End Location Y', default=50)
 
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
@@ -30,9 +29,8 @@ class ParameterSetPlayer(models.Model):
         return str(self.id)
 
     class Meta:
-        verbose_name = 'Parameter Set Player'
-        verbose_name_plural = 'Parameter Set Players'
-        ordering=['player_number']
+        verbose_name = 'Parameter Set Wall'
+        verbose_name_plural = 'Parameter Set Walls'
 
     def from_dict(self, new_ps):
         '''
@@ -40,11 +38,13 @@ class ParameterSetPlayer(models.Model):
         source : dict object of parameterset player
         '''
 
-        self.id_label = new_ps.get("id_label")
-        self.player_number = new_ps.get("player_number")
+       
         self.start_x = new_ps.get("start_x")
         self.start_y = new_ps.get("start_y")
-        self.hex_color = new_ps.get("hex_color")
+
+        self.end_x = new_ps.get("end_x")
+        self.end_y = new_ps.get("end_y")
+
 
         self.save()
         
@@ -62,7 +62,7 @@ class ParameterSetPlayer(models.Model):
         '''
         update parameter set json
         '''
-        self.parameter_set.json_for_session["parameter_set_players"][self.id] = self.json()
+        self.parameter_set.json_for_session["parameter_set_walls"][self.id] = self.json()
 
         self.parameter_set.save()
 
@@ -76,11 +76,10 @@ class ParameterSetPlayer(models.Model):
         return{
 
             "id" : self.id,
-            "player_number" : self.player_number,
-            "id_label" : self.id_label,
             "start_x" : self.start_x,
             "start_y" : self.start_y,
-            "hex_color" : self.hex_color,
+            "end_x" : self.start_x,
+            "end_y" : self.start_y,
         }
     
     def get_json_for_subject(self, update_required=False):
