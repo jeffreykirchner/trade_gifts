@@ -16,6 +16,8 @@ class ParameterSetWall(models.Model):
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_walls")
 
+    info = models.TextField(verbose_name='Info', blank=True, null=True)
+
     start_x = models.IntegerField(verbose_name='Start Location X', default=50)            #starting location x and y
     start_y = models.IntegerField(verbose_name='Start Location Y', default=50)
     
@@ -37,8 +39,8 @@ class ParameterSetWall(models.Model):
         copy source values into this period
         source : dict object of parameterset player
         '''
-
-       
+        self.info = new_ps.get("info")
+        
         self.start_x = new_ps.get("start_x")
         self.start_y = new_ps.get("start_y")
 
@@ -76,6 +78,7 @@ class ParameterSetWall(models.Model):
         return{
 
             "id" : self.id,
+            "info" : self.info,
             "start_x" : self.start_x,
             "start_y" : self.start_y,
             "end_x" : self.start_x,
@@ -87,10 +90,6 @@ class ParameterSetWall(models.Model):
         return json object for subject screen, return cached version if unchanged
         '''
 
-        v = self.parameter_set.json_for_session["parameter_set_players"][str(self.id)]
-
-        # edit v as needed
-
-        return v
+        return self.json()
 
 

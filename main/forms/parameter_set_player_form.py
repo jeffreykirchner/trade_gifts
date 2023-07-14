@@ -7,7 +7,7 @@ from django.db.models.query import RawQuerySet
 
 from main.models import ParameterSetPlayer
 
-class parameter_set_player_form(forms.ModelForm):
+class ParameterSetPlayerForm(forms.ModelForm):
     '''
     parameterset player edit form
     '''
