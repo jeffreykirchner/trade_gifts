@@ -1,11 +1,11 @@
 <div class="card">                  
     <div class="card-header fw-bold">                
         <span class="align-middle">
-            Players ([[ Object.keys(parameter_set.parameter_set_players).length]]) 
+            Walls ([[ Object.keys(parameter_set.parameter_set_walls).length]]) 
         </span>      
 
         <span class="float-end">
-            <button type="button" class="btn btn-link ms-4" title="Show Help Doc" v-on:click="send_load_help_doc('Staff Parameters Players')">
+            <button type="button" class="btn btn-link ms-4" title="Show Help Doc" v-on:click="send_load_help_doc('Staff Parameters Walls')">
                 <i class="far fa-question-circle"></i> 
             </button>
         </span> 
@@ -14,48 +14,41 @@
     <div class="card-body" >        
 
         <div class="row justify-content-center">
-            <!-- player settings -->
+            <!-- wall settings -->
             <div class="col-md-auto text-center">                
                 <div class="table-responsive">
                     <table class="table table-condensed"> 
                         <thead>
                             <tr>
                                 <th scope="col" class = "m-1 p-1">
-                                    #
+                                    Info
                                 </th> 
                                 <th scope="col" class = "m-1 p-1">
-                                    Label
+                                    Start
                                 </th>         
                                 <th scope="col" class = "m-1 p-1">
-                                    Location (X,Y)
-                                </th>
-                                <th scope="col" class = "m-1 p-1">
-                                    Color
-                                </th>                    
+                                    End
+                                </th>                 
                             </tr>
                         </thead>
-                        <tbody id="player_list">
-                            <tr v-for="(p, index) in parameter_set.parameter_set_players_order" 
+                        <tbody id="wall_list">
+                            <tr v-for="(p, index) in parameter_set.parameter_set_walls_order" 
                                 v-bind:key="p"
-                                :set="temp_p=parameter_set.parameter_set_players[p]"
+                                :set="temp_p=parameter_set.parameter_set_walls[p]"
                                 >
-                                <td v-on:click="show_edit_parameter_set_player(p)" 
-                                    class="player_table_cell">
-                                    [[temp_p.player_number]]
+                                <td v-on:click="show_edit_parameter_set_wall(p)" 
+                                    class="wall_table_cell">
+                                    [[temp_p.info]]
                                 </td>
-                                <td v-on:click="show_edit_parameter_set_player(p)" 
-                                    class="player_table_cell">
-                                    [[temp_p.id_label]]
-                                </td>
-                                <td v-on:click="show_edit_parameter_set_player(p)" 
-                                    class="player_table_cell">
+                                <td v-on:click="show_edit_parameter_set_wall(p)" 
+                                    class="wall_table_cell">
                                     [[temp_p.start_x]], [[temp_p.start_y]]
                                 </td>
-                                <td v-on:click="show_edit_parameter_set_player(p)" 
-                                    class="player_table_cell"
-                                    v-bind:style="{color:temp_p.hex_color.replace('0x','#')}">
-                                    [[temp_p.hex_color]]
+                                <td v-on:click="show_edit_parameter_set_wall(p)" 
+                                    class="wall_table_cell">
+                                    [[temp_p.end_x]], [[temp_p.end_y]]
                                 </td>
+                               
                             </tr>
                         </tbody>
                         
@@ -68,9 +61,9 @@
             <div class="col-md-auto">
                 <button class="btn btn-outline-success btn-sm"
                         type="button"
-                        title="Add player"
+                        title="Add wall"
                         v-bind:disabled="session.started || reconnecting || working"
-                        v-on:click="send_add_parameter_set_player()">
+                        v-on:click="send_add_parameter_set_wall()">
                         Add <i class="fas fa-plus"></i>
                 </button>
             </div>

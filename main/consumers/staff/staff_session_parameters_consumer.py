@@ -9,6 +9,7 @@ class StaffSessionParametersConsumer(SocketConsumerMixin,
                                      StaffSubjectUpdateMixin,
                                      GetParameterSetMixin,
                                      ParameterSetPlayersMixin,
+                                     ParameterSetWallsMixin,
                                      ControlParameterSetMixin,
                                      SendMessageMixin):
     '''
