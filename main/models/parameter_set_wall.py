@@ -81,8 +81,8 @@ class ParameterSetWall(models.Model):
             "info" : self.info,
             "start_x" : self.start_x,
             "start_y" : self.start_y,
-            "end_x" : self.start_x,
-            "end_y" : self.start_y,
+            "end_x" : self.end_x,
+            "end_y" : self.end_y,
         }
     
     def get_json_for_subject(self, update_required=False):

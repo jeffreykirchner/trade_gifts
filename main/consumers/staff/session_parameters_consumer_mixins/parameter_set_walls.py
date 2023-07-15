@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from main.models import Session
 from main.models import ParameterSetWall
 
-from main.forms import parameter_set_wall_form
+from main.forms import ParameterSetWallForm
 
 from ..session_parameters_consumer_mixins.get_parameter_set import take_get_parameter_set
 
@@ -74,11 +74,11 @@ def take_update_parameter_set_wall(data):
 
     logger.info(f'form_data_dict : {form_data_dict}')
 
-    form = parameter_set_wall_form(form_data_dict, instance=parameter_set_wall)
+    form = ParameterSetWallForm(form_data_dict, instance=parameter_set_wall)
 
     if form.is_valid():         
         form.save()              
-        parameter_set_wall.update_json_local()
+        parameter_set_wall.parameter_set.update_json_fk(update_walls=True)
 
         return {"value" : "success"}                      
                                 
@@ -98,11 +98,14 @@ def take_remove_parameterset_wall(data):
 
     try:        
         session = Session.objects.get(id=session_id)
-        session.parameter_set.remove_wall(parameterset_wall_id)
-        session.update_wall_count()
+        parameter_set_wall = ParameterSetWall.objects.get(id=parameterset_wall_id)
+        
     except ObjectDoesNotExist:
-        logger.warning(f"take_remove_parameterset_wall paramterset_wall, not found ID: {parameterset_wall_id}")
+        logger.warning(f"take_remove_parameterset_wall, not found ID: {parameterset_wall_id}")
         return
+    
+    parameter_set_wall.delete()
+    session.parameter_set.update_json_fk(update_walls=True)
     
     return {"value" : "success"}
 

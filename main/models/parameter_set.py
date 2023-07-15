@@ -217,7 +217,7 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_players"] = {p.id : p.json() for p in self.parameter_set_players.all()}
 
         if update_walls:
-            self.json_for_session["parameter_set_wall_order"] = list(self.parameter_set_walls.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_walls_order"] = list(self.parameter_set_walls.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_walls"] = {p.id : p.json() for p in self.parameter_set_walls.all()}
 
         self.save()

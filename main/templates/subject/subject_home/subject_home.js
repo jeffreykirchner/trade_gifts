@@ -18,6 +18,7 @@ var pixi_fps_label = null;                     //fps label
 var mini_map_container = null;                 //mini map container
 var pixi_avatars = {};                         //avatars
 var pixi_tokens = {};                          //tokens
+var pixi_walls = {};                           //walls
 
 //vue app
 var app = Vue.createApp({
@@ -468,6 +469,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/instructions/instructions_card.js"%}
         {%include "subject/subject_home/the_stage/pixi_setup.js"%}
         {%include "subject/subject_home/the_stage/interface.js"%}
+        {%include "subject/subject_home/the_stage/wall.js"%}
     
         /** clear form error messages
         */

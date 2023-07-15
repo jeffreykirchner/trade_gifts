@@ -17,6 +17,7 @@ setup_pixi(){
         app.setup_pixi_sheets(textures);
         app.setup_pixi_tokens_for_current_period();
         app.setup_pixi_subjects();
+        app.setup_pixi_wall();
         app.setup_pixi_minimap();
         app.setup_subject_status_overlay();
         app.update_zoom();

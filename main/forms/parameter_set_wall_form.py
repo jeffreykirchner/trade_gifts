@@ -12,8 +12,9 @@ class ParameterSetWallForm(forms.ModelForm):
     parameterset wall edit form
     '''
 
-    id_label = forms.CharField(label='Info',
-                               widget=forms.TextInput(attrs={"v-model":"current_parameter_set_wall.info",}))
+    info = forms.CharField(label='Info',
+                           required=False,
+                           widget=forms.TextInput(attrs={"v-model":"current_parameter_set_wall.info",}))
     
     start_x = forms.IntegerField(label='Starting Location X',
                                  min_value=0,
@@ -29,13 +30,13 @@ class ParameterSetWallForm(forms.ModelForm):
     
     end_x = forms.IntegerField(label='Ending Location X',
                                  min_value=0,
-                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_wall.start_x",
+                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_wall.end_x",
                                                                  "step":"1",
                                                                  "min":"0"}))
 
     end_y = forms.IntegerField(label='Ending Location Y',
                                  min_value=0,
-                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_wall.start_y",
+                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_wall.end_y",
                                                                  "step":"1",
                                                                  "min":"0"}))
 

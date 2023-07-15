@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from main.models import Session
 from main.models import ParameterSetPlayer
 
-from main.forms import parameter_set_player_form
+from main.forms import ParameterSetPlayerForm
 
 from ..session_parameters_consumer_mixins.get_parameter_set import take_get_parameter_set
 
@@ -74,7 +74,7 @@ def take_update_parameter_set_player(data):
 
     logger.info(f'form_data_dict : {form_data_dict}')
 
-    form = parameter_set_player_form(form_data_dict, instance=parameter_set_player)
+    form = ParameterSetPlayerForm(form_data_dict, instance=parameter_set_player)
 
     if form.is_valid():         
         form.save()              
