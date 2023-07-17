@@ -9,9 +9,10 @@ setup_pixi(){
     PIXI.Assets.add('sprite_sheet', '{% static "gear_3_animated.json" %}');
     PIXI.Assets.add('sprite_sheet_2', '{% static "sprite_sheet.json" %}');
     PIXI.Assets.add('bg_tex', '{% static "background_tile_low.jpg"%}');
+    PIXI.Assets.add('wall_tex', '{% static "wall.png"%}');
     PIXI.Assets.add('cherry_token', '{% static "cherry_1_animated.json"%}');
 
-    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'bg_tex', 'sprite_sheet_2', 'cherry_token']);
+    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'bg_tex', 'wall_tex', 'sprite_sheet_2', 'cherry_token']);
 
     textures_promise.then((textures) => {
         app.setup_pixi_sheets(textures);
@@ -758,7 +759,7 @@ move_player(delta)
             //move player towards target
             if(!obj.frozen)
             {
-                app.move_object(delta, obj, app.move_speed);
+                app.move_object(delta=delta, obj=obj, move_speed=app.move_speed, wall_limited=true, container=avatar_container);
             }
 
             //update the sprite locations
@@ -1227,7 +1228,7 @@ move_text_emitters(delta)
         }
         else
         {
-            app.move_object(delta, emitter, app.move_speed / 4);
+            app.move_object(delta=delta, obj=emitter, move_speed=app.move_speed / 4);
             emitter.emitter_container.position.set(emitter.current_location.x, emitter.current_location.y);
         }       
     }
@@ -1400,11 +1401,13 @@ animate_transfer_beams(delta)
 /**
  * move the object towards its target location
  */
-move_object(delta, obj, move_speed)
+move_object(delta, obj, move_speed, wall_limited=false, container=null)
 {
     let noX = false;
     let noY = false;
     let temp_move_speed = (move_speed * delta);
+
+    let temp_current_location = Object.assign({}, obj.current_location);
 
     let temp_angle = Math.atan2(obj.target_location.y - obj.current_location.y,
                                 obj.target_location.x - obj.current_location.x)
@@ -1422,4 +1425,47 @@ move_object(delta, obj, move_speed)
         else
             obj.current_location.x += temp_move_speed * Math.cos(temp_angle);        
     }
+
+    //if wall limited prevent object from moving through
+    if(wall_limited)
+    {
+        wall_limit_hit = false;
+
+        let rect1={x:obj.current_location.x - container.width/2,
+                   y:obj.current_location.y - container.height/2,
+                   width:container.width,
+                   height:container.height};  
+        
+        for(let i in app.session.parameter_set.parameter_set_walls)
+        {
+            let temp_wall = app.session.parameter_set.parameter_set_walls[i];
+            let rect2={x:temp_wall.start_x,
+                    y:temp_wall.start_y,
+                    width:temp_wall.end_x - temp_wall.start_x,
+                    height:temp_wall.end_y - temp_wall.start_y};
+
+            if(app.check_for_intersection(rect1, rect2))
+            {
+                obj.current_location =  Object.assign({}, temp_current_location);
+                break;
+            }
+        }
+    }
+},
+
+/**
+ * check for rectangle intersection
+ */
+check_for_intersection(rect1, rect2)
+{
+   if(rect1.x < rect2.x + rect2.width &&
+      rect1.x + rect1.width > rect2.x &&
+      rect1.y < rect2.y + rect2.height &&
+      rect1.y + rect1.height > rect2.y)
+   {
+        return true;
+   }
+
+   return false;
+
 },

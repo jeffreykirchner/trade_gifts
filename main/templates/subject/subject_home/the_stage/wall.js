@@ -21,10 +21,12 @@ setup_pixi_wall()
         let outline = new PIXI.Graphics();
         outline.width = width;
         outline.height = height;
-        outline.lineStyle(1, 0x000000);
-        outline.beginFill(0xBDB76B);
+        //outline.lineStyle(1, 0x000000);
+        scale = 100 / app.pixi_textures.wall_tex.width;
+        outline.beginTextureFill({texture: app.pixi_textures.wall_tex, color:0xDEB887, matrix:new PIXI.Matrix(scale,0,0,scale,0,0)});
         outline.drawRect(0, 0, width, height);
-        outline.endFill();
+       
+        //outline.endFill();
 
         wall_container.addChild(outline);
 

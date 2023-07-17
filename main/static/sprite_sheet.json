@@ -26,18 +26,34 @@
 },
 "particle2.png":
 {
-	"frame": {"x":0,"y":175,"w":100,"h":100},
+	"frame": {"x":415,"y":0,"w":100,"h":100},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":100,"h":100},
 	"sourceSize": {"w":100,"h":100}
+},
+"wall.png":
+{
+	"frame": {"x":520,"y":0,"w":255,"h":255},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":255,"h":255},
+	"sourceSize": {"w":255,"h":255}
+},
+"water_tile.jpg":
+{
+	"frame": {"x":0,"y":260,"w":1000,"h":563},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1000,"h":563},
+	"sourceSize": {"w":1000,"h":563}
 }},
 "meta": {
 	"app": "Adobe Animate",
 	"version": "23.0.2.103",
 	"image": "sprite_sheet.png",
 	"format": "RGB8",
-	"size": {"w":512,"h":512},
+	"size": {"w":1024,"h":1024},
 	"scale": "1"
 }
 }
