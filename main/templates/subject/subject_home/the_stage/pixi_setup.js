@@ -8,21 +8,20 @@ setup_pixi(){
 
     PIXI.Assets.add('sprite_sheet', '{% static "gear_3_animated.json" %}');
     PIXI.Assets.add('sprite_sheet_2', '{% static "sprite_sheet.json" %}');
-    PIXI.Assets.add('bg_tex', '{% static "background_tile_low.jpg"%}');
+    PIXI.Assets.add('grass_tex', '{% static "background_tile_low.jpg"%}');
     PIXI.Assets.add('wall_tex', '{% static "wall.png"%}');
     PIXI.Assets.add('water_tex', '{% static "water_tile.jpg"%}');
     PIXI.Assets.add('cherry_token', '{% static "cherry_1_animated.json"%}');
 
-    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'bg_tex', 'wall_tex', 'water_tex', 'sprite_sheet_2', 'cherry_token']);
+    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'grass_tex', 'wall_tex', 'water_tex', 'sprite_sheet_2', 'cherry_token']);
 
     textures_promise.then((textures) => {
         app.setup_pixi_sheets(textures);
         app.setup_pixi_tokens_for_current_period();
-        app.setup_pixi_subjects();
-        app.setup_pixi_wall();
+        app.setup_pixi_ground();
+        app.setup_pixi_subjects();       
+        app.setup_pixi_wall();       
         
-        
-
         if(app.pixi_mode!="subject")
         {
             app.update_zoom();
@@ -98,6 +97,7 @@ setup_pixi_sheets(textures){
         pixi_target.alpha = 0.33;
         pixi_target.drawCircle(0, 0, 10);
         pixi_target.eventMode='static';
+        pixi_target.zIndex = 100;
 
         //pixi_target.scale.set(app.pixi_scale, app.pixi_scale);
         pixi_container_main.addChild(pixi_target)
@@ -258,7 +258,7 @@ setup_pixi_subjects(){
                 fill: 0x000000,
                 align: 'left',
             });
-        chat_bubble_text.eventMode = 'none';    
+        chat_bubble_text.eventMode = 'passive';    
 
         chat_container.addChild(chat_bubble_sprite);
         chat_container.addChild(chat_bubble_text);

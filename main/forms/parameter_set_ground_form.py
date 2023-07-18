@@ -18,13 +18,13 @@ class ParameterSetGroundForm(forms.ModelForm):
     
     x = forms.IntegerField(label='X Location',
                                  min_value=0,
-                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_ground.start_x",
+                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_ground.x",
                                                                  "step":"1",
                                                                  "min":"0"}))
 
     y = forms.IntegerField(label='Y Location',
                                  min_value=0,
-                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_ground.start_y",
+                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_ground.y",
                                                                  "step":"1",
                                                                  "min":"0"}))
     

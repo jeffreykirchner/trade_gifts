@@ -89,8 +89,8 @@ class ParameterSetGround(models.Model):
 
             "id" : self.id,
             "info" : self.info,
-            "x" : self.start_x,
-            "y" : self.start_y,
+            "x" : self.x,
+            "y" : self.y,
             "width" : self.width,
             "height" : self.height,
             "tint" : self.tint,

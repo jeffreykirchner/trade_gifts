@@ -120,7 +120,8 @@ var app = Vue.createApp({
             app.edit_parameterset_player_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_player_modal'), {keyboard: false})
             app.edit_parameterset_wall_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_wall_modal'), {keyboard: false})
             app.upload_parameter_set_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('upload_parameter_set_modal'), {keyboard: false})   
-               
+            app.edit_parameterset_ground_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_ground_modal'), {keyboard: false})   
+            
             document.getElementById('import_parameters_modal').addEventListener('hidden.bs.modal', app.hide_import_parameters);
             document.getElementById('edit_parameterset_modal').addEventListener('hidden.bs.modal', app.hide_edit_parameter_set);
             document.getElementById('upload_parameter_set_modal').addEventListener('hidden.bs.modal', app.hide_upload_parameters);
