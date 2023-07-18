@@ -20,6 +20,7 @@ setup_pixi_ground()
         let outline = new PIXI.Graphics();
         //outline.lineStyle(1, 0x000000);
         matrix = new PIXI.Matrix(ground.scale,0,0,ground.scale,0,0);
+        matrix.rotate(ground.rotation);
         outline.beginTextureFill({texture: app.pixi_textures[ground.texture], matrix:matrix});
         outline.tint = ground.tint;
         outline.drawRect(0, 0, ground.width, ground.height);

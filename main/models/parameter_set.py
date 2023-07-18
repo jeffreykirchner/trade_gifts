@@ -115,6 +115,14 @@ class ParameterSet(models.Model):
                 p = main.models.ParameterSetWall.objects.create(parameter_set=self)
                 p.from_dict(new_parameter_set_walls[i])
 
+            #parameter set grounds
+            self.parameter_set_grounds.all().delete()
+            new_parameter_set_grounds = new_ps.get("parameter_set_grounds")
+
+            for i in new_parameter_set_grounds:
+                p = main.models.ParameterSetGround.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_grounds[i])
+
             self.json_for_session = None
             self.save()
             
