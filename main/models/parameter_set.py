@@ -208,7 +208,7 @@ class ParameterSet(models.Model):
 
         self.save()
     
-    def update_json_fk(self, update_players=False, update_walls=False):
+    def update_json_fk(self, update_players=False, update_walls=False, update_grounds=False):
         '''
         update json model
         '''
@@ -220,6 +220,10 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_walls_order"] = list(self.parameter_set_walls.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_walls"] = {p.id : p.json() for p in self.parameter_set_walls.all()}
 
+        if update_grounds:
+            self.json_for_session["parameter_set_grounds_order"] = list(self.parameter_set_grounds.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_grounds"] = {p.id : p.json() for p in self.parameter_set_grounds.all()}
+
         self.save()
 
     def json(self, update_required=False):
@@ -230,7 +234,7 @@ class ParameterSet(models.Model):
            update_required:
             self.json_for_session = {}
             self.update_json_local()
-            self.update_json_fk(update_players=True, update_walls=True)
+            self.update_json_fk(update_players=True, update_walls=True, update_grounds=True)
 
         return self.json_for_session
     

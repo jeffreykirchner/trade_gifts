@@ -10,9 +10,10 @@ setup_pixi(){
     PIXI.Assets.add('sprite_sheet_2', '{% static "sprite_sheet.json" %}');
     PIXI.Assets.add('bg_tex', '{% static "background_tile_low.jpg"%}');
     PIXI.Assets.add('wall_tex', '{% static "wall.png"%}');
+    PIXI.Assets.add('water_tex', '{% static "water_tile.jpg"%}');
     PIXI.Assets.add('cherry_token', '{% static "cherry_1_animated.json"%}');
 
-    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'bg_tex', 'wall_tex', 'sprite_sheet_2', 'cherry_token']);
+    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'bg_tex', 'wall_tex', 'water_tex', 'sprite_sheet_2', 'cherry_token']);
 
     textures_promise.then((textures) => {
         app.setup_pixi_sheets(textures);
@@ -79,7 +80,7 @@ setup_pixi_sheets(textures){
     pixi_app.stage.addChild(pixi_container_main);
    
     let tiling_sprite = new PIXI.TilingSprite(
-        textures.bg_tex,
+        app.pixi_textures["water_tex"],
         app.stage_width,
         app.stage_height,
     );

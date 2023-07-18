@@ -24,9 +24,14 @@ var app = Vue.createApp({
                         id:0,
                     }, 
 
+                    current_parameter_set_ground : {
+                        id:0,
+                    },
+
                     parameterset_form_ids: {{parameterset_form_ids|safe}},
                     parameterset_player_form_ids: {{parameterset_player_form_ids|safe}},
                     parameterset_wall_form_ids: {{parameterset_wall_form_ids|safe}},
+                    parameterset_ground_form_ids: {{parameterset_ground_form_ids|safe}},
 
                     upload_file: null,
                     upload_file_name:'Choose File',
@@ -155,6 +160,7 @@ var app = Vue.createApp({
         {%include "staff/staff_session_parameters/control/control.js"%}
         {%include "staff/staff_session_parameters/players/players.js"%}
         {%include "staff/staff_session_parameters/walls/walls.js"%}
+        {%include "staff/staff_session_parameters/grounds/grounds.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages
@@ -182,6 +188,13 @@ var app = Vue.createApp({
             }
 
             s = app.parameterset_wall_form_ids;
+            for(let i in s)
+            {
+                let e = document.getElementById("id_errors_" + s[i]);
+                if(e) e.remove();
+            }
+
+            s = app.parameterset_ground_form_ids;
             for(let i in s)
             {
                 let e = document.getElementById("id_errors_" + s[i]);
