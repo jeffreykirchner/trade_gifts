@@ -16,31 +16,31 @@ class ParameterSetWallForm(forms.ModelForm):
                            required=False,
                            widget=forms.TextInput(attrs={"v-model":"current_parameter_set_wall.info",}))
     
-    start_x = forms.IntegerField(label='Starting Location X',
+    start_x = forms.IntegerField(label='X Location',
                                  min_value=0,
                                  widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_wall.start_x",
                                                                  "step":"1",
                                                                  "min":"0"}))
 
-    start_y = forms.IntegerField(label='Starting Location Y',
+    start_y = forms.IntegerField(label='Y Location',
                                  min_value=0,
                                  widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_wall.start_y",
                                                                  "step":"1",
                                                                  "min":"0"}))
     
-    end_x = forms.IntegerField(label='Ending Location X',
+    width = forms.IntegerField(label='Width',
                                  min_value=0,
-                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_wall.end_x",
+                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_wall.width",
                                                                  "step":"1",
                                                                  "min":"0"}))
 
-    end_y = forms.IntegerField(label='Ending Location Y',
+    height = forms.IntegerField(label='Height',
                                  min_value=0,
-                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_wall.end_y",
+                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_wall.height",
                                                                  "step":"1",
                                                                  "min":"0"}))
 
     class Meta:
         model=ParameterSetWall
-        fields =['info', 'start_x', 'start_y', 'end_x', 'end_y']
+        fields =['info', 'start_x', 'start_y', 'width', 'height']
     

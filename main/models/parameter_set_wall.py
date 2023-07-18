@@ -21,8 +21,8 @@ class ParameterSetWall(models.Model):
     start_x = models.IntegerField(verbose_name='Start Location X', default=50)            #starting location x and y
     start_y = models.IntegerField(verbose_name='Start Location Y', default=50)
     
-    end_x = models.IntegerField(verbose_name='End Location X', default=50)                #ending location x and y
-    end_y = models.IntegerField(verbose_name='End Location Y', default=50)
+    width = models.IntegerField(verbose_name='End Location X', default=50)                #ending location x and y
+    height = models.IntegerField(verbose_name='End Location Y', default=50)
 
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
@@ -33,6 +33,7 @@ class ParameterSetWall(models.Model):
     class Meta:
         verbose_name = 'Parameter Set Wall'
         verbose_name_plural = 'Parameter Set Walls'
+        ordering = ['id']
 
     def from_dict(self, new_ps):
         '''
@@ -44,8 +45,8 @@ class ParameterSetWall(models.Model):
         self.start_x = new_ps.get("start_x")
         self.start_y = new_ps.get("start_y")
 
-        self.end_x = new_ps.get("end_x")
-        self.end_y = new_ps.get("end_y")
+        self.width = new_ps.get("width")
+        self.height = new_ps.get("height")
 
 
         self.save()
@@ -81,8 +82,8 @@ class ParameterSetWall(models.Model):
             "info" : self.info,
             "start_x" : self.start_x,
             "start_y" : self.start_y,
-            "end_x" : self.end_x,
-            "end_y" : self.end_y,
+            "width" : self.width,
+            "height" : self.height,
         }
     
     def get_json_for_subject(self, update_required=False):

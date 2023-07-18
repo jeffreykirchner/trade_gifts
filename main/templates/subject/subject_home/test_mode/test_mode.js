@@ -189,9 +189,9 @@ test_mode_move(){
 /**
  * find point given angle and distance
  **/
-get_point_from_angle_distance(start_x, start_y, end_x, end_y, distance)
+get_point_from_angle_distance(start_x, start_y, width, height, distance)
 {
-    let angle = app.get_angle(start_x, start_y, end_x, end_y);
+    let angle = app.get_angle(start_x, start_y, width, height);
     return {x:start_x + distance * Math.cos(angle), 
             y:start_y + distance * Math.sin(angle)};
 },
