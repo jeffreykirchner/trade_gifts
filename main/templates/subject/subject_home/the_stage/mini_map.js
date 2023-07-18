@@ -24,11 +24,22 @@ setup_pixi_minimap()
     mini_map_bg.width = app.stage_width * scale;
     mini_map_bg.height =  app.stage_height * scale;
     mini_map_bg.lineStyle(1, 0x000000);
-    mini_map_bg.beginFill(0xBDB76B);
+    mini_map_bg.beginFill('00BFFF');
     mini_map_bg.drawRect(0, 0, app.stage_width * scale, app.stage_height * scale);
     mini_map_bg.endFill();
     
     mini_map.container.addChild(mini_map_bg);
+
+    //grounds
+    for(const i in app.session.parameter_set.parameter_set_grounds){
+        const ground = app.session.parameter_set.parameter_set_grounds[i];
+
+        let temp_ground = new PIXI.Graphics();
+        temp_ground.beginFill(ground.tint);
+        temp_ground.drawRect(ground.x * scale, ground.y * scale, ground.width * scale, ground.height * scale);
+
+        mini_map.container.addChild(temp_ground);
+    }
 
     //walls
     for(const i in app.session.parameter_set.parameter_set_walls){ 
@@ -36,7 +47,7 @@ setup_pixi_minimap()
         const wall = app.session.parameter_set.parameter_set_walls[i];
 
         let temp_wall = new PIXI.Graphics();
-        temp_wall.beginFill(0xDEB887);
+        temp_wall.beginFill('DEB887');
         temp_wall.drawRect(wall.start_x * scale, wall.start_y * scale, wall.width * scale, wall.height * scale);
 
         mini_map.container.addChild(temp_wall);

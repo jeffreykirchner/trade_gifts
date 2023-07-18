@@ -225,20 +225,21 @@ setup_pixi_subjects(){
         status_label.position.set(0, -avatar_container.height/2 + 30);
 
         //bounding box outline
-        if(app.draw_bounding_boxes)
-        {
-            let bounding_box = new PIXI.Graphics();
         
-            bounding_box.width = avatar_container.width;
-            bounding_box.height = avatar_container.height;
-            bounding_box.lineStyle(1, 0x000000);
-            //bounding_box.beginFill(0xBDB76B);
-            bounding_box.drawRect(0, 0, avatar_container.width, avatar_container.height);
-            bounding_box.endFill();
-            bounding_box.pivot.set(bounding_box.width/2, bounding_box.height/2);
-            bounding_box.position.set(0, 0);
+        let bounding_box = new PIXI.Graphics();
+    
+        bounding_box.lineStyle(1, 0x000000);
+        //bounding_box.beginFill(0xBDB76B);
+        bounding_box.drawRect(0, 0, avatar_container.width*.5, avatar_container.height*.5);
+        bounding_box.endFill();
+        bounding_box.pivot.set(bounding_box.width/2, bounding_box.height/2);
+        bounding_box.position.set(0, 0);
 
-            avatar_container.addChild(bounding_box);
+        avatar_container.addChild(bounding_box);
+        pixi_avatars[i].bounding_box = bounding_box;
+        if(!app.draw_bounding_boxes)
+        {
+            bounding_box.visible = false;
         }
 
         pixi_avatars[i].avatar_container = avatar_container;
@@ -693,7 +694,7 @@ move_player(delta)
             //move player towards target
             if(!obj.frozen)
             {
-                app.move_object(delta=delta, obj=obj, move_speed=app.move_speed, wall_limited=true, container=avatar_container);
+                app.move_object(delta=delta, obj=obj, move_speed=app.move_speed, wall_limited=true, container=pixi_avatars[i].bounding_box);
             }
 
             //update the sprite locations
