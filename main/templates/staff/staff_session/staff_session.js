@@ -14,6 +14,8 @@ var pixi_transfer_beams_key = 0;
 var pixi_fps_label = null;                     //fps label
 var pixi_avatars = {};                         //avatars
 var pixi_tokens = {};                          //tokens
+var pixi_walls = {};                           //walls
+var pixi_grounds = {};                         //grounds
 
 //vue app
 var app = Vue.createApp({
@@ -439,6 +441,8 @@ var app = Vue.createApp({
         {%include "staff/staff_session/interface/interface_card.js"%}
         {%include "staff/staff_session/replay/replay_card.js"%}
         {%include "subject/subject_home/the_stage/pixi_setup.js"%}
+        {%include "subject/subject_home/the_stage/wall.js"%}
+        {%include "subject/subject_home/the_stage/ground.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages

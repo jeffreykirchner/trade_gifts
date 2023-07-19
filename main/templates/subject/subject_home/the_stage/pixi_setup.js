@@ -8,22 +8,30 @@ setup_pixi(){
 
     PIXI.Assets.add('sprite_sheet', '{% static "gear_3_animated.json" %}');
     PIXI.Assets.add('sprite_sheet_2', '{% static "sprite_sheet.json" %}');
-    PIXI.Assets.add('bg_tex', '{% static "background_tile_low.jpg"%}');
+    PIXI.Assets.add('grass_tex', '{% static "background_tile_low.jpg"%}');
+    PIXI.Assets.add('wall_tex', '{% static "wall.png"%}');
+    PIXI.Assets.add('water_tex', '{% static "water_tile.jpg"%}');
+    PIXI.Assets.add('bridge_tex', '{% static "bridge.jpg"%}');
     PIXI.Assets.add('cherry_token', '{% static "cherry_1_animated.json"%}');
 
-    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'bg_tex', 'sprite_sheet_2', 'cherry_token']);
+    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'grass_tex', 'wall_tex', 'water_tex', 'bridge_tex', 'sprite_sheet_2', 'cherry_token']);
 
     textures_promise.then((textures) => {
         app.setup_pixi_sheets(textures);
         app.setup_pixi_tokens_for_current_period();
-        app.setup_pixi_subjects();
-        app.setup_pixi_minimap();
-        app.setup_subject_status_overlay();
-        app.update_zoom();
-
+        app.setup_pixi_ground();
+        app.setup_pixi_subjects();       
+        app.setup_pixi_wall();       
+        
         if(app.pixi_mode!="subject")
         {
+            app.update_zoom();
             app.fit_to_screen();
+        }
+        else
+        {
+            app.setup_pixi_minimap();
+            app.setup_subject_status_overlay();
         }
     });
 
@@ -72,7 +80,7 @@ setup_pixi_sheets(textures){
     pixi_app.stage.addChild(pixi_container_main);
    
     let tiling_sprite = new PIXI.TilingSprite(
-        textures.bg_tex,
+        app.pixi_textures["water_tex"],
         app.stage_width,
         app.stage_height,
     );
@@ -90,6 +98,7 @@ setup_pixi_sheets(textures){
         pixi_target.alpha = 0.33;
         pixi_target.drawCircle(0, 0, 10);
         pixi_target.eventMode='static';
+        pixi_target.zIndex = 100;
 
         //pixi_target.scale.set(app.pixi_scale, app.pixi_scale);
         pixi_container_main.addChild(pixi_target)
@@ -216,20 +225,21 @@ setup_pixi_subjects(){
         status_label.position.set(0, -avatar_container.height/2 + 30);
 
         //bounding box outline
-        if(app.draw_bounding_boxes)
-        {
-            let bounding_box = new PIXI.Graphics();
         
-            bounding_box.width = avatar_container.width;
-            bounding_box.height = avatar_container.height;
-            bounding_box.lineStyle(1, 0x000000);
-            //bounding_box.beginFill(0xBDB76B);
-            bounding_box.drawRect(0, 0, avatar_container.width, avatar_container.height);
-            bounding_box.endFill();
-            bounding_box.pivot.set(bounding_box.width/2, bounding_box.height/2);
-            bounding_box.position.set(0, 0);
+        let bounding_box = new PIXI.Graphics();
+    
+        bounding_box.lineStyle(1, 0x000000);
+        //bounding_box.beginFill(0xBDB76B);
+        bounding_box.drawRect(0, 0, avatar_container.width*.5, avatar_container.height*.5);
+        bounding_box.endFill();
+        bounding_box.pivot.set(bounding_box.width/2, bounding_box.height/2);
+        bounding_box.position.set(0, 0);
 
-            avatar_container.addChild(bounding_box);
+        avatar_container.addChild(bounding_box);
+        pixi_avatars[i].bounding_box = bounding_box;
+        if(!app.draw_bounding_boxes)
+        {
+            bounding_box.visible = false;
         }
 
         pixi_avatars[i].avatar_container = avatar_container;
@@ -250,7 +260,7 @@ setup_pixi_subjects(){
                 fill: 0x000000,
                 align: 'left',
             });
-        chat_bubble_text.eventMode = 'none';    
+        chat_bubble_text.eventMode = 'passive';    
 
         chat_container.addChild(chat_bubble_sprite);
         chat_container.addChild(chat_bubble_text);
@@ -434,79 +444,6 @@ destroy_pixi_tokens_for_all_periods()
             }
         }
     }
-},
-
-/**
- * setup mini map on subject screen 
- * */
-setup_pixi_minimap()
-{
-    if(!app.session) return;
-    if(!app.session.started) return;
-    if(app.pixi_mode!="subject") return;
-
-    if(mini_map_container) mini_map_container.destroy();
-
-    app.mini_map_scale = Math.min((pixi_app.screen.width * 0.2)/app.stage_width,  (pixi_app.screen.height * 0.3)/app.stage_height);
-
-    let scale = app.mini_map_scale;
-    let obj = app.session.world_state.session_players[app.session_player.id]
-
-    mini_map_container = new PIXI.Container();
-    mini_map_container.eventMode = 'none';
-    mini_map_container.zIndex = 9998;
-
-    //mini map background
-    let mini_map_bg = new PIXI.Graphics();
-    
-    mini_map_bg.width = app.stage_width * scale;
-    mini_map_bg.height =  app.stage_height * scale;
-    mini_map_bg.lineStyle(1, 0x000000);
-    mini_map_bg.beginFill(0xBDB76B);
-    mini_map_bg.drawRect(0, 0, app.stage_width * scale, app.stage_height * scale);
-    mini_map_bg.endFill();
-    
-    mini_map_container.addChild(mini_map_bg);
-
-    //mini map view port
-    let mini_map_vp = new PIXI.Graphics();
-    mini_map_vp.width = pixi_app.screen.width * scale;
-    mini_map_vp.height = pixi_app.screen.height * scale;
-    mini_map_vp.lineStyle({width:2,color:0x000000,alignment:0});
-    mini_map_vp.beginFill(0xFFFFFF,0);
-    mini_map_vp.drawRect(0, 0, pixi_app.screen.width * scale, pixi_app.screen.height * scale);
-    mini_map_vp.endFill();    
-    mini_map_vp.pivot.set(mini_map_vp.width/2, mini_map_vp.height/2);
-    mini_map_vp.position.set(obj.current_location.x * scale, obj.current_location.y * scale);
-
-    mini_map_container.addChild(mini_map_vp);
-
-    //mini map tokens
-    const current_period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
-
-    for(const i in app.session.world_state.tokens[current_period_id]){       
-
-        let token =  app.session.world_state.tokens[current_period_id][i];
-
-        if(token.status != "available") continue;
-
-        let token_graphic = new PIXI.Graphics();
-
-        token_graphic.beginFill(0xFFFFFF);
-        token_graphic.drawRect(0, 0, 2, 2);
-        token_graphic.endFill();
-        token_graphic.pivot.set(token_graphic.width/2, token_graphic.height/2);
-        token_graphic.position.set(token.current_location.x * scale, token.current_location.y * scale);
-
-        pixi_tokens[current_period_id][i].mini_map_graphic = token_graphic;
-        mini_map_container.addChild(pixi_tokens[current_period_id][i].mini_map_graphic);
-    }
-
-    mini_map_container.position.set(20, 20);
-    mini_map_container.alpha = 0.9;
-    mini_map_container = mini_map_container;
-    pixi_app.stage.addChild(mini_map_container);
-
 },
 
 /**
@@ -757,7 +694,7 @@ move_player(delta)
             //move player towards target
             if(!obj.frozen)
             {
-                app.move_object(delta, obj, app.move_speed);
+                app.move_object(delta=delta, obj=obj, move_speed=app.move_speed, wall_limited=true, container=pixi_avatars[i].bounding_box);
             }
 
             //update the sprite locations
@@ -904,8 +841,7 @@ move_player(delta)
 update_mini_map(delta)
 {
     let obj = app.session.world_state.session_players[app.session_player.id]
-    let mini_map_vp = mini_map_container.getChildAt(1);
-    mini_map_vp.position.set(obj.current_location.x * app.mini_map_scale, 
+    mini_map.view_port.position.set(obj.current_location.x * app.mini_map_scale, 
                              obj.current_location.y * app.mini_map_scale);
 },
 
@@ -1173,7 +1109,7 @@ setup_tractor_beam(source_id, target_id)
 /**
  * add text emitters to the screen
  */
-add_text_emitters(text, start_x, start_y, end_x, end_y, font_color, font_size, emitter_image)
+add_text_emitters(text, start_x, start_y, width, height, font_color, font_size, emitter_image)
 {
     let emitter_container = new PIXI.Container();
     emitter_container.position.set(start_x, start_y);
@@ -1199,7 +1135,7 @@ add_text_emitters(text, start_x, start_y, end_x, end_y, font_color, font_size, e
     }
 
     let emitter = {current_location : {x:start_x, y:start_y},
-                   target_location : {x:end_x, y:end_y},
+                   target_location : {x:width, y:height},
                    emitter_container:emitter_container,
                 };
     
@@ -1226,7 +1162,7 @@ move_text_emitters(delta)
         }
         else
         {
-            app.move_object(delta, emitter, app.move_speed / 4);
+            app.move_object(delta=delta, obj=emitter, move_speed=app.move_speed / 4);
             emitter.emitter_container.position.set(emitter.current_location.x, emitter.current_location.y);
         }       
     }
@@ -1399,11 +1335,13 @@ animate_transfer_beams(delta)
 /**
  * move the object towards its target location
  */
-move_object(delta, obj, move_speed)
+move_object(delta, obj, move_speed, wall_limited=false, container=null)
 {
     let noX = false;
     let noY = false;
     let temp_move_speed = (move_speed * delta);
+
+    let temp_current_location = Object.assign({}, obj.current_location);
 
     let temp_angle = Math.atan2(obj.target_location.y - obj.current_location.y,
                                 obj.target_location.x - obj.current_location.x)
@@ -1421,4 +1359,47 @@ move_object(delta, obj, move_speed)
         else
             obj.current_location.x += temp_move_speed * Math.cos(temp_angle);        
     }
+
+    //if wall limited prevent object from moving through
+    if(wall_limited)
+    {
+        wall_limit_hit = false;
+
+        let rect1={x:obj.current_location.x - container.width/2,
+                   y:obj.current_location.y - container.height/2,
+                   width:container.width,
+                   height:container.height};  
+        
+        for(let i in app.session.parameter_set.parameter_set_walls)
+        {
+            let temp_wall = app.session.parameter_set.parameter_set_walls[i];
+            let rect2={x:temp_wall.start_x,
+                    y:temp_wall.start_y,
+                    width:temp_wall.width,
+                    height:temp_wall.height};
+
+            if(app.check_for_intersection(rect1, rect2))
+            {
+                obj.current_location =  Object.assign({}, temp_current_location);
+                break;
+            }
+        }
+    }
+},
+
+/**
+ * check for rectangle intersection
+ */
+check_for_intersection(rect1, rect2)
+{
+   if(rect1.x < rect2.x + rect2.width &&
+      rect1.x + rect1.width > rect2.x &&
+      rect1.y < rect2.y + rect2.height &&
+      rect1.y + rect1.height > rect2.y)
+   {
+        return true;
+   }
+
+   return false;
+
 },

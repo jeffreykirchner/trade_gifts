@@ -1,3 +1,5 @@
 from .get_parameter_set import GetParameterSetMixin
 from .parameter_set_players import ParameterSetPlayersMixin
+from .parameter_set_walls import ParameterSetWallsMixin
 from .control_parameter_set import ControlParameterSetMixin
+from .parameter_set_grounds import ParameterSetGroundsMixin

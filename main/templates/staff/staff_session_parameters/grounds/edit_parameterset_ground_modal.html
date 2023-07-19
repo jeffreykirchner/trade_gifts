@@ -1,11 +1,11 @@
 {% load crispy_forms_tags %}
-<!--Edit Player Modal -->
+<!--Edit ground Modal -->
 <div class="modal fade"
-     id="edit_parameterset_player_modal"
+     id="edit_parameterset_ground_modal"
      data-bs-backdrop="static"
      data-bs-keyboard="false"
      tabindex="-1"
-     aria-labelledby="edit_parameterset_player_modal"
+     aria-labelledby="edit_parameterset_ground_modal"
      aria-hidden="true">
 
     <div class="modal-dialog">
@@ -14,8 +14,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="parameter_set_player_form" v-on:submit.prevent="onSubmit">
-                    {% for i in parameter_set_player_form %}
+                <form id="parameter_set_ground_form" v-on:submit.prevent="onSubmit">
+                    {% for i in parameter_set_ground_form %}
                     <div class="row">
                         <div class = "col col-md-10 offset-md-1">  
                             {{ i|as_crispy_field }}         
@@ -27,15 +27,15 @@
             <div class="modal-footer">
                 <button type="button"
                         class="btn btn-outline-danger"
-                        title="Remove player from parameter set."
-                        v-on:click = "send_remove_parameter_set_player()"
+                        title="Remove ground from parameter set."
+                        v-on:click = "send_remove_parameter_set_ground()"
                         v-bind:disabled="reconnecting || working">
-                    Delete Player <i class="far fa-trash-alt"></i>
+                    Delete <i class="far fa-trash-alt"></i>
                 </button>
                 <button type="button"
                         class="btn btn-outline-primary"
-                        title="Update player settings."
-                        v-on:click = "send_update_parameter_set_player()"
+                        title="Update ground settings."
+                        v-on:click = "send_update_parameter_set_ground()"
                         v-bind:disabled="reconnecting || working">
                     Update <i class="fas fa-sign-in-alt"></i>
                 </button>

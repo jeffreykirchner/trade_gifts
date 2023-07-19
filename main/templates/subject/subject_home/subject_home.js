@@ -15,9 +15,11 @@ var pixi_text_emitter_key = 0;
 var pixi_transfer_beams = {};                  //transfer beam json
 var pixi_transfer_beams_key = 0;
 var pixi_fps_label = null;                     //fps label
-var mini_map_container = null;                 //mini map container
+var mini_map = {container:null};                 //mini map container
 var pixi_avatars = {};                         //avatars
 var pixi_tokens = {};                          //tokens
+var pixi_walls = {};                           //walls
+var pixi_grounds = {};                         //grounds
 
 //vue app
 var app = Vue.createApp({
@@ -468,6 +470,9 @@ var app = Vue.createApp({
         {%include "subject/subject_home/instructions/instructions_card.js"%}
         {%include "subject/subject_home/the_stage/pixi_setup.js"%}
         {%include "subject/subject_home/the_stage/interface.js"%}
+        {%include "subject/subject_home/the_stage/wall.js"%}
+        {%include "subject/subject_home/the_stage/ground.js"%}
+        {%include "subject/subject_home/the_stage/mini_map.js"%}
     
         /** clear form error messages
         */
