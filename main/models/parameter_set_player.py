@@ -87,8 +87,10 @@ class ParameterSetPlayer(models.Model):
         '''
         return json object for subject screen, return cached version if unchanged
         '''
-
-        v = self.parameter_set.json_for_session["parameter_set_players"][str(self.id)]
+        try:
+            v = self.parameter_set.json_for_session["parameter_set_players"][str(self.id)]
+        except KeyError:
+            v= {}
 
         # edit v as needed
 

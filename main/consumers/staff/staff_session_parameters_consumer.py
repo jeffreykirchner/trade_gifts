@@ -11,6 +11,7 @@ class StaffSessionParametersConsumer(SocketConsumerMixin,
                                      ParameterSetPlayersMixin,
                                      ParameterSetWallsMixin,
                                      ParameterSetGroundsMixin,
+                                     ParameterSetFieldTypesMixin,
                                      ControlParameterSetMixin,
                                      SendMessageMixin):
     '''
