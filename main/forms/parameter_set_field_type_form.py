@@ -15,8 +15,10 @@ class ParameterSetFieldTypeForm(forms.ModelForm):
     '''
 
     info = forms.CharField(label='Info',
-                           required=False,
                            widget=forms.TextInput(attrs={"v-model":"current_parameter_set_field_type.info",}))
+    
+    display_text = forms.CharField(label='Display Text',
+                                   widget=forms.TextInput(attrs={"v-model":"current_parameter_set_field_type.display_text",}))
     
     good_one = forms.ChoiceField(label='Good One',
                                 choices=Goods.choices,
@@ -40,5 +42,5 @@ class ParameterSetFieldTypeForm(forms.ModelForm):
 
     class Meta:
         model=ParameterSetFieldType
-        fields =['info', 'good_one', 'good_two', 'start_on_period', 'reset_every_n_periods']
+        fields =['info', 'display_text', 'good_one', 'good_two', 'start_on_period', 'reset_every_n_periods']
     

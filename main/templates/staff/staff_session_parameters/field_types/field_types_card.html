@@ -24,6 +24,9 @@
                                     Info
                                 </th> 
                                 <th scope="col" class = "m-1 p-1">
+                                    Display Text
+                                </th>
+                                <th scope="col" class = "m-1 p-1">
                                     Good One
                                 </th>         
                                 <th scope="col" class = "m-1 p-1">
@@ -45,6 +48,10 @@
                                 <td v-on:click="show_edit_parameter_set_field_type(p)" 
                                     class="player_table_cell">
                                     [[temp_p.info]]
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_field_type(p)" 
+                                    class="player_table_cell">
+                                    [[temp_p.display_text]]
                                 </td>
                                 <td v-on:click="show_edit_parameter_set_field_type(p)" 
                                    class="player_table_cell">

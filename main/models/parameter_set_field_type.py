@@ -18,7 +18,8 @@ class ParameterSetFieldType(models.Model):
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_field_types")
 
-    info = models.TextField(verbose_name='Info', blank=True, null=True, default="Even or Odd")
+    info = models.TextField(verbose_name='Info', blank=True, null=True, default="Description of Field Type")
+    display_text = models.TextField(verbose_name='Info', blank=True, null=True, default="Display Text")
 
     good_one = models.CharField(verbose_name='Good One', max_length=100, choices=Goods.choices, default=Goods.CHERRY)
     good_two = models.CharField(verbose_name='Good Two', max_length=100, choices=Goods.choices, default=Goods.BLUEBERRY)
@@ -43,6 +44,7 @@ class ParameterSetFieldType(models.Model):
         source : dict object of parameterset player
         '''
         self.info = new_ps.get("info")
+        self.display_text = new_ps.get("display_text")
         
         self.good_one = new_ps.get("good_one")
         self.good_two = new_ps.get("good_two")
@@ -81,6 +83,7 @@ class ParameterSetFieldType(models.Model):
 
             "id" : self.id,
             "info" : self.info,
+            "display_text" : self.display_text,
             "good_one" : self.good_one,
             "good_two" : self.good_two,
             "start_on_period" : self.start_on_period,
