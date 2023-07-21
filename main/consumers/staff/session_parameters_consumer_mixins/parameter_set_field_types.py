@@ -105,7 +105,7 @@ def take_remove_parameterset_field_type(data):
         return
     
     parameter_set_field_type.delete()
-    session.parameter_set.update_json_fk(update_field_types=True)
+    session.parameter_set.update_json_fk(update_field_types=True, update_fields=True)
     
     return {"value" : "success"}
 

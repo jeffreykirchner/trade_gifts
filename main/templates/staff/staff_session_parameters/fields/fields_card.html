@@ -38,11 +38,15 @@
                                 >
                                 <td v-on:click="show_edit_parameter_set_field(p)" 
                                     class="player_table_cell">
-                                    [[temp_p.parameter_set_player]]
+                                    <span v-if="temp_p.parameter_set_player">
+                                        [[parameter_set.parameter_set_players[temp_p.parameter_set_player].id_label]]
+                                    </span>
                                 </td>
                                 <td v-on:click="show_edit_parameter_set_field(p)" 
                                     class="player_table_cell">
-                                    [[temp_p.parameter_set_field_type]]
+                                    <span v-if="temp_p.parameter_set_field_type">
+                                        [[parameter_set.parameter_set_field_types[temp_p.parameter_set_field_type].info]]
+                                    </span>
                                 </td>
                                 <td v-on:click="show_edit_parameter_set_field(p)" 
                                    class="player_table_cell">

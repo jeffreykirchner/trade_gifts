@@ -199,7 +199,7 @@ class ParameterSet(models.Model):
             logger.warning(f"parameter set remove_player, not found ID: {parameterset_player_id}")
 
         self.update_player_count()
-        self.update_json_fk(update_players=True)
+        self.update_json_fk(update_players=True, update_fields=True)
     
     def update_player_count(self):
         '''

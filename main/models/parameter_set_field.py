@@ -17,8 +17,8 @@ class ParameterSetField(models.Model):
     '''
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_fields_a")
-    parameter_set_field_type = models.ForeignKey(ParameterSetFieldType, on_delete=models.DO_NOTHING, related_name="parameter_set_fields_b", blank=True, null=True)
-    parameter_set_player = models.ForeignKey(ParameterSetPlayer, on_delete=models.DO_NOTHING, related_name="parameter_set_fields_c", blank=True, null=True)
+    parameter_set_field_type = models.ForeignKey(ParameterSetFieldType, on_delete=models.SET_NULL, related_name="parameter_set_fields_b", blank=True, null=True)
+    parameter_set_player = models.ForeignKey(ParameterSetPlayer, on_delete=models.SET_NULL, related_name="parameter_set_fields_c", blank=True, null=True)
 
     x = models.IntegerField(verbose_name='Location X', default=50)            #location x and y
     y = models.IntegerField(verbose_name='Location Y', default=50)

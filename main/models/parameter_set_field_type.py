@@ -31,7 +31,7 @@ class ParameterSetFieldType(models.Model):
     updated= models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.info)
 
     class Meta:
         verbose_name = 'Parameter Set Field Type'
