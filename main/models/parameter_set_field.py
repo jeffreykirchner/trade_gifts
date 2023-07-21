@@ -40,8 +40,8 @@ class ParameterSetField(models.Model):
         source : dict object of parameterset player
         '''       
         
-        self.x = new_ps.get("start_x")
-        self.y = new_ps.get("start_y")
+        self.x = new_ps.get("x")
+        self.y = new_ps.get("y")
 
         self.save()
         

@@ -16,6 +16,7 @@ var pixi_avatars = {};                         //avatars
 var pixi_tokens = {};                          //tokens
 var pixi_walls = {};                           //walls
 var pixi_grounds = {};                         //grounds
+var pixi_fields = {};                          //fields
 
 //vue app
 var app = Vue.createApp({

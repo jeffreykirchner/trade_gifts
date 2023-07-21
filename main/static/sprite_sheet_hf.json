@@ -1,0 +1,27 @@
+﻿{"frames": {
+
+"Field0000":
+{
+	"frame": {"x":308,"y":5,"w":236,"h":392},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":236,"h":392},
+	"sourceSize": {"w":236,"h":392}
+},
+"House0000":
+{
+	"frame": {"x":5,"y":5,"w":298,"h":391},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":298,"h":391},
+	"sourceSize": {"w":298,"h":391}
+}},
+"meta": {
+	"app": "Adobe Animate",
+	"version": "22.0.0.93",
+	"image": "sprite_sheet_hf.png",
+	"format": "RGBA8888",
+	"size": {"w":1024,"h":512},
+	"scale": "1"
+}
+}

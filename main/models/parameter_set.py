@@ -105,7 +105,7 @@ class ParameterSet(models.Model):
             for i in new_parameter_set_players:
                 p = main.models.ParameterSetPlayer.objects.create(parameter_set=self)
                 p.from_dict(new_parameter_set_players[i])
-                new_parameter_set_field_types_map[i] = p.id
+                new_parameter_set_players_map[i] = p.id
 
             self.update_player_count()
 
@@ -141,13 +141,14 @@ class ParameterSet(models.Model):
 
             for i in new_parameter_set_fields:
                 p = main.models.ParameterSetField.objects.create(parameter_set=self)
-                p.from_dict(new_parameter_set_fields[i])
+                v = new_parameter_set_fields[i]
+                p.from_dict(v)
 
-                if i["parameter_set_field_type"]:
-                    p.parameter_set_field_type_id=new_parameter_set_field_types_map[i["parameter_set_field_type"]]
+                if v["parameter_set_field_type"] != None:
+                    p.parameter_set_field_type_id=new_parameter_set_field_types_map[str(v["parameter_set_field_type"])]
                 
-                if i["parameter_set_player"]:
-                    p.parameter_set_player_id=new_parameter_set_players_map[i["parameter_set_player"]]
+                if v["parameter_set_player"]:
+                    p.parameter_set_player_id=new_parameter_set_players_map[str(v["parameter_set_player"])]
 
                 p.save()
 

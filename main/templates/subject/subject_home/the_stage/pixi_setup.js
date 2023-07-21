@@ -8,18 +8,20 @@ setup_pixi(){
 
     PIXI.Assets.add('sprite_sheet', '{% static "gear_3_animated.json" %}');
     PIXI.Assets.add('sprite_sheet_2', '{% static "sprite_sheet.json" %}');
+    PIXI.Assets.add('sprite_sheet_hf', '{% static "sprite_sheet_hf.json" %}');
     PIXI.Assets.add('grass_tex', '{% static "background_tile_low.jpg"%}');
     PIXI.Assets.add('wall_tex', '{% static "wall.png"%}');
     PIXI.Assets.add('water_tex', '{% static "water_tile.jpg"%}');
     PIXI.Assets.add('bridge_tex', '{% static "bridge.jpg"%}');
     PIXI.Assets.add('cherry_token', '{% static "cherry_1_animated.json"%}');
 
-    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'grass_tex', 'wall_tex', 'water_tex', 'bridge_tex', 'sprite_sheet_2', 'cherry_token']);
+    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'sprite_sheet_hf', 'grass_tex', 'wall_tex', 'water_tex', 'bridge_tex', 'sprite_sheet_2', 'cherry_token']);
 
     textures_promise.then((textures) => {
         app.setup_pixi_sheets(textures);
         app.setup_pixi_tokens_for_current_period();
         app.setup_pixi_ground();
+        app.setup_pixi_fields();
         app.setup_pixi_subjects();       
         app.setup_pixi_wall();       
         
