@@ -1,5 +1,5 @@
 '''
-parameterset player 
+parameterset field 
 '''
 
 from django.db import models
@@ -13,12 +13,12 @@ import main
 
 class ParameterSetField(models.Model):
     '''
-    parameter set wall
+    parameter set field
     '''
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_fields_a")
-    parameter_set_field_type = models.ForeignKey(ParameterSetFieldType, on_delete=models.DO_NOTHING, related_name="parameter_set_fields_b", blank=True, null=True, null=True)
-    parameter_set_player = models.ForeignKey(ParameterSetPlayer, on_delete=models.DO_NOTHING, related_name="parameter_set_fields_c", blank=True, null=True, null=True)
+    parameter_set_field_type = models.ForeignKey(ParameterSetFieldType, on_delete=models.DO_NOTHING, related_name="parameter_set_fields_b", blank=True, null=True)
+    parameter_set_player = models.ForeignKey(ParameterSetPlayer, on_delete=models.DO_NOTHING, related_name="parameter_set_fields_c", blank=True, null=True)
 
     x = models.IntegerField(verbose_name='Location X', default=50)            #location x and y
     y = models.IntegerField(verbose_name='Location Y', default=50)
@@ -38,14 +38,10 @@ class ParameterSetField(models.Model):
         '''
         copy source values into this period
         source : dict object of parameterset player
-        '''
-        self.info = new_ps.get("info")
+        '''       
         
-        self.start_x = new_ps.get("start_x")
-        self.start_y = new_ps.get("start_y")
-
-        self.width = new_ps.get("width")
-        self.height = new_ps.get("height")
+        self.x = new_ps.get("start_x")
+        self.y = new_ps.get("start_y")
 
         self.save()
         
@@ -63,7 +59,7 @@ class ParameterSetField(models.Model):
         '''
         update parameter set json
         '''
-        self.parameter_set.json_for_session["parameter_set_walls"][self.id] = self.json()
+        self.parameter_set.json_for_session["parameter_set_fields"][self.id] = self.json()
 
         self.parameter_set.save()
 
@@ -77,11 +73,11 @@ class ParameterSetField(models.Model):
         return{
 
             "id" : self.id,
-            "info" : self.info,
-            "start_x" : self.start_x,
-            "start_y" : self.start_y,
-            "width" : self.width,
-            "height" : self.height,
+            "x" : self.x,
+            "y" : self.y,
+            "parameter_set_field_type" : self.parameter_set_field_type.id if self.parameter_set_field_type else None,
+            "parameter_set_player" : self.parameter_set_player.id if self.parameter_set_player else None,
+
         }
     
     def get_json_for_subject(self, update_required=False):

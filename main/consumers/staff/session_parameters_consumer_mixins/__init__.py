@@ -4,3 +4,4 @@ from .parameter_set_walls import ParameterSetWallsMixin
 from .control_parameter_set import ControlParameterSetMixin
 from .parameter_set_grounds import ParameterSetGroundsMixin
 from .parameter_set_field_types import ParameterSetFieldTypesMixin
+from .parameter_set_fields import ParameterSetFieldsMixin

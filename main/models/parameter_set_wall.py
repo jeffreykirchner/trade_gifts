@@ -1,5 +1,5 @@
 '''
-parameterset player 
+parameterset wall 
 '''
 
 from django.db import models
