@@ -64,7 +64,7 @@ setup_pixi_fields()
         field_container.addChild(good_two_sprite);
 
         owner_label.position.set(field_sprite.width/2, -field_sprite.height/2 - owner_label.height);
-        info_label.position.set(0, -field_sprite.height/2);
+        info_label.position.set(0, -field_sprite.height/2 + 2);
         good_one_sprite.position.set(0, -field_sprite.height/4);
         good_two_sprite.position.set(0, +field_sprite.height/4);
 
