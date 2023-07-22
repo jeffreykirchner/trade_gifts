@@ -47,12 +47,26 @@ setup_pixi_fields()
         info_label.eventMode = 'passive'; 
         info_label.anchor.set(0.5, 0);
 
+        //good one        
+        let good_one_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_one+"_tex"]);
+        good_one_sprite.anchor.set(1, 0.5);
+        good_one_sprite.eventMode = 'passive';
+
+        //good two        
+        let good_two_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_two+"_tex"]);
+        good_two_sprite.anchor.set(1, 0.5);
+        good_two_sprite.eventMode = 'passive';
+
         field_container.addChild(field_sprite);
         field_container.addChild(owner_label);
         field_container.addChild(info_label);
+        field_container.addChild(good_one_sprite);
+        field_container.addChild(good_two_sprite);
 
         owner_label.position.set(field_sprite.width/2, -field_sprite.height/2 - owner_label.height);
         info_label.position.set(0, -field_sprite.height/2);
+        good_one_sprite.position.set(0, -field_sprite.height/4);
+        good_two_sprite.position.set(0, +field_sprite.height/4);
 
         pixi_fields[i].field_container = field_container;
         pixi_fields[i].owner_label = owner_label;

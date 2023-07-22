@@ -13,12 +13,14 @@ setup_pixi(){
     PIXI.Assets.add('wall_tex', '{% static "wall.png"%}');
     PIXI.Assets.add('water_tex', '{% static "water_tile.jpg"%}');
     PIXI.Assets.add('bridge_tex', '{% static "bridge.jpg"%}');
-    PIXI.Assets.add('blueberry_tex', '{% static "blueberry.png"%}');
-    PIXI.Assets.add('pineapple_tex', '{% static "pineapple.png"%}');
+    PIXI.Assets.add('Blueberry_tex', '{% static "blueberry.png"%}');
+    PIXI.Assets.add('Pineapple_tex', '{% static "pineapple.png"%}');
+    PIXI.Assets.add('Cherry_tex', '{% static "cherry.png"%}');
     PIXI.Assets.add('cherry_token', '{% static "cherry_1_animated.json"%}');
 
     const textures_promise = PIXI.Assets.load(['sprite_sheet', 'sprite_sheet_hf', 'grass_tex', 'wall_tex', 'water_tex',
-                                               'bridge_tex', 'sprite_sheet_2', 'cherry_token', 'blueberry_tex', 'pineapple_tex']);
+                                               'bridge_tex', 'sprite_sheet_2', 'cherry_token', 'Blueberry_tex', 'Pineapple_tex',
+                                               'Cherry_tex'])
 
     textures_promise.then((textures) => {
         app.setup_pixi_sheets(textures);
