@@ -301,8 +301,8 @@ class ParameterSet(models.Model):
 
         v = self.json_for_session
 
-        v.pop("parameter_set_players")
-        v.pop("parameter_set_players_order")
+        # v.pop("parameter_set_players")
+        # v.pop("parameter_set_players_order")
         
         return v
         

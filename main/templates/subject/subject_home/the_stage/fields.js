@@ -10,21 +10,52 @@ setup_pixi_fields()
         const field_id = app.session.parameter_set.parameter_set_fields_order[i];
         const field = app.session.parameter_set.parameter_set_fields[field_id];
         
+        let parameter_set_field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type];
+        let parameter_set_player = app.session.parameter_set.parameter_set_players[field.parameter_set_player];
+
         let field_container = new PIXI.Container();
         field_container.eventMode = 'passive';
         field_container.zIndex = 0;
         
         field_container.position.set(field.x, field.y)
 
-        //outline
+        //field background
         let field_sprite = PIXI.Sprite.from(app.pixi_textures.sprite_sheet_hf.textures["Field0000"]);
         field_sprite.anchor.set(0.5);
         field_sprite.eventMode = 'passive';
-       
-        //outline.endFill();
+        field_sprite.tint = 'BlanchedAlmond';
+
+        //owner label
+        let owner_label = new PIXI.Text("Owner: " + parameter_set_player.id_label, {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fill: 'white',
+            stroke: 'black',
+            strokeThickness: 2,
+        });
+        owner_label.eventMode = 'passive'; 
+        owner_label.anchor.set(1, 0);
+
+        //info label       
+        let info_label = new PIXI.Text(parameter_set_field_type.display_text, {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fill: 'black',
+            // stroke: 'black',
+            // strokeThickness: 2,
+        });
+        info_label.eventMode = 'passive'; 
+        info_label.anchor.set(0.5, 0);
+
         field_container.addChild(field_sprite);
+        field_container.addChild(owner_label);
+        field_container.addChild(info_label);
+
+        owner_label.position.set(field_sprite.width/2, -field_sprite.height/2 - owner_label.height);
+        info_label.position.set(0, -field_sprite.height/2);
 
         pixi_fields[i].field_container = field_container;
+        pixi_fields[i].owner_label = owner_label;
 
         pixi_container_main.addChild(pixi_fields[i].field_container);
     }

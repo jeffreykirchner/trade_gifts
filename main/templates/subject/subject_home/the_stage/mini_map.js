@@ -94,3 +94,13 @@ setup_pixi_minimap()
     pixi_app.stage.addChild(mini_map.container);
 
 },
+
+/**
+ * update the mini map
+ */
+update_mini_map(delta)
+{
+    let obj = app.session.world_state.session_players[app.session_player.id]
+    mini_map.view_port.position.set(obj.current_location.x * app.mini_map_scale, 
+                             obj.current_location.y * app.mini_map_scale);
+},

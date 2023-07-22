@@ -473,7 +473,11 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/interface.js"%}
         {%include "subject/subject_home/the_stage/wall.js"%}
         {%include "subject/subject_home/the_stage/ground.js"%}
+        {%include "subject/subject_home/the_stage/fields.js"%}
         {%include "subject/subject_home/the_stage/mini_map.js"%}
+        {%include "subject/subject_home/the_stage/transfer_beam.js"%}
+        {%include "subject/subject_home/the_stage/text_emitters.js"%}
+        {%include "subject/subject_home/the_stage/avatars.js"%}
     
         /** clear form error messages
         */
