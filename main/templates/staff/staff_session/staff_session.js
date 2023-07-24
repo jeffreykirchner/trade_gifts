@@ -31,7 +31,7 @@ var app = Vue.createApp({
                     help_text : "Loading ...",
                     session_id : {{session.id}},
                     session_key : "{{session.session_key}}",
-                    other_color : 0xD3D3D3,
+                    field_color : 'BlanchedAlmond',
                     session : null,
                     session_events : null,
                     timer_pulse : null,

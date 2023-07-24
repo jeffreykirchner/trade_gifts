@@ -34,8 +34,7 @@ var app = Vue.createApp({
                     reconnection_count : 0,
                     first_load_done : false,                       //true after software is loaded for the first time
                     player_key : "{{session_player.player_key}}",
-                    owner_color : 0xA9DFBF,
-                    other_color : 0xD3D3D3,
+                    field_color : 'BlanchedAlmond',
                     session_player : null, 
                     session : null,
 

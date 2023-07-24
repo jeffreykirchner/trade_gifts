@@ -16,17 +16,19 @@ setup_pixi(){
     PIXI.Assets.add('Blueberry_tex', '{% static "blueberry.png"%}');
     PIXI.Assets.add('Pineapple_tex', '{% static "pineapple.png"%}');
     PIXI.Assets.add('Cherry_tex', '{% static "cherry.png"%}');
+    PIXI.Assets.add('field_tex', '{% static "field.png"%}');
     PIXI.Assets.add('cherry_token', '{% static "cherry_1_animated.json"%}');
 
     const textures_promise = PIXI.Assets.load(['sprite_sheet', 'sprite_sheet_hf', 'grass_tex', 'wall_tex', 'water_tex',
                                                'bridge_tex', 'sprite_sheet_2', 'cherry_token', 'Blueberry_tex', 'Pineapple_tex',
-                                               'Cherry_tex'])
+                                               'Cherry_tex', 'field_tex'])
 
     textures_promise.then((textures) => {
         app.setup_pixi_sheets(textures);
         app.setup_pixi_tokens_for_current_period();
         app.setup_pixi_ground();
         app.setup_pixi_fields();
+        app.setup_pixi_houses();
         app.setup_pixi_subjects();       
         app.setup_pixi_wall();       
         

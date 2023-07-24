@@ -20,81 +20,110 @@ setup_pixi_fields()
         field_container.position.set(field.x, field.y)
 
         //field background
-        let field_sprite = PIXI.Sprite.from(app.pixi_textures.sprite_sheet_hf.textures["Field0000"]);
+        let field_sprite = PIXI.Sprite.from(app.pixi_textures["field_tex"]);
         field_sprite.anchor.set(0.5);
         field_sprite.eventMode = 'passive';
-        field_sprite.tint = 'BlanchedAlmond';
+        field_sprite.tint = app.field_color;
 
         //owner label
         let owner_label = new PIXI.Text("Owner: " + parameter_set_player.id_label, {
             fontFamily: 'Arial',
             fontSize: 20,
             fill: 'black',
-            // stroke: 'black',
-            // strokeThickness: 2,
         });
         owner_label.eventMode = 'passive'; 
-        owner_label.anchor.set(.5, 1);
+        owner_label.anchor.set(0.5, 0);
 
         //info label       
         let info_label = new PIXI.Text(parameter_set_field_type.display_text, {
             fontFamily: 'Arial',
             fontSize: 20,
             fill: 'black',
-            // stroke: 'black',
-            // strokeThickness: 2,
         });
         info_label.eventMode = 'passive'; 
-        info_label.anchor.set(0.5, 0);
+        info_label.anchor.set(.5, 1);
 
         //good one        
         let good_one_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_one+"_tex"]);
         good_one_sprite.anchor.set(1, 0.5);
         good_one_sprite.eventMode = 'passive';
 
-        let good_one_label = new PIXI.Text("00", {
+        let good_one_label = new PIXI.Text("000", {
             fontFamily: 'Arial',
-            fontSize: 90,
+            fontSize: 60,
             fill: 'white',
             stroke: 'black',
-            strokeThickness: 3,
+            strokeThickness: 2,
         });
         good_one_label.eventMode = 'passive'; 
         good_one_label.anchor.set(0, 0.5);
+
+        let good_one_seconds_label = new PIXI.Text("00 Seconds", {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fill: 'black',
+        });
+        good_one_seconds_label.eventMode = 'passive'; 
+        good_one_seconds_label.anchor.set(0.5, 1);
 
         //good two        
         let good_two_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_two+"_tex"]);
         good_two_sprite.anchor.set(1, 0.5);
         good_two_sprite.eventMode = 'passive';
 
-        let good_two_label = new PIXI.Text("00", {
+        let good_two_label = new PIXI.Text("000", {
             fontFamily: 'Arial',
-            fontSize: 90,
+            fontSize: 60,
             fill: 'white',
             stroke: 'black',
-            strokeThickness: 3,
+            strokeThickness: 2,
         });
         good_two_label.eventMode = 'passive'; 
         good_two_label.anchor.set(0, 0.5);
 
+        let good_two_seconds_label = new PIXI.Text("00 Seconds", {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fill: 'black',
+        });
+        good_two_seconds_label.eventMode = 'passive'; 
+        good_two_seconds_label.anchor.set(0.5, 0);
+
+        //add to container
         field_container.addChild(field_sprite);
         field_container.addChild(owner_label);
         field_container.addChild(info_label);
+
         field_container.addChild(good_one_sprite);
         field_container.addChild(good_one_label);
+        field_container.addChild(good_one_seconds_label);
+
         field_container.addChild(good_two_sprite);
         field_container.addChild(good_two_label);
+        field_container.addChild(good_two_seconds_label);
 
-        owner_label.position.set(0, field_sprite.height/2-2);
-        info_label.position.set(0, -field_sprite.height/2 + 2);
+        //positions
+        owner_label.position.set(0,  -field_sprite.height/2 + 10);
+        info_label.position.set(0, field_sprite.height/2 - 10);
+
         good_one_sprite.position.set(0, -field_sprite.height/4);
         good_one_label.position.set(0, -field_sprite.height/4);
+        good_one_seconds_label.position.set(0, -5);
+
         good_two_sprite.position.set(0, +field_sprite.height/4);
         good_two_label.position.set(0, +field_sprite.height/4);
+        good_two_seconds_label.position.set(0, +5);
 
+        //add to pixi_fields
         pixi_fields[i].field_container = field_container;
         pixi_fields[i].owner_label = owner_label;
         pixi_fields[i].good_one_label = good_one_label;
+        pixi_fields[i].good_two_label = good_two_label;
+        pixi_fields[i].good_one_seconds_label = good_one_seconds_label;
+        pixi_fields[i].good_two_seconds_label = good_two_seconds_label;
+
+        pixi_fields[i].field_container.width = app.session.parameter_set.field_width;
+        pixi_fields[i].field_container.height = app.session.parameter_set.field_height;
 
         pixi_container_main.addChild(pixi_fields[i].field_container);
     }
