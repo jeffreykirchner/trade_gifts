@@ -29,12 +29,12 @@ setup_pixi_fields()
         let owner_label = new PIXI.Text("Owner: " + parameter_set_player.id_label, {
             fontFamily: 'Arial',
             fontSize: 20,
-            fill: 'white',
-            stroke: 'black',
-            strokeThickness: 2,
+            fill: 'black',
+            // stroke: 'black',
+            // strokeThickness: 2,
         });
         owner_label.eventMode = 'passive'; 
-        owner_label.anchor.set(1, 0);
+        owner_label.anchor.set(.5, 1);
 
         //info label       
         let info_label = new PIXI.Text(parameter_set_field_type.display_text, {
@@ -52,24 +52,49 @@ setup_pixi_fields()
         good_one_sprite.anchor.set(1, 0.5);
         good_one_sprite.eventMode = 'passive';
 
+        let good_one_label = new PIXI.Text("00", {
+            fontFamily: 'Arial',
+            fontSize: 90,
+            fill: 'white',
+            stroke: 'black',
+            strokeThickness: 3,
+        });
+        good_one_label.eventMode = 'passive'; 
+        good_one_label.anchor.set(0, 0.5);
+
         //good two        
         let good_two_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_two+"_tex"]);
         good_two_sprite.anchor.set(1, 0.5);
         good_two_sprite.eventMode = 'passive';
 
+        let good_two_label = new PIXI.Text("00", {
+            fontFamily: 'Arial',
+            fontSize: 90,
+            fill: 'white',
+            stroke: 'black',
+            strokeThickness: 3,
+        });
+        good_two_label.eventMode = 'passive'; 
+        good_two_label.anchor.set(0, 0.5);
+
         field_container.addChild(field_sprite);
         field_container.addChild(owner_label);
         field_container.addChild(info_label);
         field_container.addChild(good_one_sprite);
+        field_container.addChild(good_one_label);
         field_container.addChild(good_two_sprite);
+        field_container.addChild(good_two_label);
 
-        owner_label.position.set(field_sprite.width/2, -field_sprite.height/2 - owner_label.height);
+        owner_label.position.set(0, field_sprite.height/2-2);
         info_label.position.set(0, -field_sprite.height/2 + 2);
         good_one_sprite.position.set(0, -field_sprite.height/4);
+        good_one_label.position.set(0, -field_sprite.height/4);
         good_two_sprite.position.set(0, +field_sprite.height/4);
+        good_two_label.position.set(0, +field_sprite.height/4);
 
         pixi_fields[i].field_container = field_container;
         pixi_fields[i].owner_label = owner_label;
+        pixi_fields[i].good_one_label = good_one_label;
 
         pixi_container_main.addChild(pixi_fields[i].field_container);
     }
