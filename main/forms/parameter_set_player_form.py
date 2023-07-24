@@ -27,10 +27,22 @@ class ParameterSetPlayerForm(forms.ModelForm):
                                                                  "step":"1",
                                                                  "min":"0"}))
     
+    house_x = forms.IntegerField(label='House Location X',
+                                 min_value=0,
+                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_player.house_x",
+                                                                 "step":"1",
+                                                                 "min":"0"}))
+    
+    house_y = forms.IntegerField(label='House Location Y',
+                                 min_value=0,
+                                 widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_player.house_y",
+                                                                 "step":"1",
+                                                                 "min":"0"}))
+    
     hex_color = forms.CharField(label='Hex Color (e.g. 0x00AABB)',
                                 widget=forms.TextInput(attrs={"v-model":"current_parameter_set_player.hex_color",}))
 
     class Meta:
         model=ParameterSetPlayer
-        fields =['id_label', 'start_x', 'start_y', 'hex_color']
+        fields =['id_label', 'start_x', 'start_y', 'house_x', 'house_y', 'hex_color']
     

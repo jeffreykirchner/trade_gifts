@@ -21,6 +21,10 @@ class ParameterSetPlayer(models.Model):
 
     start_x = models.IntegerField(verbose_name='Start Location X', default=50)                #starting location x and y
     start_y = models.IntegerField(verbose_name='Start Location Y', default=50)
+
+    house_x = models.IntegerField(verbose_name='House Location X', default=50)                #starting location x and y
+    house_y = models.IntegerField(verbose_name='House Location Y', default=50)
+
     hex_color = models.CharField(verbose_name='Hex Color', max_length = 8, default="0x000000") #color of player
 
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -44,6 +48,8 @@ class ParameterSetPlayer(models.Model):
         self.player_number = new_ps.get("player_number")
         self.start_x = new_ps.get("start_x")
         self.start_y = new_ps.get("start_y")
+        self.house_x = new_ps.get("house_x")
+        self.house_y = new_ps.get("house_y")
         self.hex_color = new_ps.get("hex_color")
 
         self.save()
@@ -80,6 +86,8 @@ class ParameterSetPlayer(models.Model):
             "id_label" : self.id_label,
             "start_x" : self.start_x,
             "start_y" : self.start_y,
+            "house_x" : self.house_x,
+            "house_y" : self.house_y,
             "hex_color" : self.hex_color,
         }
     
