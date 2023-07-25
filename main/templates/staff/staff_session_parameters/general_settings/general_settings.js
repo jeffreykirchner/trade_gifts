@@ -53,6 +53,8 @@ take_update_parameter_set(message_data){
         app.edit_parameterset_player_modal.hide();
         app.edit_parameterset_wall_modal.hide();
         app.edit_parameterset_ground_modal.hide();
+        app.edit_parameterset_field_type_modal.hide();
+        app.edit_parameterset_field_modal.hide();
     } 
     else
     {

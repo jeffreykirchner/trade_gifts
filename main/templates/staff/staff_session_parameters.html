@@ -46,8 +46,10 @@
 {%include "staff/staff_session_parameters/players/edit_parameterset_player_modal.html"%}
 {%include "staff/staff_session_parameters/walls/edit_parameterset_wall_modal.html"%}
 {%include "staff/staff_session_parameters/grounds/edit_parameterset_ground_modal.html"%}
+{%include "staff/staff_session_parameters/field_types/edit_parameterset_field_type_modal.html"%}
 {%include "staff/staff_session_parameters/control/upload_parameters_modal.html"%}
 {%include "staff/staff_session_parameters/control/import_parameters_modal.html"%}
+{%include "staff/staff_session_parameters/fields/edit_parameterset_field_modal.html"%}
 {%include "help_modal.html"%}
 
 <!-- cards -->
@@ -71,7 +73,26 @@
         {%include "staff/staff_session_parameters/grounds/grounds_card.html"%}  
     </div>
     <div class="col-md">
-       
+        <div class="row">
+            <div class="col">
+                {%include "staff/staff_session_parameters/field_types/field_types_card.html"%}
+            </div>
+            <div class="col mt-4">
+                {%include "staff/staff_session_parameters/fields/fields_card.html"%}
+            </div>  
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-lg-center mt-4" v-cloak>
+    <div class="col-md">
+        
+    </div>
+    <div class="col-md">
+          
+    </div>
+    <div class="col-md">
+        
     </div>
 </div>
                   

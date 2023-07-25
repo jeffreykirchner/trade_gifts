@@ -12,6 +12,8 @@ from .parameter_set_form import ParameterSetForm
 from .parameter_set_player_form import ParameterSetPlayerForm
 from .parameter_set_wall_form import ParameterSetWallForm
 from .parameter_set_ground_form import ParameterSetGroundForm
+from .parameter_set_field_type_form import ParameterSetFieldTypeForm
+from .parameter_set_field_form import ParameterSetFieldForm
 
 from .session_player_name_etc_form import StaffEditNameEtcForm
 

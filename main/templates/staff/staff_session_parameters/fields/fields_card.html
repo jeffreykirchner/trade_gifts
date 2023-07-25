@@ -1,0 +1,76 @@
+<div class="card">                  
+    <div class="card-header fw-bold">                
+        <span class="align-middle">
+            Fields ([[ Object.keys(parameter_set.parameter_set_fields).length]]) 
+        </span>      
+
+        <span class="float-end">
+            <button type="button" class="btn btn-link ms-4" title="Show Help Doc" v-on:click="send_load_help_doc('Staff Parameters fields')">
+                <i class="far fa-question-circle"></i> 
+            </button>
+        </span> 
+                
+    </div>
+    <div class="card-body" >        
+
+        <div class="row justify-content-center">
+            <!-- field settings -->
+            <div class="col-md-auto text-center">                
+                <div class="table-responsive">
+                    <table class="table table-condensed"> 
+                        <thead>
+                            <tr>
+                                <th scope="col" class = "m-1 p-1">
+                                    Player
+                                </th> 
+                                <th scope="col" class = "m-1 p-1">
+                                    Field Type
+                                </th>
+                                <th scope="col" class = "m-1 p-1">
+                                    Location (X, Y)
+                                </th>                 
+                            </tr>
+                        </thead>
+                        <tbody id="field_list">
+                            <tr v-for="(p, index) in parameter_set.parameter_set_fields_order" 
+                                v-bind:key="p"
+                                :set="temp_p=parameter_set.parameter_set_fields[p]"
+                                >
+                                <td v-on:click="show_edit_parameter_set_field(p)" 
+                                    class="player_table_cell">
+                                    <span v-if="temp_p.parameter_set_player">
+                                        [[parameter_set.parameter_set_players[temp_p.parameter_set_player].id_label]]
+                                    </span>
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_field(p)" 
+                                    class="player_table_cell">
+                                    <span v-if="temp_p.parameter_set_field_type">
+                                        [[parameter_set.parameter_set_field_types[temp_p.parameter_set_field_type].info]]
+                                    </span>
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_field(p)" 
+                                   class="player_table_cell">
+                                    [[temp_p.x]], [[temp_p.y]]
+                                </td>                               
+                            </tr>
+                        </tbody>
+                        
+                    </table>
+                </div>
+            </div>
+        </div>  
+
+        <div class="row justify-content-center">
+            <div class="col-md-auto">
+                <button class="btn btn-outline-success btn-sm"
+                        type="button"
+                        title="Add field"
+                        v-bind:disabled="session.started || reconnecting || working"
+                        v-on:click="send_add_parameter_set_field()">
+                        Add <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+        
+    </div>                    
+</div> 

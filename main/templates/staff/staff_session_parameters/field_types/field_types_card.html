@@ -1,0 +1,93 @@
+<div class="card">                  
+    <div class="card-header fw-bold">                
+        <span class="align-middle">
+            Field Types ([[ Object.keys(parameter_set.parameter_set_field_types).length]]) 
+        </span>      
+
+        <span class="float-end">
+            <button type="button" class="btn btn-link ms-4" title="Show Help Doc" v-on:click="send_load_help_doc('Staff Parameters field_types')">
+                <i class="far fa-question-circle"></i> 
+            </button>
+        </span> 
+                
+    </div>
+    <div class="card-body" >        
+
+        <div class="row justify-content-center">
+            <!-- field_type settings -->
+            <div class="col-md-auto text-center">                
+                <div class="table-responsive">
+                    <table class="table table-condensed"> 
+                        <thead>
+                            <tr>
+                                <th scope="col" class = "m-1 p-1">
+                                    Info
+                                </th> 
+                                <th scope="col" class = "m-1 p-1">
+                                    Display Text
+                                </th>
+                                <th scope="col" class = "m-1 p-1">
+                                    Good One
+                                </th>         
+                                <th scope="col" class = "m-1 p-1">
+                                    Good Two
+                                </th> 
+                                <th scope="col" class = "m-1 p-1">
+                                    Start on Period
+                                </th> 
+                                <th scope="col" class = "m-1 p-1">
+                                    Reset Every N Periods
+                                </th>               
+                            </tr>
+                        </thead>
+                        <tbody id="field_type_list">
+                            <tr v-for="(p, index) in parameter_set.parameter_set_field_types_order" 
+                                v-bind:key="p"
+                                :set="temp_p=parameter_set.parameter_set_field_types[p]"
+                                >
+                                <td v-on:click="show_edit_parameter_set_field_type(p)" 
+                                    class="player_table_cell">
+                                    [[temp_p.info]]
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_field_type(p)" 
+                                    class="player_table_cell">
+                                    [[temp_p.display_text]]
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_field_type(p)" 
+                                   class="player_table_cell">
+                                    [[temp_p.good_one]]
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_field_type(p)" 
+                                    class="player_table_cell">
+                                    [[temp_p.good_two]]
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_field_type(p)" 
+                                    class="player_table_cell">
+                                    [[temp_p.start_on_period]]
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_field_type(p)" 
+                                    class="player_table_cell">
+                                    [[temp_p.reset_every_n_periods]]
+                                </td>
+                            </tr>
+                        </tbody>
+                        
+                    </table>
+                </div>
+            </div>
+        </div>  
+
+        <div class="row justify-content-center">
+            <div class="col-md-auto">
+                <button class="btn btn-outline-success btn-sm"
+                        type="button"
+                        title="Add field_type"
+                        v-bind:disabled="session.started || reconnecting || working"
+                        v-on:click="send_add_parameter_set_field_type()">
+                        Add <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+        
+    </div>                    
+</div> 

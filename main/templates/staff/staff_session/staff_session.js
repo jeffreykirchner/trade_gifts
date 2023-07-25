@@ -16,6 +16,8 @@ var pixi_avatars = {};                         //avatars
 var pixi_tokens = {};                          //tokens
 var pixi_walls = {};                           //walls
 var pixi_grounds = {};                         //grounds
+var pixi_fields = {};                          //fields
+var pixi_houses = {};                          //houses
 
 //vue app
 var app = Vue.createApp({
@@ -29,7 +31,7 @@ var app = Vue.createApp({
                     help_text : "Loading ...",
                     session_id : {{session.id}},
                     session_key : "{{session.session_key}}",
-                    other_color : 0xD3D3D3,
+                    field_color : 'BlanchedAlmond',
                     session : null,
                     session_events : null,
                     timer_pulse : null,
@@ -443,6 +445,11 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/pixi_setup.js"%}
         {%include "subject/subject_home/the_stage/wall.js"%}
         {%include "subject/subject_home/the_stage/ground.js"%}
+        {%include "subject/subject_home/the_stage/fields.js"%}
+        {%include "subject/subject_home/the_stage/houses.js"%}
+        {%include "subject/subject_home/the_stage/transfer_beam.js"%}
+        {%include "subject/subject_home/the_stage/text_emitters.js"%}
+        {%include "subject/subject_home/the_stage/avatars.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages

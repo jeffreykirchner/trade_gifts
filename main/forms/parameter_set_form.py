@@ -92,8 +92,39 @@ class ParameterSetForm(forms.ModelForm):
                                     widget=forms.NumberInput(attrs={"v-model":"parameter_set.world_height",
                                                                     "step":"1",
                                                                     "min":"1000"}))
-                                                                
-
+    
+    field_width = forms.IntegerField(label='Field Width (pixels)',
+                                     min_value=1,
+                                     widget=forms.NumberInput(attrs={"v-model":"parameter_set.field_width",
+                                                                     "step":"1",
+                                                                     "min":"1000"}))
+    
+    field_height = forms.IntegerField(label='Field Height (pixels)',
+                                      min_value=1,
+                                      widget=forms.NumberInput(attrs={"v-model":"parameter_set.field_height",
+                                                                      "step":"1",
+                                                                      "min":"1000"}))
+    
+    house_width = forms.IntegerField(label='House Width (pixels)',
+                                     min_value=1,
+                                     widget=forms.NumberInput(attrs={"v-model":"parameter_set.house_width",
+                                                                     "step":"1",
+                                                                     "min":"1000"}))
+    
+    house_height = forms.IntegerField(label='House Height (pixels)',
+                                      min_value=1,
+                                      widget=forms.NumberInput(attrs={"v-model":"parameter_set.house_height",
+                                                                      "step":"1",
+                                                                      "min":"1000"})) 
+    
+    avatar_scale = forms.DecimalField(label='Avatar Scale',
+                                      max_digits=3,
+                                      decimal_places=2,
+                                      min_value=0.01,
+                                      widget=forms.NumberInput(attrs={"v-model":"parameter_set.avatar_scale",
+                                                                      "step":"0.01",
+                                                                      "min":"0.01"}))
+                                                 
     test_mode = forms.ChoiceField(label='Test Mode',
                                        choices=((True, 'Yes'), (False,'No' )),
                                        widget=forms.Select(attrs={"v-model":"parameter_set.test_mode",}))
@@ -102,7 +133,8 @@ class ParameterSetForm(forms.ModelForm):
         model=ParameterSet
         fields =['period_count', 'period_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'test_mode', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
-                 'tokens_per_period', 'interaction_length', 'interaction_range', 'cool_down_length', 'world_width', 'world_height']
+                 'tokens_per_period', 'interaction_length', 'interaction_range', 'cool_down_length', 'world_width', 'world_height',
+                 'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale']
 
     def clean_survey_link(self):
         

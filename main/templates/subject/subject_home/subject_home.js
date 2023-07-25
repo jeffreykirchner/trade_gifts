@@ -20,6 +20,8 @@ var pixi_avatars = {};                         //avatars
 var pixi_tokens = {};                          //tokens
 var pixi_walls = {};                           //walls
 var pixi_grounds = {};                         //grounds
+var pixi_fields = {};                          //fields
+var pixi_houses = {};                          //houses
 
 //vue app
 var app = Vue.createApp({
@@ -32,8 +34,7 @@ var app = Vue.createApp({
                     reconnection_count : 0,
                     first_load_done : false,                       //true after software is loaded for the first time
                     player_key : "{{session_player.player_key}}",
-                    owner_color : 0xA9DFBF,
-                    other_color : 0xD3D3D3,
+                    field_color : 'BlanchedAlmond',
                     session_player : null, 
                     session : null,
 
@@ -56,7 +57,7 @@ var app = Vue.createApp({
                     //pixi
                     canvas_width  : null,
                     canvas_height : null,
-                    move_speed : 5,
+                    move_speed : 4,
                     animation_speed : 0.5,
                     scroll_speed : 10,
                     pixi_mode : "subject",
@@ -472,7 +473,12 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/interface.js"%}
         {%include "subject/subject_home/the_stage/wall.js"%}
         {%include "subject/subject_home/the_stage/ground.js"%}
+        {%include "subject/subject_home/the_stage/fields.js"%}
+        {%include "subject/subject_home/the_stage/houses.js"%}
         {%include "subject/subject_home/the_stage/mini_map.js"%}
+        {%include "subject/subject_home/the_stage/transfer_beam.js"%}
+        {%include "subject/subject_home/the_stage/text_emitters.js"%}
+        {%include "subject/subject_home/the_stage/avatars.js"%}
     
         /** clear form error messages
         */

@@ -10,8 +10,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 from main.models import Session
 from main.models import SessionPlayer
 
-from main.globals import ChatTypes
-
 import main
 
 class ChatMixin():

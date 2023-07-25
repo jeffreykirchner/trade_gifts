@@ -39,6 +39,14 @@ class ParameterSet(models.Model):
     world_width = models.IntegerField(verbose_name='Width of world in pixels', default=10000)                 #world width in pixels
     world_height = models.IntegerField(verbose_name='Height of world in pixels', default=10000)               #world height in pixels
 
+    field_width = models.IntegerField(verbose_name='Width of field in pixels', default=300)                  #field width in pixels
+    field_height = models.IntegerField(verbose_name='Height of field in pixels', default=500)                #field height in pixels
+
+    house_width = models.IntegerField(verbose_name='Width of house in pixels', default=350)                  #house width in pixels
+    house_height = models.IntegerField(verbose_name='Height of house in pixels', default=500)                #house height in pixels
+
+    avatar_scale = models.DecimalField(verbose_name='Avatar Scale', decimal_places=2, max_digits=3, default=1) #avatar scale
+   
     interaction_length = models.IntegerField(verbose_name='Interaction Length', default=10)                   #interaction length in seconds
     cool_down_length = models.IntegerField(verbose_name='Cool Down Length', default=10)                       #cool down length in seconds
     interaction_range = models.IntegerField(verbose_name='Interaction Range', default=300)                    #interaction range in pixels
@@ -86,6 +94,14 @@ class ParameterSet(models.Model):
             self.world_width = new_ps.get("world_width", 1000)
             self.world_height = new_ps.get("world_height", 1000)
 
+            self.field_width = new_ps.get("field_width", 300)
+            self.field_height = new_ps.get("field_height", 500)
+
+            self.house_width = new_ps.get("house_width", 350)
+            self.house_height = new_ps.get("house_height", 500)
+
+            self.avatar_scale = new_ps.get("avatar_scale", 1)
+
             self.interaction_length = new_ps.get("interaction_length", 10)
             self.cool_down_length = new_ps.get("cool_down_length", 10)
             self.interaction_range = new_ps.get("interaction_range", 300)
@@ -100,10 +116,12 @@ class ParameterSet(models.Model):
             self.parameter_set_players.all().delete()
 
             new_parameter_set_players = new_ps.get("parameter_set_players")
+            new_parameter_set_players_map = {}
 
             for i in new_parameter_set_players:
                 p = main.models.ParameterSetPlayer.objects.create(parameter_set=self)
                 p.from_dict(new_parameter_set_players[i])
+                new_parameter_set_players_map[i] = p.id
 
             self.update_player_count()
 
@@ -122,6 +140,33 @@ class ParameterSet(models.Model):
             for i in new_parameter_set_grounds:
                 p = main.models.ParameterSetGround.objects.create(parameter_set=self)
                 p.from_dict(new_parameter_set_grounds[i])
+
+            #parameter set field types
+            self.parameter_set_field_types.all().delete()
+            new_parameter_set_field_types = new_ps.get("parameter_set_field_types")
+            new_parameter_set_field_types_map = {}
+
+            for i in new_parameter_set_field_types:
+                p = main.models.ParameterSetFieldType.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_field_types[i])
+                new_parameter_set_field_types_map[i] = p.id
+
+            #parameter set fields
+            self.parameter_set_fields_a.all().delete()
+            new_parameter_set_fields = new_ps.get("parameter_set_fields")
+
+            for i in new_parameter_set_fields:
+                p = main.models.ParameterSetField.objects.create(parameter_set=self)
+                v = new_parameter_set_fields[i]
+                p.from_dict(v)
+
+                if v["parameter_set_field_type"] != None:
+                    p.parameter_set_field_type_id=new_parameter_set_field_types_map[str(v["parameter_set_field_type"])]
+                
+                if v["parameter_set_player"]:
+                    p.parameter_set_player_id=new_parameter_set_players_map[str(v["parameter_set_player"])]
+
+                p.save()
 
             self.json_for_session = None
             self.save()
@@ -171,7 +216,7 @@ class ParameterSet(models.Model):
             logger.warning(f"parameter set remove_player, not found ID: {parameterset_player_id}")
 
         self.update_player_count()
-        self.update_json_fk(update_players=True)
+        self.update_json_fk(update_players=True, update_fields=True)
     
     def update_player_count(self):
         '''
@@ -206,6 +251,14 @@ class ParameterSet(models.Model):
         self.json_for_session["world_width"] = self.world_width
         self.json_for_session["world_height"] = self.world_height
 
+        self.json_for_session["field_width"] = self.field_width
+        self.json_for_session["field_height"] = self.field_height
+
+        self.json_for_session["house_width"] = self.house_width
+        self.json_for_session["house_height"] = self.house_height
+
+        self.json_for_session["avatar_scale"] = self.avatar_scale
+
         self.json_for_session["interaction_length"] = self.interaction_length
         self.json_for_session["cool_down_length"] = self.cool_down_length
         self.json_for_session["interaction_range"] = self.interaction_range
@@ -216,7 +269,11 @@ class ParameterSet(models.Model):
 
         self.save()
     
-    def update_json_fk(self, update_players=False, update_walls=False, update_grounds=False):
+    def update_json_fk(self, update_players=False, 
+                             update_walls=False, 
+                             update_grounds=False, 
+                             update_field_types=False,
+                             update_fields=False):
         '''
         update json model
         '''
@@ -232,6 +289,14 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_grounds_order"] = list(self.parameter_set_grounds.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_grounds"] = {p.id : p.json() for p in self.parameter_set_grounds.all()}
 
+        if update_field_types:
+            self.json_for_session["parameter_set_field_types_order"] = list(self.parameter_set_field_types.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_field_types"] = {p.id : p.json() for p in self.parameter_set_field_types.all()}
+
+        if update_fields:
+            self.json_for_session["parameter_set_fields_order"] = list(self.parameter_set_fields_a.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_fields"] = {p.id : p.json() for p in self.parameter_set_fields_a.all()}
+
         self.save()
 
     def json(self, update_required=False):
@@ -242,7 +307,11 @@ class ParameterSet(models.Model):
            update_required:
             self.json_for_session = {}
             self.update_json_local()
-            self.update_json_fk(update_players=True, update_walls=True, update_grounds=True)
+            self.update_json_fk(update_players=True, 
+                                update_walls=True, 
+                                update_grounds=True, 
+                                update_field_types=True, 
+                                update_fields=True)
 
         return self.json_for_session
     
@@ -256,8 +325,8 @@ class ParameterSet(models.Model):
 
         v = self.json_for_session
 
-        v.pop("parameter_set_players")
-        v.pop("parameter_set_players_order")
+        # v.pop("parameter_set_players")
+        # v.pop("parameter_set_players_order")
         
         return v
         
