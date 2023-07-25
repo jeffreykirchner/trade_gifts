@@ -103,7 +103,7 @@ setup_pixi_subjects(){
         chat_container.addChild(chat_bubble_sprite);
         chat_container.addChild(chat_bubble_text);
 
-        chat_bubble_text.position.set(0, -chat_container.height*.09)
+        chat_bubble_text.position.set(-20, -chat_container.height*.09)
         chat_bubble_text.anchor.set(0.5);
 
         pixi_avatars[i].chat_container = chat_container;
@@ -280,7 +280,7 @@ move_player(delta)
         let obj = app.session.world_state.session_players[i];
         let chat_container = pixi_avatars[i].chat_container;
         // let avatar_container = obj.pixi.chat_container;
-        let offset = {x:chat_container.width*.7, y:chat_container.height*.4};
+        let offset = {x:chat_container.width*.5, y:chat_container.height*.45};
 
         if(app.session.world_state.session_players[obj.nearest_player].current_location.x < obj.current_location.x)
         {
