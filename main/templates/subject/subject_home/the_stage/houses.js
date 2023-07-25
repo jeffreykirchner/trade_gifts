@@ -25,16 +25,16 @@ setup_pixi_houses()
         //owner label
         let owner_label = new PIXI.Text("Owner: " + parameter_set_player.id_label, {
             fontFamily: 'Arial',
-            fontSize: 20,
+            fontSize: 30,
             fill: 'black',
         });
         owner_label.eventMode = 'passive'; 
         owner_label.anchor.set(.5, 1);
 
         //health label
-        let health_label = new PIXI.Text("Health Benefit: 000", {
+        let health_label = new PIXI.Text("Health: +000", {
             fontFamily: 'Arial',
-            fontSize: 20,
+            fontSize: 30,
             fill: 'black',
         });
         health_label.eventMode = 'passive'; 

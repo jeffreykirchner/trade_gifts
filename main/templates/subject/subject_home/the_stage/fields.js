@@ -28,7 +28,7 @@ setup_pixi_fields()
         //owner label
         let owner_label = new PIXI.Text("Owner: " + parameter_set_player.id_label, {
             fontFamily: 'Arial',
-            fontSize: 20,
+            fontSize: 30,
             fill: 'black',
         });
         owner_label.eventMode = 'passive'; 
@@ -37,7 +37,7 @@ setup_pixi_fields()
         //info label       
         let info_label = new PIXI.Text(parameter_set_field_type.display_text, {
             fontFamily: 'Arial',
-            fontSize: 20,
+            fontSize: 30,
             fill: 'black',
         });
         info_label.eventMode = 'passive'; 
@@ -60,7 +60,7 @@ setup_pixi_fields()
 
         let good_one_seconds_label = new PIXI.Text("00 Seconds", {
             fontFamily: 'Arial',
-            fontSize: 20,
+            fontSize: 30,
             fill: 'black',
         });
         good_one_seconds_label.eventMode = 'passive'; 
@@ -83,7 +83,7 @@ setup_pixi_fields()
 
         let good_two_seconds_label = new PIXI.Text("00 Seconds", {
             fontFamily: 'Arial',
-            fontSize: 20,
+            fontSize: 30,
             fill: 'black',
         });
         good_two_seconds_label.eventMode = 'passive'; 

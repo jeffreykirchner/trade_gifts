@@ -45,6 +45,8 @@ class ParameterSet(models.Model):
     house_width = models.IntegerField(verbose_name='Width of house in pixels', default=350)                  #house width in pixels
     house_height = models.IntegerField(verbose_name='Height of house in pixels', default=500)                #house height in pixels
 
+    avatar_scale = models.DecimalField(verbose_name='Avatar Scale', decimal_places=2, max_digits=3, default=1) #avatar scale
+   
     interaction_length = models.IntegerField(verbose_name='Interaction Length', default=10)                   #interaction length in seconds
     cool_down_length = models.IntegerField(verbose_name='Cool Down Length', default=10)                       #cool down length in seconds
     interaction_range = models.IntegerField(verbose_name='Interaction Range', default=300)                    #interaction range in pixels
@@ -97,6 +99,8 @@ class ParameterSet(models.Model):
 
             self.house_width = new_ps.get("house_width", 350)
             self.house_height = new_ps.get("house_height", 500)
+
+            self.avatar_scale = new_ps.get("avatar_scale", 1)
 
             self.interaction_length = new_ps.get("interaction_length", 10)
             self.cool_down_length = new_ps.get("cool_down_length", 10)
@@ -252,6 +256,8 @@ class ParameterSet(models.Model):
 
         self.json_for_session["house_width"] = self.house_width
         self.json_for_session["house_height"] = self.house_height
+
+        self.json_for_session["avatar_scale"] = self.avatar_scale
 
         self.json_for_session["interaction_length"] = self.interaction_length
         self.json_for_session["cool_down_length"] = self.cool_down_length

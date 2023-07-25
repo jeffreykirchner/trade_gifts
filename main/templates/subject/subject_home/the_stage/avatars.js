@@ -35,26 +35,16 @@ setup_pixi_subjects(){
 
         let text_style = {
             fontFamily: 'Arial',
-            fontSize: 20,
-            fill: 'white',
-            align: 'left',
-            stroke: 'black',
+            fontSize: 30,
+            fill: 'black',
+            // align: 'left',
+            // stroke: 'black',
             strokeThickness: 2,
         };
 
         let id_label = new PIXI.Text(app.session.session_players[i].parameter_set_player.id_label, text_style);
         id_label.eventMode = 'passive';
         id_label.anchor.set(0.5);
-        
-        let token_graphic = PIXI.Sprite.from(app.pixi_textures.sprite_sheet_2.textures["cherry_small.png"]);
-        token_graphic.anchor.set(1, 0.5)
-        token_graphic.eventMode = 'passive';
-        token_graphic.scale.set(0.3);
-        token_graphic.alpha = 0.7;
-
-        let inventory_label = new PIXI.Text(subject.inventory[current_period_id], text_style);
-        inventory_label.eventMode = 'passive';
-        inventory_label.anchor.set(0, 0.5);
 
         let status_label = new PIXI.Text("Working ... 10", text_style);
         status_label.eventMode = 'passive';
@@ -64,15 +54,13 @@ setup_pixi_subjects(){
         avatar_container.addChild(gear_sprite);
         avatar_container.addChild(face_sprite);
         avatar_container.addChild(id_label);
-        avatar_container.addChild(token_graphic);
-        avatar_container.addChild(inventory_label);
         avatar_container.addChild(status_label);
         
         face_sprite.position.set(0, -avatar_container.height * 0.03);
         id_label.position.set(0, -avatar_container.height * 0.2);
-        token_graphic.position.set(-2, +avatar_container.height * 0.18);
-        inventory_label.position.set(2, +avatar_container.height * 0.18);
         status_label.position.set(0, -avatar_container.height/2 + 30);
+
+        avatar_container.scale.set(app.session.parameter_set.avatar_scale);
 
         //bounding box outline
         
@@ -240,17 +228,17 @@ move_player(delta)
         //update status
         if(obj.interaction > 0)
         {
-            avatar_container.getChildAt(5).text = "Interaction ... " + obj.interaction;
-            avatar_container.getChildAt(5).visible = true;
+            avatar_container.getChildAt(4).text = "Interaction ... " + obj.interaction;
+            avatar_container.getChildAt(4).visible = true;
         }
         else if(obj.cool_down > 0)
         {
-            avatar_container.getChildAt(5).text = "Cooling ... " + obj.cool_down;
-            avatar_container.getChildAt(5).visible = true;
+            avatar_container.getChildAt(4).text = "Cooling ... " + obj.cool_down;
+            avatar_container.getChildAt(4).visible = true;
         }
         else
         {
-            avatar_container.getChildAt(5).visible = false;
+            avatar_container.getChildAt(4).visible = false;
         }
     }
 

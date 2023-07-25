@@ -57,7 +57,7 @@ var app = Vue.createApp({
                     //pixi
                     canvas_width  : null,
                     canvas_height : null,
-                    move_speed : 5,
+                    move_speed : 4,
                     animation_speed : 0.5,
                     scroll_speed : 10,
                     pixi_mode : "subject",
