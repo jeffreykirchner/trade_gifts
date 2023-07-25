@@ -31,6 +31,15 @@ setup_pixi_houses()
         owner_label.eventMode = 'passive'; 
         owner_label.anchor.set(.5, 1);
 
+        //health label
+        let health_label = new PIXI.Text("Health Benefit: 000", {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fill: 'black',
+        });
+        health_label.eventMode = 'passive'; 
+        health_label.anchor.set(.5, 1);
+
         //good one        
         let good_one_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_one+"_tex"]);
         good_one_sprite.anchor.set(1, 0.5);
@@ -78,6 +87,7 @@ setup_pixi_houses()
 
         house_container.addChild(house_sprite);
         house_container.addChild(owner_label);
+        house_container.addChild(health_label);
 
         house_container.addChild(good_one_sprite);
         house_container.addChild(good_one_label);
@@ -88,19 +98,22 @@ setup_pixi_houses()
         house_container.addChild(good_three_sprite);
         house_container.addChild(good_three_label);
         
-        owner_label.position.set(0, house_sprite.height/2-2);
+        owner_label.position.set(0, -house_sprite.height/4);
+        health_label.position.set(0, house_sprite.height/2 - 5);
 
-        good_one_sprite.position.set(0, -house_sprite.height/4);
-        good_one_label.position.set(0, -house_sprite.height/4);
+        let good_spacer = house_sprite.height/5;
+        good_one_sprite.position.set(0, house_sprite.height/2 - good_spacer*3);
+        good_one_label.position.set(0, house_sprite.height/2 - good_spacer*3);
 
-        good_two_sprite.position.set(0, 0);
-        good_two_label.position.set(0, 0);
+        good_two_sprite.position.set(0, house_sprite.height/2 - good_spacer*2);
+        good_two_label.position.set(0, house_sprite.height/2 - good_spacer*2);
 
-        good_three_sprite.position.set(0, house_sprite.height/4);
-        good_three_label.position.set(0, house_sprite.height/4);
+        good_three_sprite.position.set(0, house_sprite.height/2 - good_spacer);
+        good_three_label.position.set(0, house_sprite.height/2 - good_spacer);
 
         pixi_houses[i].house_container = house_container;
         pixi_houses[i].owner_label = owner_label;
+        pixi_houses[i].health_label = health_label;
         pixi_houses[i].good_one_label = good_one_label;
         pixi_houses[i].good_two_label = good_two_label;
         pixi_houses[i].good_three_label = good_three_label;

@@ -46,7 +46,13 @@ setup_pixi_minimap()
         const field = app.session.parameter_set.parameter_set_fields[i];
 
         let temp_field = new PIXI.Graphics();
-        temp_field.beginFill(app.field_color);
+        if(field.parameter_set_player == app.session_player.parameter_set_player.id){
+             temp_field.beginFill('yellow');
+        }
+        else
+        {
+            temp_field.beginFill(app.field_color);
+        }
         temp_field.drawRect(field.x * scale, 
                             field.y * scale, 
                             app.session.parameter_set.field_width * scale, 
