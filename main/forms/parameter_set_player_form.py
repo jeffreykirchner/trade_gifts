@@ -7,6 +7,8 @@ from django.db.models.query import RawQuerySet
 
 from main.models import ParameterSetPlayer
 
+from main.globals import Goods
+
 class ParameterSetPlayerForm(forms.ModelForm):
     '''
     parameterset player edit form
@@ -39,10 +41,23 @@ class ParameterSetPlayerForm(forms.ModelForm):
                                                                  "step":"1",
                                                                  "min":"0"}))
     
+    good_one = forms.ChoiceField(label='Good One',
+                                 choices=Goods.choices,
+                                 widget=forms.Select(attrs={"v-model":"current_parameter_set_player.good_one",}))
+    
+    good_two = forms.ChoiceField(label='Good Two',
+                                 choices=Goods.choices,
+                                 widget=forms.Select(attrs={"v-model":"current_parameter_set_player.good_two",}))
+    
+    good_three = forms.ChoiceField(label='Good Three',
+                                   required=False,
+                                   choices=Goods.choices,
+                                   widget=forms.Select(attrs={"v-model":"current_parameter_set_player.good_three",}))
+    
     hex_color = forms.CharField(label='Hex Color (e.g. 0x00AABB)',
                                 widget=forms.TextInput(attrs={"v-model":"current_parameter_set_player.hex_color",}))
 
     class Meta:
         model=ParameterSetPlayer
-        fields =['id_label', 'start_x', 'start_y', 'house_x', 'house_y', 'hex_color']
+        fields =['id_label', 'start_x', 'start_y', 'house_x', 'house_y', 'good_one', 'good_two', 'good_three', 'hex_color']
     

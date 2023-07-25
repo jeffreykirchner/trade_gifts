@@ -17,7 +17,7 @@ setup_pixi_houses()
         house_container.position.set(parameter_set_player.house_x, parameter_set_player.house_y)
 
         //house background
-        let house_sprite = PIXI.Sprite.from(app.pixi_textures.sprite_sheet_hf.textures["House0000"]);
+        let house_sprite = PIXI.Sprite.from(app.pixi_textures["house_tex"]);
         house_sprite.anchor.set(0.5);
         house_sprite.eventMode = 'passive';
         house_sprite.tint = 'BlanchedAlmond';
@@ -27,8 +27,6 @@ setup_pixi_houses()
             fontFamily: 'Arial',
             fontSize: 20,
             fill: 'black',
-            // stroke: 'black',
-            // strokeThickness: 2,
         });
         owner_label.eventMode = 'passive'; 
         owner_label.anchor.set(.5, 1);
@@ -41,6 +39,9 @@ setup_pixi_houses()
 
         pixi_houses[i].house_container = house_container;
         pixi_houses[i].owner_label = owner_label;
+
+        pixi_houses[i].house_container.width = app.session.parameter_set.house_width;
+        pixi_houses[i].house_container.height = app.session.parameter_set.house_height;
 
         pixi_container_main.addChild(pixi_houses[i].house_container);
     }

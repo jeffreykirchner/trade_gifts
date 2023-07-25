@@ -42,6 +42,9 @@ class ParameterSet(models.Model):
     field_width = models.IntegerField(verbose_name='Width of field in pixels', default=300)                  #field width in pixels
     field_height = models.IntegerField(verbose_name='Height of field in pixels', default=500)                #field height in pixels
 
+    house_width = models.IntegerField(verbose_name='Width of house in pixels', default=350)                  #house width in pixels
+    house_height = models.IntegerField(verbose_name='Height of house in pixels', default=500)                #house height in pixels
+
     interaction_length = models.IntegerField(verbose_name='Interaction Length', default=10)                   #interaction length in seconds
     cool_down_length = models.IntegerField(verbose_name='Cool Down Length', default=10)                       #cool down length in seconds
     interaction_range = models.IntegerField(verbose_name='Interaction Range', default=300)                    #interaction range in pixels
@@ -91,6 +94,9 @@ class ParameterSet(models.Model):
 
             self.field_width = new_ps.get("field_width", 300)
             self.field_height = new_ps.get("field_height", 500)
+
+            self.house_width = new_ps.get("house_width", 350)
+            self.house_height = new_ps.get("house_height", 500)
 
             self.interaction_length = new_ps.get("interaction_length", 10)
             self.cool_down_length = new_ps.get("cool_down_length", 10)
@@ -243,6 +249,9 @@ class ParameterSet(models.Model):
 
         self.json_for_session["field_width"] = self.field_width
         self.json_for_session["field_height"] = self.field_height
+
+        self.json_for_session["house_width"] = self.house_width
+        self.json_for_session["house_height"] = self.house_height
 
         self.json_for_session["interaction_length"] = self.interaction_length
         self.json_for_session["cool_down_length"] = self.cool_down_length
