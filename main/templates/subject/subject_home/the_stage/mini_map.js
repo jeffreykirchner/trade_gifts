@@ -47,7 +47,7 @@ setup_pixi_minimap()
 
         let temp_field = new PIXI.Graphics();
         if(field.parameter_set_player == app.session_player.parameter_set_player.id){
-             temp_field.beginFill('yellow');
+            temp_field.beginFill('yellow');
         }
         else
         {
@@ -61,6 +61,38 @@ setup_pixi_minimap()
         temp_field.pivot.set(temp_field.width/2, temp_field.height/2);
 
         mini_map.container.addChild(temp_field);
+    }
+
+    //houses
+    for(const i in app.session.parameter_set.parameter_set_players){
+        const parameter_set_player = app.session.parameter_set.parameter_set_players[i];
+
+        let temp_house = new PIXI.Graphics();
+        if(parameter_set_player.id == app.session_player.parameter_set_player.id){
+            temp_house.beginFill('yellow');
+        }
+        else
+        {
+            temp_house.beginFill(app.field_color);
+        }
+
+        temp_house.moveTo(parameter_set_player.house_x * scale, parameter_set_player.house_y * scale);
+        temp_house.lineTo((parameter_set_player.house_x + app.session.parameter_set.house_width/2) * scale, 
+                          (parameter_set_player.house_y + app.session.parameter_set.house_height) * scale);
+        temp_house.lineTo((parameter_set_player.house_x - app.session.parameter_set.house_width/2) * scale,
+                          (parameter_set_player.house_y + app.session.parameter_set.house_height) * scale);
+        temp_house.lineTo(parameter_set_player.house_x * scale, parameter_set_player.house_y * scale);
+
+        // temp_house.drawRect(parameter_set_player.house_x * scale,
+        //                     parameter_set_player.house_y * scale,
+        //                     app.session.parameter_set.house_width * scale,
+        //                     app.session.parameter_set.house_height * scale);
+
+        temp_house.endFill();
+
+        temp_house.pivot.set(temp_house.width/2, temp_house.height/2);
+
+        mini_map.container.addChild(temp_house);
     }
 
     //walls
