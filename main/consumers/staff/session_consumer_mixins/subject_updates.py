@@ -207,56 +207,6 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
 
-    async def collect_token(self, event):
-        '''
-        subject collects token
-        '''
-        if self.controlling_channel != self.channel_name:
-            return
-        
-        logger = logging.getLogger(__name__)
-        
-        message_text = event["message_text"]
-        token_id = message_text["token_id"]
-        period_id = message_text["period_id"]
-        player_id = self.session_players_local[event["player_key"]]["id"]
-
-        # if not await sync_to_async(sync_collect_token)(self.session_id, period_id, token_id, player_id):
-        #     logger.warning(f'collect_token: {message_text}, token {token_id} not available')
-        #     return
-        
-        if self.world_state_local['tokens'][str(period_id)][str(token_id)]['status'] != 'available':
-            return
-        
-        self.world_state_local['tokens'][str(period_id)][str(token_id)]['status'] = player_id
-        self.world_state_local['session_players'][str(player_id)]['inventory'][str(period_id)]+=1
-
-        inventory = self.world_state_local['session_players'][str(player_id)]['inventory'][str(period_id)]
-
-        await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
-        await SessionEvent.objects.acreate(session_id=self.session_id,
-                                           session_player_id=player_id, 
-                                           type="collect_token",
-                                           period_number=self.world_state_local["current_period"],
-                                           time_remaining=self.world_state_local["time_remaining"],
-                                           data={"token_id" : token_id, "period_id" : period_id, "player_id" : player_id, "inventory" : inventory})
-
-        result = {"token_id" : token_id, "period_id" : period_id, "player_id" : player_id, "inventory" : inventory}
-
-        #logger.warning(f'collect_token: {message_text}, token {token_id}')
-
-        await self.send_message(message_to_self=None, message_to_group=result,
-                                message_type=event['type'], send_to_client=False, send_to_group=True)
-
-    async def update_collect_token(self, event):
-        '''
-        subject collects token update
-        '''
-        event_data = event["group_data"]
-
-        await self.send_message(message_to_self=event_data, message_to_group=None,
-                                message_type=event['type'], send_to_client=True, send_to_group=False)
-    
     async def tractor_beam(self, event):
         '''
         subject activates tractor beam
@@ -381,7 +331,7 @@ class SubjectUpdatesMixin():
     
     async def cancel_interaction(self, event):
         '''
-        subject transfers tokens
+        subject cancels interaction
         '''
         if self.controlling_channel != self.channel_name:
             return
@@ -420,33 +370,12 @@ class SubjectUpdatesMixin():
 
     async def update_cancel_interaction(self, event):
         '''
-        subject transfers tokens update
+        subject cancel interaction update
         '''
         event_data = event["group_data"]
 
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
-        
-
-#sync companion functions
-def sync_collect_token(session_id, period_id, token_id, player_id):
-    '''
-    syncronous collect token transaction
-    '''
-
-    # world_state_filter=f"world_state__tokens__{period_id}__{token_id}__status"
-    
-    with transaction.atomic():
-    
-        session = Session.objects.select_for_update().get(id=session_id)
-
-        if session.world_state['tokens'][str(period_id)][str(token_id)]['status'] != 'available':
-            return False
-
-        session.world_state['tokens'][str(period_id)][str(token_id)]['status'] = 'waiting'
-        session.save()
-
-    return True
 
 def sync_interaction(session_id, source_player_id, target_player_id, direction, amount):
     '''

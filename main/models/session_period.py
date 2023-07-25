@@ -34,7 +34,7 @@ class SessionPeriod(models.Model):
     
     async def store_earnings(self, world_state_local):
         '''
-        convert collected tokens into cash earnings
+        convert health into cash earnings
         '''
         result = {}
 
