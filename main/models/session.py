@@ -41,18 +41,12 @@ class Session(models.Model):
     title = models.CharField(max_length = 300, default="*** New Session ***")    #title of session
     start_date = models.DateField(default=now)                                   #date of session start
 
-    # current_experiment_phase = models.CharField(max_length=100, choices=ExperimentPhase.choices, default=ExperimentPhase.RUN)         #current phase of expeirment
-
     channel_key = models.UUIDField(default=uuid.uuid4, editable=False, verbose_name = 'Channel Key')     #unique channel to communicate on
     session_key = models.UUIDField(default=uuid.uuid4, editable=False, verbose_name = 'Session Key')     #unique key for session to auto login subjects by id
 
     controlling_channel = models.CharField(max_length = 300, default="")         #channel controlling session
 
     started =  models.BooleanField(default=False)                                #starts session and filll in session
-    #current_period = models.IntegerField(default=0)                             #current period of the session
-    #time_remaining = models.IntegerField(default=0)                             #time remaining in current phase of current period
-    #timer_running = models.BooleanField(default=False)                           #true when period timer is running
-    # finished = models.BooleanField(default=False)                              #true after all session periods are complete
 
     shared = models.BooleanField(default=False)                                  #shared session parameter sets can be imported by other users
     locked = models.BooleanField(default=False)                                  #locked models cannot be deleted
@@ -132,6 +126,8 @@ class Session(models.Model):
         '''
         self.world_state = {"last_update":str(datetime.now()), 
                             "session_players":{},
+                            "fields":{},
+                            "houses":{},
                             "current_period":1,
                             "current_experiment_phase":ExperimentPhase.INSTRUCTIONS if self.parameter_set.show_instructions else ExperimentPhase.RUN,
                             "time_remaining":self.parameter_set.period_length,
@@ -143,7 +139,35 @@ class Session(models.Model):
                             "session_periods_order" : list(self.session_periods.all().values_list('id', flat=True)),
                             }
         
-        inventory = {str(i):0 for i in list(self.session_periods.all().values_list('id', flat=True))}
+        #fields
+        for i in self.parameter_set.parameter_set_fields_a.all():
+            v = {}
+            v = i.json()
+            session_player = main.models.SessionPlayer.objects.get(parameter_set_player=i.parameter_set_player)
+            v["session_player"] = session_player.id
+
+            for j in main.globals.Goods.choices:
+                v[j[0]] = 0
+
+            v["good_one_effort"] = self.parameter_set.production_effort/2
+            v["good_two_effort"] = self.parameter_set.production_effort/2
+            
+            self.world_state["fields"][str(i.id)] = v
+        
+        #houses
+        for i in self.parameter_set.parameter_set_players.all():
+            v = {}
+            v["id"] = i.id
+            session_player = main.models.SessionPlayer.objects.get(parameter_set_player=i)
+            v["session_player"] = session_player.id
+           
+            for j in main.globals.Goods.choices:
+                v[j[0]] = 0
+            
+            self.world_state["houses"][str(i.id)] = v
+
+
+        # inventory = {str(i):0 for i in list(self.session_periods.all().values_list('id', flat=True))}
         
         #session players
         for i in self.session_players.prefetch_related('parameter_set_player').all().values('id', 
@@ -152,13 +176,15 @@ class Session(models.Model):
             v = {}
 
             v['current_location'] = {'x':i['parameter_set_player__start_x'], 'y':i['parameter_set_player__start_y']}
-            v['target_location'] = v['current_location']
-            v['inventory'] = inventory
+            v['target_location'] = v['current_location']           
             v['tractor_beam_target'] = None
             v['frozen'] = False
             v['cool_down'] = 0
             v['interaction'] = 0
             v['earnings'] = 0
+
+            for j in main.globals.Goods.choices:
+                v[j[0]] = 0
             
             self.world_state["session_players"][str(i['id'])] = v
 

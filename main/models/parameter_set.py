@@ -46,10 +46,7 @@ class ParameterSet(models.Model):
 
     avatar_scale = models.DecimalField(verbose_name='Avatar Scale', decimal_places=2, max_digits=3, default=1) #avatar scale
     
-    production_time = models.IntegerField(verbose_name='Production Time', default=10)              # = p*(α*t^ω)
-    production_alpha = models.DecimalField(verbose_name='Production Parameter alpha', decimal_places=5, max_digits=6, default=1)          
-    production_omega = models.DecimalField(verbose_name='Production Parameter omega', decimal_places=5, max_digits=6, default=1)           
-    production_rho = models.DecimalField(verbose_name='Production Parameter rho', decimal_places=5, max_digits=6, default=1)          
+    production_effort = models.IntegerField(verbose_name='Production Effort', default=10)                     # the amount of effort a subject can put into production
 
     interaction_length = models.IntegerField(verbose_name='Interaction Length', default=10)                   #interaction length in seconds
     cool_down_length = models.IntegerField(verbose_name='Cool Down Length', default=10)                       #cool down length in seconds
@@ -105,10 +102,7 @@ class ParameterSet(models.Model):
 
             self.avatar_scale = new_ps.get("avatar_scale", 1)
 
-            self.production_time = new_ps.get("production_time", 10)
-            self.production_alpha = new_ps.get("production_alpha", 1)
-            self.production_omega = new_ps.get("production_omega", 1)
-            self.production_rho = new_ps.get("production_rho", 1)
+            self.production_effort = new_ps.get("production_effort", 10)
 
             self.interaction_length = new_ps.get("interaction_length", 10)
             self.cool_down_length = new_ps.get("cool_down_length", 10)
@@ -266,10 +260,7 @@ class ParameterSet(models.Model):
 
         self.json_for_session["avatar_scale"] = self.avatar_scale
 
-        self.json_for_session["production_time"] = self.production_time
-        self.json_for_session["production_alpha"] = self.production_alpha
-        self.json_for_session["production_omega"] = self.production_omega
-        self.json_for_session["production_rho"] = self.production_rho
+        self.json_for_session["production_effort"] = self.production_effort
 
         self.json_for_session["interaction_length"] = self.interaction_length
         self.json_for_session["cool_down_length"] = self.cool_down_length
