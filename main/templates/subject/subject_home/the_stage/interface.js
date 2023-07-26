@@ -28,47 +28,6 @@ take_target_location_update(message_data)
 },
 
 /**
- * take and update from the server about a collected token
- */
-take_update_collect_token(message_data)
-{
-    if(message_data.period_id != app.session.session_periods_order[app.session.world_state.current_period-1]) return;
-
-    let token = app.session.world_state.tokens[message_data.period_id][message_data.token_id];
-
-    try{
-        pixi_tokens[message_data.period_id][message_data.token_id].token_container.getChildAt(0).stop();
-        pixi_tokens[message_data.period_id][message_data.token_id].token_container.getChildAt(0).alpha = 0.25;
-        pixi_tokens[message_data.period_id][message_data.token_id].mini_map_graphic.visible = false;
-    } catch (error) {
-
-    }
-
-    token.status = message_data.player_id;
-
-    let session_player = app.session.world_state.session_players[message_data.player_id];
-    let current_location =  app.session.world_state.session_players[message_data.player_id].current_location;
-
-    session_player.inventory[message_data.period_id] = message_data.inventory;
-    pixi_avatars[message_data.player_id].avatar_container.getChildAt(4).text = message_data.inventory;
-
-    let token_graphic = PIXI.Sprite.from(app.pixi_textures.sprite_sheet_2.textures["cherry_small.png"]);
-    token_graphic.anchor.set(1, 0.5)
-    token_graphic.eventMode = 'none';
-    token_graphic.scale.set(0.4);
-    token_graphic.alpha = 0.7;
-
-    app.add_text_emitters("+1", 
-                          current_location.x, 
-                          current_location.y,
-                          current_location.x,
-                          current_location.y-100,
-                          0xFFFFFF,
-                          28,
-                          token_graphic)
-},
-
-/**
  * update the inventory of the player
  */
 update_player_inventory()

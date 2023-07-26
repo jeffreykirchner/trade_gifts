@@ -54,12 +54,6 @@ class ParameterSetForm(forms.ModelForm):
                                     widget=forms.NumberInput(attrs={"v-model":"parameter_set.reconnection_limit",
                                                                     "step":"1",
                                                                     "min":"1"}))
-
-    tokens_per_period = forms.IntegerField(label='Tokens per Period',
-                                    min_value=1,
-                                    widget=forms.NumberInput(attrs={"v-model":"parameter_set.tokens_per_period",
-                                                                    "step":"1",
-                                                                    "min":"0"}))
     
     interaction_length = forms.IntegerField(label='Interaction Length (seconds)',
                                             min_value=1,
@@ -124,6 +118,32 @@ class ParameterSetForm(forms.ModelForm):
                                       widget=forms.NumberInput(attrs={"v-model":"parameter_set.avatar_scale",
                                                                       "step":"0.01",
                                                                       "min":"0.01"}))
+    
+    production_time = forms.IntegerField(label='Production Time (seconds)',
+                                         min_value=1,
+                                         widget=forms.NumberInput(attrs={"v-model":"parameter_set.production_time",
+                                                                          "step":"1",
+                                                                          "min":"1"}))
+    production_alpha = forms.DecimalField(label='Production Alpha',
+                                          max_digits=6,
+                                          decimal_places=5,
+                                          widget=forms.NumberInput(attrs={"v-model":"parameter_set.production_alpha",
+                                                                           "step":"0.01",
+                                                                            }))
+    
+    production_omega = forms.DecimalField(label='Production Omega',
+                                          max_digits=6,
+                                          decimal_places=5,
+                                          widget=forms.NumberInput(attrs={"v-model":"parameter_set.production_omega",
+                                                                          "step":"0.01",
+                                                                          }))
+    
+    production_rho = forms.DecimalField(label='Production Rho',
+                                        max_digits=6,
+                                        decimal_places=5,
+                                        widget=forms.NumberInput(attrs={"v-model":"parameter_set.production_rho",
+                                                                        "step":"0.01",
+                                                                        }))
                                                  
     test_mode = forms.ChoiceField(label='Test Mode',
                                        choices=((True, 'Yes'), (False,'No' )),
@@ -133,8 +153,9 @@ class ParameterSetForm(forms.ModelForm):
         model=ParameterSet
         fields =['period_count', 'period_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'test_mode', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
-                 'tokens_per_period', 'interaction_length', 'interaction_range', 'cool_down_length', 'world_width', 'world_height',
-                 'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale']
+                 'interaction_length', 'interaction_range', 'cool_down_length', 'world_width', 'world_height',
+                 'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale',
+                 'production_time', 'production_alpha', 'production_omega', 'production_rho']
 
     def clean_survey_link(self):
         

@@ -141,7 +141,7 @@ class Session(models.Model):
                             "finished":False,
                             "session_periods":{str(i.id) : i.json() for i in self.session_periods.all()},
                             "session_periods_order" : list(self.session_periods.all().values_list('id', flat=True)),
-                            "tokens":{},}
+                            }
         
         inventory = {str(i):0 for i in list(self.session_periods.all().values_list('id', flat=True))}
         
@@ -161,23 +161,6 @@ class Session(models.Model):
             v['earnings'] = 0
             
             self.world_state["session_players"][str(i['id'])] = v
-        
-        #tokens
-        tokens = {}
-        for i in self.session_periods.all():
-            tokens[str(i)] = {}
-
-            for j in range(self.parameter_set.tokens_per_period):
-                
-                token = {"current_location" : {
-                            "x":random.randint(25, self.parameter_set.world_width-25),
-                            "y":random.randint(25, self.parameter_set.world_height-25)},
-                        "status":"available",}
-                
-                tokens[str(i)][str(j)] = token
-            
-
-        self.world_state["tokens"] = tokens
 
         self.save()
 

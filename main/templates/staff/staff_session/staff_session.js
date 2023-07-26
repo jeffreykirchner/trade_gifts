@@ -13,7 +13,6 @@ var pixi_transfer_beams = {};
 var pixi_transfer_beams_key = 0;
 var pixi_fps_label = null;                     //fps label
 var pixi_avatars = {};                         //avatars
-var pixi_tokens = {};                          //tokens
 var pixi_walls = {};                           //walls
 var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
@@ -276,7 +275,6 @@ var app = Vue.createApp({
          */
         do_reload()
         {
-            app.setup_pixi_tokens_for_current_period();
             app.setup_pixi_subjects();
         },
 
@@ -290,8 +288,6 @@ var app = Vue.createApp({
         *    @param message_data {json} session day in json format
         */
         take_get_session(message_data){
-            
-            app.destroy_pixi_tokens_for_all_periods();
             app.destory_setup_pixi_subjects();
 
             app.session = message_data;
@@ -396,7 +392,6 @@ var app = Vue.createApp({
             //update player earnings and inventory if period has changed
             if(period_change)
             {
-                app.setup_pixi_tokens_for_current_period();
                 app.update_player_inventory();                
             }
 

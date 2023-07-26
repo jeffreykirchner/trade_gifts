@@ -26,7 +26,6 @@ setup_pixi(){
 
     textures_promise.then((textures) => {
         app.setup_pixi_sheets(textures);
-        app.setup_pixi_tokens_for_current_period();
         app.setup_pixi_ground();
         app.setup_pixi_fields();
         app.setup_pixi_houses();
@@ -156,89 +155,6 @@ setup_pixi_sheets(textures){
 
     //start game loop
     pixi_app.ticker.add(app.game_loop);
-},
-
-/**
- * setup the pixi components for each token
- */
-setup_pixi_tokens_for_current_period()
-{
-    if(!app.session) return;
-    if(!app.session.started) return;
-
-    app.destroy_pixi_tokens_for_all_periods();
-
-    const current_period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
-
-    pixi_tokens[current_period_id] = {};
-
-    for(const i in app.session.world_state.tokens[current_period_id]){
-
-        let token =  app.session.world_state.tokens[current_period_id][i];
-        let token_container = new PIXI.Container();
-
-        token_container.zIndex = 100;
-
-        let token_graphic = new PIXI.AnimatedSprite(app.pixi_textures.cherry_token.animations['walk']);
-        token_graphic.animationSpeed = app.animation_speed;
-        token_graphic.anchor.set(0.5)
-        token_graphic.eventMode = 'passive';
-
-        if(token.status=="available")
-        {
-            token_graphic.play();
-        }
-        else
-        {
-            token_graphic.alpha = 0.25;
-        }
-
-        token_container.addChild(token_graphic);
-        // token_container.pivot.set(token_container.width/2, token_container.height/2);
-        token_container.position.set(token.current_location.x, token.current_location.y);
-
-        //bounding box outline
-        if(app.draw_bounding_boxes)
-        {
-            let bounding_box = new PIXI.Graphics();
-
-            bounding_box.width = token_container.width;
-            bounding_box.height = token_container.height;
-            bounding_box.lineStyle(1, 0x000000);
-            bounding_box.drawRect(0, 0, token_container.width, token_container.height);
-            bounding_box.endFill();
-            bounding_box.pivot.set(bounding_box.width/2, bounding_box.height/2);
-            bounding_box.position.set(0, 0);
-            token_container.addChild(bounding_box);
-        }
-
-        let v = {"token_container":token_container};
-
-        pixi_tokens[current_period_id][i] = v;
-        pixi_container_main.addChild(pixi_tokens[current_period_id][i].token_container);
-       
-   }
-},
-
-/**
- * destory pixi tokens in world state
- */
-destroy_pixi_tokens_for_all_periods()
-{
-    if(!app.session) return;
-
-    for(const i in app.session.session_periods_order){
-
-        let period_id = app.session.session_periods_order[i];
-
-        for(const j in app.session.world_state.tokens[period_id]){
-
-            if (period_id in pixi_tokens)
-            {
-                pixi_tokens[period_id][j].token_container.destroy();
-            }
-        }
-    }
 },
 
 /**
@@ -491,42 +407,11 @@ update_offsets_player(delta)
  */
 check_for_collisions(delta)
 {
-    if(Date.now() - app.last_collision_check < 100) return;
-    app.last_collision_check = Date.now();
+    // if(Date.now() - app.last_collision_check < 100) return;
+    // app.last_collision_check = Date.now();
 
-    const obj = app.session.world_state.session_players[app.session_player.id];
-    let collision_found = false;
-
-    //check for collisions with tokens
-    const current_period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
-    for(const i in app.session.world_state.tokens[current_period_id]){       
-
-        let token = app.session.world_state.tokens[current_period_id][i];
-        let distance = app.get_distance(obj.current_location, token.current_location);
-
-        if(distance <= pixi_avatars[app.session_player.id].avatar_container.width/2 &&
-           token.status == "available" && 
-           !collision_found)
-        {
-            // token.token_container.getChildAt(0).stop();
-            // token.token_container.getChildAt(0).alpha = 0.25;
-            token.status = "waiting";
-            collision_found = true;
-
-            app.send_message("collect_token", 
-                             {"token_id" : i, "period_id" : current_period_id},
-                             "group");
-        }
-        else if(distance>2000)
-        {
-            token.visible=false;
-        }
-        else
-        {
-            token.visible=true;
-        }
-        
-    }
+    // const obj = app.session.world_state.session_players[app.session_player.id];
+    // let collision_found = false;
 
 },
 
