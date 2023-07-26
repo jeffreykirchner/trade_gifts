@@ -106,9 +106,9 @@ class ParameterSet(models.Model):
             self.avatar_scale = new_ps.get("avatar_scale", 1)
 
             self.production_time = new_ps.get("production_time", 10)
-            self.production_alpha = new_ps.get("production_alpha", 10)
-            self.production_omega = new_ps.get("production_omega", 10)
-            self.production_rho = new_ps.get("production_rho", 10)
+            self.production_alpha = new_ps.get("production_alpha", 1)
+            self.production_omega = new_ps.get("production_omega", 1)
+            self.production_rho = new_ps.get("production_rho", 1)
 
             self.interaction_length = new_ps.get("interaction_length", 10)
             self.cool_down_length = new_ps.get("cool_down_length", 10)
