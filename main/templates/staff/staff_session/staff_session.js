@@ -355,8 +355,8 @@ var app = Vue.createApp({
         */
         take_update_chat(message_data){
             
-            app.session.world_state.session_players[message_data.sender_id].show_chat = true;    
-            app.session.world_state.session_players[message_data.sender_id].chat_time = Date.now();
+            app.session.world_state_avatars.session_players[message_data.sender_id].show_chat = true;    
+            app.session.world_state_avatars.session_players[message_data.sender_id].chat_time = Date.now();
             pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text =  message_data.text;
         },
 
@@ -404,10 +404,10 @@ var app = Vue.createApp({
             for(p in message_data.session_player_status)
             {
                 session_player = message_data.session_player_status[p];
-                app.session.world_state.session_players[p].interaction = session_player.interaction;
-                app.session.world_state.session_players[p].frozen = session_player.frozen;
-                app.session.world_state.session_players[p].cool_down = session_player.cool_down;
-                app.session.world_state.session_players[p].tractor_beam_target = session_player.tractor_beam_target;
+                app.session.world_state_avatars.session_players[p].interaction = session_player.interaction;
+                app.session.world_state_avatars.session_players[p].frozen = session_player.frozen;
+                app.session.world_state_avatars.session_players[p].cool_down = session_player.cool_down;
+                app.session.world_state_avatars.session_players[p].tractor_beam_target = session_player.tractor_beam_target;
             }
 
             //update player location
@@ -415,9 +415,9 @@ var app = Vue.createApp({
             {
                 let server_location = message_data.current_locations[p];
 
-                if(app.get_distance(server_location, app.session.world_state.session_players[p].current_location) > 1000)
+                if(app.get_distance(server_location, app.session.world_state_avatars.session_players[p].current_location) > 1000)
                 {
-                    app.session.world_state.session_players[p].current_location = server_location;
+                    app.session.world_state_avatars.session_players[p].current_location = server_location;
                 }
             }
 

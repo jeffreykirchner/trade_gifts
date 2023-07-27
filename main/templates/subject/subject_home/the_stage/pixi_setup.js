@@ -253,7 +253,7 @@ update_subject_status_overlay()
 
     subject_status_overlay_container.getChildAt(3).text = app.session.world_state.current_period;
     subject_status_overlay_container.getChildAt(4).text = app.session.world_state.time_remaining;
-    subject_status_overlay_container.getChildAt(5).text = app.session.world_state.session_players[app.session_player.id].earnings;
+    subject_status_overlay_container.getChildAt(5).text = app.session.world_state_avatars.session_players[app.session_player.id].earnings;
 },
 
 /**
@@ -396,7 +396,7 @@ update_offsets_player(delta)
     pixi_container_main.x = -offset.x;
     pixi_container_main.y = -offset.y;   
     
-    obj = app.session.world_state.session_players[app.session_player.id];
+    obj = app.session.world_state_avatars.session_players[app.session_player.id];
 
     pixi_target.x = obj.target_location.x;
     pixi_target.y = obj.target_location.y;
@@ -410,7 +410,7 @@ check_for_collisions(delta)
     // if(Date.now() - app.last_collision_check < 100) return;
     // app.last_collision_check = Date.now();
 
-    // const obj = app.session.world_state.session_players[app.session_player.id];
+    // const obj = app.session.world_state_avatars.session_players[app.session_player.id];
     // let collision_found = false;
 
 },
@@ -440,7 +440,7 @@ scroll_staff(delta)
  */
 get_offset()
 {
-    let obj = app.session.world_state.session_players[app.session_player.id];
+    let obj = app.session.world_state_avatars.session_players[app.session_player.id];
 
     return {x:obj.current_location.x * app.pixi_scale - pixi_app.screen.width/2,
             y:obj.current_location.y * app.pixi_scale - pixi_app.screen.height/2};
@@ -453,7 +453,7 @@ get_offset_staff()
 {
     if(app.follow_subject != -1 && app.session.started)
     {
-        obj = app.session.world_state.session_players[app.follow_subject];
+        obj = app.session.world_state_avatars.session_players[app.follow_subject];
         app.current_location = Object.assign({}, obj.current_location);
     }
 
@@ -468,7 +468,7 @@ subject_pointer_up(event)
 {
     if(!app.session.world_state.hasOwnProperty('started')) return;
     let local_pos = event.data.getLocalPosition(event.currentTarget);
-    let local_player = app.session.world_state.session_players[app.session_player.id];
+    let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
 
     if(event.button == 0)
     {
@@ -519,9 +519,9 @@ subject_pointer_up(event)
             return;
         }
         
-        for(i in app.session.world_state.session_players)
+        for(i in app.session.world_state_avatars.session_players)
         {
-            let obj = app.session.world_state.session_players[i];
+            let obj = app.session.world_state_avatars.session_players[i];
 
             if(app.get_distance(obj.current_location, local_pos) < 100 &&
                app.get_distance(obj.current_location, local_player.current_location) <= app.session.parameter_set.interaction_range+125)
@@ -556,8 +556,8 @@ staff_screen_scroll_button_out(event)
  */
 setup_tractor_beam(source_id, target_id)
 {
-    let source_player = app.session.world_state.session_players[source_id];
-    let target_player = app.session.world_state.session_players[target_id];
+    let source_player = app.session.world_state_avatars.session_players[source_id];
+    let target_player = app.session.world_state_avatars.session_players[target_id];
 
     let dY = source_player.current_location.y - target_player.current_location.y;
     let dX = source_player.current_location.x - target_player.current_location.x;

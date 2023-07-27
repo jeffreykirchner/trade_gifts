@@ -5,7 +5,7 @@ take_target_location_update(message_data)
 {
     if(message_data.value == "success")
     {
-        app.session.world_state.session_players[message_data.session_player_id].target_location = message_data.target_location;        
+        app.session.world_state_avatars.session_players[message_data.session_player_id].target_location = message_data.target_location;        
         // app.send_world_state_update();         
     } 
     else
@@ -29,9 +29,9 @@ send_world_state_update()
 
     let temp_world_state = {"session_players":{}}
 
-    for(i in app.session.world_state.session_players)
+    for(i in app.session.world_state_avatars.session_players)
     {
-        temp_world_state["session_players"][i] = {"current_location" : app.session.world_state.session_players[i].current_location};
+        temp_world_state["session_players"][i] = {"current_location" : app.session.world_state_avatars.session_players[i].current_location};
     }
 
     app.last_world_state_update = Date.now();
@@ -46,7 +46,7 @@ update_player_inventory()
     for(const i in app.session.session_players_order)
     {
         const player_id = app.session.session_players_order[i];
-        pixi_avatars[player_id].avatar_container.getChildAt(4).text = app.session.world_state.session_players[player_id].inventory[period_id];
+        pixi_avatars[player_id].avatar_container.getChildAt(4).text = app.session.world_state_avatars.session_players[player_id].inventory[period_id];
     }
 },
 
@@ -55,13 +55,13 @@ take_update_tractor_beam(message_data)
     let player_id = message_data.player_id;
     let target_player_id = message_data.target_player_id;
 
-    app.session.world_state.session_players[player_id].tractor_beam_target = target_player_id;
+    app.session.world_state_avatars.session_players[player_id].tractor_beam_target = target_player_id;
 
-    app.session.world_state.session_players[player_id].frozen = true
-    app.session.world_state.session_players[target_player_id].frozen = true
+    app.session.world_state_avatars.session_players[player_id].frozen = true
+    app.session.world_state_avatars.session_players[target_player_id].frozen = true
 
-    app.session.world_state.session_players[player_id].interaction = app.session.parameter_set.interaction_length;
-    app.session.world_state.session_players[target_player_id].interaction = app.session.parameter_set.interaction_length;
+    app.session.world_state_avatars.session_players[player_id].interaction = app.session.parameter_set.interaction_length;
+    app.session.world_state_avatars.session_players[target_player_id].interaction = app.session.parameter_set.interaction_length;
 },
 
 /**
@@ -80,8 +80,8 @@ take_update_interaction(message_data)
         let source_player_id = message_data.source_player_id;
         let target_player_id = message_data.target_player_id;
 
-        let source_player = app.session.world_state.session_players[source_player_id];
-        let target_player = app.session.world_state.session_players[target_player_id];
+        let source_player = app.session.world_state_avatars.session_players[source_player_id];
+        let target_player = app.session.world_state_avatars.session_players[target_player_id];
 
         let period = message_data.period;
 
@@ -130,12 +130,12 @@ take_update_cancel_interaction(message_data)
     let source_player_id = message_data.source_player_id;
     let target_player_id = message_data.target_player_id;
 
-    app.session.world_state.session_players[source_player_id].tractor_beam_target = null;
+    app.session.world_state_avatars.session_players[source_player_id].tractor_beam_target = null;
 
-    app.session.world_state.session_players[source_player_id].frozen = false
-    app.session.world_state.session_players[target_player_id].frozen = false
+    app.session.world_state_avatars.session_players[source_player_id].frozen = false
+    app.session.world_state_avatars.session_players[target_player_id].frozen = false
 
-    app.session.world_state.session_players[source_player_id].interaction = 0;
-    app.session.world_state.session_players[target_player_id].interaction = 0;
+    app.session.world_state_avatars.session_players[source_player_id].interaction = 0;
+    app.session.world_state_avatars.session_players[target_player_id].interaction = 0;
 }, 
 

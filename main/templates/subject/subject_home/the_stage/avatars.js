@@ -8,9 +8,9 @@ setup_pixi_subjects(){
     
     let current_z_index = 1000;
     let current_period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
-    for(const i in app.session.world_state.session_players)
+    for(const i in app.session.world_state_avatars.session_players)
     {      
-        let subject = app.session.world_state.session_players[i];
+        let subject = app.session.world_state_avatars.session_players[i];
         pixi_avatars[i] = {};
 
         //avatar
@@ -185,9 +185,9 @@ move_player(delta)
     if(!app.session.world_state) return;
 
     //move players
-    for(let i in app.session.world_state.session_players){
+    for(let i in app.session.world_state_avatars.session_players){
 
-        let obj = app.session.world_state.session_players[i];
+        let obj = app.session.world_state_avatars.session_players[i];
         let avatar_container = pixi_avatars[i].avatar_container;
 
         if(obj.target_location.x !=  obj.current_location.x ||
@@ -243,15 +243,15 @@ move_player(delta)
     }
 
     //find nearest players
-    for(let i in app.session.world_state.session_players)
+    for(let i in app.session.world_state_avatars.session_players)
     {
-        let obj1 = app.session.world_state.session_players[i];
+        let obj1 = app.session.world_state_avatars.session_players[i];
         obj1.nearest_player = null;
         obj1.nearest_player_distance = null;
 
-        for(let j in app.session.world_state.session_players)
+        for(let j in app.session.world_state_avatars.session_players)
         {
-            let obj2 = app.session.world_state.session_players[j];
+            let obj2 = app.session.world_state_avatars.session_players[j];
 
             if(i != j)
             {
@@ -275,14 +275,14 @@ move_player(delta)
     }
 
     //update chat boxes
-    for(let i in app.session.world_state.session_players)
+    for(let i in app.session.world_state_avatars.session_players)
     {
-        let obj = app.session.world_state.session_players[i];
+        let obj = app.session.world_state_avatars.session_players[i];
         let chat_container = pixi_avatars[i].chat_container;
         // let avatar_container = obj.pixi.chat_container;
         let offset = {x:chat_container.width*.5, y:chat_container.height*.45};
 
-        if(app.session.world_state.session_players[obj.nearest_player].current_location.x < obj.current_location.x)
+        if(app.session.world_state_avatars.session_players[obj.nearest_player].current_location.x < obj.current_location.x)
         {
             chat_container.position.set(obj.current_location.x + offset.x,
                                         obj.current_location.y - offset.y);
@@ -301,9 +301,9 @@ move_player(delta)
     }   
 
     //update tractor beams and status
-    for(let i in app.session.world_state.session_players)
+    for(let i in app.session.world_state_avatars.session_players)
     {
-        let player = app.session.world_state.session_players[i];
+        let player = app.session.world_state_avatars.session_players[i];
 
         if(player.tractor_beam_target)
         {
@@ -319,9 +319,9 @@ move_player(delta)
         }
     }
 
-    for(let i in app.session.world_state.session_players)
+    for(let i in app.session.world_state_avatars.session_players)
     {
-        let obj = app.session.world_state.session_players[i];
+        let obj = app.session.world_state_avatars.session_players[i];
 
         //update interaction ranges
         let interaction_container = pixi_avatars[i].interaction_container;
@@ -344,7 +344,7 @@ destory_setup_pixi_subjects()
 {
     if(!app.session) return;
 
-    for(const i in app.session.world_state.session_players){
+    for(const i in app.session.world_state_avatars.session_players){
 
         let pixi_objects = pixi_avatars[i];
 

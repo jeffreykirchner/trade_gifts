@@ -39,21 +39,6 @@ class TimerMixin():
         
         await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
 
-        # if self.world_state_local["timer_running"]:
-        #     result = {"timer_running" : True}
-        #     await self.send_message(message_to_self=result, message_to_group=None,
-        #                             message_type=event['type'], send_to_client=True, send_to_group=False)
-        
-        #     #start continue timer
-        #     # await self.channel_layer.send(
-        #     #     self.channel_name,
-        #     #     {
-        #     #         'type': "continue_timer",
-        #     #         'message_text': {},
-        #     #     }
-        #     # )
-        # else:
-            #stop timer
         result = {"timer_running" : self.world_state_local["timer_running"]}
         await self.send_message(message_to_self=result, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
@@ -90,8 +75,10 @@ class TimerMixin():
             self.world_state_local["time_remaining"] = 0
             
             session = await Session.objects.aget(id=self.session_id)
+            
+            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
             current_session_period = await session.session_periods.aget(period_number=self.world_state_local["current_period"])
-            result["earnings"] = await current_session_period.store_earnings(self.world_state_local)
+            self.world_state_local = await current_session_period.do_consumption()
 
             self.world_state_local["current_experiment_phase"] = ExperimentPhase.NAMES
             stop_timer = True
@@ -183,21 +170,6 @@ class TimerMixin():
             
             await self.send_message(message_to_self=False, message_to_group=result,
                                     message_type="time", send_to_client=False, send_to_group=True)
-
-        #if session is not over continue
-        #stop_timer = True
-        # if not stop_timer:
-
-        #     loop = asyncio.get_event_loop()
-
-        #     loop.call_later(0.33, asyncio.create_task, 
-        #                     self.channel_layer.send(
-        #                         self.channel_name,
-        #                         {
-        #                             'type': "continue_timer",
-        #                             'message_text': {},
-        #                         }
-        #                     ))
         
         # logger.info(f"continue_timer end")
 

@@ -55,6 +55,7 @@ class Session(models.Model):
     invitation_subject = HTMLField(default="", verbose_name="Invitation Subject")
 
     world_state = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Current Session State")       #world state at this point in session
+    world_state_avatars = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Current Avatar State")       #world state at this point in session
 
     soft_delete =  models.BooleanField(default=False)                             #hide session if true
 
@@ -124,10 +125,11 @@ class Session(models.Model):
         '''
         setup world state
         '''
-        self.world_state = {"last_update":str(datetime.now()), 
+        self.world_state = {
                             "session_players":{},
                             "fields":{},
                             "houses":{},
+                            "avatars":{},
                             "current_period":1,
                             "current_experiment_phase":ExperimentPhase.INSTRUCTIONS if self.parameter_set.show_instructions else ExperimentPhase.RUN,
                             "time_remaining":self.parameter_set.period_length,
@@ -138,6 +140,10 @@ class Session(models.Model):
                             "session_periods":{str(i.id) : i.json() for i in self.session_periods.all()},
                             "session_periods_order" : list(self.session_periods.all().values_list('id', flat=True)),
                             }
+        
+        self.world_state_avatars={"last_update":str(datetime.now()),
+                                  "session_players":{},
+                                  }
         
         #fields
         for i in self.parameter_set.parameter_set_fields_a.all():
@@ -165,9 +171,6 @@ class Session(models.Model):
                 v[j[0]] = 0
             
             self.world_state["houses"][str(i.id)] = v
-
-
-        # inventory = {str(i):0 for i in list(self.session_periods.all().values_list('id', flat=True))}
         
         #session players
         for i in self.session_players.prefetch_related('parameter_set_player').all().values('id', 
@@ -180,13 +183,16 @@ class Session(models.Model):
             v['tractor_beam_target'] = None
             v['frozen'] = False
             v['cool_down'] = 0
-            v['interaction'] = 0
-            v['earnings'] = 0
+            v['interaction'] = 0            
 
+            self.world_state_avatars["session_players"][str(i['id'])] = v
+
+            v2 = {}
+            v2['earnings'] = 0
             for j in main.globals.Goods.choices:
-                v[j[0]] = 0
+                v2[j[0]] = 0
+            self.world_state["avatars"][str(i['id'])] = v2
             
-            self.world_state["session_players"][str(i['id'])] = v
 
         self.save()
 
@@ -199,6 +205,7 @@ class Session(models.Model):
         #self.time_remaining = self.parameter_set.period_length
         #self.timer_running = False
         self.world_state ={}
+        self.world_state_avatars ={}
         self.save()
 
         for p in self.session_players.all():
@@ -249,40 +256,6 @@ class Session(models.Model):
 
             new_session_player.save()
 
-    def do_period_timer(self):
-        '''
-        do period timer actions
-        '''
-
-        status = "success"        
-        stop_timer = False
-
-        #check session over
-        if self.world_state["time_remaining"] == 0 and \
-           self.world_state["current_period"] >= self.parameter_set.period_count:
-
-            self.world_state["current_experiment_phase"] = ExperimentPhase.NAMES
-            stop_timer = True
-           
-        if not status == "fail" and \
-           self.world_state["current_experiment_phase"] != ExperimentPhase.NAMES:
-
-            if self.world_state["time_remaining"] == 0:
-                self.get_current_session_period().store_earnings()
-
-                self.world_state["current_period"] += 1
-                self.world_state["time_remaining"] = self.parameter_set.period_length
-            else:                                     
-                self.world_state["time_remaining"] -= 1
-
-        self.save()
-
-        result = self.json_for_timer()
-
-        return {"value" : status,
-                "result" : result,
-                "stop_timer" : stop_timer,
-                }
 
     def user_is_owner(self, user):
         '''
@@ -435,6 +408,7 @@ class Session(models.Model):
             "invitation_text" : self.invitation_text,
             "invitation_subject" : self.invitation_subject,
             "world_state" : self.world_state,
+            "world_state_avatars" : self.world_state_avatars,
         }
     
     def json_for_subject(self, session_player):
@@ -454,6 +428,7 @@ class Session(models.Model):
             "session_periods_order" : list(self.session_periods.all().values_list('id', flat=True)),
 
             "world_state" : self.world_state,
+            "world_state_avatars" : self.world_state_avatars,
         }
     
     def json_for_timer(self):

@@ -22,6 +22,7 @@ class StaffSessionConsumer(SocketConsumerMixin,
 
     has_timer_control = False         #this instance is controlling the timer           
     world_state_local = {}            #local copy of world state
+    world_state_avatars_local = {}    #local copy of world state avatars
     session_players_local = {}        #local copy of session players
     parameter_set_local = {}          #local copy of parameter set   
 

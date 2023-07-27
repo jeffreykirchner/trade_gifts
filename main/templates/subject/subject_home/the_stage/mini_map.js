@@ -12,7 +12,7 @@ setup_pixi_minimap()
     app.mini_map_scale = Math.min((pixi_app.screen.width * 0.2)/app.stage_width,  (pixi_app.screen.height * 0.3)/app.stage_height);
 
     let scale = app.mini_map_scale;
-    let obj = app.session.world_state.session_players[app.session_player.id]
+    let obj = app.session.world_state_avatars.session_players[app.session_player.id]
 
     mini_map.container = new PIXI.Container();
     mini_map.container.eventMode = 'none';
@@ -133,7 +133,7 @@ setup_pixi_minimap()
  */
 update_mini_map(delta)
 {
-    let obj = app.session.world_state.session_players[app.session_player.id]
+    let obj = app.session.world_state_avatars.session_players[app.session_player.id]
     mini_map.view_port.position.set(obj.current_location.x * app.mini_map_scale, 
                              obj.current_location.y * app.mini_map_scale);
 },

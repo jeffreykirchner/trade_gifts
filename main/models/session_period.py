@@ -5,6 +5,7 @@ session period model
 #import logging
 
 from django.db import models
+from django.db import transaction
 
 from main.models import Session
 
@@ -17,6 +18,9 @@ class SessionPeriod(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name="session_periods")
 
     period_number = models.IntegerField()                       #period number from 1 to N
+
+    production_completed = models.BooleanField(default=False)   #production completed for this period
+    consumption_completed = models.BooleanField(default=False)  #consumption completed for this period
 
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
@@ -32,7 +36,7 @@ class SessionPeriod(models.Model):
         verbose_name_plural = 'Session Periods'
         ordering = ['period_number']
     
-    async def store_earnings(self, world_state_local):
+    def do_consumption(self):
         '''
         convert health into cash earnings
         '''
@@ -40,19 +44,37 @@ class SessionPeriod(models.Model):
 
         objs = self.session.session_players.all()
         
-        async for i in objs:
+        for i in objs:
             sid = str(i.id)
             speriod_id = str(self.id)
 
-            i.earnings += world_state_local["session_players"][sid]["inventory"][speriod_id]
+            # i.earnings += world_state_local["session_players"][sid]["inventory"][speriod_id]
             
-            result[sid] = {}
-            result[sid]["total_earnings"] = i.earnings
-            result[sid]["period_earnings"] = world_state_local["session_players"][sid]["inventory"][speriod_id]
+            # result[sid] = {}
+            # result[sid]["total_earnings"] = i.earnings
+            # result[sid]["period_earnings"] = world_state_local["session_players"][sid]["inventory"][speriod_id]
         
         r = main.models.SessionPlayer.objects.abulk_update(objs, ['earnings'])
 
-        return result
+        self.consumption_completed = True
+        self.asave()
+
+        return self.session.world_state
+    
+    def do_production(self):
+        '''
+        do production for this period
+        '''
+
+        with transaction.atomic():
+            session_period = main.models.SessionPeriod.objects.select_for_update().get(id=self.id)
+            session = main.models.Session.objects.select_for_update().get(id=self.session.id)
+
+            session_period.production_completed = True
+            session_period.save()
+            session.save()
+
+        return self.session.world_state
 
     def json(self):
         '''
@@ -62,5 +84,7 @@ class SessionPeriod(models.Model):
         return{
             "id" : self.id,
             "period_number" : self.period_number,
+            "production_completed" : self.production_completed,
+            "consumption_completed" : self.consumption_completed,
         }
         

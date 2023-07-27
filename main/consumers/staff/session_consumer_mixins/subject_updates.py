@@ -173,7 +173,7 @@ class SubjectUpdatesMixin():
             # result = {"value" : "fail", "result" : {"message" : "Invalid location."}}
         
         player_id = self.session_players_local[event["player_key"]]["id"]
-        session_player = self.world_state_local["session_players"][str(player_id)]
+        session_player = self.world_state_avatars_local["session_players"][str(player_id)]
 
         if session_player["frozen"] or session_player["tractor_beam_target"]:
             return
@@ -181,13 +181,13 @@ class SubjectUpdatesMixin():
         session_player["target_location"] = target_location
         session_player["current_location"] = current_location
 
-        last_update = datetime.strptime(self.world_state_local["last_update"], "%Y-%m-%d %H:%M:%S.%f")
+        last_update = datetime.strptime(self.world_state_avatars_local["last_update"], "%Y-%m-%d %H:%M:%S.%f")
         dt_now = datetime.now()
 
         if dt_now - last_update > timedelta(seconds=1):
             # logger.info("updating world state")
-            self.world_state_local["last_update"] = str(dt_now)
-            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+            self.world_state_avatars_local["last_update"] = str(dt_now)
+            await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
         
         result = {"value" : "success", 
                   "target_location" : target_location, 
@@ -240,7 +240,7 @@ class SubjectUpdatesMixin():
 
         target_player['interaction'] = self.parameter_set_local['interaction_length']
 
-        await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+        await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
 
         await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
@@ -307,7 +307,7 @@ class SubjectUpdatesMixin():
                 source_player["inventory"][result["period"]] = result["source_player_inventory"]
                 target_player["inventory"][result["period"]] = result["target_player_inventory"]
 
-                await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+                await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
 
             await SessionEvent.objects.acreate(session_id=self.session_id, 
                                                session_player_id=player_id,

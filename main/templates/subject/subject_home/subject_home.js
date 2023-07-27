@@ -313,7 +313,7 @@ var app = Vue.createApp({
             if (message_data.time_remaining == 1)
             {
                 period_earnings = message_data.earnings[app.session_player.id].period_earnings;
-                app.session.world_state.session_players[app.session_player.id].earnings = message_data.earnings[app.session_player.id].total_earnings;
+                app.session.world_state_avatars.session_players[app.session_player.id].earnings = message_data.earnings[app.session_player.id].total_earnings;
             }
 
             if (app.session.world_state.current_period != message_data.current_period)
@@ -347,7 +347,7 @@ var app = Vue.createApp({
             if(message_data.time_remaining == 1)
             {
                 Vue.nextTick(() => {
-                    let current_location = app.session.world_state.session_players[app.session_player.id].current_location;
+                    let current_location = app.session.world_state_avatars.session_players[app.session_player.id].current_location;
 
                     app.add_text_emitters("+" + period_earnings + "¢", 
                             current_location.x, 
@@ -370,10 +370,10 @@ var app = Vue.createApp({
             for(p in message_data.session_player_status)
             {
                 session_player = message_data.session_player_status[p];
-                app.session.world_state.session_players[p].interaction = session_player.interaction;
-                app.session.world_state.session_players[p].frozen = session_player.frozen;
-                app.session.world_state.session_players[p].cool_down = session_player.cool_down;
-                app.session.world_state.session_players[p].tractor_beam_target = session_player.tractor_beam_target;
+                app.session.world_state_avatars.session_players[p].interaction = session_player.interaction;
+                app.session.world_state_avatars.session_players[p].frozen = session_player.frozen;
+                app.session.world_state_avatars.session_players[p].cool_down = session_player.cool_down;
+                app.session.world_state_avatars.session_players[p].tractor_beam_target = session_player.tractor_beam_target;
             }
 
             //update player location
@@ -383,15 +383,15 @@ var app = Vue.createApp({
                 {
                     let server_location = message_data.current_locations[p];
 
-                    if(app.get_distance(server_location, app.session.world_state.session_players[p].current_location) > 1000)
+                    if(app.get_distance(server_location, app.session.world_state_avatars.session_players[p].current_location) > 1000)
                     {
-                        app.session.world_state.session_players[p].current_location = server_location;
+                        app.session.world_state_avatars.session_players[p].current_location = server_location;
                     }
                 }
             }
 
             //hide interaction modal if interaction is over
-            if(app.session.world_state.session_players[app.session_player.id].interaction == 0)
+            if(app.session.world_state_avatars.session_players[app.session_player.id].interaction == 0)
             {
                 app.interaction_modal.hide();
             }

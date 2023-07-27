@@ -10,8 +10,9 @@ from main.models import Session
 from main.globals import ExperimentPhase
 
 from ..session_consumer_mixins.get_session import take_get_session
+from ..session_consumer_mixins.operations import OperationsMixin
 
-class ExperimentControlsMixin():
+class ExperimentControlsMixin(OperationsMixin):
     '''
     This mixin is used to start an the experiment.
     '''
@@ -27,6 +28,9 @@ class ExperimentControlsMixin():
             await self.send_message(message_to_self=result, message_to_group=None,
                                     message_type=event['type'], send_to_client=True, send_to_group=False)
         else:
+
+            await self.do_field_production()
+
             await self.send_message(message_to_self=None, message_to_group=result,
                                     message_type=event['type'], send_to_client=False, send_to_group=True)
     
@@ -36,6 +40,7 @@ class ExperimentControlsMixin():
         '''
 
         self.world_state_local = event['group_data']['world_state']
+        self.world_state_avatars_local = event['group_data']['world_state_avatars']
 
         result = await sync_to_async(take_get_session, thread_sensitive=self.thread_sensitive)(self.connection_uuid)
 
@@ -161,11 +166,13 @@ def take_start_experiment(session_id, data):
 
         if not session.started:
             session.start_experiment()
+            session = Session.objects.get(id=session_id)
 
         value = "success"
         
         return {"value" : value, 
-                "world_state" : session.world_state}
+                "world_state" : session.world_state,
+                "world_state_avatars" : session.world_state_avatars}
 
 def take_reset_experiment(session_id, data):
     '''
@@ -180,6 +187,7 @@ def take_reset_experiment(session_id, data):
 
     if session.started:
         session.reset_experiment()  
+        session = Session.objects.get(id=session_id)
 
     value = "success"
     
