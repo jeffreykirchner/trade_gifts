@@ -135,7 +135,7 @@ class Session(models.Model):
                             "time_remaining":self.parameter_set.period_length,
                             "timer_running":False,
                             "timer_history":[],
-                            "started":True,
+                            "started":self.started,
                             "finished":False,
                             "session_periods":{str(i.id) : i.json() for i in self.session_periods.all()},
                             "session_periods_order" : list(self.session_periods.all().values_list('id', flat=True)),
@@ -193,7 +193,6 @@ class Session(models.Model):
                 v2[j[0]] = 0
             self.world_state["avatars"][str(i['id'])] = v2
             
-
         self.save()
 
     def reset_experiment(self):
@@ -213,6 +212,8 @@ class Session(models.Model):
 
         self.session_periods.all().delete()
         self.session_events.all().delete()
+
+        self.setup_world_state()
 
         # self.parameter_set.setup()
     

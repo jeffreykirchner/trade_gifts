@@ -70,11 +70,32 @@ class SessionPeriod(models.Model):
             session_period = main.models.SessionPeriod.objects.select_for_update().get(id=self.id)
             session = main.models.Session.objects.select_for_update().get(id=self.session.id)
 
+            parameter_set = session.parameter_set.json()
+            world_state = session.world_state
+            current_period = world_state["current_period"]
+
+            for i in session.world_state["fields"]:
+                
+                obj = session.world_state["fields"][i]
+                field_type = parameter_set["parameter_set_field_types"][str(obj["parameter_set_field_type"])]
+
+                if current_period>=field_type["start_on_period"]:
+                    obj[field_type["good_one"]] = 1
+                    obj[field_type["good_two"]] = 1
+                else:
+                    obj[field_type["good_one"]] = 0
+                    obj[field_type["good_two"]] = 0
+
+                
+                # for j in main.globals.Goods.choices:
+                #     session.world_state["fields"][obj][j[0]] = 1
+
             session_period.production_completed = True
             session_period.save()
+
             session.save()
 
-        return self.session.world_state
+        return session.world_state
 
     def json(self):
         '''

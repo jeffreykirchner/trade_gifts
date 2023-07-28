@@ -1,6 +1,8 @@
 '''
 admin interface
 '''
+from django.utils.translation import ngettext
+
 from django.contrib import admin
 from django.contrib import messages
 from django.conf import settings
@@ -145,15 +147,28 @@ class SessionEventAdmin(admin.ModelAdmin):
     list_display = ['session', 'period_number', 'time_remaining','type']
 
 @admin.register(Session)
-class SessionAdmin(admin.ModelAdmin):
+class SessionAdmin(admin.ModelAdmin):     
+
     form = SessionFormAdmin
 
     @admin.display(description='Creator')
     def get_creator_email(self, obj):
         return obj.creator.email
+    
+    def reset(self, request, queryset):
+
+        for i in queryset.all():
+            i.reset_experiment()
+
+        self.message_user(request, ngettext(
+                '%d session is reset.',
+                '%d sessions are reset.',
+                queryset.count(),
+        ) % queryset.count(), messages.SUCCESS)
 
     readonly_fields=['parameter_set', 'session_key','channel_key', 'controlling_channel']
     inlines = [SessionPlayerInline]
+    actions = ['reset']
 
     list_display = ['title', 'get_creator_email']
 

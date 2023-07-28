@@ -29,7 +29,10 @@ class ExperimentControlsMixin(OperationsMixin):
                                     message_type=event['type'], send_to_client=True, send_to_group=False)
         else:
 
-            await self.do_field_production()
+            result["world_state"] = await self.do_field_production()
+
+            # self.world_state_local = result["world_state"]
+            # self.world_state_avatars_local = result["world_state_avatars"]
 
             await self.send_message(message_to_self=None, message_to_group=result,
                                     message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -166,7 +169,7 @@ def take_start_experiment(session_id, data):
 
         if not session.started:
             session.start_experiment()
-            session = Session.objects.get(id=session_id)
+            # session = Session.objects.get(id=session_id)
 
         value = "success"
         

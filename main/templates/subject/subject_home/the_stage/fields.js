@@ -5,10 +5,11 @@ setup_pixi_fields()
 {
     for(const i in app.session.parameter_set.parameter_set_fields_order)
     {
-        pixi_fields[i] = {};
 
         const field_id = app.session.parameter_set.parameter_set_fields_order[i];
         const field = app.session.parameter_set.parameter_set_fields[field_id];
+
+        pixi_fields[field_id] = {};
         
         let parameter_set_field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type];
         let parameter_set_player = app.session.parameter_set.parameter_set_players[field.parameter_set_player];
@@ -115,16 +116,40 @@ setup_pixi_fields()
         good_two_seconds_label.position.set(0, +5);
 
         //add to pixi_fields
-        pixi_fields[i].field_container = field_container;
-        pixi_fields[i].owner_label = owner_label;
-        pixi_fields[i].good_one_label = good_one_label;
-        pixi_fields[i].good_two_label = good_two_label;
-        pixi_fields[i].good_one_seconds_label = good_one_seconds_label;
-        pixi_fields[i].good_two_seconds_label = good_two_seconds_label;
+        pixi_fields[field_id].field_container = field_container;
+        pixi_fields[field_id].owner_label = owner_label;
+        pixi_fields[field_id][parameter_set_field_type.good_one] = good_one_label;
+        pixi_fields[field_id][parameter_set_field_type.good_two] = good_two_label;
+        pixi_fields[field_id].good_one_seconds_label = good_one_seconds_label;
+        pixi_fields[field_id].good_two_seconds_label = good_two_seconds_label;
 
-        pixi_fields[i].field_container.width = app.session.parameter_set.field_width;
-        pixi_fields[i].field_container.height = app.session.parameter_set.field_height;
+        pixi_fields[field_id].field_container.width = app.session.parameter_set.field_width;
+        pixi_fields[field_id].field_container.height = app.session.parameter_set.field_height;
 
-        pixi_container_main.addChild(pixi_fields[i].field_container);
+        pixi_container_main.addChild(pixi_fields[field_id].field_container);
+    }
+
+    app.update_field_inventory();
+},
+
+/**
+ * update field inventory
+ */
+update_field_inventory()
+{
+    if(!app.session.world_state["started"]) return;
+    
+    for(const i in app.session.parameter_set.parameter_set_fields_order)
+    {
+        const field_id = app.session.parameter_set.parameter_set_fields_order[i];
+        const field = app.session.parameter_set.parameter_set_fields[field_id];
+
+        parameter_set_field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type];
+
+        pixi_fields[field_id][parameter_set_field_type.good_one].text = app.session.world_state["fields"][field_id][parameter_set_field_type.good_one];
+        pixi_fields[field_id][parameter_set_field_type.good_two].text = app.session.world_state["fields"][field_id][parameter_set_field_type.good_two];
     }
 },
+
+
+

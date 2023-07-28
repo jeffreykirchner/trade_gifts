@@ -292,7 +292,7 @@ var app = Vue.createApp({
 
             app.session = message_data;
 
-            app.session.world_state =  app.session.world_state;
+            // app.session.world_state =  app.session.world_state;
 
             if(app.session.started)
             {

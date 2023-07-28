@@ -182,7 +182,7 @@ setup_pixi_subjects(){
  */
 move_player(delta)
 {
-    if(!app.session.world_state) return;
+    if(!app.session.world_state.started) return;
 
     //move players
     for(let i in app.session.world_state_avatars.session_players){
