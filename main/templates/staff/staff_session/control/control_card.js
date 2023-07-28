@@ -44,7 +44,6 @@ reset_experiment(){
  * @param message_data {json}
 */
 take_reset_experiment(message_data){
-    app.chat_list_to_display=[];
     app.take_get_session(message_data);
 },
 

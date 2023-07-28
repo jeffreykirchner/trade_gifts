@@ -6,7 +6,8 @@
      data-bs-keyboard="false" 
      tabindex="-1" 
      aria-labelledby="field_modal" 
-     aria-hidden="true">
+     aria-hidden="true"
+    >
 
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
@@ -14,12 +15,26 @@
                 Field
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                
-                <div>
-                   
+            <div class="modal-body">                
+                <div class="row" v-if="selected_field">
+                    <div class="col">
+                        <img v-bind:src="'/static/' + selected_field_type.good_one.toLowerCase() + '.png'" />
+                    </div>  
+                    <div class="col">
+
+                    </div>
+                </div>
+
+                <div class="row" v-if="selected_field">
+                    
+                    <div class="col">
+                        <img v-bind:src="'/static/' + selected_field_type.good_two.toLowerCase() + '.png'" />
+                    </div>  
+                    <div class="col">
+
+                    </div>
                 </div>               
-            
+                
             </div>
             <div class="modal-footer">
                                 

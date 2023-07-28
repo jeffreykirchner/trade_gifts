@@ -41,7 +41,10 @@ var app = Vue.createApp({
 
                     chat_text : "",
                     chat_button_label : "Chat",
-                    chat_list_to_display : [],                //list of chats to display on screen
+
+                    selected_field : null,
+                    selected_field_type : null,
+                    selected_house : null,
 
                     end_game_modal_visible : false,
 
@@ -51,6 +54,7 @@ var app = Vue.createApp({
                     // modals
                     end_game_modal : null,
                     interaction_modal : null,
+                    field_modal : null,
                     test_mode : {%if session.parameter_set.test_mode%}true{%else%}false{%endif%},
 
                     //pixi
