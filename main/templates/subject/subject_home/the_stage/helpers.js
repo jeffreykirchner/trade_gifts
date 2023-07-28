@@ -27,13 +27,12 @@ check_for_circle_rect_intersection(circle, rect)
     let pt3 = {x:rect.x, y:rect.y+rect.height};
     let pt4 = {x:rect.x+rect.width, y:rect.y+rect.height};
 
-    if(app.check_line_circle_intersection({start:pt1, end:pt2}, circle)) return true;
-    if(app.check_line_circle_intersection({start:pt1, end:pt3}, circle)) return true;
-    if(app.check_line_circle_intersection({start:pt2, end:pt4}, circle)) return true;
-    if(app.check_line_circle_intersection({start:pt3, end:pt4}, circle)) return true;
+    if(app.check_line_circle_intersection({p1:pt1, p2:pt2}, circle)) return true;
+    if(app.check_line_circle_intersection({p1:pt1, p2:pt3}, circle)) return true;
+    if(app.check_line_circle_intersection({p1:pt2, p2:pt4}, circle)) return true;
+    if(app.check_line_circle_intersection({p1:pt3, p2:pt4}, circle)) return true;
 
     return false;
-
 },
 
 /**
@@ -55,39 +54,39 @@ check_point_in_rectagle(point, rect)
  */
 check_line_circle_intersection(line, circle)
 {
-    // Get the distance between the line's end points and the circle's center.
-    const distance1 = app.get_distance(line.start, {x:circle.x, y:circle.y});
-    const distance2 = app.get_distance(line.end, {x:circle.x, y:circle.y});
+    let a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
 
-    // Get the length of the line.
-    const lineLength = app.get_distance(line.start, line.end);
-
-    // Get the dot product of the line and circle.
-    const dotProduct = ((circle.x - line.start.x) * (line.end.x - line.start.x)) + ((circle.y - line.start.y) * (line.end.y - line.start.y));
-
-    // Get the closest point on the line to the circle.
-    const closestPoint = {
-        x: line.start.x + (((line.end.x - line.start.x) * dotProduct) / Math.pow(lineLength, 2)),
-        y: line.start.y + (((line.end.y - line.start.y) * dotProduct) / Math.pow(lineLength, 2))
-    };
-
-    // Check if the closest point is on the line.
-    const onLine = app.check_point_in_rectagle(closestPoint, {x:line.start.x, y:line.start.y, width:line.end.x-line.start.x, height:line.end.y-line.start.y});
-
-    // If the closest point is not on the line, return false.
-    if (!onLine) {
+    v1 = {};
+    v2 = {};
+    v1.x = line.p2.x - line.p1.x;
+    v1.y = line.p2.y - line.p1.y;
+    v2.x = line.p1.x - circle.x;
+    v2.y = line.p1.y - circle.y;
+    b = (v1.x * v2.x + v1.y * v2.y);
+    c = 2 * (v1.x * v1.x + v1.y * v1.y);
+    b *= -2;
+    d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
+    if(isNaN(d)){ // no intercept
         return false;
     }
-
-    // Get the distance between the closest point and the circle's center.
-    const distanceToClosest = app.get_distance(closestPoint, circle);
-
-    // If the distance to the closest point is less than the circle's radius, return true.
-    if (distanceToClosest <= circle.radius) {
-        return true;
+    u1 = (b - d) / c;  // these represent the unit distance of point one and two on the line
+    u2 = (b + d) / c;    
+    retP1 = {};   // return points
+    retP2 = {}  
+    ret = []; // return array
+    if(u1 <= 1 && u1 >= 0){  // add point if on the line segment
+        retP1.x = line.p1.x + v1.x * u1;
+        retP1.y = line.p1.y + v1.y * u1;
+        ret[0] = retP1;
+    }
+    if(u2 <= 1 && u2 >= 0){  // second add point if on the line segment
+        retP2.x = line.p1.x + v1.x * u2;
+        retP2.y = line.p1.y + v1.y * u2;
+        ret[ret.length] = retP2;
     }
 
-    // Return false.
+    if(ret.length > 0) return true;
+
     return false;
 },
 

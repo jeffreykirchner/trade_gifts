@@ -184,13 +184,14 @@ var app = Vue.createApp({
         */
         do_first_load()
         {           
-             app.end_game_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('end_game_modal'), {keyboard: false})   
-             app.interaction_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('interaction_modal'), {keyboard: false})          
+            app.end_game_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('end_game_modal'), {keyboard: false})   
+            app.interaction_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('interaction_modal'), {keyboard: false})          
+            app.field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('field_modal'), {keyboard: false})
 
-             document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
-             document.getElementById('interaction_modal').addEventListener('hidden.bs.modal', app.hide_interaction_modal);
+            document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
+            document.getElementById('interaction_modal').addEventListener('hidden.bs.modal', app.hide_interaction_modal);
 
-             {%if session.parameter_set.test_mode%} setTimeout(app.do_test_mode, app.random_number(1000 , 1500)); {%endif%}
+            {%if session.parameter_set.test_mode%} setTimeout(app.do_test_mode, app.random_number(1000 , 1500)); {%endif%}
 
             // if game is finished show modal
             if( app.session.world_state.current_experiment_phase == 'Names')
