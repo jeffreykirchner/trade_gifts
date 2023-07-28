@@ -1,0 +1,37 @@
+{% load crispy_forms_tags %}
+<!--field Modal -->
+<div class="modal fade " 
+     id="field_modal" 
+     data-bs-backdrop="static" 
+     data-bs-keyboard="false" 
+     tabindex="-1" 
+     aria-labelledby="field_modal" 
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header fw-bold">
+                Field
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                <div>
+                   
+                </div>               
+            
+            </div>
+            <div class="modal-footer">
+                                
+                <button type="button"
+                        class="btn btn-outline-primary"
+                        v-on:click = "send_field_harvest()"
+                        title="Submit Interaction"                       
+                        v-bind:disabled="reconnecting || working">
+                    Harvest <i class="fas fa-sign-in-alt"></i>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -56,6 +56,11 @@ subject_avatar_click(target_player_id)
                      "group");
 },
 
+subject_field_click(field_id)
+{
+    console.log("subject field click", field_id);
+},
+
 /**
  * result of subject activating tractor beam
  */

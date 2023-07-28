@@ -475,6 +475,8 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/transfer_beam.js"%}
         {%include "subject/subject_home/the_stage/text_emitters.js"%}
         {%include "subject/subject_home/the_stage/avatars.js"%}
+        {%include "subject/subject_home/the_stage/helpers.js"%}
+        {%include "subject/subject_home/the_stage/subject.js"%}
     
         /** clear form error messages
         */

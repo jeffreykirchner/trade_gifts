@@ -4,10 +4,14 @@ session period model
 
 #import logging
 
+from decimal import Decimal
+
 from django.db import models
 from django.db import transaction
 
 from main.models import Session
+
+from main.globals import round_half_away_from_zero
 
 import main
 
@@ -79,9 +83,16 @@ class SessionPeriod(models.Model):
                 obj = session.world_state["fields"][i]
                 field_type = parameter_set["parameter_set_field_types"][str(obj["parameter_set_field_type"])]
 
-                if current_period>=field_type["start_on_period"]:
-                    obj[field_type["good_one"]] = 1
-                    obj[field_type["good_two"]] = 1
+                if current_period >= field_type["start_on_period"]:
+                    g1 = Decimal(field_type["good_one_rho"]) * (Decimal(field_type["good_one_alpha"]) * Decimal(obj["good_one_effort"]) ** Decimal(field_type["good_one_omega"]))
+                    g2 = Decimal(field_type["good_two_rho"]) * (Decimal(field_type["good_two_alpha"]) * Decimal(obj["good_two_effort"]) ** Decimal(field_type["good_two_omega"]))
+                    
+                    # if (current_period - field_type["start_on_period"] + 1)  % int(field_type["reset_every_n_periods"]) != 1:
+                    #     g1 -= Decimal(obj[field_type["good_one"]])
+                    #     g2 -= Decimal(obj[field_type["good_two"]])
+
+                    obj[field_type["good_one"]] = round_half_away_from_zero(g1, 0)
+                    obj[field_type["good_two"]] = round_half_away_from_zero(g2, 0)
                 else:
                     obj[field_type["good_one"]] = 0
                     obj[field_type["good_two"]] = 0
