@@ -158,7 +158,7 @@ subject_field_click(field_id)
     // console.log("subject field click", field_id);
     app.selected_field = app.session.parameter_set.parameter_set_fields[field_id];
     app.selected_field_type = app.session.parameter_set.parameter_set_field_types[app.selected_field.parameter_set_field_type];
-    app.field_modal.toggle();
+    app.interaction_modal.toggle();
 },
 
 /**

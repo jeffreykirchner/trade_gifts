@@ -22,6 +22,9 @@ var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
 
+//prevent right click
+document.addEventListener('contextmenu', event => event.preventDefault());
+
 //vue app
 var app = Vue.createApp({
     delimiters: ["[[", "]]"],
