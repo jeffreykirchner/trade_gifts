@@ -125,8 +125,8 @@ update_player_inventory()
             {
                 //check subject close enough for interaction
                 if(app.check_for_circle_rect_intersection({x:local_player.current_location.x, 
-                                                       y:local_player.current_location.y, 
-                                                       radius:app.session.parameter_set.interaction_range},
+                                                           y:local_player.current_location.y, 
+                                                           radius:app.session.parameter_set.interaction_range},
                                                       rect))
                 {
                     app.subject_field_click(i);              
@@ -156,8 +156,8 @@ subject_avatar_click(target_player_id)
 subject_field_click(field_id)
 {
     // console.log("subject field click", field_id);
-    app.selected_field = app.session.parameter_set.parameter_set_fields[field_id];
-    app.selected_field_type = app.session.parameter_set.parameter_set_field_types[app.selected_field.parameter_set_field_type];
+    app.selected_field.field = app.session.world_state.fields[field_id];
+    app.selected_field.field_type = app.session.parameter_set.parameter_set_field_types[app.selected_field.field.parameter_set_field_type];
     app.field_modal.toggle();
 },
 

@@ -45,8 +45,10 @@ var app = Vue.createApp({
                     chat_text : "",
                     chat_button_label : "Chat",
 
-                    selected_field : null,
-                    selected_field_type : null,
+                    selected_field : {field:null, 
+                                      field_type:null,
+                                      good_one_harvest:0,
+                                      good_two_harvest:0},
                     selected_house : null,
 
                     end_game_modal_visible : false,
