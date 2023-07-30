@@ -151,5 +151,27 @@ update_field_inventory()
     }
 },
 
+/**
+ * send harvest field requst
+ */
+send_field_harvest()
+{
+    if(!app.session.world_state["started"]) return;
+    if(!app.selected_field.field) return;
+
+    app.send_message("field_harvest", 
+                     {"selected_field" : app.selected_field},
+                     "group");
+},
+
+/**
+ * take field harvest response
+*/
+
+take_field_harvest(message_data)
+{
+
+},
+
 
 

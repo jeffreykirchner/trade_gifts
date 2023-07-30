@@ -214,6 +214,9 @@ var app = Vue.createApp({
                 case "load_session_events":
                     app.take_load_session_events(message_data);
                     break; 
+                case "update_field_harvest":
+                    app.take_field_harvest(message_data);
+                    break;
             }
 
             app.first_load_done = true;

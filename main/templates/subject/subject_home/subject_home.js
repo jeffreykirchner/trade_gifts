@@ -168,6 +168,9 @@ var app = Vue.createApp({
                 case "update_cancel_interaction":
                     app.take_update_cancel_interaction(message_data);
                     break;
+                case "update_field_harvest":
+                    app.take_field_harvest(message_data);
+                    break;
             }
 
             app.first_load_done = true;

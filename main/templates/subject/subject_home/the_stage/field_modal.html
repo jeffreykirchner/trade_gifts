@@ -12,17 +12,17 @@
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header fw-bold">
-                Field
+                Field:&nbsp;<span v-if="selected_field.field">Owner [[session.parameter_set.parameter_set_players[selected_field.field.parameter_set_player].id_label]]</span>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">                
-                <div class="row" v-if="selected_field.field">
+                <div class="row align-items-center" v-if="selected_field.field">
                     <div class="col text-center">
                         <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_one.toLowerCase() + '.png'" />
                     </div>  
                     <div class="col">
                         <input type="number" 
-                           class="form-control" 
+                           class="form-control-lg fw-bold"
                            v-model="selected_field.good_one_harvest"
                            min="0"
                            v-bind:max="selected_field.field[selected_field.field_type.good_one]"
@@ -32,13 +32,20 @@
                     </div>
                 </div>
 
-                <div class="row" v-if="selected_field.field">
+                <div class="row align-items-center" v-if="selected_field.field">
                     
                     <div class="col text-center">
                         <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_two.toLowerCase() + '.png'" />
                     </div>  
                     <div class="col">
-
+                        <input type="number" 
+                            class="form-control-lg fw-bold"
+                            v-model="selected_field.good_two_harvest"
+                            min="0"
+                            v-bind:max="selected_field.field[selected_field.field_type.good_two]"
+                            step="1"
+                            id="good_two_harvest"
+                        >
                     </div>
                 </div>               
                 
@@ -48,7 +55,7 @@
                 <button type="button"
                         class="btn btn-outline-primary"
                         v-on:click = "send_field_harvest()"
-                        title="Submit Interaction"                       
+                        title="Harvest the selected fruit."                       
                         v-bind:disabled="reconnecting || working">
                     Harvest <i class="fas fa-sign-in-alt"></i>
                 </button>
