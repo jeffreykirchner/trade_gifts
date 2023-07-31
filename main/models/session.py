@@ -262,7 +262,6 @@ class Session(models.Model):
 
             new_session_player.save()
 
-
     def user_is_owner(self, user):
         '''
         return turn is user is owner or an admin

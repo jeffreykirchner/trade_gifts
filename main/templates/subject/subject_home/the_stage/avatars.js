@@ -45,6 +45,15 @@ setup_pixi_subjects(){
             strokeThickness: 2,
         };
 
+        let text_style_2 = {
+            fontFamily: 'Arial',
+            fontSize: 40,
+            fill: 'white',
+            // align: 'left',
+            stroke: 'black',
+            strokeThickness: 3,
+        };
+
         //id label
         let id_label = new PIXI.Text(parameter_set_player.id_label, text_style);
         id_label.eventMode = 'passive';
@@ -57,23 +66,79 @@ setup_pixi_subjects(){
         status_label.visible = false;
 
         //good one
-        // let good_one_label = new PIXI.Text("000", text_style);
-        // good_one_label.eventMode = 'passive';
-        // good_one_label.anchor.set(0, 0.5);
-        // good_one_label.visible = false;
+        let good_one_container = new PIXI.Container();
+        good_one_container.eventMode = 'passive';
+        good_one_container.alpha = 0.75;
+        let good_one_label = new PIXI.Text("000", text_style_2);
+        good_one_label.eventMode = 'passive';
+        good_one_label.anchor.set(0, 0.5);
 
-        // let good_one_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_one+"_tex"]);
-        // good_one_sprite.anchor.set(1, 0.5);
-        // good_one_sprite.eventMode = 'passive';
+        let good_one_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_one+"_tex"]);
+        good_one_sprite.anchor.set(1, 0.5);
+        good_one_sprite.eventMode = 'passive';
+
+        good_one_container.addChild(good_one_label);
+        good_one_container.addChild(good_one_sprite);
+        good_one_label.position.set(+5,0);
+        good_one_sprite.position.set(-5,0);
+
+        //good two
+        let good_two_container = new PIXI.Container();
+        good_two_container.eventMode = 'passive';
+        good_two_container.alpha = 0.75;
+        let good_two_label = new PIXI.Text("000", text_style_2);
+        good_two_label.eventMode = 'passive';
+        good_two_label.anchor.set(0, 0.5);
+
+        let good_two_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_two+"_tex"]);
+        good_two_sprite.anchor.set(1, 0.5);
+        good_two_sprite.eventMode = 'passive';
+
+        good_two_container.addChild(good_two_label);
+        good_two_container.addChild(good_two_sprite);
+        good_two_label.position.set(+5,0);
+        good_two_sprite.position.set(-5,0);
+
+        //good three
+        let good_three_container = new PIXI.Container();
+        good_three_container.eventMode = 'passive';
+        good_three_container.alpha = 0.75;
+        let good_three_label = new PIXI.Text("000", text_style_2);
+        good_three_label.eventMode = 'passive';
+        good_three_label.anchor.set(0, 0.5);
+
+        let good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
+        good_three_sprite.anchor.set(1, 0.5);
+        good_three_sprite.eventMode = 'passive';
+
+        good_three_container.addChild(good_three_label);
+        good_three_container.addChild(good_three_sprite);
+        good_three_label.position.set(+5,0);
+        good_three_sprite.position.set(-5,0);
+        good_three_sprite.pivot.set(0.5,0.5);
 
         avatar_container.addChild(gear_sprite);
         avatar_container.addChild(face_sprite);
         avatar_container.addChild(id_label);
         avatar_container.addChild(status_label);
+
+        avatar_container.addChild(good_one_container);
+        avatar_container.addChild(good_two_container);
+        avatar_container.addChild(good_three_container);
         
-        face_sprite.position.set(0, -avatar_container.height * 0.03);
-        id_label.position.set(0, -avatar_container.height * 0.2);
-        status_label.position.set(0, -avatar_container.height/2 + 30);
+        face_sprite.position.set(0, -gear_sprite.height * 0.03);
+        id_label.position.set(0, -gear_sprite.height * 0.2);
+        status_label.position.set(0, -gear_sprite.height/2 + 30);
+
+        good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2);
+        good_two_container.position.set(0+25, -gear_sprite.height/2);
+        good_three_container.position.set(gear_sprite.width/2+5+25, -gear_sprite.height/2);
+
+        pixi_avatars[i].status_label = status_label;
+        pixi_avatars[i].gear_sprite = gear_sprite;
+        pixi_avatars[i][parameter_set_player.good_one] = good_one_label;
+        pixi_avatars[i][parameter_set_player.good_two] = good_two_label;
+        pixi_avatars[i][parameter_set_player.good_three] = good_three_label;
 
         avatar_container.scale.set(app.session.parameter_set.avatar_scale);
 
@@ -180,7 +245,6 @@ setup_pixi_subjects(){
             pixi_avatars[i].view_container = view_container;
             pixi_container_main.addChild(pixi_avatars[i].view_container);
         }
-
     }
 
     //make local subject the top layer
@@ -189,6 +253,8 @@ setup_pixi_subjects(){
         pixi_avatars[app.session_player.id].avatar_container.zIndex = 999;
         pixi_avatars[app.session_player.id].chat_container.zIndex = current_z_index;
     }
+
+    app.update_avatar_inventory();
 },
 
 
@@ -204,6 +270,8 @@ move_player(delta)
 
         let obj = app.session.world_state_avatars.session_players[i];
         let avatar_container = pixi_avatars[i].avatar_container;
+        let gear_sprite = pixi_avatars[i].gear_sprite;
+        let status_label = pixi_avatars[i].status_label;
 
         if(obj.target_location.x !=  obj.current_location.x ||
             obj.target_location.y !=  obj.current_location.y )
@@ -215,15 +283,15 @@ move_player(delta)
             }
 
             //update the sprite locations
-            avatar_container.getChildAt(0).play();
+            gear_sprite.play();
             avatar_container.position.set(obj.current_location.x, obj.current_location.y);
             if (obj.current_location.x < obj.target_location.x )
             {
-                avatar_container.getChildAt(0).animationSpeed = app.animation_speed;
+                gear_sprite.animationSpeed = app.animation_speed;
             }
             else
             {
-                avatar_container.getChildAt(0).animationSpeed = -app.animation_speed;
+                gear_sprite.animationSpeed = -app.animation_speed;
             }
 
             //hide chat if longer than 10 seconds and moving
@@ -237,23 +305,23 @@ move_player(delta)
         }
         else
         {
-            avatar_container.getChildAt(0).stop();
+            gear_sprite.stop();
         }
 
         //update status
         if(obj.interaction > 0)
         {
-            avatar_container.getChildAt(4).text = "Interaction ... " + obj.interaction;
-            avatar_container.getChildAt(4).visible = true;
+            status_label.text = "Interaction ... " + obj.interaction;
+            status_label.visible = true;
         }
         else if(obj.cool_down > 0)
         {
-            avatar_container.getChildAt(4).text = "Cooling ... " + obj.cool_down;
-            avatar_container.getChildAt(4).visible = true;
+            status_label.text = "Cooling ... " + obj.cool_down;
+            status_label.visible = true;
         }
         else
         {
-            avatar_container.getChildAt(4).visible = false;
+            status_label.visible = false;
         }
     }
 
@@ -374,5 +442,23 @@ destory_setup_pixi_subjects()
                 pixi_objects.view_container.destroy();
             }
         }
+    }
+},
+
+/**
+ * update field inventory
+ */
+update_avatar_inventory()
+{
+    if(!app.session.world_state["started"]) return;
+    
+    for(const i in app.session.world_state.avatars)
+    {
+        const avatar = app.session.world_state.avatars[i];
+        const parameter_set_player = app.session.parameter_set.parameter_set_players[avatar.parameter_set_player_id];
+
+        pixi_avatars[i][parameter_set_player.good_one].text = avatar[parameter_set_player.good_one];
+        pixi_avatars[i][parameter_set_player.good_two].text = avatar[parameter_set_player.good_two];
+        pixi_avatars[i][parameter_set_player.good_three].text = avatar[parameter_set_player.good_three];
     }
 },

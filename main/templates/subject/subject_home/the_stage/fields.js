@@ -160,7 +160,9 @@ send_field_harvest()
     if(!app.selected_field.field) return;
 
     app.send_message("field_harvest", 
-                     {"selected_field" : app.selected_field},
+                     {"field_id" : app.selected_field.field.id,
+                      "good_one_harvest" : app.selected_field.good_one_harvest,
+                      "good_two_harvest" : app.selected_field.good_two_harvest},
                      "group");
 },
 
@@ -171,6 +173,52 @@ send_field_harvest()
 take_field_harvest(message_data)
 {
 
+    if(message_data.status == "success")
+    {
+        avatar = app.session.world_state.avatars[message_data.avatar.id];
+        field = app.session.world_state.fields[message_data.field.id];
+
+        good_one_harvest = message_data.good_one_harvest;
+        good_two_harvest = message_data.good_two_harvest;
+
+        field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type];
+
+        field[field_type.good_one] = message_data.field[field_type.good_one];
+        field[field_type.good_two] = message_data.field[field_type.good_two];
+
+        avatar[field_type.good_one] = message_data.avatar[field_type.good_one];
+        avatar[field_type.good_two] = message_data.avatar[field_type.good_two];
+
+        app.update_field_inventory();
+        app.update_avatar_inventory();
+
+        elements = [];
+        if(good_one_harvest > 0)
+        {
+            element = {amount:good_one_harvest,
+                       texture:app.pixi_textures[field_type.good_one+"_tex"]  }
+            elements.push(element);
+        }
+
+        if(good_two_harvest > 0)
+        {
+            element = {amount:good_two_harvest,
+                       texture:app.pixi_textures[field_type.good_two+"_tex"]  }
+            elements.push(element);
+
+        app.add_transfer_beam(field, 
+            app.session.world_state_avatars.session_players[message_data.avatar.id].current_location,
+            elements);
+        
+        if(message_data.avatar.id == app.session_player.id)
+        {
+            app.field_modal.toggle();
+        }
+    }
+    else
+    {
+
+    }
 },
 
 

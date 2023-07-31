@@ -384,10 +384,31 @@ class SubjectUpdatesMixin():
         if self.controlling_channel != self.channel_name:
             return
         
-        status = "success"
+        logger = logging.getLogger(__name__)
+        # logger.info(f"field_harvest: {event}")
         
-        result = {"status" : status}
+        player_id = self.session_players_local[event["player_key"]]["id"]
         
+        field_id = event["message_text"]["field_id"]
+        good_one_harvest = int(event["message_text"]["good_one_harvest"])
+        good_two_harvest = int(event["message_text"]["good_two_harvest"])
+
+        v = await sync_to_async(sync_field_harvest)(self.session_id, player_id, field_id, good_one_harvest, good_two_harvest)
+        
+        result = {"status" : v["status"], "error_message" : v["error_message"]}
+
+        if v["world_state"]:
+            self.world_state_local = v["world_state"]
+            result["field"] = {"id" : field_id}
+            result["avatar"] = {"id" : player_id}
+            result["good_one_harvest"] = good_one_harvest
+            result["good_two_harvest"] = good_two_harvest
+
+            for i in main.globals.Goods.choices:
+                good = i[0]
+                result["field"][good] = self.world_state_local["fields"][str(field_id)][good]
+                result["avatar"][good] = self.world_state_local["avatars"][str(player_id)][good]
+
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
         
@@ -401,7 +422,6 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
         
-
 def sync_interaction(session_id, source_player_id, target_player_id, direction, amount):
     '''
     syncronous interaction transaction
@@ -456,6 +476,48 @@ def sync_interaction(session_id, source_player_id, target_player_id, direction, 
     result["direction"] = direction
 
     return result
+
+def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_two_harvest):
+    '''
+    harvest from field
+    '''
+
+    status = "success"
+    error_message = []
+    world_state = None
+
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
+        parameter_set = session.parameter_set.json()
+
+        field = session.world_state['fields'][str(field_id)]
+        field_type = parameter_set['parameter_set_field_types'][str(field['parameter_set_field_type'])]
+        player = session.world_state['avatars'][str(player_id)]
+
+        good_one = field_type['good_one']
+        good_two = field_type['good_two']
+
+        if field[good_one] < good_one_harvest:
+            status = "fail"
+            error_message.append({"id":"good_two_harvest", "messge": "Invalid harvest amount."})
+
+        if field[good_two] < good_two_harvest:
+            status = "fail"
+            error_message.append({"id":"good_two_harvest", "messge": "Invalid harvest amount."})
+
+        if status == "success":
+            field[good_one] -= good_one_harvest
+            field[good_two] -= good_two_harvest
+
+            player[good_one] += good_one_harvest
+            player[good_two] += good_two_harvest
+
+            session.save()
+        
+        world_state = session.world_state
+        
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+
                                       
     
 
