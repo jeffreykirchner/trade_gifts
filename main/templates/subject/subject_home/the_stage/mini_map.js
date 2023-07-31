@@ -46,7 +46,7 @@ setup_pixi_minimap()
         const field = app.session.parameter_set.parameter_set_fields[i];
 
         let temp_field = new PIXI.Graphics();
-        if(field.parameter_set_player == app.session_player.parameter_set_player.id){
+        if(field.parameter_set_player == app.session_player.parameter_set_player_id){
             temp_field.beginFill('yellow');
         }
         else
@@ -68,7 +68,7 @@ setup_pixi_minimap()
         const parameter_set_player = app.session.parameter_set.parameter_set_players[i];
 
         let temp_house = new PIXI.Graphics();
-        if(parameter_set_player.id == app.session_player.parameter_set_player.id){
+        if(parameter_set_player.id == app.session_player.parameter_set_player_id){
             temp_house.beginFill('yellow');
         }
         else
@@ -135,5 +135,5 @@ update_mini_map(delta)
 {
     let obj = app.session.world_state_avatars.session_players[app.session_player.id]
     mini_map.view_port.position.set(obj.current_location.x * app.mini_map_scale, 
-                             obj.current_location.y * app.mini_map_scale);
+                                    obj.current_location.y * app.mini_map_scale);
 },

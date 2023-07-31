@@ -59,7 +59,7 @@ setup_pixi_fields()
         good_one_label.eventMode = 'passive'; 
         good_one_label.anchor.set(0, 0.5);
 
-        let good_one_seconds_label = new PIXI.Text("00 Seconds", {
+        let good_one_seconds_label = new PIXI.Text("00 Effort Pts", {
             fontFamily: 'Arial',
             fontSize: 30,
             fill: 'black',
@@ -82,7 +82,7 @@ setup_pixi_fields()
         good_two_label.eventMode = 'passive'; 
         good_two_label.anchor.set(0, 0.5);
 
-        let good_two_seconds_label = new PIXI.Text("00 Seconds", {
+        let good_two_seconds_label = new PIXI.Text("00 Effort Pts", {
             fontFamily: 'Arial',
             fontSize: 30,
             fill: 'black',
@@ -107,11 +107,11 @@ setup_pixi_fields()
         owner_label.position.set(0,  -field_sprite.height/2 + 10);
         info_label.position.set(0, field_sprite.height/2 - 10);
 
-        good_one_sprite.position.set(0, -field_sprite.height/4);
+        good_one_sprite.position.set(-20, -field_sprite.height/4);
         good_one_label.position.set(0, -field_sprite.height/4);
         good_one_seconds_label.position.set(0, -5);
 
-        good_two_sprite.position.set(0, +field_sprite.height/4);
+        good_two_sprite.position.set(-20, +field_sprite.height/4);
         good_two_label.position.set(0, +field_sprite.height/4);
         good_two_seconds_label.position.set(0, +5);
 

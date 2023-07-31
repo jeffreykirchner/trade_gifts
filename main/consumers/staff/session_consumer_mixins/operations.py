@@ -21,5 +21,5 @@ class OperationsMixin():
         do field production for current period
         '''
         session = await Session.objects.aget(id=self.session_id)
-        current_session_period = await session.session_periods.aget(period_number=self.world_state_local["current_period"])
+        current_session_period = await session.aget_current_session_period()
         return await sync_to_async(current_session_period.do_production)()

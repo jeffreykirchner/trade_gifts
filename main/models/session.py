@@ -177,7 +177,8 @@ class Session(models.Model):
         #session players
         for i in self.session_players.prefetch_related('parameter_set_player').all().values('id', 
                                                                                             'parameter_set_player__start_x',
-                                                                                            'parameter_set_player__start_y' ):
+                                                                                            'parameter_set_player__start_y',
+                                                                                            'parameter_set_player__id'):
             v = {}
 
             v['current_location'] = {'x':i['parameter_set_player__start_x'], 'y':i['parameter_set_player__start_y']}
@@ -185,12 +186,14 @@ class Session(models.Model):
             v['tractor_beam_target'] = None
             v['frozen'] = False
             v['cool_down'] = 0
-            v['interaction'] = 0            
+            v['interaction'] = 0     
+            v['parameter_set_player_id'] = i['parameter_set_player__id']       
 
             self.world_state_avatars["session_players"][str(i['id'])] = v
 
             v2 = {}
             v2['earnings'] = 0
+            v2['parameter_set_player_id'] = i['parameter_set_player__id']
             for j in main.globals.Goods.choices:
                 v2[j[0]] = 0
             self.world_state["avatars"][str(i['id'])] = v2

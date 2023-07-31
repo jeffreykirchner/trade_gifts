@@ -215,6 +215,8 @@ setup_tractor_beam(source_id, target_id)
     let source_player = app.session.world_state_avatars.session_players[source_id];
     let target_player = app.session.world_state_avatars.session_players[target_id];
 
+    let parameter_set_player = app.session.parameter_set_player[source_player.parameter_set_player_id];
+
     let dY = source_player.current_location.y - target_player.current_location.y;
     let dX = source_player.current_location.x - target_player.current_location.x;
 
@@ -250,7 +252,7 @@ setup_tractor_beam(source_id, target_id)
         {
             if (i%2 == 0)
             {
-                tb_sprite.tint = app.session.session_players[source_id].parameter_set_player.hex_color;
+                tb_sprite.tint = parameter_set_player.hex_color;
             }
             else
             {
@@ -265,7 +267,7 @@ setup_tractor_beam(source_id, target_id)
             }
             else
             {
-                tb_sprite.tint = app.session.session_players[source_id].parameter_set_player.hex_color;
+                tb_sprite.tint = parameter_set_player.hex_color;
             }
         }
 

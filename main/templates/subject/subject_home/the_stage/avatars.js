@@ -11,6 +11,7 @@ setup_pixi_subjects(){
     for(const i in app.session.world_state_avatars.session_players)
     {      
         let subject = app.session.world_state_avatars.session_players[i];
+        let parameter_set_player = app.session.parameter_set.parameter_set_players[subject.parameter_set_player_id];
         pixi_avatars[i] = {};
 
         //avatar
@@ -23,12 +24,14 @@ setup_pixi_subjects(){
         avatar_container.zIndex=200;
         // avatar_container.on("pointerup", app.subject_avatar_click);
 
+        //gear
         let gear_sprite = new PIXI.AnimatedSprite(app.pixi_textures.sprite_sheet.animations['walk']);
         gear_sprite.animationSpeed = app.animation_speed;
         gear_sprite.anchor.set(0.5)
-        gear_sprite.tint = app.session.session_players[i].parameter_set_player.hex_color;
+        gear_sprite.tint = parameter_set_player.hex_color;
         gear_sprite.eventMode = 'passive';    
 
+        //face
         let face_sprite = PIXI.Sprite.from(app.pixi_textures.sprite_sheet_2.textures["face_1.png"]);
         face_sprite.anchor.set(0.5);
         face_sprite.eventMode = 'passive';
@@ -42,14 +45,26 @@ setup_pixi_subjects(){
             strokeThickness: 2,
         };
 
-        let id_label = new PIXI.Text(app.session.session_players[i].parameter_set_player.id_label, text_style);
+        //id label
+        let id_label = new PIXI.Text(parameter_set_player.id_label, text_style);
         id_label.eventMode = 'passive';
         id_label.anchor.set(0.5);
 
+        //status label
         let status_label = new PIXI.Text("Working ... 10", text_style);
         status_label.eventMode = 'passive';
         status_label.anchor.set(0.5);
         status_label.visible = false;
+
+        //good one
+        // let good_one_label = new PIXI.Text("000", text_style);
+        // good_one_label.eventMode = 'passive';
+        // good_one_label.anchor.set(0, 0.5);
+        // good_one_label.visible = false;
+
+        // let good_one_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_one+"_tex"]);
+        // good_one_sprite.anchor.set(1, 0.5);
+        // good_one_sprite.eventMode = 'passive';
 
         avatar_container.addChild(gear_sprite);
         avatar_container.addChild(face_sprite);
@@ -136,7 +151,7 @@ setup_pixi_subjects(){
         let interaction_range = new PIXI.Graphics();
         let interaction_range_radius = app.session.parameter_set.interaction_range;
 
-        interaction_range.lineStyle({width:1, color:app.session.session_players[i].parameter_set_player.hex_color, alignment:0});
+        interaction_range.lineStyle({width:1, color:parameter_set_player.hex_color, alignment:0});
         interaction_range.beginFill(0xFFFFFF,0);
         interaction_range.drawCircle(0, 0, interaction_range_radius);
         interaction_range.endFill();    
@@ -153,8 +168,8 @@ setup_pixi_subjects(){
             view_container.position.set(subject.current_location.x, subject.current_location.y);
 
             let view_range = new PIXI.Graphics();
-            // view_range.lineStyle({width:2, color:app.session.session_players[i].parameter_set_player.hex_color, alignment:0});
-            view_range.beginFill(app.session.session_players[i].parameter_set_player.hex_color,0.1);
+            // view_range.lineStyle({width:2, color:parameter_set_player.hex_color, alignment:0});
+            view_range.beginFill(parameter_set_player.hex_color,0.1);
             view_range.drawRect(0, 0, 1850, 800);
             view_range.endFill();    
             view_range.zIndex = 75;
