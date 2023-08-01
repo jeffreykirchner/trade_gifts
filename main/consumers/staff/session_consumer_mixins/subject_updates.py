@@ -408,6 +408,8 @@ class SubjectUpdatesMixin():
                 good = i[0]
                 result["field"][good] = self.world_state_local["fields"][str(field_id)][good]
                 result["avatar"][good] = self.world_state_local["avatars"][str(player_id)][good]
+        else:
+            return
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)

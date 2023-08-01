@@ -20,7 +20,7 @@
                     <div class="col text-center">
                         <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_one.toLowerCase() + '.png'" />
                     </div>  
-                    <div class="col">
+                    <div class="col" id="div_id_good_one_harvest">
                         <input type="number" 
                            class="form-control-lg fw-bold"
                            v-model="selected_field.good_one_harvest"
@@ -37,7 +37,7 @@
                     <div class="col text-center">
                         <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_two.toLowerCase() + '.png'" />
                     </div>  
-                    <div class="col">
+                    <div class="col" id="div_id_good_two_harvest">
                         <input type="number" 
                             class="form-control-lg fw-bold"
                             v-model="selected_field.good_two_harvest"

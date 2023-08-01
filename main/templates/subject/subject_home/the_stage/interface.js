@@ -153,14 +153,6 @@ subject_avatar_click(target_player_id)
     //                  "group");
 },
 
-subject_field_click(field_id)
-{
-    // console.log("subject field click", field_id);
-    app.selected_field.field = app.session.world_state.fields[field_id];
-    app.selected_field.field_type = app.session.parameter_set.parameter_set_field_types[app.selected_field.field.parameter_set_field_type];
-    app.field_modal.toggle();
-},
-
 /**
  * result of subject activating tractor beam
  */

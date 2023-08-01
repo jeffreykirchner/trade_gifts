@@ -501,6 +501,11 @@ var app = Vue.createApp({
                 let e = document.getElementById("id_errors_" + s[i]);
                 if(e) e.remove();
             }
+
+            e = document.getElementById("id_errors_good_one_harvest");
+            if(e) e.remove();
+            e = document.getElementById("id_errors_good_two_harvest");
+            if(e) e.remove();
         },
 
         /** display form error messages

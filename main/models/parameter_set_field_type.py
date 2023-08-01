@@ -27,13 +27,13 @@ class ParameterSetFieldType(models.Model):
     start_on_period = models.IntegerField(verbose_name='Start on Period', default=1)                   #ending location x and y
     reset_every_n_periods = models.IntegerField(verbose_name='Reset Every N Periods', default=2)       #ending location x and y
 
-    good_one_alpha = models.DecimalField(verbose_name='Good One Production Alpha', decimal_places=5, max_digits=6, default=1)          
-    good_one_omega = models.DecimalField(verbose_name='Good One Production Omega', decimal_places=5, max_digits=6, default=1)           
-    good_one_rho = models.DecimalField(verbose_name='Good One Production Rho', decimal_places=5, max_digits=6, default=1)  
+    good_one_alpha = models.DecimalField(verbose_name='Good One Production Alpha', decimal_places=5, max_digits=7, default=1)          
+    good_one_omega = models.DecimalField(verbose_name='Good One Production Omega', decimal_places=5, max_digits=7, default=1)           
+    good_one_rho = models.DecimalField(verbose_name='Good One Production Rho', decimal_places=5, max_digits=7, default=1)  
 
-    good_two_alpha = models.DecimalField(verbose_name='Good Two Production Alpha', decimal_places=5, max_digits=6, default=1)          
-    good_two_omega = models.DecimalField(verbose_name='Good Two Production Omega', decimal_places=5, max_digits=6, default=1)           
-    good_two_rho = models.DecimalField(verbose_name='Good Two Production Rho', decimal_places=5, max_digits=6, default=1)
+    good_two_alpha = models.DecimalField(verbose_name='Good Two Production Alpha', decimal_places=5, max_digits=7, default=1)          
+    good_two_omega = models.DecimalField(verbose_name='Good Two Production Omega', decimal_places=5, max_digits=7, default=1)           
+    good_two_rho = models.DecimalField(verbose_name='Good Two Production Rho', decimal_places=5, max_digits=7, default=1)
 
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
