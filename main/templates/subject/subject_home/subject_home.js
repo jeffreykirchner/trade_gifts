@@ -174,7 +174,7 @@ var app = Vue.createApp({
                 case "update_field_harvest":
                     app.take_field_harvest(message_data);
                     break;
-                case "update_field_effort"
+                case "update_field_effort":
                     app.take_field_effort(message_data);
                     break;
                 

@@ -54,6 +54,14 @@
                 <div class="row mt-4">
                     <div class="col text-end">
                         <button type="button"
+                                class="btn btn-outline-primary me-2"
+                                v-on:click = "select_all_fruit()"
+                                title="Select all fruit for harvest."                       
+                                v-bind:disabled="reconnecting || working">
+                            Select All <i class="fas fa-check-double"></i>
+                        </button>
+
+                        <button type="button"
                                 class="btn btn-outline-primary"
                                 v-on:click = "send_field_harvest()"
                                 title="Harvest the selected fruit."                       
@@ -65,15 +73,17 @@
 
                 <div v-if="selected_field.field && selected_field.field.session_player==session_player.id">
                     <div class="row mt-4 pt-4 border-top">
-                        <div class="col text-center h5">Effort: [[session.parameter_set.production_effort]] Pts</div>
+                        <div class="col text-center h5">Effort Allocation: [[session.parameter_set.production_effort]] Pts</div>
                     </div>
 
                     <div class="row">
-                        <div class="col text-start">
-                            [[selected_field.good_one_production_effort]]
+                        <div class="col text-start h5">                           
+                            <img class="field_modal_icons_2" v-bind:src="'/static/' + selected_field.field_type.good_one.toLowerCase() + '.png'" />
+                            [[selected_field.good_one_production_effort]] Pts
                         </div>
-                        <div class="col text-end">
-                            [[selected_field.good_two_production_effort]]
+                        <div class="col text-end h5">
+                            [[selected_field.good_two_production_effort]] Pts
+                            <img class="field_modal_icons_2" v-bind:src="'/static/' + selected_field.field_type.good_two.toLowerCase() + '.png'" />
                         </div>
                     </div>
 

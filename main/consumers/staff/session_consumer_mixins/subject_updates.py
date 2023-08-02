@@ -462,8 +462,14 @@ class SubjectUpdatesMixin():
 
         v = await sync_to_async(sync_field_effort)(self.session_id, player_id, field_id, good_one_effort, good_two_effort)
 
+        result = {"status" : v["status"], "error_message" : v["error_message"]}
+
         if v["world_state"]:
             self.world_state_local = v["world_state"]
+            result["field"] = {"id" : field_id}
+            result["avatar"] = {"id" : player_id}
+            result["good_one_effort"] = good_one_effort
+            result["good_two_effort"] = good_two_effort
         else:
             logger.info(f"field_effort: invalid amounts from sync, {event['message_text']}")
             return

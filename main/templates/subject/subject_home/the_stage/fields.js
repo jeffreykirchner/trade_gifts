@@ -307,6 +307,17 @@ take_field_harvest(message_data)
 },
 
 /**
+ * select all fruit for harvest
+ */
+select_all_fruit()
+{
+    field_type = app.session.parameter_set.parameter_set_field_types[app.selected_field.field.parameter_set_field_type];
+
+    app.selected_field.good_one_harvest = app.selected_field.field[field_type.good_one];
+    app.selected_field.good_two_harvest = app.selected_field.field[field_type.good_two];
+},
+
+/**
  * send field effort update
  */
 send_field_effort()
@@ -330,6 +341,12 @@ take_field_effort(message_data)
     field.good_two_effort = message_data.good_two_effort;
 
     app.update_field_inventory();
+
+    if(message_data.avatar.id == app.session_player.id)
+    {
+        app.field_modal.toggle();
+    }
+
 },
 
 
