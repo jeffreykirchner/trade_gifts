@@ -48,7 +48,10 @@ var app = Vue.createApp({
                     selected_field : {field:null, 
                                       field_type:null,
                                       good_one_harvest:0,
-                                      good_two_harvest:0},
+                                      good_two_harvest:0,
+                                      effort_slider:0,
+                                      good_one_production_effort:0,
+                                      good_two_production_effort:0},
                     selected_house : null,
 
                     end_game_modal_visible : false,
@@ -171,6 +174,10 @@ var app = Vue.createApp({
                 case "update_field_harvest":
                     app.take_field_harvest(message_data);
                     break;
+                case "update_field_effort"
+                    app.take_field_effort(message_data);
+                    break;
+                
             }
 
             app.first_load_done = true;

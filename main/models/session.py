@@ -158,6 +158,9 @@ class Session(models.Model):
             v["good_one_effort"] = self.parameter_set.production_effort/2
             v["good_two_effort"] = self.parameter_set.production_effort/2
 
+            v["good_one_effort_in_use"] = v["good_one_effort"]
+            v["good_two_effort_in_use"] = v["good_two_effort"]
+
             v["harvest_history"] = {i.id:{} for i in self.session_periods.all()}
 
             self.world_state["fields"][str(i.id)] = v

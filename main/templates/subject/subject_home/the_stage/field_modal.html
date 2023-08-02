@@ -15,9 +15,13 @@
                 Field:&nbsp;<span v-if="selected_field.field">Owner [[session.parameter_set.parameter_set_players[selected_field.field.parameter_set_player].id_label]]</span>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">                
+            <div class="modal-body">   
+                <div class="row">
+                    <div class="col text-center h5">Harvest</div>
+                </div>
+
                 <div class="row align-items-center" v-if="selected_field.field">
-                    <div class="col text-center">
+                    <div class="col-4 text-center">
                         <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_one.toLowerCase() + '.png'" />
                     </div>  
                     <div class="col" id="div_id_good_one_harvest">
@@ -25,16 +29,15 @@
                            class="form-control-lg fw-bold"
                            v-model="selected_field.good_one_harvest"
                            min="0"
-                           v-bind:max="selected_field.field[selected_field.field_type.good_one]"
+                           max="999"
                            step="1"
-                           id="good_one_harvest"
-                           >
+                           id="good_one_harvest">                           
                     </div>
                 </div>
 
                 <div class="row align-items-center" v-if="selected_field.field">
                     
-                    <div class="col text-center">
+                    <div class="col-4 text-center">
                         <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_two.toLowerCase() + '.png'" />
                     </div>  
                     <div class="col" id="div_id_good_two_harvest">
@@ -42,24 +45,66 @@
                             class="form-control-lg fw-bold"
                             v-model="selected_field.good_two_harvest"
                             min="0"
-                            v-bind:max="selected_field.field[selected_field.field_type.good_two]"
+                            max="999"
                             step="1"
-                            id="good_two_harvest"
-                        >
+                            id="good_two_harvest">
                     </div>
-                </div>               
+                </div>   
                 
-            </div>
-            <div class="modal-footer">
-                                
-                <button type="button"
-                        class="btn btn-outline-primary"
-                        v-on:click = "send_field_harvest()"
-                        title="Harvest the selected fruit."                       
-                        v-bind:disabled="reconnecting || working">
-                    Harvest <i class="fas fa-sign-in-alt"></i>
-                </button>
+                <div class="row mt-4">
+                    <div class="col text-end">
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                v-on:click = "send_field_harvest()"
+                                title="Harvest the selected fruit."                       
+                                v-bind:disabled="reconnecting || working">
+                            Harvest Fruit <i class="fas fa-sign-in-alt"></i>
+                        </button>
+                    </div>
+                </div>
 
+                <div v-if="selected_field.field && selected_field.field.session_player==session_player.id">
+                    <div class="row mt-4 pt-4 border-top">
+                        <div class="col text-center h5">Effort: [[session.parameter_set.production_effort]] Pts</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col text-start">
+                            [[selected_field.good_one_production_effort]]
+                        </div>
+                        <div class="col text-end">
+                            [[selected_field.good_two_production_effort]]
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col text-center">
+                            <input type="range"
+                                    class="form-range" 
+                                    id="effort_range" 
+                                    v-bind:max="session.parameter_set.production_effort/2" 
+                                    v-bind:min="-session.parameter_set.production_effort/2" 
+                                    step="1"
+                                    v-bind:disabled="reconnecting || working"
+                                    v-on:input="update_effort_slider"
+                                    v-model="selected_field.effort_slider">
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col text-end">
+                            <button type="button"
+                                    class="btn btn-outline-primary"
+                                    v-on:click = "send_field_effort()"
+                                    title="Update Effort."                       
+                                    v-bind:disabled="reconnecting || working">
+                                Update Effort <i class="fas fa-sign-in-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>

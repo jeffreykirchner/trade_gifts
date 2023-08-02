@@ -154,6 +154,9 @@ update_field_inventory()
     }
 },
 
+/**
+ * handle field click
+ */
 subject_field_click(field_id)
 {
     // console.log("subject field click", field_id);
@@ -164,6 +167,47 @@ subject_field_click(field_id)
 
     app.clear_main_form_errors();
     app.field_modal.toggle();
+
+    let total_effort = app.session.parameter_set.production_effort;
+
+    if(app.selected_field.field.good_one_effort > total_effort/2)
+    {
+        app.selected_field.effort_slider = -(app.selected_field.field.good_one_effort - total_effort/2);
+    }
+    else if(app.selected_field.field.good_two_effort > total_effort/2)
+    {
+        app.selected_field.effort_slider = app.selected_field.field.good_two_effort - total_effort/2;
+    }
+    else
+    {
+        app.selected_field.effort_slider = 0;
+    }
+    
+    app.update_effort_slider();
+},
+
+/**
+ * handle update to effort slider
+ */
+update_effort_slider()
+{
+    let total_effort = app.session.parameter_set.production_effort;
+    let effort_slider = parseInt(app.selected_field.effort_slider);
+
+    if(effort_slider < 0){
+
+        app.selected_field.good_one_production_effort = Math.abs(effort_slider) + total_effort/2;
+        app.selected_field.good_two_production_effort = total_effort - app.selected_field.good_one_production_effort;
+
+    }else if(effort_slider > 0){
+
+        app.selected_field.good_two_production_effort = effort_slider + total_effort/2;
+        app.selected_field.good_one_production_effort = total_effort - app.selected_field.good_two_production_effort;
+    }else{
+        effort_slider = 0;
+        app.selected_field.good_one_production_effort = total_effort/2;
+        app.selected_field.good_two_production_effort = total_effort/2;
+    }
 },
 
 /**
@@ -179,19 +223,19 @@ send_field_harvest()
     let field = app.session.world_state.fields[app.selected_field.field.id];
     let field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type];
 
-    if(app.selected_field.good_one_harvest == 0 && app.selected_field.good_two_harvest == 0)
+    if(app.selected_field.good_one_harvest <= 0 && app.selected_field.good_two_harvest <= 0)
     {
         app.display_errors({good_one_harvest: ["Invalid Amount"], good_two_harvest: ["Invalid Amount"]});
         return;
     }
 
-    if(app.selected_field.good_one_harvest > field[field_type.good_one])
+    if(app.selected_field.good_one_harvest > field[field_type.good_one] || app.selected_field.good_one_harvest < 0)
     {
         app.display_errors({good_one_harvest: ["Invalid Amount"]});
         return;
     }
 
-    if(app.selected_field.good_two_harvest > field[field_type.good_two])
+    if(app.selected_field.good_two_harvest > field[field_type.good_two] || app.selected_field.good_two_harvest < 0)
     {
         app.display_errors({good_two_harvest: ["Invalid Amount"]})
         return;
@@ -201,7 +245,7 @@ send_field_harvest()
                      {"field_id" : app.selected_field.field.id,
                       "good_one_harvest" : app.selected_field.good_one_harvest,
                       "good_two_harvest" : app.selected_field.good_two_harvest},
-                     "group");
+                      "group");
 },
 
 /**
@@ -261,6 +305,33 @@ take_field_harvest(message_data)
 
     }
 },
+
+/**
+ * send field effort update
+ */
+send_field_effort()
+{
+
+    app.send_message("field_effort", 
+                     {"field_id" : app.selected_field.field.id,
+                      "good_one_effort" : app.selected_field.good_one_production_effort,
+                      "good_two_effort" : app.selected_field.good_two_production_effort},
+                      "group");
+},
+
+/**
+ * take field effort update
+ */
+take_field_effort(message_data)
+{
+    field = app.session.world_state.fields[message_data.field.id];
+
+    field.good_one_effort = message_data.good_one_effort;
+    field.good_two_effort = message_data.good_two_effort;
+
+    app.update_field_inventory();
+},
+
 
 
 

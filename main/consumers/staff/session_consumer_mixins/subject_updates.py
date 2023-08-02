@@ -387,11 +387,18 @@ class SubjectUpdatesMixin():
         logger = logging.getLogger(__name__)
         # logger.info(f"field_harvest: {event}")
         
-        player_id = self.session_players_local[event["player_key"]]["id"]
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            field_id = event["message_text"]["field_id"]
+            good_one_harvest = int(event["message_text"]["good_one_harvest"])
+            good_two_harvest = int(event["message_text"]["good_two_harvest"])
+        except:
+            logger.info(f"field_harvest: invalid data, {event['message_text']}")
+            return
         
-        field_id = event["message_text"]["field_id"]
-        good_one_harvest = int(event["message_text"]["good_one_harvest"])
-        good_two_harvest = int(event["message_text"]["good_two_harvest"])
+        if good_one_harvest < 0 or good_two_harvest < 0:
+            logger.info(f"field_harvest: invalid amounts, {event['message_text']}")
+            return
 
         v = await sync_to_async(sync_field_harvest)(self.session_id, player_id, field_id, good_one_harvest, good_two_harvest)
         
@@ -409,6 +416,7 @@ class SubjectUpdatesMixin():
                 result["field"][good] = self.world_state_local["fields"][str(field_id)][good]
                 result["avatar"][good] = self.world_state_local["avatars"][str(player_id)][good]
         else:
+            logger.info(f"field_harvest: invalid amounts from sync, {event['message_text']}")
             return
 
         await self.send_message(message_to_self=None, message_to_group=result,
@@ -423,7 +431,56 @@ class SubjectUpdatesMixin():
 
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
+
+    async def field_effort(self, event):
+        '''
+        update field's effort settings
+        '''
+
+        if self.controlling_channel != self.channel_name:
+            return
         
+        logger = logging.getLogger(__name__)
+        # logger.info(f"field_harvest: {event}")
+        
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            field_id = event["message_text"]["field_id"]
+            good_one_effort = int(event["message_text"]["good_one_effort"])
+            good_two_effort = int(event["message_text"]["good_two_effort"])
+        except:
+            logger.info(f"field_effort: invalid data, {event['message_text']}")
+            return
+        
+        if good_one_effort < 0 or good_two_effort < 0:
+            logger.info(f"field_harvest: invalid amounts, less than zero, {event['message_text']}")
+            return
+        
+        if good_one_effort + good_two_effort != self.parameter_set_local["production_effort"]:
+            logger.info(f"field_harvest: invalid amounts, does not total effort, {event['message_text']}")
+            return
+
+        v = await sync_to_async(sync_field_effort)(self.session_id, player_id, field_id, good_one_effort, good_two_effort)
+
+        if v["world_state"]:
+            self.world_state_local = v["world_state"]
+        else:
+            logger.info(f"field_effort: invalid amounts from sync, {event['message_text']}")
+            return
+        
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+
+    async def update_field_effort(self, event):
+        '''
+        update field's effort settings
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+            
 def sync_interaction(session_id, source_player_id, target_player_id, direction, amount):
     '''
     syncronous interaction transaction
@@ -518,6 +575,26 @@ def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_t
         
         world_state = session.world_state
         
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+
+def sync_field_effort(session_id, player_id, field_id, good_one_effort, good_two_effort):
+    '''
+    update field effort
+    '''
+
+    status = "success"
+    error_message = []
+    world_state = None
+
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
+
+        session.world_state['fields'][str(field_id)]['good_one_effort'] = good_one_effort
+        session.world_state['fields'][str(field_id)]['good_two_effort'] = good_two_effort
+
+        session.save()
+        world_state = session.world_state
+    
     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 
                                       
