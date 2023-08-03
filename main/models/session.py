@@ -145,37 +145,41 @@ class Session(models.Model):
                                   "session_players":{},
                                   }
         
+        parameter_set = self.parameter_set.json()
+
         #fields
-        for i in self.parameter_set.parameter_set_fields_a.all():
+        for i in parameter_set["parameter_set_fields"]:
             v = {}
-            v = i.json()
-            session_player = main.models.SessionPlayer.objects.get(parameter_set_player=i.parameter_set_player)
+            v = parameter_set["parameter_set_fields"][i]
+
+            session_player = main.models.SessionPlayer.objects.get(parameter_set_player_id=int(v["parameter_set_player"]))
             v["session_player"] = session_player.id
 
             for j in main.globals.Goods.choices:
                 v[j[0]] = 0
 
-            v["good_one_effort"] = self.parameter_set.production_effort/2
-            v["good_two_effort"] = self.parameter_set.production_effort/2
+            v["good_one_effort"] = parameter_set["production_effort"] / 2
+            v["good_two_effort"] = parameter_set["production_effort"] / 2
 
             v["good_one_effort_in_use"] = v["good_one_effort"]
             v["good_two_effort_in_use"] = v["good_two_effort"]
 
-            v["harvest_history"] = {i.id:[] for i in self.session_periods.all()}
+            v["harvest_history"] = {str(i.id):[] for i in self.session_periods.all()}
 
-            self.world_state["fields"][str(i.id)] = v
+            self.world_state["fields"][str(v["id"])] = v
         
         #houses
-        for i in self.parameter_set.parameter_set_players.all():
+        for i in parameter_set["parameter_set_players"]:
             v = {}
-            v["id"] = i.id
-            session_player = main.models.SessionPlayer.objects.get(parameter_set_player=i)
+            v["id"] =  parameter_set["parameter_set_players"][i]["id"]
+
+            session_player = main.models.SessionPlayer.objects.get(parameter_set_player_id= v["id"])
             v["session_player"] = session_player.id
            
             for j in main.globals.Goods.choices:
                 v[j[0]] = 0
             
-            self.world_state["houses"][str(i.id)] = v
+            self.world_state["houses"][v["id"]] = v
         
         #session players
         for i in self.session_players.prefetch_related('parameter_set_player').all().values('id', 
