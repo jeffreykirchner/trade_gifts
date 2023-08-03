@@ -282,23 +282,23 @@ class ParameterSet(models.Model):
         '''
         if update_players:
             self.json_for_session["parameter_set_players_order"] = list(self.parameter_set_players.all().values_list('id', flat=True))
-            self.json_for_session["parameter_set_players"] = {p.id : p.json() for p in self.parameter_set_players.all()}
+            self.json_for_session["parameter_set_players"] = {str(p.id) : p.json() for p in self.parameter_set_players.all()}
 
         if update_walls:
             self.json_for_session["parameter_set_walls_order"] = list(self.parameter_set_walls.all().values_list('id', flat=True))
-            self.json_for_session["parameter_set_walls"] = {p.id : p.json() for p in self.parameter_set_walls.all()}
+            self.json_for_session["parameter_set_walls"] = {str(p.id) : p.json() for p in self.parameter_set_walls.all()}
 
         if update_grounds:
             self.json_for_session["parameter_set_grounds_order"] = list(self.parameter_set_grounds.all().values_list('id', flat=True))
-            self.json_for_session["parameter_set_grounds"] = {p.id : p.json() for p in self.parameter_set_grounds.all()}
+            self.json_for_session["parameter_set_grounds"] = {str(p.id) : p.json() for p in self.parameter_set_grounds.all()}
 
         if update_field_types:
             self.json_for_session["parameter_set_field_types_order"] = list(self.parameter_set_field_types.all().values_list('id', flat=True))
-            self.json_for_session["parameter_set_field_types"] = {p.id : p.json() for p in self.parameter_set_field_types.all()}
+            self.json_for_session["parameter_set_field_types"] = {str(p.id) : p.json() for p in self.parameter_set_field_types.all()}
 
         if update_fields:
             self.json_for_session["parameter_set_fields_order"] = list(self.parameter_set_fields_a.all().values_list('id', flat=True))
-            self.json_for_session["parameter_set_fields"] = {p.id : p.json() for p in self.parameter_set_fields_a.all()}
+            self.json_for_session["parameter_set_fields"] = {str(p.id) : p.json() for p in self.parameter_set_fields_a.all()}
 
         self.save()
 
