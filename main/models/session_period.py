@@ -2,7 +2,7 @@
 session period model
 '''
 
-#import logging
+import logging
 
 from decimal import Decimal
 
@@ -44,69 +44,84 @@ class SessionPeriod(models.Model):
         '''
         convert health into cash earnings
         '''
-        result = {}
 
-        objs = self.session.session_players.all()
+        #clear avatar inventory
+        for i in self.session.world_state["avatars"]:
+            avatar = self.session.world_state["avatars"][i]
+
+            for i in main.globals.Goods.choices:
+                good = i[0]
+                avatar[good] = 0
+
+        #convert goods in homes to cash
         
-        for i in objs:
-            sid = str(i.id)
-            speriod_id = str(self.id)
-
-            # i.earnings += world_state_local["session_players"][sid]["inventory"][speriod_id]
-            
-            # result[sid] = {}
-            # result[sid]["total_earnings"] = i.earnings
-            # result[sid]["period_earnings"] = world_state_local["session_players"][sid]["inventory"][speriod_id]
-        
-        r = main.models.SessionPlayer.objects.abulk_update(objs, ['earnings'])
-
         self.consumption_completed = True
-        self.asave()
+        self.save()
 
-        return self.session.world_state
+        self.session.world_state["session_periods"][str(self.id)]["consumption_completed"]=True
+        self.session.save()
+
+        return self.session
     
     def do_production(self):
         '''
         do production for this period
         '''
 
-        with transaction.atomic():
-            session_period = main.models.SessionPeriod.objects.select_for_update().get(id=self.id)
-            session = main.models.Session.objects.select_for_update().get(id=self.session.id)
+        logger = logging.getLogger(__name__)
+        # logger.info(f"do_production {self.id}")
 
-            parameter_set = session.parameter_set.json()
-            world_state = session.world_state
-            current_period = world_state["current_period"]
+        parameter_set = self.session.parameter_set.json()
+        world_state = self.session.world_state
+        current_period = world_state["current_period"]
+        last_period_id = None
 
-            for i in session.world_state["fields"]:
+        if self.period_number > 1:
+            last_period_id = self.session.session_periods.get(period_number=self.period_number-1).id
+
+        for i in self.session.world_state["fields"]:
+            
+            obj = self.session.world_state["fields"][str(i)]
+            field_type = parameter_set["parameter_set_field_types"][str(obj["parameter_set_field_type"])]
+
+            if current_period >= field_type["start_on_period"]:
+                g1 = Decimal(field_type["good_one_rho"]) * (Decimal(field_type["good_one_alpha"]) * Decimal(obj["good_one_effort"]) ** Decimal(field_type["good_one_omega"]))
+                g2 = Decimal(field_type["good_two_rho"]) * (Decimal(field_type["good_two_alpha"]) * Decimal(obj["good_two_effort"]) ** Decimal(field_type["good_two_omega"]))
                 
-                obj = session.world_state["fields"][i]
-                field_type = parameter_set["parameter_set_field_types"][str(obj["parameter_set_field_type"])]
+                if last_period_id:                   
+                    if (current_period - field_type["start_on_period"] + 1)  % int(field_type["reset_every_n_periods"]) != 1:
 
-                if current_period >= field_type["start_on_period"]:
-                    g1 = Decimal(field_type["good_one_rho"]) * (Decimal(field_type["good_one_alpha"]) * Decimal(obj["good_one_effort"]) ** Decimal(field_type["good_one_omega"]))
-                    g2 = Decimal(field_type["good_two_rho"]) * (Decimal(field_type["good_two_alpha"]) * Decimal(obj["good_two_effort"]) ** Decimal(field_type["good_two_omega"]))
-                    
-                    # if (current_period - field_type["start_on_period"] + 1)  % int(field_type["reset_every_n_periods"]) != 1:
-                    #     g1 -= Decimal(obj[field_type["good_one"]])
-                    #     g2 -= Decimal(obj[field_type["good_two"]])
+                        good_one_harvest_total = 0
+                        good_two_harvest_total = 0
 
-                    obj[field_type["good_one"]] = round_half_away_from_zero(g1, 0)
-                    obj[field_type["good_two"]] = round_half_away_from_zero(g2, 0)
-                else:
-                    obj[field_type["good_one"]] = 0
-                    obj[field_type["good_two"]] = 0
+                        for j in obj["harvest_history"][str(last_period_id)]:
+                            good_one_harvest_total += j[field_type["good_one"]]
+                            good_two_harvest_total += j[field_type["good_two"]]
 
-                
-                # for j in main.globals.Goods.choices:
-                #     session.world_state["fields"][obj][j[0]] = 1
+                        g1 -= good_one_harvest_total
+                        g2 -= good_two_harvest_total
 
-            session_period.production_completed = True
-            session_period.save()
+                        g1 /= Decimal(field_type["good_one_rho"])
+                        g2 /= Decimal(field_type["good_two_rho"])
 
-            session.save()
+                obj[field_type["good_one"]] = round_half_away_from_zero(g1, 0)
+                obj[field_type["good_two"]] = round_half_away_from_zero(g2, 0)
+            else:
+                obj[field_type["good_one"]] = 0
+                obj[field_type["good_two"]] = 0
 
-        return session.world_state
+            
+            # for j in main.globals.Goods.choices:
+            #     session.world_state["fields"][obj][j[0]] = 1
+
+        self.production_completed = True
+        self.save()
+
+        self.session.save()
+
+        # logger.info(f"do_production {self.id}")
+        
+        return self.session
 
     def json(self):
         '''

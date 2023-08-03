@@ -373,10 +373,6 @@ var app = Vue.createApp({
 
             let period_change = false;
 
-            if (app.session.world_state.current_period != message_data.current_period)
-            {
-                period_change = true;
-            }
 
             // app.session.started = result.started;
             app.session.world_state.current_period = message_data.current_period;
@@ -391,15 +387,28 @@ var app = Vue.createApp({
             app.update_phase_button_text();
 
             //update player earnings and inventory if period has changed
-            if(period_change)
+            if(message_data.period_is_over)
             {
-                app.update_player_inventory();                
+                app.session.world_state.avatars = message_data.avatars;
+
+                //update fields.
+                for(let i in message_data.fields)
+                {
+                    field = app.session.world_state.fields[i]
+                    field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type]
+            
+                    good_one = field_type.good_one;
+                    good_two = field_type.good_two;
+            
+                    app.session.world_state.fields[i][good_one] = message_data.fields[i][good_one];
+                    app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
+                }
+
+                app.update_avatar_inventory();
+                app.update_field_inventory();
             }
 
-            if(app.session.world_state.time_remaining == 1)
-            {
-                app.take_update_earnings(message_data.earnings);
-            }
+            app.take_update_earnings(message_data.earnings);
 
             //update player status
             for(p in message_data.session_player_status)

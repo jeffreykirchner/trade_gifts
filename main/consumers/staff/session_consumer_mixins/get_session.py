@@ -53,6 +53,8 @@ def take_get_session(session_key):
     session = None
     logger = logging.getLogger(__name__)
 
+    logger.info(f"take_get_session {session_key}")
+
     try:        
         session = Session.objects.get(session_key=session_key)
         return session.json()

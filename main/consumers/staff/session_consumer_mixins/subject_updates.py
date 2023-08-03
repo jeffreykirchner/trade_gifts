@@ -553,6 +553,7 @@ def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_t
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
+        session_period = session.get_current_session_period()
         parameter_set = session.parameter_set.json()
 
         field = session.world_state['fields'][str(field_id)]
@@ -576,6 +577,11 @@ def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_t
 
             player[good_one] += good_one_harvest
             player[good_two] += good_two_harvest
+
+            field["harvest_history"][str(session_period.id)].append({good_one:good_one_harvest, 
+                                                                     good_two:good_two_harvest, 
+                                                                     "session_player":player_id,
+                                                                     "time_remaining":session.world_state["time_remaining"]})
 
             session.save()
         

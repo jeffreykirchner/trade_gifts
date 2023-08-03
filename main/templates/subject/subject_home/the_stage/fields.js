@@ -295,7 +295,7 @@ take_field_harvest(message_data)
             app.session.world_state_avatars.session_players[message_data.avatar.id].current_location,
             elements);
         
-        if(message_data.avatar.id == app.session_player.id)
+        if(app.is_subject && message_data.avatar.id == app.session_player.id)
         {
             app.field_modal.toggle();
         }

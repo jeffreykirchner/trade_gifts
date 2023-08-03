@@ -38,18 +38,6 @@ send_world_state_update()
     app.send_message("world_state_update", {"world_state" : temp_world_state});       
 },
 
-update_player_inventory()
-{
-
-    let period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
-
-    for(const i in app.session.session_players_order)
-    {
-        const player_id = app.session.session_players_order[i];
-        pixi_avatars[player_id].avatar_container.getChildAt(4).text = app.session.world_state_avatars.session_players[player_id].inventory[period_id];
-    }
-},
-
 take_update_tractor_beam(message_data)
 {
     let player_id = message_data.player_id;

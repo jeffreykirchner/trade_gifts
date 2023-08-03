@@ -21,6 +21,7 @@ class ExperimentControlsMixin(OperationsMixin):
         '''
         start experiment
         '''
+        logger = logging.getLogger(__name__)
         result = await sync_to_async(take_start_experiment)(self.session_id, event["message_text"])
 
         #Send message to staff page
@@ -29,7 +30,9 @@ class ExperimentControlsMixin(OperationsMixin):
                                     message_type=event['type'], send_to_client=True, send_to_group=False)
         else:
 
-            result["world_state"] = await self.do_field_production()
+            session = await self.do_field_production()
+
+            result["world_state"] = session.world_state
 
             # self.world_state_local = result["world_state"]
             # self.world_state_avatars_local = result["world_state_avatars"]
@@ -41,6 +44,8 @@ class ExperimentControlsMixin(OperationsMixin):
         '''
         start experiment on staff
         '''
+        logger = logging.getLogger(__name__)
+        # logger.info(f"update_start_experiment {event}")
 
         self.world_state_local = event['group_data']['world_state']
         self.world_state_avatars_local = event['group_data']['world_state_avatars']

@@ -27,20 +27,6 @@ take_target_location_update(message_data)
     }
 },
 
-/**
- * update the inventory of the player
- */
-update_player_inventory()
-{
-
-    let period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
-
-    for(const i in app.session.session_players_order)
-    {
-        const player_id = app.session.session_players_order[i];
-        pixi_avatars[player_id].avatar_container.getChildAt(4).text = app.session.world_state_avatars.session_players[player_id].inventory[period_id];
-    }
-},
 
 /**
  *pointer up on subject screen

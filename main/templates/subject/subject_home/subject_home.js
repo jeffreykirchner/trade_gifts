@@ -330,15 +330,11 @@ var app = Vue.createApp({
             let period_change = false;
             let period_earnings = 0;
 
-            if (message_data.time_remaining == 1)
+            
+            if (app.session_player.id in message_data)
             {
                 period_earnings = message_data.earnings[app.session_player.id].period_earnings;
-                app.session.world_state_avatars.session_players[app.session_player.id].earnings = message_data.earnings[app.session_player.id].total_earnings;
-            }
-
-            if (app.session.world_state.current_period != message_data.current_period)
-            {
-                period_change = true;
+                // app.session.world_state_avatars.session_players[app.session_player.id].earnings = message_data.earnings[app.session_player.id].total_earnings;
             }
 
             app.session.started = message_data.started;
@@ -349,6 +345,27 @@ var app = Vue.createApp({
             app.session.world_state.started = message_data.started;
             app.session.world_state.finished = message_data.finished;
             app.session.world_state.current_experiment_phase = message_data.current_experiment_phase;
+
+            if(message_data.period_is_over)
+            {
+                app.session.world_state.avatars = message_data.avatars;                
+
+                //update fields.
+                for(let i in message_data.fields)
+                {
+                    field = app.session.world_state.fields[i]
+                    field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type]
+            
+                    good_one = field_type.good_one;
+                    good_two = field_type.good_two;
+            
+                    app.session.world_state.fields[i][good_one] = message_data.fields[i][good_one];
+                    app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
+                }
+
+                app.update_avatar_inventory();
+                app.update_field_inventory();
+            }
 
             // app.session.world_state.finished = message_data.finished;
         
@@ -364,27 +381,26 @@ var app = Vue.createApp({
 
 
             //period has changed display earnings
-            if(message_data.time_remaining == 1)
-            {
-                Vue.nextTick(() => {
-                    let current_location = app.session.world_state_avatars.session_players[app.session_player.id].current_location;
+            // if(message_data.time_remaining == 1)
+            // {
+            //     Vue.nextTick(() => {
+            //         let current_location = app.session.world_state_avatars.session_players[app.session_player.id].current_location;
 
-                    app.add_text_emitters("+" + period_earnings + "¢", 
-                            current_location.x, 
-                            current_location.y,
-                            current_location.x,
-                            current_location.y-100,
-                            0xFFFFFF,
-                            28,
-                            null)                    
-                });               
-            }
+            //         app.add_text_emitters("+" + period_earnings + "¢", 
+            //                 current_location.x, 
+            //                 current_location.y,
+            //                 current_location.x,
+            //                 current_location.y-100,
+            //                 0xFFFFFF,
+            //                 28,
+            //                 null)                    
+            //     });               
+            // }
 
-            if(period_change)
-            {
-                app.setup_pixi_minimap();
-                app.update_player_inventory();
-            }
+            // if(period_change)
+            // {
+            //     app.setup_pixi_minimap();
+            // }
 
             //update player states
             for(p in message_data.session_player_status)
@@ -411,10 +427,11 @@ var app = Vue.createApp({
             }
 
             //hide interaction modal if interaction is over
-            if(app.session.world_state_avatars.session_players[app.session_player.id].interaction == 0)
-            {
-                app.interaction_modal.hide();
-            }
+            // if(app.session.world_state_avatars.session_players[app.session_player.id].interaction == 0)
+            // {
+            //     app.interaction_modal.hide();
+            //     app.field_modal.hide();
+            // }
         },
 
         /**
