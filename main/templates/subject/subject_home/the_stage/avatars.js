@@ -472,11 +472,20 @@ subject_avatar_click(target_player_id)
     // console.log("subject avatar click", target_player_id);
 
     app.selected_avatar.avatar = app.session.world_state.avatars[target_player_id];
+    app.selected_avatar.target_player_id = target_player_id;
     app.selected_avatar.parameter_set_player = app.session.parameter_set.parameter_set_players[app.selected_avatar.avatar.parameter_set_player_id];
 
     app.selected_avatar.good_one_move = 0;
     app.selected_avatar.good_two_move = 0;
     app.selected_avatar.good_three_move = 0;
+
+    app.selected_avatar.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
+    app.selected_avatar.good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
+    app.selected_avatar.good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
+
+    app.selected_avatar.good_one_available = app.session.world_state.avatars[app.session_player.id][app.selected_avatar.good_one];
+    app.selected_avatar.good_two_available = app.session.world_state.avatars[app.session_player.id][app.selected_avatar.good_two];
+    app.selected_avatar.good_three_available = app.session.world_state.avatars[app.session_player.id][app.selected_avatar.good_three];
 
     app.clear_main_form_errors();
     app.avatar_modal.toggle();
@@ -485,106 +494,59 @@ subject_avatar_click(target_player_id)
 /**
  * send interaction to server
  */
-send_move_fruit()
+send_move_fruit_to_avatar()
 {
+    if(!app.session.world_state["started"]) return;
+    if(!app.selected_avatar.avatar) return;
+
     app.clear_main_form_errors();
 
-    let errors = {};
+    let avatar = app.session.world_state.avatars[app.session_player.id];
 
-    if(!app.interaction_form.direction || app.interaction_form.direction == "")
+    if(app.selected_avatar.good_one_move <= 0 && 
+       app.selected_avatar.good_two_move <= 0 && 
+       app.selected_avatar.good_three_move <= 0)
     {
-        errors["direction"] = ["Choose a direction"];
-    }
-
-    if(!app.interaction_form.amount || app.interaction_form.amount < 1)
-    {
-        errors["amount"] = ["Invalid amount"];
-    }
-
-    if(Object.keys(errors).length > 0)
-    {
-        app.display_errors(errors);
+        app.display_errors({good_one_move: ["Invalid Amount"], good_two_move: ["Invalid Amount"], good_three_move: ["Invalid Amount"]});
         return;
     }
 
-    app.working = true;
+    if(app.selected_avatar.good_one_move > avatar[app.selected_avatar.good_one])
+    {
+        app.display_errors({good_one_move: ["Invalid Amount"]});
+        app.selected_avatar.good_one_available = avatar[app.selected_avatar.good_one];
+        return;
+    }
 
-    app.send_message("interaction", 
-                    {"interaction" : app.interaction_form},
+    if(app.selected_avatar.good_two_move > avatar[app.selected_avatar.good_two])
+    {
+        app.display_errors({good_two_move: ["Invalid Amount"]});
+        app.selected_avatar.good_two_available = avatar[app.selected_avatar.good_two];
+        return;
+    }
+
+    if(app.selected_avatar.good_three_move > avatar[app.selected_avatar.good_three])
+    {
+        app.display_errors({good_three_move: ["Invalid Amount"]});
+        app.selected_avatar.good_three_available = avatar[app.selected_avatar.good_three];
+        return;
+    }
+
+    app.send_message("move_fruit_to_avatar", 
+                    {"good_one_move" : app.selected_avatar.good_one_move,
+                     "good_two_move" : app.selected_avatar.good_two_move,
+                     "good_three_move" : app.selected_avatar.good_three_move,
+                     "target_player_id" : app.selected_avatar.target_player_id},
                      "group"); 
 },
 
 
 /**
- * take update from server about interactions
+ * take update from server about moving fruit to avatar
  */
-take_update_move_fruit(message_data)
+take_update_move_fruit_to_avatar(message_data)
 {
-    if(message_data.value == "fail")
-    {
-        if(message_data.source_player_id == app.session_player.id)
-        {
-            let errors = {};
-            errors["direction"] = [message_data.error_message];
-            app.display_errors(errors);
-            app.working = false;            
-        }
-    }
-    else
-    {
-        let currnent_period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
-
-        let source_player_id = message_data.source_player_id;
-        let target_player_id = message_data.target_player_id;
-
-        let source_player = app.session.world_state_avatars.session_players[source_player_id];
-        let target_player = app.session.world_state_avatars.session_players[target_player_id];
-
-        let period = message_data.period;
-
-        //update status
-        source_player.tractor_beam_target = null;
-
-        source_player.frozen = false
-        target_player.frozen = false
     
-        source_player.interaction = 0;
-        target_player.interaction = 0;
-
-        source_player.cool_down = app.session.parameter_set.cool_down_length;
-        target_player.cool_down = app.session.parameter_set.cool_down_length;
-
-        //update inventory
-        source_player.inventory[period] = message_data.source_player_inventory;
-        target_player.inventory[period] = message_data.target_player_inventory;
-        
-        pixi_avatars[source_player_id].avatar_container.getChildAt(4).text = source_player.inventory[currnent_period_id];
-        pixi_avatars[target_player_id].avatar_container.getChildAt(4).text = target_player.inventory[currnent_period_id];
-
-         //add transfer beam
-         if(message_data.direction == "give")
-         {
-             app.add_transfer_beam(source_player.current_location, 
-                                  target_player.current_location,
-                                  app.pixi_textures.sprite_sheet_2.textures["cherry_small.png"],
-                                  message_data.source_player_change,
-                                  message_data.target_player_change);
-         }
-         else
-         {
-             app.add_transfer_beam(target_player.current_location, 
-                                   source_player.current_location,
-                                   app.pixi_textures.sprite_sheet_2.textures["cherry_small.png"],
-                                   message_data.target_player_change,
-                                   message_data.source_player_change);
-         }
-
-        if(message_data.source_player_id == app.session_player.id)
-        {
-            app.working = false;
-            app.avatar_modal.hide();
-        }
-    }
 },
 
 /** hide choice grid modal modal
@@ -596,7 +558,7 @@ hide_avatar_modal(){
 /**
  * cancel interaction in progress
  */
-cancel_move_fruit()
+cancel_move_fruit_to_avatar()
 {
     app.avatar_modal.hide();
 },

@@ -165,6 +165,9 @@ subject_field_click(field_id)
     app.selected_field.good_one_harvest = 0;
     app.selected_field.good_two_harvest = 0;
 
+    app.selected_field.good_one_available = app.selected_field.field[app.selected_field.field_type.good_one];
+    app.selected_field.good_two_available = app.selected_field.field[app.selected_field.field_type.good_two];
+
     app.clear_main_form_errors();
     app.field_modal.toggle();
 
@@ -232,12 +235,14 @@ send_field_harvest()
     if(app.selected_field.good_one_harvest > field[field_type.good_one] || app.selected_field.good_one_harvest < 0)
     {
         app.display_errors({good_one_harvest: ["Invalid Amount"]});
+        app.selected_field.good_one_available = field[field_type.good_one];        
         return;
     }
 
     if(app.selected_field.good_two_harvest > field[field_type.good_two] || app.selected_field.good_two_harvest < 0)
     {
-        app.display_errors({good_two_harvest: ["Invalid Amount"]})
+        app.display_errors({good_two_harvest: ["Invalid Amount"]});
+        app.selected_field.good_two_available = field[field_type.good_two];
         return;
     }
 

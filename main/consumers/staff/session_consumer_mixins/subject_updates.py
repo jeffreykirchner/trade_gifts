@@ -486,7 +486,42 @@ class SubjectUpdatesMixin():
 
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
-            
+
+    async def move_fruit_to_avatar(self, event):
+        '''
+        move fruit from one avatar to another
+        '''
+
+        if self.controlling_channel != self.channel_name:
+            return
+        
+        logger = logging.getLogger(__name__)
+
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            target_player_id = event["message_text"]["target_player_id"]
+            good_one_move = int(event["message_text"]["good_one_move"])
+            good_two_move = int(event["message_text"]["good_two_move"])
+            good_three_move = int(event["message_text"]["good_three_move"])
+        except:
+            logger.info(f"move_fruit_to_avatar: invalid data, {event['message_text']}")
+            return
+
+
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+
+
+    async def update_move_fruit_to_avatar(self, event):
+        '''
+        update field's effort settings
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+                
 def sync_interaction(session_id, source_player_id, target_player_id, direction, amount):
     '''
     syncronous interaction transaction
@@ -608,6 +643,45 @@ def sync_field_effort(session_id, player_id, field_id, good_one_effort, good_two
         world_state = session.world_state
     
     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+
+def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_move, good_two_move, good_three_move):
+    '''
+    move fruit from one avatar to another
+    '''
+    status = "success"
+    error_message = []
+    world_state = None
+
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
+
+        if session.world_state['avatars'][str(player_id)]['good_one'] < good_one_move:
+            status = "fail"
+            error_message.append({"id":"good_one_move", "messge": "Invalid amount."})
+
+        if session.world_state['avatars'][str(player_id)]['good_two'] < good_two_move:
+            status = "fail"
+            error_message.append({"id":"good_two_move", "messge": "Invalid amount."})
+
+        if session.world_state['avatars'][str(player_id)]['good_three'] < good_three_move:
+            status = "fail"
+            error_message.append({"id":"good_three_move", "messge": "Invalid amount."})
+
+        if status == "success":
+            session.world_state['avatars'][str(player_id)]['good_one'] -= good_one_move
+            session.world_state['avatars'][str(player_id)]['good_two'] -= good_two_move
+            session.world_state['avatars'][str(player_id)]['good_three'] -= good_three_move
+
+            session.world_state['avatars'][str(target_player_id)]['good_one'] += good_one_move
+            session.world_state['avatars'][str(target_player_id)]['good_two'] += good_two_move
+            session.world_state['avatars'][str(target_player_id)]['good_three'] += good_three_move
+            
+            session.save()
+
+        world_state = session.world_state
+
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+
 
                                       
     

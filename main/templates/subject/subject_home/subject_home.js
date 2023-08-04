@@ -58,6 +58,9 @@ var app = Vue.createApp({
                                        good_one_move:0,
                                        good_two_move:0,
                                        good_three_move:0,
+                                       good_one:null,
+                                       good_two:null,
+                                       good_three:null,
                                        },
 
                     selected_house : null,
@@ -184,6 +187,9 @@ var app = Vue.createApp({
                     break;
                 case "update_field_effort":
                     app.take_field_effort(message_data);
+                    break;
+                case "update_move_fruit":
+                    app.take_update_move_fruit(message_data);
                     break;
                 
             }
@@ -537,6 +543,13 @@ var app = Vue.createApp({
             e = document.getElementById("id_errors_good_one_harvest");
             if(e) e.remove();
             e = document.getElementById("id_errors_good_two_harvest");
+            if(e) e.remove();
+
+            e = document.getElementById("id_errors_good_one_move");
+            if(e) e.remove();
+            e = document.getElementById("id_errors_good_two_move");
+            if(e) e.remove();
+            e = document.getElementById("id_errors_good_three_move");
             if(e) e.remove();
         },
 

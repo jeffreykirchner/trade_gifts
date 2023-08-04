@@ -15,48 +15,54 @@
             </div>
             <div class="modal-body">
                 
-                <div class="row align-items-center" v-if="selected_avatar.avatar">
+                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar" id="div_id_good_one_move">
                     <div class="col-4 text-center">
-                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_avatar.parameter_set_player.good_one.toLowerCase() + '.png'" />
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_avatar.good_one.toLowerCase() + '.png'" />
                     </div>  
-                    <div class="col" id="div_id_good_one_harvest">
+                    <div class="col text-start" id="div_id_good_one_harvest">
                         <input type="number" 
-                           class="form-control-lg fw-bold"
+                           class="transfer_model_input form-control-lg fw-bold"
                            v-model="selected_avatar.good_one_move"
                            min="0"
                            max="999"
-                           step="1"
-                           id="good_one_move">                           
-                    </div>
+                           step="1"                           
+                           id="good_one_move">                   
+                          
+                           of [[selected_avatar.good_one_available]]
+                    </div>                    
                 </div>
                       
-                <div class="row align-items-center" v-if="selected_avatar.avatar">
+                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar" id="div_id_good_two_move">
                     <div class="col-4 text-center">
-                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_avatar.parameter_set_player.good_two.toLowerCase() + '.png'" />
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_avatar.good_two.toLowerCase() + '.png'" />
                     </div>  
-                    <div class="col" id="div_id_good_two_harvest">
+                    <div class="col text-start" id="div_id_good_two_harvest">
                         <input type="number" 
-                           class="form-control-lg fw-bold"
+                           class="transfer_model_input form-control-lg fw-bold"
                            v-model="selected_avatar.good_two_move"
                            min="0"
                            max="999"
                            step="1"
-                           id="good_two_move">                           
+                           id="good_two_move">     
+                           
+                           of [[selected_avatar.good_two_available]]
                     </div>
                 </div>
 
-                <div class="row align-items-center" v-if="selected_avatar.avatar">
+                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar" id="div_id_good_three_move">
                     <div class="col-4 text-center">
-                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_avatar.parameter_set_player.good_three.toLowerCase() + '.png'" />
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_avatar.good_three.toLowerCase() + '.png'" />
                     </div>  
-                    <div class="col" id="div_id_good_three_harvest">
+                    <div class="col text-start" id="div_id_good_three_harvest">
                         <input type="number" 
-                           class="form-control-lg fw-bold"
+                           class="transfer_model_input form-control-lg fw-bold"
                            v-model="selected_avatar.good_three_move"
                            min="0"
                            max="999"
                            step="1"
-                           id="good_three_move">                           
+                           id="good_three_move">         
+                           
+                           of [[selected_avatar.good_three_available]]
                     </div>
                 </div>
             
@@ -64,7 +70,7 @@
             <div class="modal-footer">
                 <button type="button"
                         class="btn btn-outline-primary mr-2"
-                        v-on:click = "cancel_move_fruit()"
+                        v-on:click = "cancel_move_fruit_to_avatar()"
                         title="Cancel Interaction"                       
                         v-bind:disabled="reconnecting || working">
                     Cancel <i class="fas fa-ban"></i>
@@ -72,7 +78,7 @@
                 
                 <button type="button"
                         class="btn btn-outline-primary"
-                        v-on:click = "send_move_fruit()"
+                        v-on:click = "move_fruit_to_avatar()"
                         title="Submit Interaction"                       
                         v-bind:disabled="reconnecting || working">
                     Move <i class="fas fa-sign-in-alt"></i>
