@@ -89,14 +89,33 @@ take_target_location_update(message_data)
         //check if click on another player
         for(i in app.session.world_state_avatars.session_players)
         {
-            let obj = app.session.world_state_avatars.session_players[i];
-
-            if(app.get_distance(obj.current_location, local_pos) < 100 &&
-            app.get_distance(obj.current_location, local_player.current_location) <= app.session.parameter_set.interaction_range+125)
+            if(i != app.session_player.id)
             {
-                app.subject_avatar_click(i);              
-                break;
+                // let obj = app.session.world_state_avatars.session_players[i];
+                let obj = pixi_avatars[i].avatar_container;
+                let rect={x:obj.x-obj.width/2, y:obj.y-obj.height/2, width:obj.width, height:obj.height};
+                let pt={x:local_pos.x, y:local_pos.y};
+
+                if(app.check_point_in_rectagle(pt, rect))
+                {
+                    if(app.check_for_circle_rect_intersection({x:local_player.current_location.x, 
+                                                            y:local_player.current_location.y, 
+                                                            radius:app.session.parameter_set.interaction_range},
+                                            rect))
+                    {
+                        app.subject_avatar_click(i);
+                        break;
+                    }
+                }
             }
+            
+
+            // if(app.get_distance(obj.current_location, local_pos) < 100 &&
+            // app.get_distance(obj.current_location, local_player.current_location) <= app.session.parameter_set.interaction_range+125)
+            // {
+            //     app.subject_avatar_click(i);              
+            //     break;
+            // }
         }
 
         //check if click on a field
@@ -126,20 +145,6 @@ take_target_location_update(message_data)
  },
 
 /**
- * subject avatar click
- */
-subject_avatar_click(target_player_id)
-{
-    if(target_player_id == app.session_player.id) return;
-
-    // console.log("subject avatar click", target_player_id);
-
-    // app.send_message("tractor_beam", 
-    //                  {"target_player_id" : target_player_id},
-    //                  "group");
-},
-
-/**
  * result of subject activating tractor beam
  */
 take_update_tractor_beam(message_data)
@@ -160,138 +165,8 @@ take_update_tractor_beam(message_data)
         app.clear_main_form_errors();
         app.interaction_form.direction = null;
         app.interaction_form.amount = null;
-        app.interaction_modal.toggle();
+        app.avatar_modal.toggle();
     }
-},
-
-/**
- * send interaction to server
- */
-send_interaction()
-{
-    app.clear_main_form_errors();
-
-    let errors = {};
-
-    if(!app.interaction_form.direction || app.interaction_form.direction == "")
-    {
-        errors["direction"] = ["Choose a direction"];
-    }
-
-    if(!app.interaction_form.amount || app.interaction_form.amount < 1)
-    {
-        errors["amount"] = ["Invalid amount"];
-    }
-
-    if(Object.keys(errors).length > 0)
-    {
-        app.display_errors(errors);
-        return;
-    }
-
-    app.working = true;
-
-    app.send_message("interaction", 
-                    {"interaction" : app.interaction_form},
-                     "group"); 
-},
-
-
-/**
- * take update from server about interactions
- */
-take_update_interaction(message_data)
-{
-    if(message_data.value == "fail")
-    {
-        if(message_data.source_player_id == app.session_player.id)
-        {
-            let errors = {};
-            errors["direction"] = [message_data.error_message];
-            app.display_errors(errors);
-            app.working = false;            
-        }
-    }
-    else
-    {
-        let currnent_period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
-
-        let source_player_id = message_data.source_player_id;
-        let target_player_id = message_data.target_player_id;
-
-        let source_player = app.session.world_state_avatars.session_players[source_player_id];
-        let target_player = app.session.world_state_avatars.session_players[target_player_id];
-
-        let period = message_data.period;
-
-        //update status
-        source_player.tractor_beam_target = null;
-
-        source_player.frozen = false
-        target_player.frozen = false
-    
-        source_player.interaction = 0;
-        target_player.interaction = 0;
-
-        source_player.cool_down = app.session.parameter_set.cool_down_length;
-        target_player.cool_down = app.session.parameter_set.cool_down_length;
-
-        //update inventory
-        source_player.inventory[period] = message_data.source_player_inventory;
-        target_player.inventory[period] = message_data.target_player_inventory;
-        
-        pixi_avatars[source_player_id].avatar_container.getChildAt(4).text = source_player.inventory[currnent_period_id];
-        pixi_avatars[target_player_id].avatar_container.getChildAt(4).text = target_player.inventory[currnent_period_id];
-
-         //add transfer beam
-         if(message_data.direction == "give")
-         {
-             app.add_transfer_beam(source_player.current_location, 
-                                  target_player.current_location,
-                                  app.pixi_textures.sprite_sheet_2.textures["cherry_small.png"],
-                                  message_data.source_player_change,
-                                  message_data.target_player_change);
-         }
-         else
-         {
-             app.add_transfer_beam(target_player.current_location, 
-                                   source_player.current_location,
-                                   app.pixi_textures.sprite_sheet_2.textures["cherry_small.png"],
-                                   message_data.target_player_change,
-                                   message_data.source_player_change);
-         }
-
-        if(message_data.source_player_id == app.session_player.id)
-        {
-            app.working = false;
-            app.interaction_modal.hide();
-        }
-    }
-},
-
-/** hide choice grid modal modal
-*/
-hide_interaction_modal(){
-    
-},
-
-/**
- * cancel interaction in progress
- */
-cancel_interaction()
-{
-    session_player = app.session.world_state_avatars.session_players[app.session_player.id];
-
-    if(session_player.interaction == 0)
-    {        
-        app.interaction_modal.hide();
-        return;
-    }
-
-    app.working = true;
-    app.send_message("cancel_interaction", 
-                    {},
-                     "group"); 
 },
 
 take_update_cancel_interaction(message_data)
@@ -313,6 +188,6 @@ take_update_cancel_interaction(message_data)
     if(source_player_id == app.session_player.id)
     {
         app.working = false;
-        app.interaction_modal.hide();
+        app.avatar_modal.hide();
     }
 }, 

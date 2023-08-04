@@ -52,6 +52,14 @@ var app = Vue.createApp({
                                       effort_slider:0,
                                       good_one_production_effort:0,
                                       good_two_production_effort:0},
+
+                    selected_avatar : {avatar:null,
+                                       parameter_set_player:null,
+                                       good_one_move:0,
+                                       good_two_move:0,
+                                       good_three_move:0,
+                                       },
+
                     selected_house : null,
 
                     end_game_modal_visible : false,
@@ -61,7 +69,7 @@ var app = Vue.createApp({
 
                     // modals
                     end_game_modal : null,
-                    interaction_modal : null,
+                    avatar_modal : null,
                     field_modal : null,
                     test_mode : {%if session.parameter_set.test_mode%}true{%else%}false{%endif%},
 
@@ -204,11 +212,11 @@ var app = Vue.createApp({
         do_first_load()
         {           
             app.end_game_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('end_game_modal'), {keyboard: false})   
-            app.interaction_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('interaction_modal'), {keyboard: false})          
+            app.avatar_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_modal'), {keyboard: false})          
             app.field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('field_modal'), {keyboard: false})
 
             document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
-            document.getElementById('interaction_modal').addEventListener('hidden.bs.modal', app.hide_interaction_modal);
+            document.getElementById('avatar_modal').addEventListener('hidden.bs.modal', app.hide_avatar_modal);
 
             {%if session.parameter_set.test_mode%} setTimeout(app.do_test_mode, app.random_number(1000 , 1500)); {%endif%}
 
@@ -429,7 +437,7 @@ var app = Vue.createApp({
             //hide interaction modal if interaction is over
             // if(app.session.world_state_avatars.session_players[app.session_player.id].interaction == 0)
             // {
-            //     app.interaction_modal.hide();
+            //     app.avatar_modal.hide();
             //     app.field_modal.hide();
             // }
         },
