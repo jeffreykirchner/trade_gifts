@@ -3,6 +3,7 @@ session period model
 '''
 
 import logging
+import math
 
 from decimal import Decimal
 
@@ -104,8 +105,13 @@ class SessionPeriod(models.Model):
                         g1 /= Decimal(field_type["good_one_rho"])
                         g2 /= Decimal(field_type["good_two_rho"])
 
-                obj[field_type["good_one"]] = round_half_away_from_zero(g1, 0)
-                obj[field_type["good_two"]] = round_half_away_from_zero(g2, 0)
+                if g1 < 0:
+                    g1 = 0
+                if g2 < 0:
+                    g2 = 0
+
+                obj[field_type["good_one"]] = math.floor(g1)
+                obj[field_type["good_two"]] = math.floor(g2)
             else:
                 obj[field_type["good_one"]] = 0
                 obj[field_type["good_two"]] = 0

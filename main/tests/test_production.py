@@ -187,10 +187,10 @@ class TestProduction(TestCase):
         self.update_field_variables()
 
         self.assertEqual(25, self.field_1[self.field_1_good_one])
-        self.assertEqual(105, self.field_1[self.field_1_good_two])
+        self.assertEqual(104, self.field_1[self.field_1_good_two])
 
         self.assertEqual(12500, self.field_2[self.field_2_good_one])
-        self.assertEqual(31445, self.field_2[self.field_2_good_two])
+        self.assertEqual(31444, self.field_2[self.field_2_good_two])
 
     def test_period_2_effort(self):
         '''

@@ -506,6 +506,25 @@ class SubjectUpdatesMixin():
         except:
             logger.info(f"move_fruit_to_avatar: invalid data, {event['message_text']}")
             return
+        
+        v = await sync_to_async(sync_move_fruit_to_avatar)(self.session_id, player_id, target_player_id, good_one_move, good_two_move, good_three_move)
+
+        result = {"status" : v["status"], "error_message" : v["error_message"]}
+
+        if v["world_state"]:
+            self.world_state_local = v["world_state"]
+
+            result["source_player_id"] = player_id
+            result["target_player_id"] = target_player_id
+            result["source_player"] = self.world_state_local["avatars"][str(player_id)]
+            result["target_player"] = self.world_state_local["avatars"][str(target_player_id)]
+            result["good_one_move"] = good_one_move
+            result["good_two_move"] = good_two_move
+            result["good_three_move"] = good_three_move
+            
+        else:
+            logger.info(f"move_fruit_to_avatar: invalid amounts from sync, {event['message_text']}")
+            return
 
 
         await self.send_message(message_to_self=None, message_to_group=result,
@@ -522,61 +541,6 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
                 
-def sync_interaction(session_id, source_player_id, target_player_id, direction, amount):
-    '''
-    syncronous interaction transaction
-    '''
-
-    # world_state_filter=f"world_state__tokens__{period_id}__{token_id}__status"
-    
-    result = {"value" : "success"}
-    result["source_player_id"] = source_player_id
-    result["target_player_id"] = target_player_id
-
-    with transaction.atomic():
-    
-        session = Session.objects.select_for_update().get(id=session_id)
-
-        source_player = session.world_state['session_players'][str(source_player_id)]
-        target_player = session.world_state['session_players'][str(target_player_id)]
-
-        current_period_id = str(session.get_current_session_period().id)
-
-        if direction == 'take':
-            #take from target
-            if target_player["inventory"][current_period_id] < amount:
-                result["value"] = "fail"
-                result["error_message"] = "They do not have enough tokens."
-                return result
-            else:
-                target_player["inventory"][current_period_id] -= amount
-                source_player["inventory"][current_period_id] += amount
-
-                result["target_player_change"] = f"-{amount}"
-                result["source_player_change"] = f"+{amount}"             
-        else:
-            #give to target
-            if source_player["inventory"][current_period_id] < amount:
-                result["value"] = "fail"
-                result["error_message"] = "You do not have enough tokens."
-                return result
-            else:
-                source_player["inventory"][current_period_id] -= amount
-                target_player["inventory"][current_period_id] += amount
-
-                result["source_player_change"] = f"-{amount}"
-                result["target_player_change"] = f"+{amount}"
-                
-        session.save()
-
-    result["source_player_inventory"] = source_player["inventory"][current_period_id]
-    result["target_player_inventory"] = target_player["inventory"][current_period_id]
-
-    result["period"] = current_period_id
-    result["direction"] = direction
-
-    return result
-
 def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_two_harvest):
     '''
     harvest from field
@@ -655,30 +619,37 @@ def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
 
-        if session.world_state['avatars'][str(player_id)]['good_one'] < good_one_move:
+        parameter_set = session.parameter_set.json()
+        parameter_set_player_id = str(session.world_state['avatars'][str(player_id)]['parameter_set_player_id'])
+
+        good_one = parameter_set['parameter_set_players'][parameter_set_player_id]['good_one']
+        good_two = parameter_set['parameter_set_players'][parameter_set_player_id]['good_two']
+        good_three = parameter_set['parameter_set_players'][parameter_set_player_id]['good_three']
+
+        if session.world_state['avatars'][str(player_id)][good_one] < good_one_move:
             status = "fail"
             error_message.append({"id":"good_one_move", "messge": "Invalid amount."})
 
-        if session.world_state['avatars'][str(player_id)]['good_two'] < good_two_move:
+        if session.world_state['avatars'][str(player_id)][good_two] < good_two_move:
             status = "fail"
             error_message.append({"id":"good_two_move", "messge": "Invalid amount."})
 
-        if session.world_state['avatars'][str(player_id)]['good_three'] < good_three_move:
+        if session.world_state['avatars'][str(player_id)][good_three] < good_three_move:
             status = "fail"
             error_message.append({"id":"good_three_move", "messge": "Invalid amount."})
 
         if status == "success":
-            session.world_state['avatars'][str(player_id)]['good_one'] -= good_one_move
-            session.world_state['avatars'][str(player_id)]['good_two'] -= good_two_move
-            session.world_state['avatars'][str(player_id)]['good_three'] -= good_three_move
+            session.world_state['avatars'][str(player_id)][good_one] -= good_one_move
+            session.world_state['avatars'][str(player_id)][good_two] -= good_two_move
+            session.world_state['avatars'][str(player_id)][good_three] -= good_three_move
 
-            session.world_state['avatars'][str(target_player_id)]['good_one'] += good_one_move
-            session.world_state['avatars'][str(target_player_id)]['good_two'] += good_two_move
-            session.world_state['avatars'][str(target_player_id)]['good_three'] += good_three_move
-            
+            session.world_state['avatars'][str(target_player_id)][good_one] += good_one_move
+            session.world_state['avatars'][str(target_player_id)][good_two] += good_two_move
+            session.world_state['avatars'][str(target_player_id)][good_three] += good_three_move
+
             session.save()
 
-        world_state = session.world_state
+            world_state = session.world_state
 
     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 

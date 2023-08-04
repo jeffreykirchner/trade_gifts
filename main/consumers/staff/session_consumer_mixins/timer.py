@@ -236,7 +236,7 @@ def sync_continue_timer(event, session_id):
             if period_is_over:
                 
                 session = session.session_periods.get(id=last_period_id).do_consumption()
-                session = session.session_periods.get(id=last_period_id).do_production()
+                session = session.get_current_session_period().do_production()
 
                 for i in session.world_state["session_players"]:
                     # session.world_state["session_players"][i]["earnings"] += session.world_state["session_players"][i]["inventory"][current_period_id]

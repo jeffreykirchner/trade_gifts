@@ -12,6 +12,7 @@
         <div class="modal-content">
             <div class="modal-header fw-bold" v-if="selected_avatar.avatar">
                 Move Fruit to [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 
@@ -68,18 +69,19 @@
             
             </div>
             <div class="modal-footer">
+
                 <button type="button"
-                        class="btn btn-outline-primary mr-2"
-                        v-on:click = "cancel_move_fruit_to_avatar()"
-                        title="Cancel Interaction"                       
+                        class="btn btn-outline-primary me-2"
+                        v-on:click = "select_all_fruit_avatar()"
+                        title="Select all fruit to move."                       
                         v-bind:disabled="reconnecting || working">
-                    Cancel <i class="fas fa-ban"></i>
+                    Select All <i class="fas fa-check-double"></i>
                 </button>
-                
+                               
                 <button type="button"
                         class="btn btn-outline-primary"
-                        v-on:click = "move_fruit_to_avatar()"
-                        title="Submit Interaction"                       
+                        v-on:click = "send_move_fruit_to_avatar()"
+                        title="Move fruit to selected avatar."                       
                         v-bind:disabled="reconnecting || working">
                     Move <i class="fas fa-sign-in-alt"></i>
                 </button>

@@ -188,8 +188,8 @@ var app = Vue.createApp({
                 case "update_field_effort":
                     app.take_field_effort(message_data);
                     break;
-                case "update_move_fruit":
-                    app.take_update_move_fruit(message_data);
+                case "update_move_fruit_to_avatar":
+                    app.take_update_move_fruit_to_avatar(message_data);
                     break;
                 
             }

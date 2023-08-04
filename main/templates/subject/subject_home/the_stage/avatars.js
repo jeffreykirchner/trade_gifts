@@ -546,7 +546,62 @@ send_move_fruit_to_avatar()
  */
 take_update_move_fruit_to_avatar(message_data)
 {
-    
+    if(message_data.status == "success")
+    {
+        souce_player_id = message_data.source_player_id;
+        target_player_id = message_data.target_player_id;
+
+        app.session.world_state.avatars[souce_player_id] = message_data.source_player;
+        app.session.world_state.avatars[target_player_id] = message_data.target_player;
+
+        good_one_move = message_data.good_one_move;
+        good_two_move = message_data.good_two_move;
+        good_three_move = message_data.good_three_move;
+
+        good_one = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_one;
+        good_two = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_two;
+        good_three = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_three;
+
+        app.update_avatar_inventory();
+
+        elements = [];
+        if(good_one_move > 0)
+        {
+            element = {source_change:"-" + good_one_move,
+                       target_change:"+" + good_one_move, 
+                       texture:app.pixi_textures[good_one+"_tex"]  }
+            elements.push(element);
+        }
+
+        if(good_two_move > 0)
+        {
+            element = {source_change:"-" + good_two_move,
+                       target_change:"+" + good_two_move,
+                       texture:app.pixi_textures[good_two+"_tex"]  }
+            elements.push(element);
+        }
+
+        if(good_three_move > 0)
+        {
+            element = {source_change:"-" + good_three_move,
+                       target_change:"+" + good_three_move,
+                       texture:app.pixi_textures[good_three+"_tex"]  }
+            elements.push(element);
+        }
+
+        app.add_transfer_beam(app.session.world_state_avatars.session_players[souce_player_id].current_location, 
+                              app.session.world_state_avatars.session_players[target_player_id].current_location,
+            elements);
+        
+        if(app.is_subject && souce_player_id == app.session_player.id)
+        {
+            app.avatar_modal.toggle();
+        }
+    }
+    else
+    {
+
+    }
 },
 
 /** hide choice grid modal modal
@@ -556,9 +611,14 @@ hide_avatar_modal(){
 },
 
 /**
- * cancel interaction in progress
+ * select all fruit to move to avatar
  */
-cancel_move_fruit_to_avatar()
+select_all_fruit_avatar()
 {
-    app.avatar_modal.hide();
+    let avatar = app.session.world_state.avatars[app.session_player.id];
+
+    app.selected_avatar.good_one_move = avatar[app.selected_avatar.good_one];
+    app.selected_avatar.good_two_move = avatar[app.selected_avatar.good_two];
+    app.selected_avatar.good_three_move = avatar[app.selected_avatar.good_three];
+
 },
