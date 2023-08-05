@@ -86,8 +86,14 @@ class SessionPeriod(models.Model):
             field_type = parameter_set["parameter_set_field_types"][str(obj["parameter_set_field_type"])]
 
             if current_period >= field_type["start_on_period"]:
-                g1 = Decimal(field_type["good_one_rho"]) * (Decimal(field_type["good_one_alpha"]) * Decimal(obj["good_one_effort"]) ** Decimal(field_type["good_one_omega"]))
-                g2 = Decimal(field_type["good_two_rho"]) * (Decimal(field_type["good_two_alpha"]) * Decimal(obj["good_two_effort"]) ** Decimal(field_type["good_two_omega"]))
+
+                #update in-use effort
+                if (current_period - field_type["start_on_period"] + 1)  % int(field_type["reset_every_n_periods"]) == 1:
+                    obj["good_one_effort_in_use"] = obj["good_one_effort"]
+                    obj["good_two_effort_in_use"] = obj["good_two_effort"]
+
+                g1 = Decimal(field_type["good_one_rho"]) * (Decimal(field_type["good_one_alpha"]) * Decimal(obj["good_one_effort_in_use"]) ** Decimal(field_type["good_one_omega"]))
+                g2 = Decimal(field_type["good_two_rho"]) * (Decimal(field_type["good_two_alpha"]) * Decimal(obj["good_two_effort_in_use"]) ** Decimal(field_type["good_two_omega"]))
                 
                 if last_period_id:                   
                     if (current_period - field_type["start_on_period"] + 1)  % int(field_type["reset_every_n_periods"]) != 1:

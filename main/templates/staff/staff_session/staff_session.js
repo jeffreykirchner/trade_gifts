@@ -280,6 +280,8 @@ var app = Vue.createApp({
         do_reload()
         {
             app.setup_pixi_subjects();
+            app.update_field_inventory();
+            app.update_avatar_inventory();
         },
 
         /** send winsock request to get session info
