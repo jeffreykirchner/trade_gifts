@@ -71,6 +71,7 @@ var app = Vue.createApp({
                                       good_one:null,
                                       good_two:null,
                                       good_three:null,
+                                      direction:"avatar_to_house",
                                      },
 
                     end_game_modal_visible : false,

@@ -16,6 +16,17 @@
             </div>
             <div class="modal-body">
                 
+                <div class="row">
+                    <div class="col text-center">
+                        <select class="form-select form-select-lg mb-3 fw-bold text-center" 
+                                aria-label="Avatar to house direction"
+                                v-model="selected_house.direction">
+                            <option value="avatar_to_house">Avatar -> House</option>
+                            <option value="house_to_avatar">House -> Avatar</option>
+                          </select>
+                    </div>
+                </div>
+
                 <div class="row align-items-center text-center fw-bold" v-if="selected_house.house" id="div_id_good_one_move">
                     <div class="col-4 text-center">
                         <img class="field_modal_icons" v-bind:src="'/static/' + selected_house.good_one.toLowerCase() + '.png'" />
