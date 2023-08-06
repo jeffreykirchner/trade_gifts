@@ -62,8 +62,16 @@ var app = Vue.createApp({
                                        good_two:null,
                                        good_three:null,
                                        },
-
-                    selected_house : null,
+                    
+                    selected_house : {avatar:null,
+                                      parameter_set_player:null,
+                                      good_one_move:0,
+                                      good_two_move:0,
+                                      good_three_move:0,
+                                      good_one:null,
+                                      good_two:null,
+                                      good_three:null,
+                                     },
 
                     end_game_modal_visible : false,
 
@@ -74,6 +82,7 @@ var app = Vue.createApp({
                     end_game_modal : null,
                     avatar_modal : null,
                     field_modal : null,
+                    house_modal : null,
                     test_mode : {%if session.parameter_set.test_mode%}true{%else%}false{%endif%},
 
                     //pixi
@@ -220,6 +229,7 @@ var app = Vue.createApp({
             app.end_game_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('end_game_modal'), {keyboard: false})   
             app.avatar_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_modal'), {keyboard: false})          
             app.field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('field_modal'), {keyboard: false})
+            app.house_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('house_modal'), {keyboard: false})
 
             document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
             document.getElementById('avatar_modal').addEventListener('hidden.bs.modal', app.hide_avatar_modal);

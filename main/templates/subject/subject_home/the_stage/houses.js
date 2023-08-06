@@ -3,12 +3,11 @@
  */
 setup_pixi_houses()
 {
-    for(const i in app.session.parameter_set.parameter_set_players_order)
+    for(const i in app.session.parameter_set.parameter_set_players)
     {
         pixi_houses[i] = {};
-
-        let parameter_set_player_id = app.session.parameter_set.parameter_set_players_order[i];        
-        let parameter_set_player = app.session.parameter_set.parameter_set_players[parameter_set_player_id];
+      
+        let parameter_set_player = app.session.parameter_set.parameter_set_players[i];
 
         let house_container = new PIXI.Container();
         house_container.eventMode = 'passive';
@@ -101,26 +100,203 @@ setup_pixi_houses()
         owner_label.position.set(0, -house_sprite.height/4);
         health_label.position.set(0, house_sprite.height/2 - 5);
 
-        let good_spacer = house_sprite.height/5;
-        good_one_sprite.position.set(0, house_sprite.height/2 - good_spacer*3);
+        let good_spacer = house_sprite.height/5+2;
+        good_one_sprite.position.set(-10, house_sprite.height/2 - good_spacer*3);
         good_one_label.position.set(0, house_sprite.height/2 - good_spacer*3);
 
-        good_two_sprite.position.set(0, house_sprite.height/2 - good_spacer*2);
+        good_two_sprite.position.set(-10, house_sprite.height/2 - good_spacer*2);
         good_two_label.position.set(0, house_sprite.height/2 - good_spacer*2);
 
-        good_three_sprite.position.set(0, house_sprite.height/2 - good_spacer);
+        good_three_sprite.position.set(-10, house_sprite.height/2 - good_spacer);
         good_three_label.position.set(0, house_sprite.height/2 - good_spacer);
 
         pixi_houses[i].house_container = house_container;
         pixi_houses[i].owner_label = owner_label;
         pixi_houses[i].health_label = health_label;
-        pixi_houses[i].good_one_label = good_one_label;
-        pixi_houses[i].good_two_label = good_two_label;
-        pixi_houses[i].good_three_label = good_three_label;
+        pixi_houses[i][parameter_set_player.good_one] = good_one_label;
+        pixi_houses[i][parameter_set_player.good_two] = good_two_label;
+        pixi_houses[i][parameter_set_player.good_three] = good_three_label;
 
         pixi_houses[i].house_container.width = app.session.parameter_set.house_width;
         pixi_houses[i].house_container.height = app.session.parameter_set.house_height;
 
         pixi_container_main.addChild(pixi_houses[i].house_container);
     }
+
+    app.update_house_inventory();
+},
+
+/**
+ * update house inventory
+ */
+update_house_inventory()
+{
+    if(!app.session.world_state["started"]) return;
+    
+    for(const i in app.session.world_state.houses)
+    {
+        const house = app.session.world_state.houses[i];
+        const parameter_set_player = app.session.parameter_set.parameter_set_players[i];
+
+        pixi_houses[i][parameter_set_player.good_one].text = house[parameter_set_player.good_one];
+        pixi_houses[i][parameter_set_player.good_two].text = house[parameter_set_player.good_two];
+        pixi_houses[i][parameter_set_player.good_three].text = house[parameter_set_player.good_three];
+    }
+},
+
+/**
+ * subject avatar click
+ */
+subject_avatar_click(target_house_id)
+{
+    //if(target_house_id == app.session_player.id) return;
+
+    // console.log("subject avatar click", target_house_id);
+
+    app.selected_house.house = app.session.world_state.houses[target_house_id];
+    app.selected_house.target_house_id = target_house_id;
+
+    session_player = app.session.world_state_avatars.session_players[app.selected_house.house.session_player];
+    app.selected_house.parameter_set_player = app.session.parameter_set.parameter_set_players[session_player];
+
+    app.selected_house.good_one_move = 0;
+    app.selected_house.good_two_move = 0;
+    app.selected_house.good_three_move = 0;
+
+    app.selected_house.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
+    app.selected_house.good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
+    app.selected_house.good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
+
+    app.selected_house.good_one_available = app.session.world_state.avatars[app.session_player.id][app.selected_house.good_one];
+    app.selected_house.good_two_available = app.session.world_state.avatars[app.session_player.id][app.selected_house.good_two];
+    app.selected_house.good_three_available = app.session.world_state.avatars[app.session_player.id][app.selected_house.good_three];
+
+    app.clear_main_form_errors();
+    app.avatar_modal.toggle();
+},
+
+/**
+ * send interaction to server
+ */
+send_move_fruit_to_avatar()
+{
+    if(!app.session.world_state["started"]) return;
+    if(!app.selected_house.avatar) return;
+
+    app.clear_main_form_errors();
+
+    let avatar = app.session.world_state.avatars[app.session_player.id];
+
+    if(app.selected_house.good_one_move <= 0 && 
+       app.selected_house.good_two_move <= 0 && 
+       app.selected_house.good_three_move <= 0)
+    {
+        app.display_errors({good_one_move: ["Invalid Amount"], good_two_move: ["Invalid Amount"], good_three_move: ["Invalid Amount"]});
+        return;
+    }
+
+    if(app.selected_house.good_one_move > avatar[app.selected_house.good_one])
+    {
+        app.display_errors({good_one_move: ["Invalid Amount"]});
+        app.selected_house.good_one_available = avatar[app.selected_house.good_one];
+        return;
+    }
+
+    if(app.selected_house.good_two_move > avatar[app.selected_house.good_two])
+    {
+        app.display_errors({good_two_move: ["Invalid Amount"]});
+        app.selected_house.good_two_available = avatar[app.selected_house.good_two];
+        return;
+    }
+
+    if(app.selected_house.good_three_move > avatar[app.selected_house.good_three])
+    {
+        app.display_errors({good_three_move: ["Invalid Amount"]});
+        app.selected_house.good_three_available = avatar[app.selected_house.good_three];
+        return;
+    }
+
+    app.send_message("move_fruit_to_avatar", 
+                    {"good_one_move" : app.selected_house.good_one_move,
+                     "good_two_move" : app.selected_house.good_two_move,
+                     "good_three_move" : app.selected_house.good_three_move,
+                     "target_house_id" : app.selected_house.target_house_id},
+                     "group"); 
+},
+
+
+/**
+ * take update from server about moving fruit to avatar
+ */
+take_update_move_fruit_to_avatar(message_data)
+{
+    if(message_data.status == "success")
+    {
+        souce_player_id = message_data.source_player_id;
+        target_house_id = message_data.target_house_id;
+
+        app.session.world_state.avatars[souce_player_id] = message_data.source_player;
+        app.session.world_state.avatars[target_house_id] = message_data.target_player;
+
+        good_one_move = message_data.good_one_move;
+        good_two_move = message_data.good_two_move;
+        good_three_move = message_data.good_three_move;
+
+        good_one = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_one;
+        good_two = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_two;
+        good_three = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_three;
+
+        app.update_avatar_inventory();
+
+        elements = [];
+        if(good_one_move > 0)
+        {
+            element = {source_change:"-" + good_one_move,
+                       target_change:"+" + good_one_move, 
+                       texture:app.pixi_textures[good_one+"_tex"]  }
+            elements.push(element);
+        }
+
+        if(good_two_move > 0)
+        {
+            element = {source_change:"-" + good_two_move,
+                       target_change:"+" + good_two_move,
+                       texture:app.pixi_textures[good_two+"_tex"]  }
+            elements.push(element);
+        }
+
+        if(good_three_move > 0)
+        {
+            element = {source_change:"-" + good_three_move,
+                       target_change:"+" + good_three_move,
+                       texture:app.pixi_textures[good_three+"_tex"]  }
+            elements.push(element);
+        }
+
+        app.add_transfer_beam(app.session.world_state_avatars.session_players[souce_player_id].current_location, 
+                              app.session.world_state_avatars.session_players[target_house_id].current_location,
+            elements);
+        
+        if(app.is_subject && souce_player_id == app.session_player.id)
+        {
+            app.avatar_modal.toggle();
+        }
+    }
+    else
+    {
+
+    }
+},
+
+/**
+* select all fruit to move to avatar
+*/
+select_all_fruit_avatar()
+{
+   let avatar = app.session.world_state.avatars[app.session_player.id];
+
+   app.selected_house.good_one_move = avatar[app.selected_house.good_one];
+   app.selected_house.good_two_move = avatar[app.selected_house.good_two];
+   app.selected_house.good_three_move = avatar[app.selected_house.good_three];
+
 },

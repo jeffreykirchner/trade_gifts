@@ -445,7 +445,7 @@ destory_setup_pixi_subjects()
 },
 
 /**
- * update field inventory
+ * update avatar inventory
  */
 update_avatar_inventory()
 {
