@@ -163,6 +163,7 @@ subject_house_click(target_house_id)
     app.selected_house.good_one_move = 0;
     app.selected_house.good_two_move = 0;
     app.selected_house.good_three_move = 0;
+    app.selected_house.direction = "avatar_to_house";
 
     app.selected_house.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
     app.selected_house.good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
@@ -258,7 +259,7 @@ send_move_fruit_house()
 /**
  * take update from server about moving fruit to or from house
  */
-take_update_move_fruit_house(message_data)
+take_update_move_fruit_to_house(message_data)
 {
     if(message_data.status == "success")
     {
@@ -266,7 +267,7 @@ take_update_move_fruit_house(message_data)
         target_house_id = message_data.target_house_id;
 
         app.session.world_state.avatars[souce_player_id] = message_data.source_player;
-        app.session.world_state.avatars[target_house_id] = message_data.target_player;
+        app.session.world_state.houses[target_house_id] = message_data.target_house;
 
         good_one_move = message_data.good_one_move;
         good_two_move = message_data.good_two_move;
@@ -275,41 +276,82 @@ take_update_move_fruit_house(message_data)
         good_one = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_one;
         good_two = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_two;
         good_three = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_three;
+        
+        direction = message_data.direction;
 
         app.update_avatar_inventory();
+        app.update_house_inventory();
 
         elements = [];
-        if(good_one_move > 0)
-        {
-            element = {source_change:"-" + good_one_move,
-                       target_change:"+" + good_one_move, 
-                       texture:app.pixi_textures[good_one+"_tex"]  }
-            elements.push(element);
-        }
+        house_location = {x:app.session.parameter_set.parameter_set_players[target_house_id].house_x,
+                          y:app.session.parameter_set.parameter_set_players[target_house_id].house_y}
 
-        if(good_two_move > 0)
+        if(direction == "avatar_to_house")
         {
-            element = {source_change:"-" + good_two_move,
-                       target_change:"+" + good_two_move,
-                       texture:app.pixi_textures[good_two+"_tex"]  }
-            elements.push(element);
-        }
+       
+            if(good_one_move > 0)
+            {
+                element = {source_change:"-" + good_one_move,
+                           target_change:"+" + good_one_move, 
+                           texture:app.pixi_textures[good_one+"_tex"]  }
+                elements.push(element);
+            }
 
-        if(good_three_move > 0)
+            if(good_two_move > 0)
+            {
+                element = {source_change:"-" + good_two_move,
+                           target_change:"+" + good_two_move,
+                           texture:app.pixi_textures[good_two+"_tex"]  }
+                elements.push(element);
+            }
+
+            if(good_three_move > 0)
+            {
+                element = {source_change:"-" + good_three_move,
+                           target_change:"+" + good_three_move,
+                           texture:app.pixi_textures[good_three+"_tex"]  }
+                elements.push(element);
+            }
+
+            app.add_transfer_beam(app.session.world_state_avatars.session_players[souce_player_id].current_location, 
+                                  house_location,
+                                  elements);
+        }
+        else
         {
-            element = {source_change:"-" + good_three_move,
-                       target_change:"+" + good_three_move,
-                       texture:app.pixi_textures[good_three+"_tex"]  }
-            elements.push(element);
-        }
+            if(good_one_move > 0)
+            {
+                element = {source_change:"+" + good_one_move,
+                           target_change:"-" + good_one_move, 
+                           texture:app.pixi_textures[good_one+"_tex"]  }
+                elements.push(element);
+            }
 
-        app.add_transfer_beam(app.session.world_state_avatars.session_players[souce_player_id].current_location, 
-                              app.session.world_state_avatars.session_players[target_house_id].current_location,
-            elements);
+            if(good_two_move > 0)
+            {
+                element = {source_change:"+" + good_two_move,
+                           target_change:"-" + good_two_move,
+                           texture:app.pixi_textures[good_two+"_tex"]  }
+                elements.push(element);
+            }
+
+            if(good_three_move > 0)
+            {
+                element = {source_change:"+" + good_three_move,
+                           target_change:"-" + good_three_move,
+                           texture:app.pixi_textures[good_three+"_tex"]  }
+                elements.push(element);
+            }
+
+            app.add_transfer_beam(house_location, 
+                                  app.session.world_state_avatars.session_players[souce_player_id].current_location,
+                                  elements);
+
+        }
         
         if(app.is_subject && souce_player_id == app.session_player.id)
         {
-            app.avatar_modal.toggle();
+            app.house_modal.toggle();
         }
     }
     else

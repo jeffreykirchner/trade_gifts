@@ -117,6 +117,25 @@ setup_pixi_subjects(){
         good_three_sprite.position.set(-5,0);
         good_three_sprite.pivot.set(0.5,0.5);
 
+        //health
+        let health_container = new PIXI.Container();
+        health_container.eventMode = 'passive';
+        health_container.alpha = 0.75;
+        let health_label = new PIXI.Text("000", text_style_2);
+        health_label.eventMode = 'passive';
+        health_label.anchor.set(0, 0.5);
+
+        let health_sprite = PIXI.Sprite.from(app.pixi_textures["health_tex"]);
+        health_sprite.anchor.set(1, 0.5);
+        health_sprite.eventMode = 'passive';
+
+        health_container.addChild(health_label);
+        health_container.addChild(health_sprite);
+
+        health_label.position.set(-3,0);
+        health_sprite.position.set(3,0);
+
+        //add to container
         avatar_container.addChild(gear_sprite);
         avatar_container.addChild(face_sprite);
         avatar_container.addChild(id_label);
@@ -125,20 +144,26 @@ setup_pixi_subjects(){
         avatar_container.addChild(good_one_container);
         avatar_container.addChild(good_two_container);
         avatar_container.addChild(good_three_container);
+
+        avatar_container.addChild(health_container);
         
+        //position in container
         face_sprite.position.set(0, -gear_sprite.height * 0.03);
         id_label.position.set(0, -gear_sprite.height * 0.2);
         status_label.position.set(0, -gear_sprite.height/2 + 30);
 
-        good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2);
-        good_two_container.position.set(0+25, -gear_sprite.height/2);
-        good_three_container.position.set(gear_sprite.width/2+5+25, -gear_sprite.height/2);
+        good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2 - 10);
+        good_two_container.position.set(0+25, -gear_sprite.height/2 - 10);
+        good_three_container.position.set(gear_sprite.width/2+5+25, -gear_sprite.height/2 - 10);
+
+        health_container.position.set(10, -gear_sprite.height/2 - 115);
 
         pixi_avatars[i].status_label = status_label;
         pixi_avatars[i].gear_sprite = gear_sprite;
         pixi_avatars[i][parameter_set_player.good_one] = good_one_label;
         pixi_avatars[i][parameter_set_player.good_two] = good_two_label;
         pixi_avatars[i][parameter_set_player.good_three] = good_three_label;
+        pixi_avatars[i].health_label = health_label;
 
         avatar_container.scale.set(app.session.parameter_set.avatar_scale);
 
@@ -459,6 +484,8 @@ update_avatar_inventory()
         pixi_avatars[i][parameter_set_player.good_one].text = avatar[parameter_set_player.good_one];
         pixi_avatars[i][parameter_set_player.good_two].text = avatar[parameter_set_player.good_two];
         pixi_avatars[i][parameter_set_player.good_three].text = avatar[parameter_set_player.good_three];
+
+        pixi_avatars[i].health_label.text = avatar.health.toFixed(1);;
     }
 },
 
