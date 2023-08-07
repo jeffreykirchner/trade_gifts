@@ -156,7 +156,7 @@ subject_house_click(target_house_id)
     app.selected_house.house = app.session.world_state.houses[target_house_id];
     app.selected_house.target_house_id = target_house_id;
 
-    session_player = app.session.world_state_avatars.session_players[app.session_player.id];
+    let session_player = app.session.world_state_avatars.session_players[app.session_player.id];
     parameter_set_player_id = session_player.parameter_set_player_id;
     app.selected_house.parameter_set_player = app.session.parameter_set.parameter_set_players[parameter_set_player_id];
 
@@ -181,59 +181,84 @@ subject_house_click(target_house_id)
 },
 
 /**
- * send interaction to server
+ * send move fruit house
  */
-send_move_fruit_to_avatar()
+send_move_fruit_house()
 {
     if(!app.session.world_state["started"]) return;
-    if(!app.selected_house.avatar) return;
+    if(!app.selected_house.house) return;
 
     app.clear_main_form_errors();
 
     let avatar = app.session.world_state.avatars[app.session_player.id];
+    let house = app.session.world_state.houses[app.selected_house.target_house_id];
 
     if(app.selected_house.good_one_move <= 0 && 
        app.selected_house.good_two_move <= 0 && 
        app.selected_house.good_three_move <= 0)
     {
-        app.display_errors({good_one_move: ["Invalid Amount"], good_two_move: ["Invalid Amount"], good_three_move: ["Invalid Amount"]});
+        app.display_errors({good_one_move_house: ["Invalid Amount"], 
+                            good_two_move_house: ["Invalid Amount"], 
+                            good_three_move_house: ["Invalid Amount"]});
         return;
     }
 
-    if(app.selected_house.good_one_move > avatar[app.selected_house.good_one])
+    let g1_max = 0;
+    let g2_max = 0;
+    let g3_max = 0;
+    if(app.selected_house.direction == "avatar_to_house")
     {
-        app.display_errors({good_one_move: ["Invalid Amount"]});
-        app.selected_house.good_one_available = avatar[app.selected_house.good_one];
-        return;
-    }
+        g1_max = avatar[app.selected_house.good_one];
+        g2_max = avatar[app.selected_house.good_two];
+        g3_max = avatar[app.selected_house.good_three];
 
-    if(app.selected_house.good_two_move > avatar[app.selected_house.good_two])
+        app.selected_house.good_one_avatar_available = g1_max
+        app.selected_house.good_two_avatar_available = g2_max
+        app.selected_house.good_three_avatar_available = g3_max
+    }
+    else
     {
-        app.display_errors({good_two_move: ["Invalid Amount"]});
-        app.selected_house.good_two_available = avatar[app.selected_house.good_two];
-        return;
+        g1_max = house[app.selected_house.good_one];
+        g2_max = house[app.selected_house.good_two];
+        g3_max = house[app.selected_house.good_three];
+
+        app.selected_house.good_one_house_available = g1_max
+        app.selected_house.good_two_house_available = g2_max
+        app.selected_house.good_three_house_available = g3_max
     }
 
-    if(app.selected_house.good_three_move > avatar[app.selected_house.good_three])
+    if(app.selected_house.good_one_move > g1_max)
     {
-        app.display_errors({good_three_move: ["Invalid Amount"]});
-        app.selected_house.good_three_available = avatar[app.selected_house.good_three];
+        app.display_errors({good_one_move_house: ["Invalid Amount"]});
         return;
     }
 
-    app.send_message("move_fruit_to_avatar", 
+    if(app.selected_house.good_two_move > g2_max)
+    {
+        app.display_errors({good_two_move_house: ["Invalid Amount"]});
+        return;
+    }
+
+    if(app.selected_house.good_three_move > g3_max)
+    {
+        app.display_errors({good_three_move_house: ["Invalid Amount"]});
+        return;
+    }
+
+    app.send_message("move_fruit_to_house", 
                     {"good_one_move" : app.selected_house.good_one_move,
                      "good_two_move" : app.selected_house.good_two_move,
                      "good_three_move" : app.selected_house.good_three_move,
+                     "direction" : app.selected_house.direction,
                      "target_house_id" : app.selected_house.target_house_id},
                      "group"); 
 },
 
 
 /**
- * take update from server about moving fruit to avatar
+ * take update from server about moving fruit to or from house
  */
-take_update_move_fruit_to_avatar(message_data)
+take_update_move_fruit_house(message_data)
 {
     if(message_data.status == "success")
     {
@@ -294,14 +319,23 @@ take_update_move_fruit_to_avatar(message_data)
 },
 
 /**
-* select all fruit to move to avatar
+* select all fruit for house movement   
 */
-select_all_fruit_avatar()
+select_all_fruit_house()
 {
-   let avatar = app.session.world_state.avatars[app.session_player.id];
+    let session_player = app.session.world_state.avatars[app.session_player.id];
+    let house = app.session.world_state.houses[app.selected_house.target_house_id];
 
-   app.selected_house.good_one_move = avatar[app.selected_house.good_one];
-   app.selected_house.good_two_move = avatar[app.selected_house.good_two];
-   app.selected_house.good_three_move = avatar[app.selected_house.good_three];
-
+    if(app.selected_house.direction == "avatar_to_house")
+    {
+        app.selected_house.good_one_move = session_player[app.selected_house.good_one];
+        app.selected_house.good_two_move = session_player[app.selected_house.good_two];
+        app.selected_house.good_three_move = session_player[app.selected_house.good_three];
+    }
+    else
+    {
+        app.selected_house.good_one_move = house[app.selected_house.good_one];
+        app.selected_house.good_two_move = house[app.selected_house.good_two];
+        app.selected_house.good_three_move = house[app.selected_house.good_three];
+    }
 },

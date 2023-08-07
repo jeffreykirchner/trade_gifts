@@ -201,6 +201,9 @@ var app = Vue.createApp({
                 case "update_move_fruit_to_avatar":
                     app.take_update_move_fruit_to_avatar(message_data);
                     break;
+                case "update_move_fruit_to_house":
+                    app.take_update_move_fruit_to_house(message_data);
+                    break;
                 
             }
 
@@ -563,6 +566,13 @@ var app = Vue.createApp({
             e = document.getElementById("id_errors_good_two_move");
             if(e) e.remove();
             e = document.getElementById("id_errors_good_three_move");
+            if(e) e.remove();
+
+            e = document.getElementById("id_errors_good_one_move_house");
+            if(e) e.remove();
+            e = document.getElementById("id_errors_good_two_move_house");
+            if(e) e.remove();
+            e = document.getElementById("id_errors_good_three_move_house");
             if(e) e.remove();
         },
 

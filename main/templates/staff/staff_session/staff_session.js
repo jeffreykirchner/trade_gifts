@@ -220,6 +220,9 @@ var app = Vue.createApp({
                 case "update_move_fruit_to_avatar":
                     app.take_update_move_fruit_to_avatar(message_data);
                     break;
+                case "update_move_fruit_to_house":
+                    app.take_update_move_fruit_to_house(message_data);
+                    break;
             }
 
             app.first_load_done = true;

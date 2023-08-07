@@ -27,7 +27,7 @@
                     </div>
                 </div>
 
-                <div class="row align-items-center text-center fw-bold" v-if="selected_house.house" id="div_id_good_one_move">
+                <div class="row align-items-center text-center fw-bold" v-if="selected_house.house" id="div_id_good_one_move_house">
                     <div class="col-4 text-center">
                         <img class="field_modal_icons" v-bind:src="'/static/' + selected_house.good_one.toLowerCase() + '.png'" />
                     </div>  
@@ -38,13 +38,14 @@
                            min="0"
                            max="999"
                            step="1"                           
-                           id="good_one_move">                   
+                           id="good_one_move_house">                   
                           
-                           of [[selected_house.good_one_available]]
+                           of <span v-if="selected_house.direction=='avatar_to_house'">[[selected_house.good_one_avatar_available]]</span>
+                              <span v-else>[[selected_house.good_one_house_available]]</span>
                     </div>                    
                 </div>
                       
-                <div class="row align-items-center text-center fw-bold" v-if="selected_house.house" id="div_id_good_two_move">
+                <div class="row align-items-center text-center fw-bold" v-if="selected_house.house" id="div_id_good_two_move_house">
                     <div class="col-4 text-center">
                         <img class="field_modal_icons" v-bind:src="'/static/' + selected_house.good_two.toLowerCase() + '.png'" />
                     </div>  
@@ -55,13 +56,14 @@
                            min="0"
                            max="999"
                            step="1"
-                           id="good_two_move">     
+                           id="good_two_move_house">     
                            
-                           of [[selected_house.good_two_available]]
+                           of <span v-if="selected_house.direction=='avatar_to_house'">[[selected_house.good_two_avatar_available]]</span>
+                              <span v-else>[[selected_house.good_two_house_available]]</span>
                     </div>
                 </div>
 
-                <div class="row align-items-center text-center fw-bold" v-if="selected_house.house" id="div_id_good_three_move">
+                <div class="row align-items-center text-center fw-bold" v-if="selected_house.house" id="div_id_good_three_move_house">
                     <div class="col-4 text-center">
                         <img class="field_modal_icons" v-bind:src="'/static/' + selected_house.good_three.toLowerCase() + '.png'" />
                     </div>  
@@ -72,9 +74,10 @@
                            min="0"
                            max="999"
                            step="1"
-                           id="good_three_move">         
+                           id="good_three_move_house">         
                            
-                           of [[selected_house.good_three_available]]
+                           of <span v-if="selected_house.direction=='avatar_to_house'">[[selected_house.good_three_avatar_available]]</span>
+                              <span v-else>[[selected_house.good_three_house_available]]</span>
                     </div>
                 </div>
             
