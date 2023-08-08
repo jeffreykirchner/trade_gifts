@@ -14,6 +14,7 @@ from django.utils.decorators import method_decorator
 from datetime import datetime, timedelta
 
 from main.globals import ExperimentPhase
+from main.globals import convert_goods_to_health
 
 import main
 
@@ -772,6 +773,8 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
                 house[good_one] -= good_one_move
                 house[good_two] -= good_two_move
                 house[good_three] -= good_three_move
+
+            house["health_value"] = convert_goods_to_health(house[good_one], house[good_two], house[good_three], parameter_set)
 
             session.save()
 

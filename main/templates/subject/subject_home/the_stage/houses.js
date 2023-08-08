@@ -141,6 +141,8 @@ update_house_inventory()
         pixi_houses[i][parameter_set_player.good_one].text = house[parameter_set_player.good_one];
         pixi_houses[i][parameter_set_player.good_two].text = house[parameter_set_player.good_two];
         pixi_houses[i][parameter_set_player.good_three].text = house[parameter_set_player.good_three];
+
+        pixi_houses[i].health_label.text = "Health: +" + house.health_value;
     }
 },
 

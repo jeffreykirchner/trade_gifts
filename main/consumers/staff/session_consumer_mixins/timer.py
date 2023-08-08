@@ -89,11 +89,14 @@ class TimerMixin():
                 #avatar inventorys
                 
                 result["fields"] = {}
+
                 for i in self.world_state_local["fields"]:
                     result["fields"][i] = {}
                     for j in main.globals.Goods.choices:
                         good = j[0]
                         result["fields"][i][good] = self.world_state_local["fields"][i][good]
+
+                result["houses"] = self.world_state_local["houses"]
 
             #current locations
             result["current_locations"] = {}

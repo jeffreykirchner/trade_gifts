@@ -178,7 +178,8 @@ class Session(models.Model):
 
             session_player = main.models.SessionPlayer.objects.get(parameter_set_player_id= v["id"])
             v["session_player"] = session_player.id
-           
+            v["health_value"] = "0"
+            
             for j in main.globals.Goods.choices:
                 v[j[0]] = 0
             

@@ -96,6 +96,18 @@ class SessionPeriod(models.Model):
                 avatar[good] = 0
 
         #convert goods in homes to cash
+        for i in self.session.world_state["houses"]:
+            house = self.session.world_state["houses"][i]
+            avatar = self.session.world_state["avatars"][str(house["session_player"])]
+
+            avatar["health"] = Decimal(avatar["health"]) + Decimal(house["health_value"])
+            avatar["health"] = str(min(Decimal(avatar["health"]), 100))
+
+            house["health_value"] = 0
+
+            for j in main.globals.Goods.choices:
+                good = j[0]
+                house[good] = 0
         
         self.consumption_completed = True
         self.save()
