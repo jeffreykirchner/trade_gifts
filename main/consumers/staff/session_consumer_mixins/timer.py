@@ -13,6 +13,8 @@ from main.models import SessionEvent
 
 from main.globals import ExperimentPhase
 
+import main
+
 class TimerMixin():
     '''
     timer mixin for staff session consumer
@@ -29,34 +31,16 @@ class TimerMixin():
             logger.warning(f"start_timer: not controlling channel")
             return
 
-        if event["message_text"]["action"] == "start":            
-            self.world_state_local["timer_running"] = True
+        v = await sync_to_async(sync_start_timer)(event, self.session_id)
+
+        if v["world_state"]:
+            self.world_state_local = v["world_state"]
+
+            result = {"timer_running" : self.world_state_local["timer_running"]}
+            await self.send_message(message_to_self=result, message_to_group=None,
+                                    message_type=event['type'], send_to_client=True, send_to_group=False)
         else:
-            self.world_state_local["timer_running"] = False
-
-        self.world_state_local["timer_history"].append({"time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
-                                                        "count": 0})
-        
-        await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
-
-        # if self.world_state_local["timer_running"]:
-        #     result = {"timer_running" : True}
-        #     await self.send_message(message_to_self=result, message_to_group=None,
-        #                             message_type=event['type'], send_to_client=True, send_to_group=False)
-        
-        #     #start continue timer
-        #     # await self.channel_layer.send(
-        #     #     self.channel_name,
-        #     #     {
-        #     #         'type': "continue_timer",
-        #     #         'message_text': {},
-        #     #     }
-        #     # )
-        # else:
-            #stop timer
-        result = {"timer_running" : self.world_state_local["timer_running"]}
-        await self.send_message(message_to_self=result, message_to_group=None,
-                                message_type=event['type'], send_to_client=True, send_to_group=False)
+            return
         
         # logger.info(f"start_timer complete {event}")
 
@@ -77,68 +61,39 @@ class TimerMixin():
                                     message_type="stop_timer_pulse", send_to_client=True, send_to_group=False)
             return
 
-        stop_timer = False
-        send_update = True
+        #check if full second has past
+        ts = datetime.now() - datetime.strptime(self.world_state_local["timer_history"][-1]["time"],"%Y-%m-%dT%H:%M:%S.%f")
 
-        result = {"earnings":{}}
+        if self.world_state_local["timer_history"][-1]["count"] == math.floor(ts.seconds):
+            return
 
-        #check session over
-        if self.world_state_local["current_period"] >= self.parameter_set_local["period_count"] and \
-           self.world_state_local["time_remaining"] <= 1:
+        v = await sync_to_async(sync_continue_timer)(event, self.session_id)
 
-            self.world_state_local["current_period"] = self.parameter_set_local["period_count"]
-            self.world_state_local["time_remaining"] = 0
-            
-            session = await Session.objects.aget(id=self.session_id)
-            current_session_period = await session.session_periods.aget(period_number=self.world_state_local["current_period"])
-            result["earnings"] = await current_session_period.store_earnings(self.world_state_local)
+        if v["world_state"]:
+            self.world_state_local = v["world_state"]
+            result = {}
 
-            self.world_state_local["current_experiment_phase"] = ExperimentPhase.NAMES
-            stop_timer = True
-           
-        if self.world_state_local["current_experiment_phase"] != ExperimentPhase.NAMES:
-
-            ts = datetime.now() - datetime.strptime(self.world_state_local["timer_history"][-1]["time"],"%Y-%m-%dT%H:%M:%S.%f")
-
-            #check if a full second has passed
-            if self.world_state_local["timer_history"][-1]["count"] == math.floor(ts.seconds):
-                send_update = False
-
-            if send_update:
-                self.world_state_local["timer_history"][-1]["count"] = math.floor(ts.seconds)
-
-                total_time = 0
-                for i in self.world_state_local["timer_history"]:
-                    total_time += i["count"]
-
-                current_period = math.floor(total_time / self.parameter_set_local["period_length"]) + 1
-                time_remaining = self.parameter_set_local["period_length"] - (total_time % self.parameter_set_local["period_length"])
-
-                self.world_state_local["time_remaining"] = time_remaining
-                self.world_state_local["current_period"] = current_period
-
-                #check if period over
-                if self.world_state_local["time_remaining"] == 1:
-
-                    current_period_id = str(self.world_state_local["session_periods_order"][self.world_state_local["current_period"]-1])
-
-                    for i in self.world_state_local["session_players"]:
-                        self.world_state_local["session_players"][i]["earnings"] += self.world_state_local["session_players"][i]["inventory"][current_period_id]
-
-                        result["earnings"][i] = {}
-                        result["earnings"][i]["total_earnings"] = self.world_state_local["session_players"][i]["earnings"]
-                        result["earnings"][i]["period_earnings"] = self.world_state_local["session_players"][i]["inventory"][current_period_id]
-
-        if send_update:
             #session status
             result["value"] = "success"
-            result["stop_timer"] = stop_timer
             result["time_remaining"] = self.world_state_local["time_remaining"]
             result["current_period"] = self.world_state_local["current_period"]
             result["timer_running"] = self.world_state_local["timer_running"]
             result["started"] = self.world_state_local["started"]
             result["finished"] = self.world_state_local["finished"]
             result["current_experiment_phase"] = self.world_state_local["current_experiment_phase"]
+            result["earnings"] = v["earnings"]
+            result["period_is_over"] = v["period_is_over"]
+            result["avatars"] = self.world_state_local["avatars"]
+
+            if v["period_is_over"]:
+                #avatar inventorys
+                
+                result["fields"] = {}
+                for i in self.world_state_local["fields"]:
+                    result["fields"][i] = {}
+                    for j in main.globals.Goods.choices:
+                        good = j[0]
+                        result["fields"][i][good] = self.world_state_local["fields"][i][good]
 
             #current locations
             result["current_locations"] = {}
@@ -148,33 +103,29 @@ class TimerMixin():
             session_player_status = {}
 
             #decrement waiting and interaction time
-            for p in self.world_state_local["session_players"]:
-                session_player = self.world_state_local["session_players"][p]
+            # for p in self.world_state_local["session_players"]:
+            #     session_player = self.world_state_local["session_players"][p]
 
-                if session_player["cool_down"] > 0:
-                    session_player["cool_down"] -= 1
+            #     if session_player["cool_down"] > 0:
+            #         session_player["cool_down"] -= 1
 
-                if session_player["interaction"] > 0:
-                    session_player["interaction"] -= 1
+            #     if session_player["interaction"] > 0:
+            #         session_player["interaction"] -= 1
 
-                    if session_player["interaction"] == 0:
-                        session_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+            #         if session_player["interaction"] == 0:
+            #             session_player["cool_down"] = self.parameter_set_local["cool_down_length"]
                 
-                if session_player["interaction"] == 0:
-                    session_player["frozen"] = False
-                    session_player["tractor_beam_target"] = None
+            #     if session_player["interaction"] == 0:
+            #         session_player["frozen"] = False
+            #         session_player["tractor_beam_target"] = None
 
-                session_player_status[p] = {"interaction": session_player["interaction"], 
-                                            "frozen": session_player["frozen"], 
-                                            "cool_down": session_player["cool_down"],
-                                            "tractor_beam_target" : session_player["tractor_beam_target"]}                
+            #     session_player_status[p] = {"interaction": session_player["interaction"], 
+            #                                 "frozen": session_player["frozen"], 
+            #                                 "cool_down": session_player["cool_down"],
+            #                                 "tractor_beam_target" : session_player["tractor_beam_target"]}                
             
             result["session_player_status"] = session_player_status
 
-            if stop_timer:
-                self.world_state_local["timer_running"] = False
-
-            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
             await SessionEvent.objects.acreate(session_id=self.session_id, 
                                                type="timer_tick",
                                                period_number=self.world_state_local["current_period"],
@@ -183,21 +134,6 @@ class TimerMixin():
             
             await self.send_message(message_to_self=False, message_to_group=result,
                                     message_type="time", send_to_client=False, send_to_group=True)
-
-        #if session is not over continue
-        #stop_timer = True
-        # if not stop_timer:
-
-        #     loop = asyncio.get_event_loop()
-
-        #     loop.call_later(0.33, asyncio.create_task, 
-        #                     self.channel_layer.send(
-        #                         self.channel_name,
-        #                         {
-        #                             'type': "continue_timer",
-        #                             'message_text': {},
-        #                         }
-        #                     ))
         
         # logger.info(f"continue_timer end")
 
@@ -210,3 +146,107 @@ class TimerMixin():
 
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
+    
+
+def sync_start_timer(event, session_id):
+    '''
+    start timer action
+    '''
+    status = "success"
+    error_message = []
+    world_state = None
+
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
+
+        if event["message_text"]["action"] == "start":            
+            session.world_state["timer_running"] = True
+        else:
+            session.world_state["timer_running"] = False
+
+        session.world_state["timer_history"].append({"time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
+                                                     "count": 0})
+
+        session.save()
+        world_state = session.world_state
+    
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+
+def sync_continue_timer(event, session_id):
+    '''
+    timer pulse action
+    '''
+
+    status = "success"
+    error_message = []
+    world_state = None
+    earnings = {}
+    period_is_over = False
+
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
+        parameter_set = session.parameter_set.json()
+
+        #check session over
+        if session.world_state["current_period"] >= parameter_set["period_count"] and \
+            session.world_state["time_remaining"] <= 1:
+
+            session.world_state["current_period"] = parameter_set["period_count"]
+            session.world_state["time_remaining"] = 0
+            session.world_state["timer_running"] = False
+
+            session.save()
+            
+            session = session.get_current_session_period().do_consumption()
+            session.world_state["current_experiment_phase"] = ExperimentPhase.NAMES
+            period_is_over = True
+
+            session.save()
+            
+        if session.world_state["current_experiment_phase"] != ExperimentPhase.NAMES:
+
+            ts = datetime.now() - datetime.strptime(session.world_state["timer_history"][-1]["time"],"%Y-%m-%dT%H:%M:%S.%f")
+
+            session.world_state["timer_history"][-1]["count"] = math.floor(ts.seconds)
+
+            total_time = 0
+            for i in session.world_state["timer_history"]:
+                total_time += i["count"]
+
+            current_period = math.floor(total_time / parameter_set["period_length"]) + 1
+            time_remaining = parameter_set["period_length"] - (total_time % parameter_set["period_length"])
+
+            if current_period == 2 and time_remaining ==10:
+                '''test code'''
+                pass
+
+            session.world_state["time_remaining"] = time_remaining
+            session.world_state["current_period"] = current_period
+            session.save()
+
+            period_is_over = False
+            if current_period > 1:
+                last_period_id = session.world_state["session_periods_order"][current_period - 2]
+                last_period = session.world_state["session_periods"][str(last_period_id)]
+
+                period_is_over = not last_period["consumption_completed"]
+
+            #check if period over
+            if period_is_over:
+                
+                session = session.session_periods.get(id=last_period_id).do_consumption()
+                session = session.get_current_session_period().do_timer_actions(time_remaining)
+                session = session.get_current_session_period().do_production()
+
+                for i in session.world_state["session_players"]:
+                    # session.world_state["session_players"][i]["earnings"] += session.world_state["session_players"][i]["inventory"][current_period_id]
+
+                    earnings[i] = {}
+                    earnings[i]["total_earnings"] = 0
+                    earnings[i]["period_earnings"] = 0
+            else:
+                session = session.get_current_session_period().do_timer_actions(time_remaining)
+          
+        world_state = session.world_state
+
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state, "earnings" : earnings, "period_is_over" : period_is_over}

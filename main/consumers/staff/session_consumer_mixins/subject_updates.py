@@ -173,7 +173,7 @@ class SubjectUpdatesMixin():
             # result = {"value" : "fail", "result" : {"message" : "Invalid location."}}
         
         player_id = self.session_players_local[event["player_key"]]["id"]
-        session_player = self.world_state_local["session_players"][str(player_id)]
+        session_player = self.world_state_avatars_local["session_players"][str(player_id)]
 
         if session_player["frozen"] or session_player["tractor_beam_target"]:
             return
@@ -181,13 +181,13 @@ class SubjectUpdatesMixin():
         session_player["target_location"] = target_location
         session_player["current_location"] = current_location
 
-        last_update = datetime.strptime(self.world_state_local["last_update"], "%Y-%m-%d %H:%M:%S.%f")
+        last_update = datetime.strptime(self.world_state_avatars_local["last_update"], "%Y-%m-%d %H:%M:%S.%f")
         dt_now = datetime.now()
 
         if dt_now - last_update > timedelta(seconds=1):
             # logger.info("updating world state")
-            self.world_state_local["last_update"] = str(dt_now)
-            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+            self.world_state_avatars_local["last_update"] = str(dt_now)
+            await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
         
         result = {"value" : "success", 
                   "target_location" : target_location, 
@@ -240,7 +240,7 @@ class SubjectUpdatesMixin():
 
         target_player['interaction'] = self.parameter_set_local['interaction_length']
 
-        await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+        await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
 
         await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
@@ -307,7 +307,7 @@ class SubjectUpdatesMixin():
                 source_player["inventory"][result["period"]] = result["source_player_inventory"]
                 target_player["inventory"][result["period"]] = result["target_player_inventory"]
 
-                await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+                await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
 
             await SessionEvent.objects.acreate(session_id=self.session_id, 
                                                session_player_id=player_id,
@@ -377,60 +377,409 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
 
-def sync_interaction(session_id, source_player_id, target_player_id, direction, amount):
+    async def field_harvest(self, event):
+        '''
+        subject activates tractor beam
+       '''
+        if self.controlling_channel != self.channel_name:
+            return
+        
+        logger = logging.getLogger(__name__)
+        # logger.info(f"field_harvest: {event}")
+        
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            field_id = event["message_text"]["field_id"]
+            good_one_harvest = int(event["message_text"]["good_one_harvest"])
+            good_two_harvest = int(event["message_text"]["good_two_harvest"])
+        except:
+            logger.info(f"field_harvest: invalid data, {event['message_text']}")
+            return
+        
+        if good_one_harvest < 0 or good_two_harvest < 0:
+            logger.info(f"field_harvest: invalid amounts, {event['message_text']}")
+            return
+
+        v = await sync_to_async(sync_field_harvest)(self.session_id, player_id, field_id, good_one_harvest, good_two_harvest)
+        
+        result = {"status" : v["status"], "error_message" : v["error_message"]}
+
+        if v["world_state"]:
+            self.world_state_local = v["world_state"]
+            result["field"] = {"id" : field_id}
+            result["avatar"] = {"id" : player_id}
+            result["good_one_harvest"] = good_one_harvest
+            result["good_two_harvest"] = good_two_harvest
+
+            for i in main.globals.Goods.choices:
+                good = i[0]
+                result["field"][good] = self.world_state_local["fields"][str(field_id)][good]
+                result["avatar"][good] = self.world_state_local["avatars"][str(player_id)][good]
+        else:
+            logger.info(f"field_harvest: invalid amounts from sync, {event['message_text']}")
+            return
+
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+        
+    async def update_field_harvest(self, event):
+        '''
+        subject activates tractor beam update
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+
+    async def field_effort(self, event):
+        '''
+        update field's effort settings
+        '''
+
+        if self.controlling_channel != self.channel_name:
+            return
+        
+        logger = logging.getLogger(__name__)
+        # logger.info(f"field_harvest: {event}")
+        
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            field_id = event["message_text"]["field_id"]
+            good_one_effort = int(event["message_text"]["good_one_effort"])
+            good_two_effort = int(event["message_text"]["good_two_effort"])
+        except:
+            logger.info(f"field_effort: invalid data, {event['message_text']}")
+            return
+        
+        if good_one_effort < 0 or good_two_effort < 0:
+            logger.info(f"field_harvest: invalid amounts, less than zero, {event['message_text']}")
+            return
+        
+        if good_one_effort + good_two_effort != self.parameter_set_local["production_effort"]:
+            logger.info(f"field_harvest: invalid amounts, does not total effort, {event['message_text']}")
+            return
+
+        v = await sync_to_async(sync_field_effort)(self.session_id, player_id, field_id, good_one_effort, good_two_effort)
+
+        result = {"status" : v["status"], "error_message" : v["error_message"]}
+
+        if v["world_state"]:
+            self.world_state_local = v["world_state"]
+            result["field"] = {"id" : field_id}
+            result["avatar"] = {"id" : player_id}
+            result["good_one_effort"] = good_one_effort
+            result["good_two_effort"] = good_two_effort
+        else:
+            logger.info(f"field_effort: invalid amounts from sync, {event['message_text']}")
+            return
+        
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+
+    async def update_field_effort(self, event):
+        '''
+        update field's effort settings
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+
+    async def move_fruit_to_avatar(self, event):
+        '''
+        move fruit from one avatar to another
+        '''
+
+        if self.controlling_channel != self.channel_name:
+            return
+        
+        logger = logging.getLogger(__name__)
+
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            target_player_id = event["message_text"]["target_player_id"]
+            good_one_move = int(event["message_text"]["good_one_move"])
+            good_two_move = int(event["message_text"]["good_two_move"])
+            good_three_move = int(event["message_text"]["good_three_move"])
+        except:
+            logger.info(f"move_fruit_to_avatar: invalid data, {event['message_text']}")
+            return
+        
+        v = await sync_to_async(sync_move_fruit_to_avatar)(self.session_id, player_id, target_player_id, good_one_move, good_two_move, good_three_move)
+
+        result = {"status" : v["status"], "error_message" : v["error_message"]}
+
+        if v["world_state"]:
+            self.world_state_local = v["world_state"]
+
+            result["source_player_id"] = player_id
+            result["target_player_id"] = target_player_id
+            result["source_player"] = self.world_state_local["avatars"][str(player_id)]
+            result["target_player"] = self.world_state_local["avatars"][str(target_player_id)]
+            result["good_one_move"] = good_one_move
+            result["good_two_move"] = good_two_move
+            result["good_three_move"] = good_three_move
+            
+        else:
+            logger.info(f"move_fruit_to_avatar: invalid amounts from sync, {event['message_text']}")
+            return
+
+
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+
+
+    async def update_move_fruit_to_avatar(self, event):
+        '''
+        update move fruit to avatar
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+        
+
+    async def move_fruit_to_house(self, event):
+        '''
+        move fruit from one avatar to or from a house
+        '''
+
+        if self.controlling_channel != self.channel_name:
+            return
+        
+        logger = logging.getLogger(__name__)
+
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            target_house_id = event["message_text"]["target_house_id"]
+            good_one_move = int(event["message_text"]["good_one_move"])
+            good_two_move = int(event["message_text"]["good_two_move"])
+            good_three_move = int(event["message_text"]["good_three_move"])
+            direction = event["message_text"]["direction"]
+        except:
+            logger.info(f"move_fruit_to_house: invalid data, {event['message_text']}")
+            return
+        
+        v = await sync_to_async(sync_move_fruit_to_house)(self.session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction)
+
+        result = {"status" : v["status"], "error_message" : v["error_message"]}
+
+        if v["world_state"]:
+            self.world_state_local = v["world_state"]
+
+            result["source_player_id"] = player_id
+            result["target_house_id"] = target_house_id
+            result["source_player"] = self.world_state_local["avatars"][str(player_id)]
+            result["target_house"] = self.world_state_local["houses"][str(target_house_id)]
+            result["good_one_move"] = good_one_move
+            result["good_two_move"] = good_two_move
+            result["good_three_move"] = good_three_move
+            result["direction"] = direction
+            
+        else:
+            logger.info(f"move_fruit_to_house: invalid amounts from sync, {event['message_text']}")
+            return
+
+
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+
+
+    async def update_move_fruit_to_house(self, event):
+        '''
+        update field's effort settings
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+                
+def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_two_harvest):
     '''
-    syncronous interaction transaction
+    harvest from field
     '''
 
-    # world_state_filter=f"world_state__tokens__{period_id}__{token_id}__status"
-    
-    result = {"value" : "success"}
-    result["source_player_id"] = source_player_id
-    result["target_player_id"] = target_player_id
+    status = "success"
+    error_message = []
+    world_state = None
 
     with transaction.atomic():
-    
+        session = Session.objects.select_for_update().get(id=session_id)
+        session_period = session.get_current_session_period()
+        parameter_set = session.parameter_set.json()
+
+        field = session.world_state['fields'][str(field_id)]
+        field_type = parameter_set['parameter_set_field_types'][str(field['parameter_set_field_type'])]
+        player = session.world_state['avatars'][str(player_id)]
+
+        good_one = field_type['good_one']
+        good_two = field_type['good_two']
+
+        if field[good_one] < good_one_harvest:
+            status = "fail"
+            error_message.append({"id":"good_two_harvest", "messge": "Invalid harvest amount."})
+
+        if field[good_two] < good_two_harvest:
+            status = "fail"
+            error_message.append({"id":"good_two_harvest", "messge": "Invalid harvest amount."})
+
+        if status == "success":
+            field[good_one] -= good_one_harvest
+            field[good_two] -= good_two_harvest
+
+            player[good_one] += good_one_harvest
+            player[good_two] += good_two_harvest
+
+            field["harvest_history"][str(session_period.id)].append({good_one:good_one_harvest, 
+                                                                     good_two:good_two_harvest, 
+                                                                     "session_player":player_id,
+                                                                     "time_remaining":session.world_state["time_remaining"]})
+
+            session.save()
+        
+        world_state = session.world_state
+        
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+
+def sync_field_effort(session_id, player_id, field_id, good_one_effort, good_two_effort):
+    '''
+    update field effort
+    '''
+
+    status = "success"
+    error_message = []
+    world_state = None
+
+    with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
 
-        source_player = session.world_state['session_players'][str(source_player_id)]
-        target_player = session.world_state['session_players'][str(target_player_id)]
+        session.world_state['fields'][str(field_id)]['good_one_effort'] = good_one_effort
+        session.world_state['fields'][str(field_id)]['good_two_effort'] = good_two_effort
 
-        current_period_id = str(session.get_current_session_period().id)
-
-        if direction == 'take':
-            #take from target
-            if target_player["inventory"][current_period_id] < amount:
-                result["value"] = "fail"
-                result["error_message"] = "They do not have enough tokens."
-                return result
-            else:
-                target_player["inventory"][current_period_id] -= amount
-                source_player["inventory"][current_period_id] += amount
-
-                result["target_player_change"] = f"-{amount}"
-                result["source_player_change"] = f"+{amount}"             
-        else:
-            #give to target
-            if source_player["inventory"][current_period_id] < amount:
-                result["value"] = "fail"
-                result["error_message"] = "You do not have enough tokens."
-                return result
-            else:
-                source_player["inventory"][current_period_id] -= amount
-                target_player["inventory"][current_period_id] += amount
-
-                result["source_player_change"] = f"-{amount}"
-                result["target_player_change"] = f"+{amount}"
-                
         session.save()
+        world_state = session.world_state
+    
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 
-    result["source_player_inventory"] = source_player["inventory"][current_period_id]
-    result["target_player_inventory"] = target_player["inventory"][current_period_id]
+def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_move, good_two_move, good_three_move):
+    '''
+    move fruit from one avatar to another
+    '''
+    status = "success"
+    error_message = []
+    world_state = None
 
-    result["period"] = current_period_id
-    result["direction"] = direction
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
 
-    return result
+        parameter_set = session.parameter_set.json()
+        parameter_set_player_id = str(session.world_state['avatars'][str(player_id)]['parameter_set_player_id'])
+
+        good_one = parameter_set['parameter_set_players'][parameter_set_player_id]['good_one']
+        good_two = parameter_set['parameter_set_players'][parameter_set_player_id]['good_two']
+        good_three = parameter_set['parameter_set_players'][parameter_set_player_id]['good_three']
+
+        if session.world_state['avatars'][str(player_id)][good_one] < good_one_move:
+            status = "fail"
+            error_message.append({"id":"good_one_move", "messge": "Invalid amount."})
+
+        if session.world_state['avatars'][str(player_id)][good_two] < good_two_move:
+            status = "fail"
+            error_message.append({"id":"good_two_move", "messge": "Invalid amount."})
+
+        if session.world_state['avatars'][str(player_id)][good_three] < good_three_move:
+            status = "fail"
+            error_message.append({"id":"good_three_move", "messge": "Invalid amount."})
+
+        if status == "success":
+            session.world_state['avatars'][str(player_id)][good_one] -= good_one_move
+            session.world_state['avatars'][str(player_id)][good_two] -= good_two_move
+            session.world_state['avatars'][str(player_id)][good_three] -= good_three_move
+
+            session.world_state['avatars'][str(target_player_id)][good_one] += good_one_move
+            session.world_state['avatars'][str(target_player_id)][good_two] += good_two_move
+            session.world_state['avatars'][str(target_player_id)][good_three] += good_three_move
+
+            session.save()
+
+            world_state = session.world_state
+
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+
+def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction):
+    '''
+    move fruit from between avatar and house
+    '''
+    status = "success"
+    error_message = []
+    world_state = None
+
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
+
+        parameter_set = session.parameter_set.json()
+        parameter_set_player_id = str(session.world_state['avatars'][str(player_id)]['parameter_set_player_id'])
+        house = session.world_state['houses'][str(target_house_id)]
+        avatar =  session.world_state['avatars'][str(player_id)]
+
+        good_one = parameter_set['parameter_set_players'][parameter_set_player_id]['good_one']
+        good_two = parameter_set['parameter_set_players'][parameter_set_player_id]['good_two']
+        good_three = parameter_set['parameter_set_players'][parameter_set_player_id]['good_three']
+
+        if direction == "avatar_to_house":
+            if avatar[good_one] < good_one_move:
+                status = "fail"
+                error_message.append({"id":"good_one_move", "messge": "Invalid amount."})
+
+            if avatar[good_two] < good_two_move:
+                status = "fail"
+                error_message.append({"id":"good_two_move", "messge": "Invalid amount."})
+
+            if avatar[good_three] < good_three_move:
+                status = "fail"
+                error_message.append({"id":"good_three_move", "messge": "Invalid amount."})
+        else:
+            if house[good_one] < good_one_move:
+                status = "fail"
+                error_message.append({"id":"good_one_move", "messge": "Invalid amount."})
+
+            if house[good_two] < good_two_move:
+                status = "fail"
+                error_message.append({"id":"good_two_move", "messge": "Invalid amount."})
+
+            if house[good_three] < good_three_move:
+                status = "fail"
+                error_message.append({"id":"good_three_move", "messge": "Invalid amount."})
+
+        if status == "success":
+            if direction == "avatar_to_house":
+                avatar[good_one] -= good_one_move
+                avatar[good_two] -= good_two_move
+                avatar[good_three] -= good_three_move
+
+                house[good_one] += good_one_move
+                house[good_two] += good_two_move
+                house[good_three] += good_three_move
+            else:
+                avatar[good_one] += good_one_move
+                avatar[good_two] += good_two_move
+                avatar[good_three] += good_three_move
+
+                house[good_one] -= good_one_move
+                house[good_two] -= good_two_move
+                house[good_three] -= good_three_move
+
+            session.save()
+
+            world_state = session.world_state
+
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+
+
                                       
     
 

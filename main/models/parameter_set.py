@@ -46,16 +46,16 @@ class ParameterSet(models.Model):
 
     avatar_scale = models.DecimalField(verbose_name='Avatar Scale', decimal_places=2, max_digits=3, default=1) #avatar scale
     
-    production_time = models.IntegerField(verbose_name='Production Time', default=10)              # = p*(α*t^ω)
-    production_alpha = models.DecimalField(verbose_name='Production Parameter alpha', decimal_places=5, max_digits=6, default=1)          
-    production_omega = models.DecimalField(verbose_name='Production Parameter omega', decimal_places=5, max_digits=6, default=1)           
-    production_rho = models.DecimalField(verbose_name='Production Parameter rho', decimal_places=5, max_digits=6, default=1)          
+    production_effort = models.IntegerField(verbose_name='Production Effort', default=10)                     # the amount of effort a subject can put into production
 
     interaction_length = models.IntegerField(verbose_name='Interaction Length', default=10)                   #interaction length in seconds
     cool_down_length = models.IntegerField(verbose_name='Cool Down Length', default=10)                       #cool down length in seconds
     interaction_range = models.IntegerField(verbose_name='Interaction Range', default=300)                    #interaction range in pixels
 
-    reconnection_limit = models.IntegerField(verbose_name='Age Warning', default=25)       #age cut that issues a warning for invalid age range
+    health_loss_per_second = models.DecimalField(verbose_name='Health Loss per Second', decimal_places=2, max_digits=3, default=1.00)            #health loss per second
+    heath_gain_per_sleep_second = models.DecimalField(verbose_name='Health Gain per Sleep Second', decimal_places=2, max_digits=4, default=5.00) #health gain per sleep second
+
+    reconnection_limit = models.IntegerField(verbose_name='Age Warning', default=25)                        #stop trying to reconnect after this many failed attempts
 
     test_mode = models.BooleanField(default=False, verbose_name='Test Mode')                                #if true subject screens will do random auto testing
 
@@ -105,14 +105,14 @@ class ParameterSet(models.Model):
 
             self.avatar_scale = new_ps.get("avatar_scale", 1)
 
-            self.production_time = new_ps.get("production_time", 10)
-            self.production_alpha = new_ps.get("production_alpha", 1)
-            self.production_omega = new_ps.get("production_omega", 1)
-            self.production_rho = new_ps.get("production_rho", 1)
+            self.production_effort = new_ps.get("production_effort", 10)
 
             self.interaction_length = new_ps.get("interaction_length", 10)
             self.cool_down_length = new_ps.get("cool_down_length", 10)
             self.interaction_range = new_ps.get("interaction_range", 300)
+
+            self.health_loss_per_second = new_ps.get("health_loss_per_second", 1.00)
+            self.heath_gain_per_sleep_second = new_ps.get("heath_gain_per_sleep_second", 5.00)
 
             self.reconnection_limit = new_ps.get("reconnection_limit", None)
 
@@ -266,14 +266,14 @@ class ParameterSet(models.Model):
 
         self.json_for_session["avatar_scale"] = self.avatar_scale
 
-        self.json_for_session["production_time"] = self.production_time
-        self.json_for_session["production_alpha"] = self.production_alpha
-        self.json_for_session["production_omega"] = self.production_omega
-        self.json_for_session["production_rho"] = self.production_rho
+        self.json_for_session["production_effort"] = self.production_effort
 
         self.json_for_session["interaction_length"] = self.interaction_length
         self.json_for_session["cool_down_length"] = self.cool_down_length
         self.json_for_session["interaction_range"] = self.interaction_range
+
+        self.json_for_session["health_loss_per_second"] = self.health_loss_per_second
+        self.json_for_session["heath_gain_per_sleep_second"] = self.heath_gain_per_sleep_second
 
         self.json_for_session["reconnection_limit"] = self.reconnection_limit
 
@@ -291,23 +291,23 @@ class ParameterSet(models.Model):
         '''
         if update_players:
             self.json_for_session["parameter_set_players_order"] = list(self.parameter_set_players.all().values_list('id', flat=True))
-            self.json_for_session["parameter_set_players"] = {p.id : p.json() for p in self.parameter_set_players.all()}
+            self.json_for_session["parameter_set_players"] = {str(p.id) : p.json() for p in self.parameter_set_players.all()}
 
         if update_walls:
             self.json_for_session["parameter_set_walls_order"] = list(self.parameter_set_walls.all().values_list('id', flat=True))
-            self.json_for_session["parameter_set_walls"] = {p.id : p.json() for p in self.parameter_set_walls.all()}
+            self.json_for_session["parameter_set_walls"] = {str(p.id) : p.json() for p in self.parameter_set_walls.all()}
 
         if update_grounds:
             self.json_for_session["parameter_set_grounds_order"] = list(self.parameter_set_grounds.all().values_list('id', flat=True))
-            self.json_for_session["parameter_set_grounds"] = {p.id : p.json() for p in self.parameter_set_grounds.all()}
+            self.json_for_session["parameter_set_grounds"] = {str(p.id) : p.json() for p in self.parameter_set_grounds.all()}
 
         if update_field_types:
             self.json_for_session["parameter_set_field_types_order"] = list(self.parameter_set_field_types.all().values_list('id', flat=True))
-            self.json_for_session["parameter_set_field_types"] = {p.id : p.json() for p in self.parameter_set_field_types.all()}
+            self.json_for_session["parameter_set_field_types"] = {str(p.id) : p.json() for p in self.parameter_set_field_types.all()}
 
         if update_fields:
             self.json_for_session["parameter_set_fields_order"] = list(self.parameter_set_fields_a.all().values_list('id', flat=True))
-            self.json_for_session["parameter_set_fields"] = {p.id : p.json() for p in self.parameter_set_fields_a.all()}
+            self.json_for_session["parameter_set_fields"] = {str(p.id) : p.json() for p in self.parameter_set_fields_a.all()}
 
         self.save()
 

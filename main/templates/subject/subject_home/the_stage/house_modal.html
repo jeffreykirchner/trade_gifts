@@ -1,0 +1,106 @@
+{% load crispy_forms_tags %}
+<!--interaction Modal -->
+<div class="modal fade " 
+     id="house_modal" 
+     data-bs-backdrop="static" 
+     data-bs-keyboard="false" 
+     tabindex="-1" 
+     aria-labelledby="house_modal" 
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header fw-bold" v-if="selected_house.house">
+                Your house
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                <div class="row">
+                    <div class="col text-center">
+                        <select class="form-select form-select-lg mb-3 fw-bold text-center" 
+                                aria-label="Avatar to house direction"
+                                v-model="selected_house.direction">
+                            <option value="avatar_to_house">Avatar -> House</option>
+                            <option value="house_to_avatar">House -> Avatar</option>
+                          </select>
+                    </div>
+                </div>
+
+                <div class="row align-items-center text-center fw-bold" v-if="selected_house.house" id="div_id_good_one_move_house">
+                    <div class="col-4 text-center">
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_house.good_one.toLowerCase() + '.png'" />
+                    </div>  
+                    <div class="col text-start" id="div_id_good_one_harvest">
+                        <input type="number" 
+                           class="transfer_model_input form-control-lg fw-bold"
+                           v-model="selected_house.good_one_move"
+                           min="0"
+                           max="999"
+                           step="1"                           
+                           id="good_one_move_house">                   
+                          
+                           of <span v-if="selected_house.direction=='avatar_to_house'">[[selected_house.good_one_avatar_available]]</span>
+                              <span v-else>[[selected_house.good_one_house_available]]</span>
+                    </div>                    
+                </div>
+                      
+                <div class="row align-items-center text-center fw-bold" v-if="selected_house.house" id="div_id_good_two_move_house">
+                    <div class="col-4 text-center">
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_house.good_two.toLowerCase() + '.png'" />
+                    </div>  
+                    <div class="col text-start" id="div_id_good_two_harvest">
+                        <input type="number" 
+                           class="transfer_model_input form-control-lg fw-bold"
+                           v-model="selected_house.good_two_move"
+                           min="0"
+                           max="999"
+                           step="1"
+                           id="good_two_move_house">     
+                           
+                           of <span v-if="selected_house.direction=='avatar_to_house'">[[selected_house.good_two_avatar_available]]</span>
+                              <span v-else>[[selected_house.good_two_house_available]]</span>
+                    </div>
+                </div>
+
+                <div class="row align-items-center text-center fw-bold" v-if="selected_house.house" id="div_id_good_three_move_house">
+                    <div class="col-4 text-center">
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_house.good_three.toLowerCase() + '.png'" />
+                    </div>  
+                    <div class="col text-start" id="div_id_good_three_harvest">
+                        <input type="number" 
+                           class="transfer_model_input form-control-lg fw-bold"
+                           v-model="selected_house.good_three_move"
+                           min="0"
+                           max="999"
+                           step="1"
+                           id="good_three_move_house">         
+                           
+                           of <span v-if="selected_house.direction=='avatar_to_house'">[[selected_house.good_three_avatar_available]]</span>
+                              <span v-else>[[selected_house.good_three_house_available]]</span>
+                    </div>
+                </div>
+            
+            </div>
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-outline-primary me-2"
+                        v-on:click = "select_all_fruit_house()"
+                        title="Select all fruit to move."                       
+                        v-bind:disabled="reconnecting || working">
+                    Select All <i class="fas fa-check-double"></i>
+                </button>
+                               
+                <button type="button"
+                        class="btn btn-outline-primary"
+                        v-on:click = "send_move_fruit_house()"
+                        title="Move fruit to selected house."                       
+                        v-bind:disabled="reconnecting || working">
+                    Move <i class="fas fa-sign-in-alt"></i>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>

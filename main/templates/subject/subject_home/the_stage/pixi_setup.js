@@ -18,11 +18,11 @@ setup_pixi(){
     PIXI.Assets.add('Cherry_tex', '{% static "cherry.png"%}');
     PIXI.Assets.add('field_tex', '{% static "field.png"%}');
     PIXI.Assets.add('house_tex', '{% static "house.png"%}');
-    PIXI.Assets.add('cherry_token', '{% static "cherry_1_animated.json"%}');
+    PIXI.Assets.add('health_tex', '{% static "health_2.png"%}');
 
     const textures_promise = PIXI.Assets.load(['sprite_sheet', 'sprite_sheet_hf', 'grass_tex', 'wall_tex', 'water_tex',
-                                               'bridge_tex', 'sprite_sheet_2', 'cherry_token', 'Blueberry_tex', 'Pineapple_tex',
-                                               'Cherry_tex', 'field_tex', 'house_tex'])
+                                               'bridge_tex', 'sprite_sheet_2', 'Blueberry_tex', 'Pineapple_tex',
+                                               'Cherry_tex', 'field_tex', 'house_tex', 'health_tex'])
 
     textures_promise.then((textures) => {
         app.setup_pixi_sheets(textures);
@@ -158,141 +158,6 @@ setup_pixi_sheets(textures){
 },
 
 /**
- * setup subject screen status overlay
- */
-setup_subject_status_overlay()
-{
-    if(!app.session) return;
-    if(app.pixi_mode!="subject") return;
-    if(subject_status_overlay_container) subject_status_overlay_container.destroy();
-
-    subject_status_overlay_container = new PIXI.Container();
-    subject_status_overlay_container.eventMode = 'none';
-    subject_status_overlay_container.zIndex = 9999
-
-    temp_y = 0;
-
-    let text_style = {
-        fontFamily: 'Arial',
-        fontSize: 28,
-        fill: 'white',
-        align: 'left',
-        stroke: 'black',
-        strokeThickness: 2,
-    };
-
-    //labels
-    //current period
-    let current_period_text = new PIXI.Text('Current Period:', text_style);
-    current_period_text.eventMode = 'none';   
-
-    subject_status_overlay_container.addChild(current_period_text);
-    current_period_text.position.set(0, temp_y);
-
-    temp_y += current_period_text.height+5;
-
-    //time remaining
-    let time_remaining_text = new PIXI.Text('Time Remaining:', text_style);
-    time_remaining_text.eventMode = 'none';   
-
-    subject_status_overlay_container.addChild(time_remaining_text);
-    time_remaining_text.position.set(0, temp_y);
-
-    temp_y += time_remaining_text.height+5;
-
-    //profit
-    let profit_text = new PIXI.Text('Total Profit (¢):', text_style);
-    profit_text.eventMode = 'none';   
-
-    subject_status_overlay_container.addChild(profit_text);
-    profit_text.position.set(0, temp_y);
-
-    //amounts
-    temp_y = 0;
-    //current period 
-    let current_period_label = new PIXI.Text('NN', text_style);
-    current_period_label.eventMode = 'none';   
-
-    subject_status_overlay_container.addChild(current_period_label);
-    current_period_label.position.set(time_remaining_text.width+10, temp_y);
-
-    temp_y += current_period_text.height+5;
-
-    //time remaining 
-    let time_remaining_label = new PIXI.Text('00:00', text_style);
-    time_remaining_label.eventMode = 'none';   
-
-    subject_status_overlay_container.addChild(time_remaining_label);
-    time_remaining_label.position.set(time_remaining_text.width+10, temp_y);
-
-    temp_y += time_remaining_text.height+5;
-
-    //profit
-    let profit_label = new PIXI.Text('0000', text_style);
-    profit_label.eventMode = 'none';   
-
-    subject_status_overlay_container.addChild(profit_label);
-    profit_label.position.set(time_remaining_text.width+10, temp_y);
-
-    subject_status_overlay_container.position.set(pixi_app.screen.width - subject_status_overlay_container.width-20, 20);
-    
-    pixi_app.stage.addChild(subject_status_overlay_container);
-
-    app.update_subject_status_overlay();
-},
-
-/**
- * update subject overlay
- */
-update_subject_status_overlay()
-{
-    if(!app.session.world_state.hasOwnProperty('started')) return;
-
-    if(!subject_status_overlay_container) return;
-    // subject_status_overlay_container.position.set(pixi_app.screen.width - subject_status_overlay_container.width-20, 20);
-
-    subject_status_overlay_container.getChildAt(3).text = app.session.world_state.current_period;
-    subject_status_overlay_container.getChildAt(4).text = app.session.world_state.time_remaining;
-    subject_status_overlay_container.getChildAt(5).text = app.session.world_state.session_players[app.session_player.id].earnings;
-},
-
-/**
- * add scroll buttons to staff screen
- */
-add_scroll_button(button_size, name, text)
-{
-    let g = new PIXI.Graphics();
-    g.lineStyle(1, 0x000000);
-    g.beginFill(0xffffff);
-    g.drawRect(0, 0, button_size.w, button_size.h);
-    g.pivot.set(button_size.w/2, button_size.h/2);
-    g.endFill();
-    g.lineStyle(1, 0x000000);
-    g.x=button_size.x;
-    g.y=button_size.y;
-    g.eventMode='static';
-    g.alpha = 0.5;
-    g.name = name;
-
-    g.on("pointerover", app.staff_screen_scroll_button_over);
-    g.on("pointerout", app.staff_screen_scroll_button_out);
-
-    let label = new PIXI.Text(text,{fontFamily : 'Arial',
-                                    fontWeight:'bold',
-                                    fontSize: 28,       
-                                    lineHeight : 14,                             
-                                    align : 'center'});
-    label.pivot.set(label.width/2, label.height/2);
-    label.x = button_size.w/2;
-    label.y = button_size.h/2-3;
-    g.addChild(label);
-
-    pixi_app.stage.addChild(g);
-
-    return g
-},
-
-/**
  * game loop for pixi
  */
 game_loop(delta)
@@ -330,79 +195,6 @@ game_loop(delta)
 },
 
 /**
- * update zoom level on staff screen
- */
-update_zoom()
-{
-    if(app.pixi_mode == "subject") return;
-    if(app.pixi_scale == app.pixi_scale_range_control) return;
-    
-   
-    let zoom_direction = 1;
-    if(app.pixi_scale_range_control > app.pixi_scale)
-    {
-        zoom_direction = -1;
-    }
-
-    app.pixi_scale = app.pixi_scale_range_control;
-    pixi_container_main.scale.set(app.pixi_scale);
-},
-
-/**
- * fit staff display to screen
- */
-fit_to_screen()
-{
-    if(app.pixi_mode == "subject") return;
-    
-    app.current_location.x = app.stage_width/2;
-    app.current_location.y = app.stage_height/2;
-
-    let zoom_factor = Math.min(app.canvas_width / app.stage_width, app.canvas_height / app.stage_height);
-
-    app.pixi_scale_range_control = zoom_factor;
-    app.pixi_scale = app.pixi_scale_range_control;
-    pixi_container_main.scale.set(app.pixi_scale);
-},
-
-/**
- * get distance in pixels between two points
- */
-get_distance(point1, point2) 
-{
-    // Get the difference between the x-coordinates of the two points.
-    const dx = point2.x - point1.x;
-  
-    // Get the difference between the y-coordinates of the two points.
-    const dy = point2.y - point1.y;
-  
-    // Calculate the square of the distance between the two points.
-    const distanceSquared = dx * dx + dy * dy;
-  
-    // Take the square root of the distance between the two points.
-    const distance = Math.sqrt(distanceSquared);
-  
-    // Return the distance between the two points.
-    return distance;
-},
-
-/**
- * update the amount of shift needed to center the player
- */
-update_offsets_player(delta)
-{
-    offset = app.get_offset();
-
-    pixi_container_main.x = -offset.x;
-    pixi_container_main.y = -offset.y;   
-    
-    obj = app.session.world_state.session_players[app.session_player.id];
-
-    pixi_target.x = obj.target_location.x;
-    pixi_target.y = obj.target_location.y;
-},
-
-/**
  * check for collisions between local player and other objects
  */
 check_for_collisions(delta)
@@ -410,145 +202,9 @@ check_for_collisions(delta)
     // if(Date.now() - app.last_collision_check < 100) return;
     // app.last_collision_check = Date.now();
 
-    // const obj = app.session.world_state.session_players[app.session_player.id];
+    // const obj = app.session.world_state_avatars.session_players[app.session_player.id];
     // let collision_found = false;
 
-},
-
-/**
- * update the amount of shift needed for the staff view
- */
-update_offsets_staff(delta)
-{
-    let offset = app.get_offset_staff();
-
-    pixi_container_main.x = -offset.x;
-    pixi_container_main.y = -offset.y;   
-},
-
-/**
- * manaully scroll staff screen
- */
-scroll_staff(delta)
-{
-    app.current_location.x += app.scroll_direction.x;
-    app.current_location.y += app.scroll_direction.y;
-},
-
-/**
- * subject screen offset from the origin
- */
-get_offset()
-{
-    let obj = app.session.world_state.session_players[app.session_player.id];
-
-    return {x:obj.current_location.x * app.pixi_scale - pixi_app.screen.width/2,
-            y:obj.current_location.y * app.pixi_scale - pixi_app.screen.height/2};
-},
-
-/**
- * staff screen offset from origin
- */
-get_offset_staff()
-{
-    if(app.follow_subject != -1 && app.session.started)
-    {
-        obj = app.session.world_state.session_players[app.follow_subject];
-        app.current_location = Object.assign({}, obj.current_location);
-    }
-
-    return {x:app.current_location.x * app.pixi_scale - pixi_app.screen.width/2,
-            y:app.current_location.y * app.pixi_scale - pixi_app.screen.height/2};
-},
-
-/**
- *pointer up on subject screen
- */
-subject_pointer_up(event)
-{
-    if(!app.session.world_state.hasOwnProperty('started')) return;
-    let local_pos = event.data.getLocalPosition(event.currentTarget);
-    let local_player = app.session.world_state.session_players[app.session_player.id];
-
-    if(event.button == 0)
-    {
-
-        if(local_player.frozen)
-        {
-            app.add_text_emitters("No movement while interacting.", 
-                            local_player.current_location.x, 
-                            local_player.current_location.y,
-                            local_player.current_location.x,
-                            local_player.current_location.y-100,
-                            0xFFFFFF,
-                            28,
-                            null);
-            return;
-        }
-        
-        local_player.target_location.x = local_pos.x;
-        local_player.target_location.y = local_pos.y;
-
-        app.target_location_update();
-    }
-    else if(event.button == 2)
-    {
-        if(local_player.frozen)
-        {
-            app.add_text_emitters("No actions while interacting.", 
-                            local_player.current_location.x, 
-                            local_player.current_location.y,
-                            local_player.current_location.x,
-                            local_player.current_location.y-100,
-                            0xFFFFFF,
-                            28,
-                            null);
-            return;
-        }
-
-        if(local_player.cool_down > 0)
-        {
-            app.add_text_emitters("No actions cooling down.", 
-                            local_player.current_location.x, 
-                            local_player.current_location.y,
-                            local_player.current_location.x,
-                            local_player.current_location.y-100,
-                            0xFFFFFF,
-                            28,
-                            null);
-            return;
-        }
-        
-        for(i in app.session.world_state.session_players)
-        {
-            let obj = app.session.world_state.session_players[i];
-
-            if(app.get_distance(obj.current_location, local_pos) < 100 &&
-               app.get_distance(obj.current_location, local_player.current_location) <= app.session.parameter_set.interaction_range+125)
-            {
-                app.subject_avatar_click(i);              
-                break;
-            }
-        }
-    }
-},
-
-/**
- *scroll control for staff
- */
-staff_screen_scroll_button_over(event)
-{
-    event.currentTarget.alpha = 1;  
-    app.scroll_direction = event.currentTarget.name.scroll_direction;
-},
-
-/**
- *scroll control for staff
- */
-staff_screen_scroll_button_out(event)
-{
-    event.currentTarget.alpha = 0.5;
-    app.scroll_direction = {x:0, y:0};
 },
 
 /**
@@ -556,8 +212,10 @@ staff_screen_scroll_button_out(event)
  */
 setup_tractor_beam(source_id, target_id)
 {
-    let source_player = app.session.world_state.session_players[source_id];
-    let target_player = app.session.world_state.session_players[target_id];
+    let source_player = app.session.world_state_avatars.session_players[source_id];
+    let target_player = app.session.world_state_avatars.session_players[target_id];
+
+    let parameter_set_player = app.session.parameter_set_player[source_player.parameter_set_player_id];
 
     let dY = source_player.current_location.y - target_player.current_location.y;
     let dX = source_player.current_location.x - target_player.current_location.x;
@@ -594,7 +252,7 @@ setup_tractor_beam(source_id, target_id)
         {
             if (i%2 == 0)
             {
-                tb_sprite.tint = app.session.session_players[source_id].parameter_set_player.hex_color;
+                tb_sprite.tint = parameter_set_player.hex_color;
             }
             else
             {
@@ -609,7 +267,7 @@ setup_tractor_beam(source_id, target_id)
             }
             else
             {
-                tb_sprite.tint = app.session.session_players[source_id].parameter_set_player.hex_color;
+                tb_sprite.tint = parameter_set_player.hex_color;
             }
         }
 
@@ -662,7 +320,7 @@ move_object(delta, obj, move_speed, wall_limited=false, container=null)
                     width:temp_wall.width,
                     height:temp_wall.height};
 
-            if(app.check_for_intersection(rect1, rect2))
+            if(app.check_for_rect_intersection(rect1, rect2))
             {
                 obj.current_location =  Object.assign({}, temp_current_location);
                 break;
@@ -671,19 +329,3 @@ move_object(delta, obj, move_speed, wall_limited=false, container=null)
     }
 },
 
-/**
- * check for rectangle intersection
- */
-check_for_intersection(rect1, rect2)
-{
-   if(rect1.x < rect2.x + rect2.width &&
-      rect1.x + rect1.width > rect2.x &&
-      rect1.y < rect2.y + rect2.height &&
-      rect1.y + rect1.height > rect2.y)
-   {
-        return true;
-   }
-
-   return false;
-
-},

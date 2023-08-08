@@ -39,8 +39,6 @@ var app = Vue.createApp({
 
                     move_to_next_phase_text : 'Start Next Experiment Phase',
 
-                    chat_list_to_display : [],                  //list of chats to display on screen
-
                     data_downloading : false,                   //show spinner when data downloading
                     earnings_copied : false,                    //if true show earnings copied   
 
@@ -216,6 +214,15 @@ var app = Vue.createApp({
                 case "load_session_events":
                     app.take_load_session_events(message_data);
                     break; 
+                case "update_field_harvest":
+                    app.take_field_harvest(message_data);
+                    break;
+                case "update_move_fruit_to_avatar":
+                    app.take_update_move_fruit_to_avatar(message_data);
+                    break;
+                case "update_move_fruit_to_house":
+                    app.take_update_move_fruit_to_house(message_data);
+                    break;
             }
 
             app.first_load_done = true;
@@ -276,6 +283,8 @@ var app = Vue.createApp({
         do_reload()
         {
             app.setup_pixi_subjects();
+            app.update_field_inventory();
+            app.update_avatar_inventory();
         },
 
         /** send winsock request to get session info
@@ -292,7 +301,7 @@ var app = Vue.createApp({
 
             app.session = message_data;
 
-            app.session.world_state =  app.session.world_state;
+            // app.session.world_state =  app.session.world_state;
 
             if(app.session.started)
             {
@@ -355,8 +364,8 @@ var app = Vue.createApp({
         */
         take_update_chat(message_data){
             
-            app.session.world_state.session_players[message_data.sender_id].show_chat = true;    
-            app.session.world_state.session_players[message_data.sender_id].chat_time = Date.now();
+            app.session.world_state_avatars.session_players[message_data.sender_id].show_chat = true;    
+            app.session.world_state_avatars.session_players[message_data.sender_id].chat_time = Date.now();
             pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text =  message_data.text;
         },
 
@@ -372,10 +381,6 @@ var app = Vue.createApp({
 
             let period_change = false;
 
-            if (app.session.world_state.current_period != message_data.current_period)
-            {
-                period_change = true;
-            }
 
             // app.session.started = result.started;
             app.session.world_state.current_period = message_data.current_period;
@@ -383,6 +388,7 @@ var app = Vue.createApp({
             app.session.world_state.timer_running = message_data.timer_running;
             app.session.world_state.started = message_data.started;
             app.session.world_state.finished = message_data.finished;
+            app.session.world_state.avatars = message_data.avatars;
            
             // app.session.finished = result.finished;
             app.session.world_state.current_experiment_phase = message_data.current_experiment_phase;
@@ -390,24 +396,36 @@ var app = Vue.createApp({
             app.update_phase_button_text();
 
             //update player earnings and inventory if period has changed
-            if(period_change)
+            if(message_data.period_is_over)
             {
-                app.update_player_inventory();                
+                //update fields.
+                for(let i in message_data.fields)
+                {
+                    field = app.session.world_state.fields[i]
+                    field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type]
+            
+                    good_one = field_type.good_one;
+                    good_two = field_type.good_two;
+            
+                    app.session.world_state.fields[i][good_one] = message_data.fields[i][good_one];
+                    app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
+                }
+                
+                app.update_field_inventory();
             }
 
-            if(app.session.world_state.time_remaining == 1)
-            {
-                app.take_update_earnings(message_data.earnings);
-            }
+            app.update_avatar_inventory();
+
+            app.take_update_earnings(message_data.earnings);
 
             //update player status
             for(p in message_data.session_player_status)
             {
                 session_player = message_data.session_player_status[p];
-                app.session.world_state.session_players[p].interaction = session_player.interaction;
-                app.session.world_state.session_players[p].frozen = session_player.frozen;
-                app.session.world_state.session_players[p].cool_down = session_player.cool_down;
-                app.session.world_state.session_players[p].tractor_beam_target = session_player.tractor_beam_target;
+                app.session.world_state_avatars.session_players[p].interaction = session_player.interaction;
+                app.session.world_state_avatars.session_players[p].frozen = session_player.frozen;
+                app.session.world_state_avatars.session_players[p].cool_down = session_player.cool_down;
+                app.session.world_state_avatars.session_players[p].tractor_beam_target = session_player.tractor_beam_target;
             }
 
             //update player location
@@ -415,9 +433,9 @@ var app = Vue.createApp({
             {
                 let server_location = message_data.current_locations[p];
 
-                if(app.get_distance(server_location, app.session.world_state.session_players[p].current_location) > 1000)
+                if(app.get_distance(server_location, app.session.world_state_avatars.session_players[p].current_location) > 1000)
                 {
-                    app.session.world_state.session_players[p].current_location = server_location;
+                    app.session.world_state_avatars.session_players[p].current_location = server_location;
                 }
             }
 
@@ -445,6 +463,8 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/transfer_beam.js"%}
         {%include "subject/subject_home/the_stage/text_emitters.js"%}
         {%include "subject/subject_home/the_stage/avatars.js"%}
+        {%include "subject/subject_home/the_stage/staff.js"%}
+        {%include "subject/subject_home/the_stage/helpers.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages

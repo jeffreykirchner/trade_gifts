@@ -26,11 +26,12 @@ class GetSessionMixin():
         result = await sync_to_async(take_get_session, thread_sensitive=self.thread_sensitive)(self.connection_uuid)       
 
         self.world_state_local = result["world_state"]
+        self.world_state_avatars_local = result['world_state_avatars']
         self.session_players_local = {}
 
         if self.controlling_channel == self.channel_name and result["started"]:
             self.world_state_local["timer_history"].append({"time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
-                                                        "count": 0})
+                                                            "count": 0})
             await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
 
         for p in result["session_players"]:
@@ -51,6 +52,8 @@ def take_get_session(session_key):
     '''
     session = None
     logger = logging.getLogger(__name__)
+
+    logger.info(f"take_get_session {session_key}")
 
     try:        
         session = Session.objects.get(session_key=session_key)

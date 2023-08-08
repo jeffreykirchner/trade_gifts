@@ -32,7 +32,7 @@
                         key="sd_graph" 
                         id="sd_graph_id" 
                         style="border-style: solid;border-width: 1px;"
-                        oncontextmenu="return false;"></canvas>                
+                        ></canvas>                
             </div>
         </div>
 
@@ -63,7 +63,7 @@
                            :value="session.session_players[p].id" 
                            :key="index"
                            :set="temp_p=session.session_players[p]">
-                           Player [[temp_p.parameter_set_player.id_label]]
+                           Player [[session.parameter_set.parameter_set_players[temp_p.parameter_set_player_id].id_label]]
                     </option>
                 </select>
             </div>

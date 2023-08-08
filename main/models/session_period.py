@@ -2,11 +2,19 @@
 session period model
 '''
 
-#import logging
+import logging
+import math
+
+from decimal import Decimal
 
 from django.db import models
+from django.db import transaction
+
+from django.core.serializers.json import DjangoJSONEncoder
 
 from main.models import Session
+
+from main.globals import round_half_away_from_zero
 
 import main
 
@@ -17,6 +25,11 @@ class SessionPeriod(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name="session_periods")
 
     period_number = models.IntegerField()                       #period number from 1 to N
+
+    production_completed = models.BooleanField(default=False)   #production completed for this period
+    consumption_completed = models.BooleanField(default=False)  #consumption completed for this period
+
+    timer_actions = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)   #timer actions for this period
 
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
@@ -31,28 +44,137 @@ class SessionPeriod(models.Model):
         verbose_name = 'Session Period'
         verbose_name_plural = 'Session Periods'
         ordering = ['period_number']
-    
-    async def store_earnings(self, world_state_local):
+
+    def start(self):
+        '''
+        do start actions
+        '''
+        self.timer_actions = {}
+
+        for i in range(self.session.parameter_set.period_length):
+            self.timer_actions[i+1] = {"metabolism" : False}
+
+        self.save()
+
+    def do_timer_actions(self, time_remaining):
+        '''
+        do timer actions
+        '''
+        health_loss_count = 0
+        health_loss_per_second = self.session.parameter_set.health_loss_per_second
+
+        for i in self.timer_actions:
+            if int(i) >= time_remaining and not self.timer_actions[i]["metabolism"]:
+                self.timer_actions[i]["metabolism"] = True
+                health_loss_count += 1
+        
+        if health_loss_count > 0:
+            for i in self.session.world_state["avatars"]:
+                current_health = Decimal(self.session.world_state["avatars"][i]["health"])
+                self.session.world_state["avatars"][i]["health"] = str(current_health - (health_loss_count * health_loss_per_second))
+                if Decimal(self.session.world_state["avatars"][i]["health"]) < 0:
+                    self.session.world_state["avatars"][i]["health"] = "0"
+
+            self.save()
+            self.session.save()    
+        
+        return self.session
+
+    def do_consumption(self):
         '''
         convert health into cash earnings
         '''
-        result = {}
 
-        objs = self.session.session_players.all()
+        session = self.do_timer_actions(0)
+
+        #clear avatar inventory
+        for i in self.session.world_state["avatars"]:
+            avatar = self.session.world_state["avatars"][i]
+
+            for i in main.globals.Goods.choices:
+                good = i[0]
+                avatar[good] = 0
+
+        #convert goods in homes to cash
         
-        async for i in objs:
-            sid = str(i.id)
-            speriod_id = str(self.id)
+        self.consumption_completed = True
+        self.save()
 
-            i.earnings += world_state_local["session_players"][sid]["inventory"][speriod_id]
+        session.world_state["session_periods"][str(self.id)]["consumption_completed"]=True
+        session.save()
+
+        return session
+    
+    def do_production(self):
+        '''
+        do production for this period
+        '''
+
+        logger = logging.getLogger(__name__)
+        # logger.info(f"do_production {self.id}")
+
+        parameter_set = self.session.parameter_set.json()
+        world_state = self.session.world_state
+        current_period = world_state["current_period"]
+        last_period_id = None
+
+        if self.period_number > 1:
+            last_period_id = self.session.session_periods.get(period_number=self.period_number-1).id
+
+        for i in self.session.world_state["fields"]:
             
-            result[sid] = {}
-            result[sid]["total_earnings"] = i.earnings
-            result[sid]["period_earnings"] = world_state_local["session_players"][sid]["inventory"][speriod_id]
-        
-        r = main.models.SessionPlayer.objects.abulk_update(objs, ['earnings'])
+            obj = self.session.world_state["fields"][str(i)]
+            field_type = parameter_set["parameter_set_field_types"][str(obj["parameter_set_field_type"])]
 
-        return result
+            if current_period >= field_type["start_on_period"]:
+
+                #update in-use effort
+                if (current_period - field_type["start_on_period"] + 1)  % int(field_type["reset_every_n_periods"]) == 1:
+                    obj["good_one_effort_in_use"] = obj["good_one_effort"]
+                    obj["good_two_effort_in_use"] = obj["good_two_effort"]
+
+                g1 = Decimal(field_type["good_one_rho"]) * (Decimal(field_type["good_one_alpha"]) * Decimal(obj["good_one_effort_in_use"]) ** Decimal(field_type["good_one_omega"]))
+                g2 = Decimal(field_type["good_two_rho"]) * (Decimal(field_type["good_two_alpha"]) * Decimal(obj["good_two_effort_in_use"]) ** Decimal(field_type["good_two_omega"]))
+                
+                if last_period_id:                   
+                    if (current_period - field_type["start_on_period"] + 1)  % int(field_type["reset_every_n_periods"]) != 1:
+
+                        good_one_harvest_total = 0
+                        good_two_harvest_total = 0
+
+                        for j in obj["harvest_history"][str(last_period_id)]:
+                            good_one_harvest_total += j[field_type["good_one"]]
+                            good_two_harvest_total += j[field_type["good_two"]]
+
+                        g1 -= good_one_harvest_total
+                        g2 -= good_two_harvest_total
+
+                        g1 /= Decimal(field_type["good_one_rho"])
+                        g2 /= Decimal(field_type["good_two_rho"])
+
+                if g1 < 0:
+                    g1 = 0
+                if g2 < 0:
+                    g2 = 0
+
+                obj[field_type["good_one"]] = math.floor(g1)
+                obj[field_type["good_two"]] = math.floor(g2)
+            else:
+                obj[field_type["good_one"]] = 0
+                obj[field_type["good_two"]] = 0
+
+            
+            # for j in main.globals.Goods.choices:
+            #     session.world_state["fields"][obj][j[0]] = 1
+
+        self.production_completed = True
+        self.save()
+
+        self.session.save()
+
+        # logger.info(f"do_production {self.id}")
+        
+        return self.session
 
     def json(self):
         '''
@@ -62,5 +184,8 @@ class SessionPeriod(models.Model):
         return{
             "id" : self.id,
             "period_number" : self.period_number,
+            "production_completed" : self.production_completed,
+            "consumption_completed" : self.consumption_completed,
+            "timer_actions" : self.timer_actions,
         }
         

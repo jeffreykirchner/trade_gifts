@@ -22,7 +22,7 @@ class ParameterSetField(models.Model):
 
     x = models.IntegerField(verbose_name='Location X', default=50)            #location x and y
     y = models.IntegerField(verbose_name='Location Y', default=50)
-
+    
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
 

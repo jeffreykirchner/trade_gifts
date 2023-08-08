@@ -87,6 +87,46 @@ class InterfaceMixin():
 
         await self.send_message(message_to_self=event_data, message_to_subjects=None, message_to_staff=None, 
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
+        
+    async def update_field_harvest(self, event):
+        '''
+        a subject has harvested a field, update
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_subjects=None, message_to_staff=None, 
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+        
+    async def update_field_effort(self, event):
+        '''
+        update field's effort settings
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_subjects=None, message_to_staff=None, 
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+        
+    async def update_move_fruit_to_avatar(self, event):
+        '''
+        update move fruit between avatars
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_subjects=None, message_to_staff=None, 
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+        
+    async def update_move_fruit_to_house(self, event):
+        '''
+        update move fruit between house and avatar
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_subjects=None, message_to_staff=None, 
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
 
 
         

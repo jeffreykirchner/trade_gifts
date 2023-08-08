@@ -22,6 +22,9 @@ var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
 
+//prevent right click
+document.addEventListener('contextmenu', event => event.preventDefault());
+
 //vue app
 var app = Vue.createApp({
     delimiters: ["[[", "]]"],
@@ -41,7 +44,35 @@ var app = Vue.createApp({
 
                     chat_text : "",
                     chat_button_label : "Chat",
-                    chat_list_to_display : [],                //list of chats to display on screen
+
+                    selected_field : {field:null, 
+                                      field_type:null,
+                                      good_one_harvest:0,
+                                      good_two_harvest:0,
+                                      effort_slider:0,
+                                      good_one_production_effort:0,
+                                      good_two_production_effort:0},
+
+                    selected_avatar : {avatar:null,
+                                       parameter_set_player:null,
+                                       good_one_move:0,
+                                       good_two_move:0,
+                                       good_three_move:0,
+                                       good_one:null,
+                                       good_two:null,
+                                       good_three:null,
+                                       },
+                    
+                    selected_house : {avatar:null,
+                                      parameter_set_player:null,
+                                      good_one_move:0,
+                                      good_two_move:0,
+                                      good_three_move:0,
+                                      good_one:null,
+                                      good_two:null,
+                                      good_three:null,
+                                      direction:"avatar_to_house",
+                                     },
 
                     end_game_modal_visible : false,
 
@@ -50,7 +81,9 @@ var app = Vue.createApp({
 
                     // modals
                     end_game_modal : null,
-                    interaction_modal : null,
+                    avatar_modal : null,
+                    field_modal : null,
+                    house_modal : null,
                     test_mode : {%if session.parameter_set.test_mode%}true{%else%}false{%endif%},
 
                     //pixi
@@ -159,6 +192,19 @@ var app = Vue.createApp({
                 case "update_cancel_interaction":
                     app.take_update_cancel_interaction(message_data);
                     break;
+                case "update_field_harvest":
+                    app.take_field_harvest(message_data);
+                    break;
+                case "update_field_effort":
+                    app.take_field_effort(message_data);
+                    break;
+                case "update_move_fruit_to_avatar":
+                    app.take_update_move_fruit_to_avatar(message_data);
+                    break;
+                case "update_move_fruit_to_house":
+                    app.take_update_move_fruit_to_house(message_data);
+                    break;
+                
             }
 
             app.first_load_done = true;
@@ -184,13 +230,15 @@ var app = Vue.createApp({
         */
         do_first_load()
         {           
-             app.end_game_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('end_game_modal'), {keyboard: false})   
-             app.interaction_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('interaction_modal'), {keyboard: false})          
+            app.end_game_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('end_game_modal'), {keyboard: false})   
+            app.avatar_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_modal'), {keyboard: false})          
+            app.field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('field_modal'), {keyboard: false})
+            app.house_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('house_modal'), {keyboard: false})
 
-             document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
-             document.getElementById('interaction_modal').addEventListener('hidden.bs.modal', app.hide_interaction_modal);
+            document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
+            document.getElementById('avatar_modal').addEventListener('hidden.bs.modal', app.hide_avatar_modal);
 
-             {%if session.parameter_set.test_mode%} setTimeout(app.do_test_mode, app.random_number(1000 , 1500)); {%endif%}
+            {%if session.parameter_set.test_mode%} setTimeout(app.do_test_mode, app.random_number(1000 , 1500)); {%endif%}
 
             // if game is finished show modal
             if( app.session.world_state.current_experiment_phase == 'Names')
@@ -229,6 +277,8 @@ var app = Vue.createApp({
             app.setup_pixi_subjects();
             app.setup_pixi_minimap();
             app.update_subject_status_overlay();
+            app.update_field_inventory();
+            app.update_avatar_inventory();
         },
 
         /** send winsock request to get session info
@@ -310,15 +360,11 @@ var app = Vue.createApp({
             let period_change = false;
             let period_earnings = 0;
 
-            if (message_data.time_remaining == 1)
+            
+            if (app.session_player.id in message_data)
             {
                 period_earnings = message_data.earnings[app.session_player.id].period_earnings;
-                app.session.world_state.session_players[app.session_player.id].earnings = message_data.earnings[app.session_player.id].total_earnings;
-            }
-
-            if (app.session.world_state.current_period != message_data.current_period)
-            {
-                period_change = true;
+                // app.session.world_state_avatars.session_players[app.session_player.id].earnings = message_data.earnings[app.session_player.id].total_earnings;
             }
 
             app.session.started = message_data.started;
@@ -329,6 +375,28 @@ var app = Vue.createApp({
             app.session.world_state.started = message_data.started;
             app.session.world_state.finished = message_data.finished;
             app.session.world_state.current_experiment_phase = message_data.current_experiment_phase;
+            app.session.world_state.avatars = message_data.avatars;
+
+            if(message_data.period_is_over)
+            {
+
+                //update fields.
+                for(let i in message_data.fields)
+                {
+                    field = app.session.world_state.fields[i]
+                    field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type]
+            
+                    good_one = field_type.good_one;
+                    good_two = field_type.good_two;
+            
+                    app.session.world_state.fields[i][good_one] = message_data.fields[i][good_one];
+                    app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
+                }
+
+                app.update_field_inventory();
+            }
+
+            app.update_avatar_inventory();
 
             // app.session.world_state.finished = message_data.finished;
         
@@ -344,36 +412,35 @@ var app = Vue.createApp({
 
 
             //period has changed display earnings
-            if(message_data.time_remaining == 1)
-            {
-                Vue.nextTick(() => {
-                    let current_location = app.session.world_state.session_players[app.session_player.id].current_location;
+            // if(message_data.time_remaining == 1)
+            // {
+            //     Vue.nextTick(() => {
+            //         let current_location = app.session.world_state_avatars.session_players[app.session_player.id].current_location;
 
-                    app.add_text_emitters("+" + period_earnings + "¢", 
-                            current_location.x, 
-                            current_location.y,
-                            current_location.x,
-                            current_location.y-100,
-                            0xFFFFFF,
-                            28,
-                            null)                    
-                });               
-            }
+            //         app.add_text_emitters("+" + period_earnings + "¢", 
+            //                 current_location.x, 
+            //                 current_location.y,
+            //                 current_location.x,
+            //                 current_location.y-100,
+            //                 0xFFFFFF,
+            //                 28,
+            //                 null)                    
+            //     });               
+            // }
 
-            if(period_change)
-            {
-                app.setup_pixi_minimap();
-                app.update_player_inventory();
-            }
+            // if(period_change)
+            // {
+            //     app.setup_pixi_minimap();
+            // }
 
             //update player states
             for(p in message_data.session_player_status)
             {
                 session_player = message_data.session_player_status[p];
-                app.session.world_state.session_players[p].interaction = session_player.interaction;
-                app.session.world_state.session_players[p].frozen = session_player.frozen;
-                app.session.world_state.session_players[p].cool_down = session_player.cool_down;
-                app.session.world_state.session_players[p].tractor_beam_target = session_player.tractor_beam_target;
+                app.session.world_state_avatars.session_players[p].interaction = session_player.interaction;
+                app.session.world_state_avatars.session_players[p].frozen = session_player.frozen;
+                app.session.world_state_avatars.session_players[p].cool_down = session_player.cool_down;
+                app.session.world_state_avatars.session_players[p].tractor_beam_target = session_player.tractor_beam_target;
             }
 
             //update player location
@@ -383,18 +450,19 @@ var app = Vue.createApp({
                 {
                     let server_location = message_data.current_locations[p];
 
-                    if(app.get_distance(server_location, app.session.world_state.session_players[p].current_location) > 1000)
+                    if(app.get_distance(server_location, app.session.world_state_avatars.session_players[p].current_location) > 1000)
                     {
-                        app.session.world_state.session_players[p].current_location = server_location;
+                        app.session.world_state_avatars.session_players[p].current_location = server_location;
                     }
                 }
             }
 
             //hide interaction modal if interaction is over
-            if(app.session.world_state.session_players[app.session_player.id].interaction == 0)
-            {
-                app.interaction_modal.hide();
-            }
+            // if(app.session.world_state_avatars.session_players[app.session_player.id].interaction == 0)
+            // {
+            //     app.avatar_modal.hide();
+            //     app.field_modal.hide();
+            // }
         },
 
         /**
@@ -475,6 +543,8 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/transfer_beam.js"%}
         {%include "subject/subject_home/the_stage/text_emitters.js"%}
         {%include "subject/subject_home/the_stage/avatars.js"%}
+        {%include "subject/subject_home/the_stage/helpers.js"%}
+        {%include "subject/subject_home/the_stage/subject.js"%}
     
         /** clear form error messages
         */
@@ -486,6 +556,25 @@ var app = Vue.createApp({
                 let e = document.getElementById("id_errors_" + s[i]);
                 if(e) e.remove();
             }
+
+            e = document.getElementById("id_errors_good_one_harvest");
+            if(e) e.remove();
+            e = document.getElementById("id_errors_good_two_harvest");
+            if(e) e.remove();
+
+            e = document.getElementById("id_errors_good_one_move");
+            if(e) e.remove();
+            e = document.getElementById("id_errors_good_two_move");
+            if(e) e.remove();
+            e = document.getElementById("id_errors_good_three_move");
+            if(e) e.remove();
+
+            e = document.getElementById("id_errors_good_one_move_house");
+            if(e) e.remove();
+            e = document.getElementById("id_errors_good_two_move_house");
+            if(e) e.remove();
+            e = document.getElementById("id_errors_good_three_move_house");
+            if(e) e.remove();
         },
 
         /** display form error messages

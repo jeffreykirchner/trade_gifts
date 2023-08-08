@@ -1,0 +1,92 @@
+{% load crispy_forms_tags %}
+<!--interaction Modal -->
+<div class="modal fade " 
+     id="avatar_modal" 
+     data-bs-backdrop="static" 
+     data-bs-keyboard="false" 
+     tabindex="-1" 
+     aria-labelledby="avatar_modal" 
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header fw-bold" v-if="selected_avatar.avatar">
+                Move Fruit to [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar" id="div_id_good_one_move">
+                    <div class="col-4 text-center">
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_avatar.good_one.toLowerCase() + '.png'" />
+                    </div>  
+                    <div class="col text-start" id="div_id_good_one_harvest">
+                        <input type="number" 
+                           class="transfer_model_input form-control-lg fw-bold"
+                           v-model="selected_avatar.good_one_move"
+                           min="0"
+                           max="999"
+                           step="1"                           
+                           id="good_one_move">                   
+                          
+                           of [[selected_avatar.good_one_available]]
+                    </div>                    
+                </div>
+                      
+                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar" id="div_id_good_two_move">
+                    <div class="col-4 text-center">
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_avatar.good_two.toLowerCase() + '.png'" />
+                    </div>  
+                    <div class="col text-start" id="div_id_good_two_harvest">
+                        <input type="number" 
+                           class="transfer_model_input form-control-lg fw-bold"
+                           v-model="selected_avatar.good_two_move"
+                           min="0"
+                           max="999"
+                           step="1"
+                           id="good_two_move">     
+                           
+                           of [[selected_avatar.good_two_available]]
+                    </div>
+                </div>
+
+                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar" id="div_id_good_three_move">
+                    <div class="col-4 text-center">
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_avatar.good_three.toLowerCase() + '.png'" />
+                    </div>  
+                    <div class="col text-start" id="div_id_good_three_harvest">
+                        <input type="number" 
+                           class="transfer_model_input form-control-lg fw-bold"
+                           v-model="selected_avatar.good_three_move"
+                           min="0"
+                           max="999"
+                           step="1"
+                           id="good_three_move">         
+                           
+                           of [[selected_avatar.good_three_available]]
+                    </div>
+                </div>
+            
+            </div>
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-outline-primary me-2"
+                        v-on:click = "select_all_fruit_avatar()"
+                        title="Select all fruit to move."                       
+                        v-bind:disabled="reconnecting || working">
+                    Select All <i class="fas fa-check-double"></i>
+                </button>
+                               
+                <button type="button"
+                        class="btn btn-outline-primary"
+                        v-on:click = "send_move_fruit_to_avatar()"
+                        title="Move fruit to selected avatar."                       
+                        v-bind:disabled="reconnecting || working">
+                    Move <i class="fas fa-sign-in-alt"></i>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>

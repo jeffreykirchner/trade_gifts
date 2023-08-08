@@ -8,9 +8,10 @@ setup_pixi_subjects(){
     
     let current_z_index = 1000;
     let current_period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
-    for(const i in app.session.world_state.session_players)
+    for(const i in app.session.world_state_avatars.session_players)
     {      
-        let subject = app.session.world_state.session_players[i];
+        let subject = app.session.world_state_avatars.session_players[i];
+        let parameter_set_player = app.session.parameter_set.parameter_set_players[subject.parameter_set_player_id];
         pixi_avatars[i] = {};
 
         //avatar
@@ -23,12 +24,14 @@ setup_pixi_subjects(){
         avatar_container.zIndex=200;
         // avatar_container.on("pointerup", app.subject_avatar_click);
 
+        //gear
         let gear_sprite = new PIXI.AnimatedSprite(app.pixi_textures.sprite_sheet.animations['walk']);
         gear_sprite.animationSpeed = app.animation_speed;
         gear_sprite.anchor.set(0.5)
-        gear_sprite.tint = app.session.session_players[i].parameter_set_player.hex_color;
+        gear_sprite.tint = parameter_set_player.hex_color;
         gear_sprite.eventMode = 'passive';    
 
+        //face
         let face_sprite = PIXI.Sprite.from(app.pixi_textures.sprite_sheet_2.textures["face_1.png"]);
         face_sprite.anchor.set(0.5);
         face_sprite.eventMode = 'passive';
@@ -42,23 +45,125 @@ setup_pixi_subjects(){
             strokeThickness: 2,
         };
 
-        let id_label = new PIXI.Text(app.session.session_players[i].parameter_set_player.id_label, text_style);
+        let text_style_2 = {
+            fontFamily: 'Arial',
+            fontSize: 40,
+            fill: 'white',
+            // align: 'left',
+            stroke: 'black',
+            strokeThickness: 3,
+        };
+
+        //id label
+        let id_label = new PIXI.Text(parameter_set_player.id_label, text_style);
         id_label.eventMode = 'passive';
         id_label.anchor.set(0.5);
 
+        //status label
         let status_label = new PIXI.Text("Working ... 10", text_style);
         status_label.eventMode = 'passive';
         status_label.anchor.set(0.5);
         status_label.visible = false;
 
+        //good one
+        let good_one_container = new PIXI.Container();
+        good_one_container.eventMode = 'passive';
+        good_one_container.alpha = 0.75;
+        let good_one_label = new PIXI.Text("000", text_style_2);
+        good_one_label.eventMode = 'passive';
+        good_one_label.anchor.set(0, 0.5);
+
+        let good_one_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_one+"_tex"]);
+        good_one_sprite.anchor.set(1, 0.5);
+        good_one_sprite.eventMode = 'passive';
+
+        good_one_container.addChild(good_one_label);
+        good_one_container.addChild(good_one_sprite);
+        good_one_label.position.set(+5,0);
+        good_one_sprite.position.set(-5,0);
+
+        //good two
+        let good_two_container = new PIXI.Container();
+        good_two_container.eventMode = 'passive';
+        good_two_container.alpha = 0.75;
+        let good_two_label = new PIXI.Text("000", text_style_2);
+        good_two_label.eventMode = 'passive';
+        good_two_label.anchor.set(0, 0.5);
+
+        let good_two_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_two+"_tex"]);
+        good_two_sprite.anchor.set(1, 0.5);
+        good_two_sprite.eventMode = 'passive';
+
+        good_two_container.addChild(good_two_label);
+        good_two_container.addChild(good_two_sprite);
+        good_two_label.position.set(+5,0);
+        good_two_sprite.position.set(-5,0);
+
+        //good three
+        let good_three_container = new PIXI.Container();
+        good_three_container.eventMode = 'passive';
+        good_three_container.alpha = 0.75;
+        let good_three_label = new PIXI.Text("000", text_style_2);
+        good_three_label.eventMode = 'passive';
+        good_three_label.anchor.set(0, 0.5);
+
+        let good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
+        good_three_sprite.anchor.set(1, 0.5);
+        good_three_sprite.eventMode = 'passive';
+
+        good_three_container.addChild(good_three_label);
+        good_three_container.addChild(good_three_sprite);
+        good_three_label.position.set(+5,0);
+        good_three_sprite.position.set(-5,0);
+        good_three_sprite.pivot.set(0.5,0.5);
+
+        //health
+        let health_container = new PIXI.Container();
+        health_container.eventMode = 'passive';
+        health_container.alpha = 0.75;
+        let health_label = new PIXI.Text("000", text_style_2);
+        health_label.eventMode = 'passive';
+        health_label.anchor.set(0, 0.5);
+
+        let health_sprite = PIXI.Sprite.from(app.pixi_textures["health_tex"]);
+        health_sprite.anchor.set(1, 0.5);
+        health_sprite.eventMode = 'passive';
+
+        health_container.addChild(health_label);
+        health_container.addChild(health_sprite);
+
+        health_label.position.set(-3,0);
+        health_sprite.position.set(3,0);
+
+        //add to container
         avatar_container.addChild(gear_sprite);
         avatar_container.addChild(face_sprite);
         avatar_container.addChild(id_label);
         avatar_container.addChild(status_label);
+
+        avatar_container.addChild(good_one_container);
+        avatar_container.addChild(good_two_container);
+        avatar_container.addChild(good_three_container);
+
+        avatar_container.addChild(health_container);
         
-        face_sprite.position.set(0, -avatar_container.height * 0.03);
-        id_label.position.set(0, -avatar_container.height * 0.2);
-        status_label.position.set(0, -avatar_container.height/2 + 30);
+        //position in container
+        face_sprite.position.set(0, -gear_sprite.height * 0.03);
+        id_label.position.set(0, -gear_sprite.height * 0.2);
+        status_label.position.set(0, -gear_sprite.height/2 + 30);
+
+        good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2 - 10);
+        good_two_container.position.set(0+25, -gear_sprite.height/2 - 10);
+        good_three_container.position.set(gear_sprite.width/2+5+25, -gear_sprite.height/2 - 10);
+
+        health_container.position.set(10, -gear_sprite.height/2 - 115);
+
+        pixi_avatars[i].status_label = status_label;
+        pixi_avatars[i].gear_sprite = gear_sprite;
+        pixi_avatars[i][parameter_set_player.good_one] = good_one_label;
+        pixi_avatars[i][parameter_set_player.good_two] = good_two_label;
+        pixi_avatars[i][parameter_set_player.good_three] = good_three_label;
+        pixi_avatars[i].health_label = health_label;
 
         avatar_container.scale.set(app.session.parameter_set.avatar_scale);
 
@@ -136,7 +241,7 @@ setup_pixi_subjects(){
         let interaction_range = new PIXI.Graphics();
         let interaction_range_radius = app.session.parameter_set.interaction_range;
 
-        interaction_range.lineStyle({width:1, color:app.session.session_players[i].parameter_set_player.hex_color, alignment:0});
+        interaction_range.lineStyle({width:1, color:parameter_set_player.hex_color, alignment:0});
         interaction_range.beginFill(0xFFFFFF,0);
         interaction_range.drawCircle(0, 0, interaction_range_radius);
         interaction_range.endFill();    
@@ -153,8 +258,8 @@ setup_pixi_subjects(){
             view_container.position.set(subject.current_location.x, subject.current_location.y);
 
             let view_range = new PIXI.Graphics();
-            // view_range.lineStyle({width:2, color:app.session.session_players[i].parameter_set_player.hex_color, alignment:0});
-            view_range.beginFill(app.session.session_players[i].parameter_set_player.hex_color,0.1);
+            // view_range.lineStyle({width:2, color:parameter_set_player.hex_color, alignment:0});
+            view_range.beginFill(parameter_set_player.hex_color,0.1);
             view_range.drawRect(0, 0, 1850, 800);
             view_range.endFill();    
             view_range.zIndex = 75;
@@ -165,7 +270,6 @@ setup_pixi_subjects(){
             pixi_avatars[i].view_container = view_container;
             pixi_container_main.addChild(pixi_avatars[i].view_container);
         }
-
     }
 
     //make local subject the top layer
@@ -174,21 +278,24 @@ setup_pixi_subjects(){
         pixi_avatars[app.session_player.id].avatar_container.zIndex = 999;
         pixi_avatars[app.session_player.id].chat_container.zIndex = current_z_index;
     }
-},
 
+    app.update_avatar_inventory();
+},
 
 /**
  * move players if target does not equal current location
  */
 move_player(delta)
 {
-    if(!app.session.world_state) return;
+    if(!app.session.world_state.started) return;
 
     //move players
-    for(let i in app.session.world_state.session_players){
+    for(let i in app.session.world_state_avatars.session_players){
 
-        let obj = app.session.world_state.session_players[i];
+        let obj = app.session.world_state_avatars.session_players[i];
         let avatar_container = pixi_avatars[i].avatar_container;
+        let gear_sprite = pixi_avatars[i].gear_sprite;
+        let status_label = pixi_avatars[i].status_label;
 
         if(obj.target_location.x !=  obj.current_location.x ||
             obj.target_location.y !=  obj.current_location.y )
@@ -200,15 +307,15 @@ move_player(delta)
             }
 
             //update the sprite locations
-            avatar_container.getChildAt(0).play();
+            gear_sprite.play();
             avatar_container.position.set(obj.current_location.x, obj.current_location.y);
             if (obj.current_location.x < obj.target_location.x )
             {
-                avatar_container.getChildAt(0).animationSpeed = app.animation_speed;
+                gear_sprite.animationSpeed = app.animation_speed;
             }
             else
             {
-                avatar_container.getChildAt(0).animationSpeed = -app.animation_speed;
+                gear_sprite.animationSpeed = -app.animation_speed;
             }
 
             //hide chat if longer than 10 seconds and moving
@@ -222,36 +329,36 @@ move_player(delta)
         }
         else
         {
-            avatar_container.getChildAt(0).stop();
+            gear_sprite.stop();
         }
 
         //update status
         if(obj.interaction > 0)
         {
-            avatar_container.getChildAt(4).text = "Interaction ... " + obj.interaction;
-            avatar_container.getChildAt(4).visible = true;
+            status_label.text = "Interaction ... " + obj.interaction;
+            status_label.visible = true;
         }
         else if(obj.cool_down > 0)
         {
-            avatar_container.getChildAt(4).text = "Cooling ... " + obj.cool_down;
-            avatar_container.getChildAt(4).visible = true;
+            status_label.text = "Cooling ... " + obj.cool_down;
+            status_label.visible = true;
         }
         else
         {
-            avatar_container.getChildAt(4).visible = false;
+            status_label.visible = false;
         }
     }
 
     //find nearest players
-    for(let i in app.session.world_state.session_players)
+    for(let i in app.session.world_state_avatars.session_players)
     {
-        let obj1 = app.session.world_state.session_players[i];
+        let obj1 = app.session.world_state_avatars.session_players[i];
         obj1.nearest_player = null;
         obj1.nearest_player_distance = null;
 
-        for(let j in app.session.world_state.session_players)
+        for(let j in app.session.world_state_avatars.session_players)
         {
-            let obj2 = app.session.world_state.session_players[j];
+            let obj2 = app.session.world_state_avatars.session_players[j];
 
             if(i != j)
             {
@@ -275,14 +382,14 @@ move_player(delta)
     }
 
     //update chat boxes
-    for(let i in app.session.world_state.session_players)
+    for(let i in app.session.world_state_avatars.session_players)
     {
-        let obj = app.session.world_state.session_players[i];
+        let obj = app.session.world_state_avatars.session_players[i];
         let chat_container = pixi_avatars[i].chat_container;
         // let avatar_container = obj.pixi.chat_container;
         let offset = {x:chat_container.width*.5, y:chat_container.height*.45};
 
-        if(app.session.world_state.session_players[obj.nearest_player].current_location.x < obj.current_location.x)
+        if(app.session.world_state_avatars.session_players[obj.nearest_player].current_location.x < obj.current_location.x)
         {
             chat_container.position.set(obj.current_location.x + offset.x,
                                         obj.current_location.y - offset.y);
@@ -301,9 +408,9 @@ move_player(delta)
     }   
 
     //update tractor beams and status
-    for(let i in app.session.world_state.session_players)
+    for(let i in app.session.world_state_avatars.session_players)
     {
-        let player = app.session.world_state.session_players[i];
+        let player = app.session.world_state_avatars.session_players[i];
 
         if(player.tractor_beam_target)
         {
@@ -319,9 +426,9 @@ move_player(delta)
         }
     }
 
-    for(let i in app.session.world_state.session_players)
+    for(let i in app.session.world_state_avatars.session_players)
     {
-        let obj = app.session.world_state.session_players[i];
+        let obj = app.session.world_state_avatars.session_players[i];
 
         //update interaction ranges
         let interaction_container = pixi_avatars[i].interaction_container;
@@ -344,7 +451,7 @@ destory_setup_pixi_subjects()
 {
     if(!app.session) return;
 
-    for(const i in app.session.world_state.session_players){
+    for(const i in app.session.world_state_avatars.session_players){
 
         let pixi_objects = pixi_avatars[i];
 
@@ -360,4 +467,185 @@ destory_setup_pixi_subjects()
             }
         }
     }
+},
+
+/**
+ * update avatar inventory
+ */
+update_avatar_inventory()
+{
+    if(!app.session.world_state["started"]) return;
+    
+    for(const i in app.session.world_state.avatars)
+    {
+        const avatar = app.session.world_state.avatars[i];
+        const parameter_set_player = app.session.parameter_set.parameter_set_players[avatar.parameter_set_player_id];
+
+        pixi_avatars[i][parameter_set_player.good_one].text = avatar[parameter_set_player.good_one];
+        pixi_avatars[i][parameter_set_player.good_two].text = avatar[parameter_set_player.good_two];
+        pixi_avatars[i][parameter_set_player.good_three].text = avatar[parameter_set_player.good_three];
+
+        pixi_avatars[i].health_label.text = Number(avatar.health).toFixed(1);;
+    }
+},
+
+/**
+ * subject avatar click
+ */
+subject_avatar_click(target_player_id)
+{
+    if(target_player_id == app.session_player.id) return;
+
+    // console.log("subject avatar click", target_player_id);
+
+    app.selected_avatar.avatar = app.session.world_state.avatars[target_player_id];
+    app.selected_avatar.target_player_id = target_player_id;
+    app.selected_avatar.parameter_set_player = app.session.parameter_set.parameter_set_players[app.selected_avatar.avatar.parameter_set_player_id];
+
+    app.selected_avatar.good_one_move = 0;
+    app.selected_avatar.good_two_move = 0;
+    app.selected_avatar.good_three_move = 0;
+
+    app.selected_avatar.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
+    app.selected_avatar.good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
+    app.selected_avatar.good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
+
+    app.selected_avatar.good_one_available = app.session.world_state.avatars[app.session_player.id][app.selected_avatar.good_one];
+    app.selected_avatar.good_two_available = app.session.world_state.avatars[app.session_player.id][app.selected_avatar.good_two];
+    app.selected_avatar.good_three_available = app.session.world_state.avatars[app.session_player.id][app.selected_avatar.good_three];
+
+    app.clear_main_form_errors();
+    app.avatar_modal.toggle();
+},
+
+/**
+ * send interaction to server
+ */
+send_move_fruit_to_avatar()
+{
+    if(!app.session.world_state["started"]) return;
+    if(!app.selected_avatar.avatar) return;
+
+    app.clear_main_form_errors();
+
+    let avatar = app.session.world_state.avatars[app.session_player.id];
+
+    if(app.selected_avatar.good_one_move <= 0 && 
+       app.selected_avatar.good_two_move <= 0 && 
+       app.selected_avatar.good_three_move <= 0)
+    {
+        app.display_errors({good_one_move: ["Invalid Amount"], good_two_move: ["Invalid Amount"], good_three_move: ["Invalid Amount"]});
+        return;
+    }
+
+    if(app.selected_avatar.good_one_move > avatar[app.selected_avatar.good_one])
+    {
+        app.display_errors({good_one_move: ["Invalid Amount"]});
+        app.selected_avatar.good_one_available = avatar[app.selected_avatar.good_one];
+        return;
+    }
+
+    if(app.selected_avatar.good_two_move > avatar[app.selected_avatar.good_two])
+    {
+        app.display_errors({good_two_move: ["Invalid Amount"]});
+        app.selected_avatar.good_two_available = avatar[app.selected_avatar.good_two];
+        return;
+    }
+
+    if(app.selected_avatar.good_three_move > avatar[app.selected_avatar.good_three])
+    {
+        app.display_errors({good_three_move: ["Invalid Amount"]});
+        app.selected_avatar.good_three_available = avatar[app.selected_avatar.good_three];
+        return;
+    }
+
+    app.send_message("move_fruit_to_avatar", 
+                    {"good_one_move" : app.selected_avatar.good_one_move,
+                     "good_two_move" : app.selected_avatar.good_two_move,
+                     "good_three_move" : app.selected_avatar.good_three_move,
+                     "target_player_id" : app.selected_avatar.target_player_id},
+                     "group"); 
+},
+
+
+/**
+ * take update from server about moving fruit to avatar
+ */
+take_update_move_fruit_to_avatar(message_data)
+{
+    if(message_data.status == "success")
+    {
+        souce_player_id = message_data.source_player_id;
+        target_player_id = message_data.target_player_id;
+
+        app.session.world_state.avatars[souce_player_id] = message_data.source_player;
+        app.session.world_state.avatars[target_player_id] = message_data.target_player;
+
+        good_one_move = message_data.good_one_move;
+        good_two_move = message_data.good_two_move;
+        good_three_move = message_data.good_three_move;
+
+        good_one = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_one;
+        good_two = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_two;
+        good_three = app.session.parameter_set.parameter_set_players[message_data.source_player.parameter_set_player_id].good_three;
+
+        app.update_avatar_inventory();
+
+        elements = [];
+        if(good_one_move > 0)
+        {
+            element = {source_change:"-" + good_one_move,
+                       target_change:"+" + good_one_move, 
+                       texture:app.pixi_textures[good_one+"_tex"]  }
+            elements.push(element);
+        }
+
+        if(good_two_move > 0)
+        {
+            element = {source_change:"-" + good_two_move,
+                       target_change:"+" + good_two_move,
+                       texture:app.pixi_textures[good_two+"_tex"]  }
+            elements.push(element);
+        }
+
+        if(good_three_move > 0)
+        {
+            element = {source_change:"-" + good_three_move,
+                       target_change:"+" + good_three_move,
+                       texture:app.pixi_textures[good_three+"_tex"]  }
+            elements.push(element);
+        }
+
+        app.add_transfer_beam(app.session.world_state_avatars.session_players[souce_player_id].current_location, 
+                              app.session.world_state_avatars.session_players[target_player_id].current_location,
+            elements);
+        
+        if(app.is_subject && souce_player_id == app.session_player.id)
+        {
+            app.avatar_modal.toggle();
+        }
+    }
+    else
+    {
+
+    }
+},
+
+/** hide choice grid modal modal
+*/
+hide_avatar_modal(){
+    
+},
+
+/**
+ * select all fruit to move to avatar
+ */
+select_all_fruit_avatar()
+{
+    let avatar = app.session.world_state.avatars[app.session_player.id];
+
+    app.selected_avatar.good_one_move = avatar[app.selected_avatar.good_one];
+    app.selected_avatar.good_two_move = avatar[app.selected_avatar.good_two];
+    app.selected_avatar.good_three_move = avatar[app.selected_avatar.good_three];
+
 },

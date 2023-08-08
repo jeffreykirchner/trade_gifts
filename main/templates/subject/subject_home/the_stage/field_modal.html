@@ -1,0 +1,125 @@
+{% load crispy_forms_tags %}
+<!--field Modal -->
+<div class="modal fade " 
+     id="field_modal" 
+     data-bs-backdrop="static" 
+     data-bs-keyboard="false" 
+     tabindex="-1" 
+     aria-labelledby="field_modal" 
+     aria-hidden="true"
+    >
+
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header fw-bold">
+                Field:&nbsp;<span v-if="selected_field.field">Owner [[session.parameter_set.parameter_set_players[selected_field.field.parameter_set_player].id_label]]</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">   
+                <div class="row">
+                    <div class="col text-center h5">Harvest</div>
+                </div>
+
+                <div class="row align-items-center text-center fw-bold mt-2" v-if="selected_field.field" id="div_id_good_one_harvest">
+                    <div class="col-4 text-center">
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_one.toLowerCase() + '.png'" />
+                    </div>  
+                    <div class="col fw-bold text-start">
+                        <input type="number" 
+                           class="transfer_model_input form-control-lg fw-bold"
+                           v-model="selected_field.good_one_harvest"
+                           min="0"
+                           max="999"
+                           step="1"
+                           id="good_one_harvest">      
+                           
+                           of [[selected_field.good_one_available]]
+                    </div>                    
+                </div>
+
+                <div class="row align-items-center text-center fw-bold mt-2" v-if="selected_field.field" id="div_id_good_two_harvest">
+                    
+                    <div class="col-4 text-center">
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_two.toLowerCase() + '.png'" />
+                    </div>  
+                    <div class="col text-start">
+                        <input type="number" 
+                            class="transfer_model_input form-control-lg fw-bold"
+                            v-model="selected_field.good_two_harvest"
+                            min="0"
+                            max="999"
+                            step="1"
+                            id="good_two_harvest">
+
+                            of [[selected_field.good_two_available]]
+                    </div>
+                </div>   
+                
+                <div class="row mt-4">
+                    <div class="col text-end">
+                        <button type="button"
+                                class="btn btn-outline-primary me-2"
+                                v-on:click = "select_all_fruit()"
+                                title="Select all fruit for harvest."                       
+                                v-bind:disabled="reconnecting || working">
+                            Select All <i class="fas fa-check-double"></i>
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                v-on:click = "send_field_harvest()"
+                                title="Harvest the selected fruit."                       
+                                v-bind:disabled="reconnecting || working">
+                            Harvest Fruit <i class="fas fa-sign-in-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div v-if="selected_field.field && selected_field.field.session_player==session_player.id">
+                    <div class="row mt-4 pt-4 border-top">
+                        <div class="col text-center h5">Effort Allocation: [[session.parameter_set.production_effort]] Pts</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col text-start h5">                           
+                            <img class="field_modal_icons_2" v-bind:src="'/static/' + selected_field.field_type.good_one.toLowerCase() + '.png'" />
+                            [[selected_field.good_one_production_effort]] Pts
+                        </div>
+                        <div class="col text-end h5">
+                            [[selected_field.good_two_production_effort]] Pts
+                            <img class="field_modal_icons_2" v-bind:src="'/static/' + selected_field.field_type.good_two.toLowerCase() + '.png'" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col text-center">
+                            <input type="range"
+                                    class="form-range" 
+                                    id="effort_range" 
+                                    v-bind:max="session.parameter_set.production_effort/2" 
+                                    v-bind:min="-session.parameter_set.production_effort/2" 
+                                    step="1"
+                                    v-bind:disabled="reconnecting || working"
+                                    v-on:input="update_effort_slider"
+                                    v-model="selected_field.effort_slider">
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col text-end">
+                            <button type="button"
+                                    class="btn btn-outline-primary"
+                                    v-on:click = "send_field_effort()"
+                                    title="Update Effort."                       
+                                    v-bind:disabled="reconnecting || working">
+                                Update Effort <i class="fas fa-sign-in-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>

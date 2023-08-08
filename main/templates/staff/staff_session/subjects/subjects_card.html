@@ -118,7 +118,7 @@
                                 [[temp_p.player_number]]
                             </td>
                             <td class="player_table_cell text-nowrap" v-on:click="show_edit_subject(p)">
-                                [[temp_p.parameter_set_player.id_label]]
+                                [[session.parameter_set.parameter_set_players[temp_p.parameter_set_player_id].id_label]]
                             </td>
                             <td class="player_table_cell text-nowrap" v-on:click="show_edit_subject(p)">
                                 [[temp_p.name=="" ? "---" : temp_p.name]]
@@ -136,7 +136,7 @@
                             </td>
                             <td class="player_table_cell text-nowrap">
                                 <span v-if="Object.keys(session.world_state).length>0 && session.started">
-                                    $[[(session.world_state.session_players[p].earnings/100).toFixed(2)]]
+                                    $[[(session.world_state.avatars[p].earnings/100).toFixed(2)]]
                                 </span>
                                 <span v-else>
                                     ---

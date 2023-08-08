@@ -1,14 +1,12 @@
 /**
  * create transfer beam between two points
  */
-add_transfer_beam(source_location, target_location, beam_texture, source_amount, target_amount)
+add_transfer_beam(source_location, target_location, elements) //beam_texture, source_amount, target_amount
 {
 
     let transfer_beam = {source_location:source_location, 
                          target_location:target_location, 
-                         source_amount:source_amount,
-                         target_amount:target_amount,
-                         beam_texture:beam_texture,
+                         elements,
                          beam_images:[]}    
 
     let dY = target_location.y - source_location.y;
@@ -33,10 +31,14 @@ add_transfer_beam(source_location, target_location, beam_texture, source_amount,
     let xIncrement = Math.sqrt(Math.pow(myX - targetX, 2) + Math.pow(myY - targetY, 2)) / tractorCircles;
     let tempScale = 0;
     
+    element_index = 0;
+
     for (let i=0; i<tractorCircles; i++)
     {
         let temp_x = (myX - Math.cos(tempAngle) * xIncrement * i);
         let temp_y = (myY - Math.sin(tempAngle) * xIncrement * i);
+        
+        let beam_texture = elements[element_index].texture;
 
         let token_graphic = PIXI.Sprite.from(beam_texture); //app.pixi_textures.sprite_sheet_2.textures["cherry_small.png"]
         token_graphic.anchor.set(0.5);
@@ -51,6 +53,9 @@ add_transfer_beam(source_location, target_location, beam_texture, source_amount,
         pixi_container_main.addChild(token_graphic);
 
         tempScale += scaleIncrement;
+
+        element_index++;
+        if(element_index >= elements.length) element_index = 0;
     }
 
     pixi_transfer_beams[pixi_transfer_beams_key++] = transfer_beam;
@@ -108,47 +113,57 @@ animate_transfer_beams(delta)
     }
 
     //remove the completed beams and show text emitters
+    let y_offset = 0;
     for(let i=0; i<completed.length; i++){      
+
+        for(let j in pixi_transfer_beams[completed[i]].elements)
+        {
+            element = pixi_transfer_beams[completed[i]].elements[j];
+
+            let beam_texture = element.texture;
+            let source_location = pixi_transfer_beams[completed[i]].source_location;
+            let target_location = pixi_transfer_beams[completed[i]].target_location;
+            let source_change = element.source_change;
+            let target_change = element.target_change;
+
+            //add text emitters
+            let token_graphic_1 = PIXI.Sprite.from(beam_texture);
+            token_graphic_1.animationSpeed = app.animation_speed;
+            token_graphic_1.anchor.set(1, 0.5)
+            token_graphic_1.eventMode = 'none';
+            token_graphic_1.scale.set(0.4);
+            token_graphic_1.alpha = 0.7;
+
+            app.add_text_emitters(source_change, 
+                                source_location.x, 
+                                source_location.y + y_offset,
+                                source_location.x,
+                                source_location.y - 100 + y_offset,
+                                0xFFFFFF,
+                                28,
+                                token_graphic_1)
+            
+                                        //add text emitters
+            let token_graphic_2 = PIXI.Sprite.from(beam_texture);
+            token_graphic_2.animationSpeed = app.animation_speed;
+            token_graphic_2.anchor.set(1, 0.5)
+            token_graphic_2.eventMode = 'none';
+            token_graphic_2.scale.set(0.4);
+            token_graphic_2.alpha = 0.7;
+
+            app.add_text_emitters(target_change, 
+                                target_location.x, 
+                                target_location.y + y_offset,
+                                target_location.x,
+                                target_location.y - 100 + y_offset,
+                                0xFFFFFF,
+                                28,
+                                token_graphic_2)
+
+            y_offset += 50;
+        }
         
-        let beam_texture = pixi_transfer_beams[completed[i]].beam_texture;
-        let source_location = pixi_transfer_beams[completed[i]].source_location;
-        let target_location = pixi_transfer_beams[completed[i]].target_location;
-        let source_amount = pixi_transfer_beams[completed[i]].source_amount;
-        let target_amount = pixi_transfer_beams[completed[i]].target_amount;
 
-        //add text emitters
-        let token_graphic_1 = PIXI.Sprite.from(beam_texture);
-        token_graphic_1.animationSpeed = app.animation_speed;
-        token_graphic_1.anchor.set(1, 0.5)
-        token_graphic_1.eventMode = 'none';
-        token_graphic_1.scale.set(0.4);
-        token_graphic_1.alpha = 0.7;
-
-        app.add_text_emitters(source_amount, 
-                              source_location.x, 
-                              source_location.y,
-                              source_location.x,
-                              source_location.y-100,
-                              0xFFFFFF,
-                              28,
-                              token_graphic_1)
-        
-                                    //add text emitters
-        let token_graphic_2 = PIXI.Sprite.from(beam_texture);
-        token_graphic_2.animationSpeed = app.animation_speed;
-        token_graphic_2.anchor.set(1, 0.5)
-        token_graphic_2.eventMode = 'none';
-        token_graphic_2.scale.set(0.4);
-        token_graphic_2.alpha = 0.7;
-
-        app.add_text_emitters(target_amount, 
-                              target_location.x, 
-                              target_location.y,
-                              target_location.x,
-                              target_location.y-100,
-                              0xFFFFFF,
-                              28,
-                              token_graphic_2)
         
         //remove beams
         delete pixi_transfer_beams[completed[i]]; 

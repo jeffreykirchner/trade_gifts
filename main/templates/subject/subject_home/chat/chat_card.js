@@ -35,8 +35,8 @@ take_chat(message_data){
 take_update_chat(message_data){
     
 
-    app.session.world_state.session_players[message_data.sender_id].show_chat = true;    
-    app.session.world_state.session_players[message_data.sender_id].chat_time = Date.now();
+    app.session.world_state_avatars.session_players[message_data.sender_id].show_chat = true;    
+    app.session.world_state_avatars.session_players[message_data.sender_id].chat_time = Date.now();
     pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text =  message_data.text;
 
 },
