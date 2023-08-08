@@ -216,6 +216,10 @@ def sync_continue_timer(event, session_id):
             current_period = math.floor(total_time / parameter_set["period_length"]) + 1
             time_remaining = parameter_set["period_length"] - (total_time % parameter_set["period_length"])
 
+            if current_period == 2 and time_remaining ==10:
+                '''test code'''
+                pass
+
             session.world_state["time_remaining"] = time_remaining
             session.world_state["current_period"] = current_period
             session.save()
@@ -231,6 +235,7 @@ def sync_continue_timer(event, session_id):
             if period_is_over:
                 
                 session = session.session_periods.get(id=last_period_id).do_consumption()
+                session = session.get_current_session_period().do_timer_actions(time_remaining)
                 session = session.get_current_session_period().do_production()
 
                 for i in session.world_state["session_players"]:

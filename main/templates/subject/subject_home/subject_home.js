@@ -379,7 +379,6 @@ var app = Vue.createApp({
 
             if(message_data.period_is_over)
             {
-                                
 
                 //update fields.
                 for(let i in message_data.fields)

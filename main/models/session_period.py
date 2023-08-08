@@ -85,7 +85,7 @@ class SessionPeriod(models.Model):
         convert health into cash earnings
         '''
 
-        self.do_timer_actions(0)
+        session = self.do_timer_actions(0)
 
         #clear avatar inventory
         for i in self.session.world_state["avatars"]:
@@ -100,10 +100,10 @@ class SessionPeriod(models.Model):
         self.consumption_completed = True
         self.save()
 
-        self.session.world_state["session_periods"][str(self.id)]["consumption_completed"]=True
-        self.session.save()
+        session.world_state["session_periods"][str(self.id)]["consumption_completed"]=True
+        session.save()
 
-        return self.session
+        return session
     
     def do_production(self):
         '''
