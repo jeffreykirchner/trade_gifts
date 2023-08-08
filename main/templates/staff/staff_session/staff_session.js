@@ -388,6 +388,7 @@ var app = Vue.createApp({
             app.session.world_state.timer_running = message_data.timer_running;
             app.session.world_state.started = message_data.started;
             app.session.world_state.finished = message_data.finished;
+            app.session.world_state.avatars = message_data.avatars;
            
             // app.session.finished = result.finished;
             app.session.world_state.current_experiment_phase = message_data.current_experiment_phase;
@@ -397,8 +398,6 @@ var app = Vue.createApp({
             //update player earnings and inventory if period has changed
             if(message_data.period_is_over)
             {
-                app.session.world_state.avatars = message_data.avatars;
-
                 //update fields.
                 for(let i in message_data.fields)
                 {
@@ -411,10 +410,11 @@ var app = Vue.createApp({
                     app.session.world_state.fields[i][good_one] = message_data.fields[i][good_one];
                     app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
                 }
-
-                app.update_avatar_inventory();
+                
                 app.update_field_inventory();
             }
+
+            app.update_avatar_inventory();
 
             app.take_update_earnings(message_data.earnings);
 

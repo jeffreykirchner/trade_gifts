@@ -83,11 +83,11 @@ class TimerMixin():
             result["current_experiment_phase"] = self.world_state_local["current_experiment_phase"]
             result["earnings"] = v["earnings"]
             result["period_is_over"] = v["period_is_over"]
+            result["avatars"] = self.world_state_local["avatars"]
 
             if v["period_is_over"]:
                 #avatar inventorys
-                result["avatars"] = self.world_state_local["avatars"]
-
+                
                 result["fields"] = {}
                 for i in self.world_state_local["fields"]:
                     result["fields"][i] = {}
@@ -207,11 +207,6 @@ def sync_continue_timer(event, session_id):
 
             ts = datetime.now() - datetime.strptime(session.world_state["timer_history"][-1]["time"],"%Y-%m-%dT%H:%M:%S.%f")
 
-            #check if a full second has passed
-            # if session.world_state["timer_history"][-1]["count"] == math.floor(ts.seconds):
-            #     send_update = False
-
-            # if send_update:
             session.world_state["timer_history"][-1]["count"] = math.floor(ts.seconds)
 
             total_time = 0
@@ -244,8 +239,9 @@ def sync_continue_timer(event, session_id):
                     earnings[i] = {}
                     earnings[i]["total_earnings"] = 0
                     earnings[i]["period_earnings"] = 0
-                
-        
+            else:
+                session = session.get_current_session_period().do_timer_actions(time_remaining)
+          
         world_state = session.world_state
 
     return {"status" : status, "error_message" : error_message, "world_state" : world_state, "earnings" : earnings, "period_is_over" : period_is_over}

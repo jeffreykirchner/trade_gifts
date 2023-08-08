@@ -52,7 +52,10 @@ class ParameterSet(models.Model):
     cool_down_length = models.IntegerField(verbose_name='Cool Down Length', default=10)                       #cool down length in seconds
     interaction_range = models.IntegerField(verbose_name='Interaction Range', default=300)                    #interaction range in pixels
 
-    reconnection_limit = models.IntegerField(verbose_name='Age Warning', default=25)       #age cut that issues a warning for invalid age range
+    health_loss_per_second = models.DecimalField(verbose_name='Health Loss per Second', decimal_places=2, max_digits=3, default=1.00)            #health loss per second
+    heath_gain_per_sleep_second = models.DecimalField(verbose_name='Health Gain per Sleep Second', decimal_places=2, max_digits=4, default=5.00) #health gain per sleep second
+
+    reconnection_limit = models.IntegerField(verbose_name='Age Warning', default=25)                        #stop trying to reconnect after this many failed attempts
 
     test_mode = models.BooleanField(default=False, verbose_name='Test Mode')                                #if true subject screens will do random auto testing
 
@@ -107,6 +110,9 @@ class ParameterSet(models.Model):
             self.interaction_length = new_ps.get("interaction_length", 10)
             self.cool_down_length = new_ps.get("cool_down_length", 10)
             self.interaction_range = new_ps.get("interaction_range", 300)
+
+            self.health_loss_per_second = new_ps.get("health_loss_per_second", 1.00)
+            self.heath_gain_per_sleep_second = new_ps.get("heath_gain_per_sleep_second", 5.00)
 
             self.reconnection_limit = new_ps.get("reconnection_limit", None)
 
@@ -265,6 +271,9 @@ class ParameterSet(models.Model):
         self.json_for_session["interaction_length"] = self.interaction_length
         self.json_for_session["cool_down_length"] = self.cool_down_length
         self.json_for_session["interaction_range"] = self.interaction_range
+
+        self.json_for_session["health_loss_per_second"] = self.health_loss_per_second
+        self.json_for_session["heath_gain_per_sleep_second"] = self.heath_gain_per_sleep_second
 
         self.json_for_session["reconnection_limit"] = self.reconnection_limit
 

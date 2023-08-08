@@ -10,6 +10,8 @@ from decimal import Decimal
 from django.db import models
 from django.db import transaction
 
+from django.core.serializers.json import DjangoJSONEncoder
+
 from main.models import Session
 
 from main.globals import round_half_away_from_zero
@@ -27,6 +29,8 @@ class SessionPeriod(models.Model):
     production_completed = models.BooleanField(default=False)   #production completed for this period
     consumption_completed = models.BooleanField(default=False)  #consumption completed for this period
 
+    timer_actions = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)   #timer actions for this period
+
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
 
@@ -40,11 +44,48 @@ class SessionPeriod(models.Model):
         verbose_name = 'Session Period'
         verbose_name_plural = 'Session Periods'
         ordering = ['period_number']
-    
+
+    def start(self):
+        '''
+        do start actions
+        '''
+        self.timer_actions = {}
+
+        for i in range(self.session.parameter_set.period_length):
+            self.timer_actions[i+1] = {"metabolism" : False}
+
+        self.save()
+
+    def do_timer_actions(self, time_remaining):
+        '''
+        do timer actions
+        '''
+        health_loss_count = 0
+        health_loss_per_second = self.session.parameter_set.health_loss_per_second
+
+        for i in self.timer_actions:
+            if int(i) >= time_remaining and not self.timer_actions[i]["metabolism"]:
+                self.timer_actions[i]["metabolism"] = True
+                health_loss_count += 1
+        
+        if health_loss_count > 0:
+            for i in self.session.world_state["avatars"]:
+                current_health = Decimal(self.session.world_state["avatars"][i]["health"])
+                self.session.world_state["avatars"][i]["health"] = str(current_health - (health_loss_count * health_loss_per_second))
+                if Decimal(self.session.world_state["avatars"][i]["health"]) < 0:
+                    self.session.world_state["avatars"][i]["health"] = "0"
+
+            self.save()
+            self.session.save()    
+        
+        return self.session
+
     def do_consumption(self):
         '''
         convert health into cash earnings
         '''
+
+        self.do_timer_actions(0)
 
         #clear avatar inventory
         for i in self.session.world_state["avatars"]:
@@ -145,5 +186,6 @@ class SessionPeriod(models.Model):
             "period_number" : self.period_number,
             "production_completed" : self.production_completed,
             "consumption_completed" : self.consumption_completed,
+            "timer_actions" : self.timer_actions,
         }
         

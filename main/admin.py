@@ -20,6 +20,7 @@ from main.models import Session
 from main.models import SessionEvent
 from main.models import SessionPlayer
 from main.models import SessionPlayerPeriod
+from main.models import SessionPeriod
 
 from main.models import  HelpDocs
 
@@ -139,6 +140,25 @@ class SessionPlayerInline(admin.TabularInline):
     fields = ['get_parameter_set_player_id_label', 'name', 'student_id', 'email', 'name_submitted', 'survey_complete']
     readonly_fields = ('get_parameter_set_player_id_label',)
 
+@admin.register(SessionPeriod)
+class SessionPeriodAdmin(admin.ModelAdmin):
+
+    readonly_fields=['session','period_number']
+    list_display = ['session', 'period_number']
+    fields = ['session','period_number', 'production_completed', 'consumption_completed', 'timer_actions']
+
+class SessionPeriodInline(admin.TabularInline):
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    extra = 0  
+    model = SessionPeriod
+    can_delete = False   
+    show_change_link = True
+    fields = ['period_number', 'production_completed', 'consumption_completed']
+    readonly_fields = ['period_number']
+
 @admin.register(SessionEvent)
 class SessionEventAdmin(admin.ModelAdmin):
 
@@ -167,7 +187,7 @@ class SessionAdmin(admin.ModelAdmin):
         ) % queryset.count(), messages.SUCCESS)
 
     readonly_fields=['parameter_set', 'session_key','channel_key', 'controlling_channel']
-    inlines = [SessionPlayerInline]
+    inlines = [SessionPlayerInline, SessionPeriodInline]
     actions = ['reset']
 
     list_display = ['title', 'get_creator_email']

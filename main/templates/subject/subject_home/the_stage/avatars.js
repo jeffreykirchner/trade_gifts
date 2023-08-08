@@ -485,7 +485,7 @@ update_avatar_inventory()
         pixi_avatars[i][parameter_set_player.good_two].text = avatar[parameter_set_player.good_two];
         pixi_avatars[i][parameter_set_player.good_three].text = avatar[parameter_set_player.good_three];
 
-        pixi_avatars[i].health_label.text = avatar.health.toFixed(1);;
+        pixi_avatars[i].health_label.text = Number(avatar.health).toFixed(1);;
     }
 },
 

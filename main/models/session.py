@@ -119,6 +119,9 @@ class Session(models.Model):
         for i in self.session_players.all():
             i.start()
 
+        for i in self.session_periods.all():
+            i.start()
+
         self.setup_world_state()
 
     def setup_world_state(self):
@@ -200,7 +203,7 @@ class Session(models.Model):
 
             v2 = {}
             v2['earnings'] = 0
-            v2['health'] = 100
+            v2['health'] = "100"
             v2['parameter_set_player_id'] = i['parameter_set_player__id']
             for j in main.globals.Goods.choices:
                 v2[j[0]] = 0

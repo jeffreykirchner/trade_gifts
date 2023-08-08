@@ -375,10 +375,11 @@ var app = Vue.createApp({
             app.session.world_state.started = message_data.started;
             app.session.world_state.finished = message_data.finished;
             app.session.world_state.current_experiment_phase = message_data.current_experiment_phase;
+            app.session.world_state.avatars = message_data.avatars;
 
             if(message_data.period_is_over)
             {
-                app.session.world_state.avatars = message_data.avatars;                
+                                
 
                 //update fields.
                 for(let i in message_data.fields)
@@ -393,9 +394,10 @@ var app = Vue.createApp({
                     app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
                 }
 
-                app.update_avatar_inventory();
                 app.update_field_inventory();
             }
+
+            app.update_avatar_inventory();
 
             // app.session.world_state.finished = message_data.finished;
         

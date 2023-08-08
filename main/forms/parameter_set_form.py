@@ -74,6 +74,22 @@ class ParameterSetForm(forms.ModelForm):
                                           widget=forms.NumberInput(attrs={"v-model":"parameter_set.cool_down_length",
                                                                           "step":"1",
                                                                           "min":"1"}))
+    
+    health_loss_per_second = forms.DecimalField(label='Health Loss Per Second',
+                                                max_digits=3,
+                                                decimal_places=2,
+                                                min_value=0.01,
+                                                widget=forms.NumberInput(attrs={"v-model":"parameter_set.health_loss_per_second",
+                                                                                "step":"0.01",
+                                                                                "min":"0.01"}))
+    
+    heath_gain_per_sleep_second = forms.DecimalField(label='Health Gain Per Sleep Second',
+                                                     max_digits=4,
+                                                     decimal_places=2,
+                                                     min_value=0.01,
+                                                     widget=forms.NumberInput(attrs={"v-model":"parameter_set.heath_gain_per_sleep_second",
+                                                                                     "step":"0.01",
+                                                                                     "min":"0.01"}))
 
     world_width = forms.IntegerField(label='World Width (pixels)',
                                     min_value=1,
@@ -133,7 +149,8 @@ class ParameterSetForm(forms.ModelForm):
         model=ParameterSet
         fields =['period_count', 'period_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'test_mode', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
-                 'interaction_length', 'interaction_range', 'cool_down_length', 'world_width', 'world_height',
+                 'interaction_length', 'interaction_range', 'cool_down_length', 'health_loss_per_second', 'heath_gain_per_sleep_second',
+                 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale','production_effort']
                  
 
