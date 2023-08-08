@@ -185,10 +185,21 @@ class SessionAdmin(admin.ModelAdmin):
                 '%d sessions are reset.',
                 queryset.count(),
         ) % queryset.count(), messages.SUCCESS)
+    
+    def refresh(self, request, queryset):
+
+        for i in queryset.all():
+            i.parameter_set.json(update_required=True)
+
+        self.message_user(request, ngettext(
+                '%d session is reset.',
+                '%d sessions are reset.',
+                queryset.count(),
+        ) % queryset.count(), messages.SUCCESS)
 
     readonly_fields=['parameter_set', 'session_key','channel_key', 'controlling_channel']
     inlines = [SessionPlayerInline, SessionPeriodInline]
-    actions = ['reset']
+    actions = ['reset', 'refresh']
 
     list_display = ['title', 'get_creator_email']
 
