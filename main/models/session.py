@@ -203,7 +203,7 @@ class Session(models.Model):
             self.world_state_avatars["session_players"][str(i['id'])] = v
 
             v2 = {}
-            v2['earnings'] = 0
+            v2['earnings'] = "0"
             v2['health'] = "100"
             v2['parameter_set_player_id'] = i['parameter_set_player__id']
             for j in main.globals.Goods.choices:

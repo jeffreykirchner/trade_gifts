@@ -60,6 +60,14 @@ class SessionPeriod(models.Model):
         '''
         do timer actions
         '''
+        cents_per_second = self.session.parameter_set.cents_per_second
+
+        #earnings
+        for i in self.session.world_state["avatars"]:
+            avatar = self.session.world_state["avatars"][i]
+            avatar["earnings"] = str(Decimal(avatar["earnings"]) + Decimal(avatar["health"]) * Decimal(cents_per_second))
+
+        #metabolism
         health_loss_count = 0
         health_loss_per_second = self.session.parameter_set.health_loss_per_second
 

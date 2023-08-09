@@ -5,6 +5,7 @@ session player model
 #import logging
 import uuid
 import logging
+import math
 
 from decimal import Decimal
 
@@ -192,7 +193,11 @@ class SessionPlayer(models.Model):
         return earnings in dollar format
         '''
 
-        return f'${(self.earnings/100):.2f}'
+        earnings =  Decimal(math.ceil(float(self.session.world_state["avatars"][str(self.id)]["earnings"]))) / 100
+
+        return f'${earnings:.2f}'
+
+        #return f'${(self.earnings/100):.2f}'
 
 
         
