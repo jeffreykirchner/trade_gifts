@@ -114,6 +114,22 @@ class ParameterSetForm(forms.ModelForm):
                                           widget=forms.NumberInput(attrs={"v-model":"parameter_set.cents_per_second",
                                                                           "step":"0.01",
                                                                           "min":"0.01"}))
+    
+    attack_cost = forms.DecimalField(label='Attack Cost (Health)',
+                                     max_digits=3,
+                                     decimal_places=1,
+                                     min_value=0.1,
+                                     widget=forms.NumberInput(attrs={"v-model":"parameter_set.attack_cost",
+                                                                     "step":"0.1",
+                                                                     "min":"0.1"}))
+    
+    attack_damage = forms.DecimalField(label='Attack Damage (Health)',
+                                       max_digits=3,
+                                       decimal_places=1,
+                                       min_value=0.1,
+                                       widget=forms.NumberInput(attrs={"v-model":"parameter_set.attack_damage",
+                                                                       "step":"0.1",
+                                                                       "min":"0.1"}))
 
     world_width = forms.IntegerField(label='World Width (pixels)',
                                      min_value=1,
@@ -174,7 +190,7 @@ class ParameterSetForm(forms.ModelForm):
         fields =['period_count', 'period_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'test_mode', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'health_loss_per_second', 'heath_gain_per_sleep_second',
-                 'consumption_alpha', 'consumption_beta', 'cents_per_second', 'world_width', 'world_height',
+                 'consumption_alpha', 'consumption_beta', 'cents_per_second', 'attack_damage', 'attack_cost', 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale','production_effort']
                  
 
