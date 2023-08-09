@@ -649,3 +649,28 @@ select_all_fruit_avatar()
     app.selected_avatar.good_three_move = avatar[app.selected_avatar.good_three];
 
 },
+
+/**
+ * show the attack avatar modal
+*/
+show_attack_avatar()
+{
+    app.avatar_modal.hide();
+    app.avatar_attack_modal.toggle();
+},
+
+/**
+ * send attack avatar to server
+ */
+send_attack_avatar()
+{
+
+},
+
+/**
+ * take update from server about attack avatar
+*/
+take_update_attack_avatar(message_data)
+{
+    
+},

@@ -1,0 +1,51 @@
+{% load crispy_forms_tags %}
+<!--interaction Modal -->
+<div class="modal fade " 
+     id="avatar_attack_modal" 
+     data-bs-backdrop="static" 
+     data-bs-keyboard="false" 
+     tabindex="-1" 
+     aria-labelledby="avatar_attack_modal" 
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header fw-bold" v-if="selected_avatar.avatar">
+                Attack Player [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" v-if="session">              
+                
+                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar" id="div_id_good_two_move">
+                    <div class="col-9 text-end">
+                        Health Cost to You:
+                    </div>  
+                    <div class="col text-start">
+                        [[session.parameter_set.attack_cost]]
+                    </div>
+                </div>
+
+                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar" id="div_id_good_three_move">
+                    <div class="col-9 text-end">
+                        Health Damage to [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]:
+                    </div>  
+                    <div class="col text-start">
+                       [[session.parameter_set.attack_damage]]
+                    </div>
+                </div>
+            
+            </div>
+            <div class="modal-footer">
+                               
+                <button type="button"
+                        class="btn btn-outline-danger"
+                        v-on:click = "send_attack_avatar()"
+                        title="Attack the selected player."                       
+                        v-bind:disabled="reconnecting || working">
+                    Attack <i class="fas fa-fist-raised"></i>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
