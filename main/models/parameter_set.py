@@ -60,6 +60,9 @@ class ParameterSet(models.Model):
 
     cents_per_second = models.DecimalField(verbose_name='Cents per Second', decimal_places=5, max_digits=7, default=0.016) #cents per second
 
+    attack_cost = models.DecimalField(verbose_name='Attack Cost to Health', decimal_places=1, max_digits=3, default=5.0)     #attack cost
+    attack_damage = models.DecimalField(verbose_name='Attack Damage to Health', decimal_places=1, max_digits=3, default=7.0) #attack damage
+
     reconnection_limit = models.IntegerField(verbose_name='Age Warning', default=25)                        #stop trying to reconnect after this many failed attempts
 
     test_mode = models.BooleanField(default=False, verbose_name='Test Mode')                                #if true subject screens will do random auto testing
@@ -124,6 +127,9 @@ class ParameterSet(models.Model):
 
             self.cents_per_second = new_ps.get("cents_per_second", 0.016)
 
+            self.attack_cost = new_ps.get("attack_cost", 5.0)
+            self.attack_damage = new_ps.get("attack_damage", 7.0)
+            
             self.reconnection_limit = new_ps.get("reconnection_limit", None)
 
             self.instruction_set = InstructionSet.objects.get(label=new_ps.get("instruction_set")["label"])
@@ -289,6 +295,9 @@ class ParameterSet(models.Model):
         self.json_for_session["consumption_beta"] = self.consumption_beta
 
         self.json_for_session["cents_per_second"] = self.cents_per_second
+
+        self.json_for_session["attack_cost"] = self.attack_cost
+        self.json_for_session["attack_damage"] = self.attack_damage
 
         self.json_for_session["reconnection_limit"] = self.reconnection_limit
 
