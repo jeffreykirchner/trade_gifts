@@ -60,6 +60,14 @@ class SessionPeriod(models.Model):
         '''
         do timer actions
         '''
+        cents_per_second = self.session.parameter_set.cents_per_second
+
+        #earnings
+        for i in self.session.world_state["avatars"]:
+            avatar = self.session.world_state["avatars"][i]
+            avatar["earnings"] = str(Decimal(avatar["earnings"]) + Decimal(avatar["health"]) * Decimal(cents_per_second))
+
+        #metabolism
         health_loss_count = 0
         health_loss_per_second = self.session.parameter_set.health_loss_per_second
 
@@ -96,6 +104,19 @@ class SessionPeriod(models.Model):
                 avatar[good] = 0
 
         #convert goods in homes to cash
+        for i in self.session.world_state["houses"]:
+            house = self.session.world_state["houses"][i]
+            avatar = self.session.world_state["avatars"][str(house["session_player"])]
+
+            avatar["health"] = Decimal(avatar["health"]) + Decimal(house["health_value"])
+            avatar["health"] = str(min(Decimal(avatar["health"]), 100))
+
+            house["health_consumed"] = house["health_value"]
+            house["health_value"] = 0
+
+            for j in main.globals.Goods.choices:
+                good = j[0]
+                house[good] = 0
         
         self.consumption_completed = True
         self.save()

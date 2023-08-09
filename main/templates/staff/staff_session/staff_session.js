@@ -285,6 +285,7 @@ var app = Vue.createApp({
             app.setup_pixi_subjects();
             app.update_field_inventory();
             app.update_avatar_inventory();
+            app.update_house_inventory();
         },
 
         /** send winsock request to get session info
@@ -410,8 +411,12 @@ var app = Vue.createApp({
                     app.session.world_state.fields[i][good_one] = message_data.fields[i][good_one];
                     app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
                 }
+
+                //update houses
+                app.session.world_state.houses = message_data.houses;
                 
                 app.update_field_inventory();
+                app.update_house_inventory();
             }
 
             app.update_avatar_inventory();

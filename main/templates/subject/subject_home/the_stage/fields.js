@@ -277,6 +277,7 @@ take_field_harvest(message_data)
         avatar[field_type.good_two] = message_data.avatar[field_type.good_two];
 
         app.update_field_inventory();
+        app.update_avatar_inventory();
 
         elements = [];
         if(good_one_harvest > 0)

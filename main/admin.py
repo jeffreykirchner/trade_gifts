@@ -192,8 +192,8 @@ class SessionAdmin(admin.ModelAdmin):
             i.parameter_set.json(update_required=True)
 
         self.message_user(request, ngettext(
-                '%d session is reset.',
-                '%d sessions are reset.',
+                '%d session is refreshed.',
+                '%d sessions are refreshed.',
                 queryset.count(),
         ) % queryset.count(), messages.SUCCESS)
 

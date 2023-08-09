@@ -279,6 +279,7 @@ var app = Vue.createApp({
             app.update_subject_status_overlay();
             app.update_field_inventory();
             app.update_avatar_inventory();
+            app.update_house_inventory();
         },
 
         /** send winsock request to get session info
@@ -393,7 +394,11 @@ var app = Vue.createApp({
                     app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
                 }
 
+                //update houses
+                app.session.world_state.houses = message_data.houses;
+
                 app.update_field_inventory();
+                app.update_house_inventory();
             }
 
             app.update_avatar_inventory();

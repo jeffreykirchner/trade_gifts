@@ -55,6 +55,11 @@ class ParameterSet(models.Model):
     health_loss_per_second = models.DecimalField(verbose_name='Health Loss per Second', decimal_places=2, max_digits=3, default=1.00)            #health loss per second
     heath_gain_per_sleep_second = models.DecimalField(verbose_name='Health Gain per Sleep Second', decimal_places=2, max_digits=4, default=5.00) #health gain per sleep second
 
+    consumption_alpha = models.DecimalField(verbose_name='Consumption Alpha', decimal_places=5, max_digits=7, default=1.0)    #consumption alpha
+    consumption_beta = models.DecimalField(verbose_name='Consumption Beta', decimal_places=5, max_digits=7, default=1.0)      #consumption beta
+
+    cents_per_second = models.DecimalField(verbose_name='Cents per Second', decimal_places=5, max_digits=7, default=0.016) #cents per second
+
     reconnection_limit = models.IntegerField(verbose_name='Age Warning', default=25)                        #stop trying to reconnect after this many failed attempts
 
     test_mode = models.BooleanField(default=False, verbose_name='Test Mode')                                #if true subject screens will do random auto testing
@@ -113,6 +118,11 @@ class ParameterSet(models.Model):
 
             self.health_loss_per_second = new_ps.get("health_loss_per_second", 1.00)
             self.heath_gain_per_sleep_second = new_ps.get("heath_gain_per_sleep_second", 5.00)
+
+            self.consumption_alpha = new_ps.get("consumption_alpha", 1.0)
+            self.consumption_beta = new_ps.get("consumption_beta", 1.0)
+
+            self.cents_per_second = new_ps.get("cents_per_second", 0.016)
 
             self.reconnection_limit = new_ps.get("reconnection_limit", None)
 
@@ -274,6 +284,11 @@ class ParameterSet(models.Model):
 
         self.json_for_session["health_loss_per_second"] = self.health_loss_per_second
         self.json_for_session["heath_gain_per_sleep_second"] = self.heath_gain_per_sleep_second
+
+        self.json_for_session["consumption_alpha"] = self.consumption_alpha
+        self.json_for_session["consumption_beta"] = self.consumption_beta
+
+        self.json_for_session["cents_per_second"] = self.cents_per_second
 
         self.json_for_session["reconnection_limit"] = self.reconnection_limit
 
