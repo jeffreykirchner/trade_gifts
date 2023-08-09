@@ -111,6 +111,7 @@ class SessionPeriod(models.Model):
             avatar["health"] = Decimal(avatar["health"]) + Decimal(house["health_value"])
             avatar["health"] = str(min(Decimal(avatar["health"]), 100))
 
+            house["health_consumed"] = house["health_value"]
             house["health_value"] = 0
 
             for j in main.globals.Goods.choices:
