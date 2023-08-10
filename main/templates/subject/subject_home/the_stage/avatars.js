@@ -655,6 +655,7 @@ select_all_fruit_avatar()
 */
 show_attack_avatar()
 {
+    app.clear_main_form_errors();
     app.avatar_modal.hide();
     app.avatar_attack_modal.toggle();
 },
@@ -664,7 +665,24 @@ show_attack_avatar()
  */
 send_attack_avatar()
 {
+    let target_avatar = app.session.world_state.avatars[app.selected_avatar.target_player_id];
+    let source_player = app.session.world_state.avatars[app.session_player.id];
 
+    if(Number(target_avatar.health) == 0)
+    {
+        app.display_errors({attack_avatar_button: ["Target player already has zero health."]});
+        return;
+    }
+
+    if(Number(source_player.health) < app.session.parameter_set.attack_cost)
+    {
+        app.display_errors({attack_avatar_button: ["You do not have enough health to attack."]});
+        return;
+    }
+
+    app.send_message("attack_avatar", 
+                    {"target_player_id" : app.selected_avatar.target_player_id},
+                     "group"); 
 },
 
 /**
@@ -672,5 +690,15 @@ send_attack_avatar()
 */
 take_update_attack_avatar(message_data)
 {
+    if(message_data.status == "success")
+    {
+        source_player_id = message_data.source_player_id;
+        target_player_id = message_data.target_player_id;
+
+        app.session.world_state.avatars[source_player_id] = message_data.source_player;
+        app.session.world_state.avatars[target_player_id] = message_data.target_player;
+
+        app.update_avatar_inventory();
+    }
     
 },

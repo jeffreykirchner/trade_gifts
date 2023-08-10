@@ -606,6 +606,9 @@ var app = Vue.createApp({
             if(e) e.remove();
             e = document.getElementById("id_errors_good_three_move_house");
             if(e) e.remove();
+
+            e = document.getElementById("id_errors_attack_avatar_button");
+            if(e) e.remove();
         },
 
         /** display form error messages

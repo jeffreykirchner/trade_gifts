@@ -2,6 +2,7 @@
 import logging
 
 from asgiref.sync import sync_to_async
+from decimal import Decimal
 
 from django.db import transaction
 from django.db.models.fields.json import KT
@@ -598,6 +599,53 @@ class SubjectUpdatesMixin():
 
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
+        
+    async def attack_avatar(self, event):
+        '''
+        attack another avatar
+        '''
+        
+        if self.controlling_channel != self.channel_name:
+            return
+
+        logger = logging.getLogger(__name__)
+
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            target_player_id = event["message_text"]["target_player_id"]
+        except:
+            logger.info(f"attack_avatar: invalid data, {event['message_text']}")
+            return
+        
+        v = await sync_to_async(sync_attack_avatar)(self.session_id, player_id, target_player_id)
+
+        result = {"status" : v["status"], "error_message" : v["error_message"]}
+
+        if v["world_state"]:
+            self.world_state_local = v["world_state"]
+
+            result["source_player_id"] = player_id
+            result["target_player_id"] = target_player_id
+
+            result["source_player"] = self.world_state_local["avatars"][str(player_id)]
+            result["target_player"] = self.world_state_local["avatars"][str(target_player_id)]
+                       
+        else:
+            logger.info(f"move_fruit_to_house: invalid amounts from sync, {event['message_text']}")
+            return
+
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+    
+    async def update_attack_avatar(self, event):
+        '''
+        update attack avatar
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
                 
 def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_two_harvest):
     '''
@@ -622,11 +670,11 @@ def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_t
 
         if field[good_one] < good_one_harvest:
             status = "fail"
-            error_message.append({"id":"good_two_harvest", "messge": "Invalid harvest amount."})
+            error_message.append({"id":"good_two_harvest", "message": "Invalid harvest amount."})
 
         if field[good_two] < good_two_harvest:
             status = "fail"
-            error_message.append({"id":"good_two_harvest", "messge": "Invalid harvest amount."})
+            error_message.append({"id":"good_two_harvest", "message": "Invalid harvest amount."})
 
         if status == "success":
             field[good_one] -= good_one_harvest
@@ -686,15 +734,15 @@ def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_
 
         if session.world_state['avatars'][str(player_id)][good_one] < good_one_move:
             status = "fail"
-            error_message.append({"id":"good_one_move", "messge": "Invalid amount."})
+            error_message.append({"id":"good_one_move", "message": "Invalid amount."})
 
         if session.world_state['avatars'][str(player_id)][good_two] < good_two_move:
             status = "fail"
-            error_message.append({"id":"good_two_move", "messge": "Invalid amount."})
+            error_message.append({"id":"good_two_move", "message": "Invalid amount."})
 
         if session.world_state['avatars'][str(player_id)][good_three] < good_three_move:
             status = "fail"
-            error_message.append({"id":"good_three_move", "messge": "Invalid amount."})
+            error_message.append({"id":"good_three_move", "message": "Invalid amount."})
 
         if status == "success":
             session.world_state['avatars'][str(player_id)][good_one] -= good_one_move
@@ -734,27 +782,27 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
         if direction == "avatar_to_house":
             if avatar[good_one] < good_one_move:
                 status = "fail"
-                error_message.append({"id":"good_one_move", "messge": "Invalid amount."})
+                error_message.append({"id":"good_one_move", "message": "Invalid amount."})
 
             if avatar[good_two] < good_two_move:
                 status = "fail"
-                error_message.append({"id":"good_two_move", "messge": "Invalid amount."})
+                error_message.append({"id":"good_two_move", "message": "Invalid amount."})
 
             if avatar[good_three] < good_three_move:
                 status = "fail"
-                error_message.append({"id":"good_three_move", "messge": "Invalid amount."})
+                error_message.append({"id":"good_three_move", "message": "Invalid amount."})
         else:
             if house[good_one] < good_one_move:
                 status = "fail"
-                error_message.append({"id":"good_one_move", "messge": "Invalid amount."})
+                error_message.append({"id":"good_one_move", "message": "Invalid amount."})
 
             if house[good_two] < good_two_move:
                 status = "fail"
-                error_message.append({"id":"good_two_move", "messge": "Invalid amount."})
+                error_message.append({"id":"good_two_move", "message": "Invalid amount."})
 
             if house[good_three] < good_three_move:
                 status = "fail"
-                error_message.append({"id":"good_three_move", "messge": "Invalid amount."})
+                error_message.append({"id":"good_three_move", "message": "Invalid amount."})
 
         if status == "success":
             if direction == "avatar_to_house":
@@ -782,9 +830,53 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
 
     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 
+def sync_attack_avatar(session_id, player_id, target_house_id):
+    '''
+    sync attack avatar
+    '''
 
-                                      
-    
+    status = "success"
+    error_message = []
+    world_state = None
+
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
+        parameter_set = session.parameter_set.json()
+
+        source_player = session.world_state['avatars'][str(player_id)]
+        target_player = session.world_state['avatars'][str(target_house_id)]
+
+        if Decimal(source_player["health"]) < Decimal(parameter_set["attack_cost"]):
+            status = "fail"
+            error_message.append({"id":"attack_avatar_button", "message": "You do not have enough health."})
+
+        if Decimal(target_player["health"]) == 0:
+            status = "fail"
+            error_message.append({"id":"attack_avatar_button", "message": "Target player already has zero health."})
+
+        if status == "success":
+            source_player["health"] = Decimal(source_player["health"]) - Decimal(parameter_set["attack_cost"])
+            target_player["health"] = Decimal(target_player["health"]) - Decimal(parameter_set["attack_damage"])
+
+            if Decimal(source_player["health"]) < 0:
+                source_player["health"] = 0
+
+            if Decimal(target_player["health"]) < 0:
+                target_player["health"] = 0
+
+            source_player["health"] = str(source_player["health"])
+            target_player["health"] = str(target_player["health"])
+            
+            session.save()
+
+            world_state = session.world_state
+        session.save()
+
+        world_state = session.world_state
+
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+
+
 
                                 
         

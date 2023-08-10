@@ -34,17 +34,24 @@
                     </div>
                 </div>
             
-            </div>
-            <div class="modal-footer">
-                               
-                <button type="button"
-                        class="btn btn-outline-danger"
-                        v-on:click = "send_attack_avatar()"
-                        title="Attack the selected player."                       
-                        v-bind:disabled="reconnecting || working">
-                    Attack <i class="fas fa-fist-raised"></i>
-                </button>
+                <div class="row mt-4 border-top pt-3">
+                    <div class="col text-end">                       
 
+                        <button type="button"
+                                class="btn btn-outline-danger"
+                                v-on:click = "send_attack_avatar()"
+                                title="Attack the selected player."                       
+                                v-bind:disabled="reconnecting || working">
+                            Attack <i class="fas fa-fist-raised"></i>
+                        </button>
+                    </div>
+                </div>           
+                
+                <div class="row">
+                    <div class="col text-center">
+                        <span id="div_id_attack_avatar_button"></span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
