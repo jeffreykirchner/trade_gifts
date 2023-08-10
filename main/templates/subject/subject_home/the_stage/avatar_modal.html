@@ -66,26 +66,43 @@
                            of [[selected_avatar.good_three_available]]
                     </div>
                 </div>
-            
-            </div>
-            <div class="modal-footer">
 
-                <button type="button"
-                        class="btn btn-outline-primary me-2"
-                        v-on:click = "select_all_fruit_avatar()"
-                        title="Select all fruit to move."                       
-                        v-bind:disabled="reconnecting || working">
-                    Select All <i class="fas fa-check-double"></i>
-                </button>
+
+                <div class="row text-end mt-4 border-top pt-2">
+                    <div class="col text-end">
+                        <button type="button"
+                                class="btn btn-outline-primary me-2"
+                                v-on:click = "select_all_fruit_avatar()"
+                                title="Select all fruit to move."                       
+                                v-bind:disabled="reconnecting || working">
+                            Select All <i class="fas fa-check-double"></i>
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                v-on:click = "send_move_fruit_to_avatar()"
+                                title="Move fruit to selected player."                       
+                                v-bind:disabled="reconnecting || working">
+                            Move <i class="fas fa-sign-in-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row text-end mt-3">
+                    <div class="col text-end">
+                        
+                        <button type="button"
+                                class="btn btn-outline-danger"
+                                v-on:click = "show_attack_avatar()"
+                                title="Attack the slected player?"                       
+                                v-bind:disabled="reconnecting || working">
                                
-                <button type="button"
-                        class="btn btn-outline-primary"
-                        v-on:click = "send_move_fruit_to_avatar()"
-                        title="Move fruit to selected avatar."                       
-                        v-bind:disabled="reconnecting || working">
-                    Move <i class="fas fa-sign-in-alt"></i>
-                </button>
+                            Attack <i class="fas fa-fist-raised"></i>
+                        </button>
 
+                    </div>
+                </div>
+            
             </div>
         </div>
     </div>

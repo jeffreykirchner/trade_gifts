@@ -106,11 +106,11 @@ class TimerMixin():
             session_player_status = {}
 
             #decrement waiting and interaction time
-            # for p in self.world_state_local["session_players"]:
-            #     session_player = self.world_state_local["session_players"][p]
+            for p in self.world_state_avatars_local["session_players"]:
+                session_player = self.world_state_avatars_local["session_players"][str(p)]
 
-            #     if session_player["cool_down"] > 0:
-            #         session_player["cool_down"] -= 1
+                if session_player["cool_down"] > 0:
+                    session_player["cool_down"] -= 1
 
             #     if session_player["interaction"] > 0:
             #         session_player["interaction"] -= 1
@@ -122,10 +122,10 @@ class TimerMixin():
             #         session_player["frozen"] = False
             #         session_player["tractor_beam_target"] = None
 
-            #     session_player_status[p] = {"interaction": session_player["interaction"], 
-            #                                 "frozen": session_player["frozen"], 
-            #                                 "cool_down": session_player["cool_down"],
-            #                                 "tractor_beam_target" : session_player["tractor_beam_target"]}                
+                session_player_status[p] = {"interaction": session_player["interaction"], 
+                                            "frozen": session_player["frozen"], 
+                                            "cool_down": session_player["cool_down"],
+                                            "tractor_beam_target" : session_player["tractor_beam_target"]}                
             
             result["session_player_status"] = session_player_status
 

@@ -82,6 +82,7 @@ var app = Vue.createApp({
                     // modals
                     end_game_modal : null,
                     avatar_modal : null,
+                    avatar_attack_modal : null,
                     field_modal : null,
                     house_modal : null,
                     test_mode : {%if session.parameter_set.test_mode%}true{%else%}false{%endif%},
@@ -204,6 +205,9 @@ var app = Vue.createApp({
                 case "update_move_fruit_to_house":
                     app.take_update_move_fruit_to_house(message_data);
                     break;
+                case "update_attack_avatar":
+                    app.take_update_attack_avatar(message_data);
+                    break;
                 
             }
 
@@ -231,7 +235,8 @@ var app = Vue.createApp({
         do_first_load()
         {           
             app.end_game_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('end_game_modal'), {keyboard: false})   
-            app.avatar_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_modal'), {keyboard: false})          
+            app.avatar_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_modal'), {keyboard: false})  
+            app.avatar_attack_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_attack_modal'), {keyboard: false})        
             app.field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('field_modal'), {keyboard: false})
             app.house_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('house_modal'), {keyboard: false})
 
@@ -603,6 +608,9 @@ var app = Vue.createApp({
             e = document.getElementById("id_errors_good_two_move_house");
             if(e) e.remove();
             e = document.getElementById("id_errors_good_three_move_house");
+            if(e) e.remove();
+
+            e = document.getElementById("id_errors_attack_avatar_button");
             if(e) e.remove();
         },
 
