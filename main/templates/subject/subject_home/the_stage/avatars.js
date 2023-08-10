@@ -150,7 +150,7 @@ setup_pixi_subjects(){
         //position in container
         face_sprite.position.set(0, -gear_sprite.height * 0.03);
         id_label.position.set(0, -gear_sprite.height * 0.2);
-        status_label.position.set(0, -gear_sprite.height/2 + 30);
+        status_label.position.set(0, +gear_sprite.height/2-30);
 
         good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2 - 10);
         good_two_container.position.set(0+25, -gear_sprite.height/2 - 10);
@@ -575,10 +575,10 @@ take_update_move_fruit_to_avatar(message_data)
 {
     if(message_data.status == "success")
     {
-        souce_player_id = message_data.source_player_id;
+        source_player_id = message_data.source_player_id;
         target_player_id = message_data.target_player_id;
 
-        app.session.world_state.avatars[souce_player_id] = message_data.source_player;
+        app.session.world_state.avatars[source_player_id] = message_data.source_player;
         app.session.world_state.avatars[target_player_id] = message_data.target_player;
 
         good_one_move = message_data.good_one_move;
@@ -591,7 +591,7 @@ take_update_move_fruit_to_avatar(message_data)
 
         app.update_avatar_inventory();
 
-        elements = [];
+        let elements = [];
         if(good_one_move > 0)
         {
             element = {source_change:"-" + good_one_move,
@@ -616,11 +616,11 @@ take_update_move_fruit_to_avatar(message_data)
             elements.push(element);
         }
 
-        app.add_transfer_beam(app.session.world_state_avatars.session_players[souce_player_id].current_location, 
+        app.add_transfer_beam(app.session.world_state_avatars.session_players[source_player_id].current_location, 
                               app.session.world_state_avatars.session_players[target_player_id].current_location,
             elements);
         
-        if(app.is_subject && souce_player_id == app.session_player.id)
+        if(app.is_subject && source_player_id == app.session_player.id)
         {
             app.avatar_modal.toggle();
         }
@@ -698,7 +698,42 @@ take_update_attack_avatar(message_data)
         app.session.world_state.avatars[source_player_id] = message_data.source_player;
         app.session.world_state.avatars[target_player_id] = message_data.target_player;
 
+        app.session.world_state_avatars.session_players[source_player_id].cool_down = app.session.parameter_set.cool_down_length;
+        app.session.world_state_avatars.session_players[target_player_id].cool_down = app.session.parameter_set.cool_down_length;
+
         app.update_avatar_inventory();
+
+        if(app.is_subject && source_player_id == app.session_player.id)
+        {
+            app.avatar_attack_modal.hide();
+
+            let elements = [];
+
+            let fist_texture = app.pixi_textures["fist_left_tex"];
+
+            if(app.session.world_state_avatars.session_players[source_player_id].current_location.x < 
+               app.session.world_state_avatars.session_players[target_player_id].current_location.x)
+            {
+                fist_texture = app.pixi_textures["fist_right_tex"];
+            }
+  
+            let element = {source_change:"",
+                           target_change:"", 
+                           texture: fist_texture}
+
+            elements.push(element);
+
+            element = {source_change:"-" + app.session.parameter_set.attack_cost,
+                           target_change:"-" + app.session.parameter_set.attack_damage, 
+                           texture:app.pixi_textures["health_tex"]  }
+
+            elements.push(element);
+            
+            app.add_transfer_beam(app.session.world_state_avatars.session_players[source_player_id].current_location, 
+                                  app.session.world_state_avatars.session_players[target_player_id].current_location,
+            elements);
+        }
+
     }
     
 },

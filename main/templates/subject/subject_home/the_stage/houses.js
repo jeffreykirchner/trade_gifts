@@ -265,10 +265,10 @@ take_update_move_fruit_to_house(message_data)
 {
     if(message_data.status == "success")
     {
-        souce_player_id = message_data.source_player_id;
+        source_player_id = message_data.source_player_id;
         target_house_id = message_data.target_house_id;
 
-        app.session.world_state.avatars[souce_player_id] = message_data.source_player;
+        app.session.world_state.avatars[source_player_id] = message_data.source_player;
         app.session.world_state.houses[target_house_id] = message_data.target_house;
 
         good_one_move = message_data.good_one_move;
@@ -315,7 +315,7 @@ take_update_move_fruit_to_house(message_data)
                 elements.push(element);
             }
 
-            app.add_transfer_beam(app.session.world_state_avatars.session_players[souce_player_id].current_location, 
+            app.add_transfer_beam(app.session.world_state_avatars.session_players[source_player_id].current_location, 
                                   house_location,
                                   elements);
         }
@@ -346,12 +346,12 @@ take_update_move_fruit_to_house(message_data)
             }
 
             app.add_transfer_beam(house_location, 
-                                  app.session.world_state_avatars.session_players[souce_player_id].current_location,
+                                  app.session.world_state_avatars.session_players[source_player_id].current_location,
                                   elements);
 
         }
         
-        if(app.is_subject && souce_player_id == app.session_player.id)
+        if(app.is_subject && source_player_id == app.session_player.id)
         {
             app.house_modal.toggle();
         }

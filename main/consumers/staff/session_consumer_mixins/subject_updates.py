@@ -624,6 +624,9 @@ class SubjectUpdatesMixin():
         if v["world_state"]:
             self.world_state_local = v["world_state"]
 
+            self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+            self.world_state_avatars_local["session_players"][str(target_player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+
             result["source_player_id"] = player_id
             result["target_player_id"] = target_player_id
 

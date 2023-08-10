@@ -19,10 +19,12 @@ setup_pixi(){
     PIXI.Assets.add('field_tex', '{% static "field.png"%}');
     PIXI.Assets.add('house_tex', '{% static "house.png"%}');
     PIXI.Assets.add('health_tex', '{% static "health_2.png"%}');
+    PIXI.Assets.add('fist_left_tex', '{% static "fist_left.png"%}');
+    PIXI.Assets.add('fist_right_tex', '{% static "fist_right.png"%}');
 
     const textures_promise = PIXI.Assets.load(['sprite_sheet', 'sprite_sheet_hf', 'grass_tex', 'wall_tex', 'water_tex',
                                                'bridge_tex', 'sprite_sheet_2', 'Blueberry_tex', 'Pineapple_tex',
-                                               'Cherry_tex', 'field_tex', 'house_tex', 'health_tex'])
+                                               'Cherry_tex', 'field_tex', 'house_tex', 'health_tex', 'fist_left_tex', 'fist_right_tex'])
 
     textures_promise.then((textures) => {
         app.setup_pixi_sheets(textures);
