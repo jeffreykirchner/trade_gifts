@@ -17,6 +17,7 @@ var pixi_walls = {};                           //walls
 var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
+var pixi_night = {};                           //night
 
 //vue app
 var app = Vue.createApp({
@@ -473,6 +474,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/avatars.js"%}
         {%include "subject/subject_home/the_stage/staff.js"%}
         {%include "subject/subject_home/the_stage/helpers.js"%}
+        {%include "subject/subject_home/the_stage/night.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages

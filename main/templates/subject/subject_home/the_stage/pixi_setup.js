@@ -33,7 +33,8 @@ setup_pixi(){
         app.setup_pixi_houses();
         app.setup_pixi_subjects();       
         app.setup_pixi_wall();       
-        
+        app.setup_pixi_night();
+
         if(app.pixi_mode!="subject")
         {
             app.update_zoom();
