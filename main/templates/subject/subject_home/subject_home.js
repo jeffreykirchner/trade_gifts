@@ -21,7 +21,8 @@ var pixi_walls = {};                           //walls
 var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
-var pixi_night = {};                           //night
+var pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
+                  text_night_coming : "Night is approching ... "};                                        //night
 
 //prevent right click
 document.addEventListener('contextmenu', event => event.preventDefault());
