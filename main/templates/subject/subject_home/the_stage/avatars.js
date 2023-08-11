@@ -293,6 +293,7 @@ move_player(delta)
     for(let i in app.session.world_state_avatars.session_players){
 
         let obj = app.session.world_state_avatars.session_players[i];
+        let avatar = app.session.world_state.avatars[i];
         let avatar_container = pixi_avatars[i].avatar_container;
         let gear_sprite = pixi_avatars[i].gear_sprite;
         let status_label = pixi_avatars[i].status_label;
@@ -336,6 +337,11 @@ move_player(delta)
         if(obj.interaction > 0)
         {
             status_label.text = "Interaction ... " + obj.interaction;
+            status_label.visible = true;
+        }
+        else if(avatar.sleeping)
+        {
+            status_label.text = "ZZZ ... ";
             status_label.visible = true;
         }
         else if(obj.cool_down > 0)

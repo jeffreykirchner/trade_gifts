@@ -383,3 +383,26 @@ select_all_fruit_house()
         app.selected_house.good_three_move = house[app.selected_house.good_three];
     }
 },
+
+/**
+ * send sleep to server
+ */
+send_sleep()
+{
+    app.send_message("sleep", {}, "group");
+},
+
+/**
+ * take update from server about sleeping
+ */
+take_update_sleep(message_data)
+{
+    let source_player_id = message_data.source_player_id;
+
+    app.session.world_state.avatars[source_player_id].sleeping = true;
+
+    if(app.is_subject && source_player_id == app.session_player.id)
+    {
+        app.house_modal.toggle();
+    }
+},

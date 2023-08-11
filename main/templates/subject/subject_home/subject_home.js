@@ -210,6 +210,9 @@ var app = Vue.createApp({
                 case "update_attack_avatar":
                     app.take_update_attack_avatar(message_data);
                     break;
+                case "update_sleep":
+                    app.take_update_sleep(message_data);
+                    break;
                 
             }
 
@@ -430,6 +433,28 @@ var app = Vue.createApp({
 
                 app.update_field_inventory();
                 app.update_house_inventory();
+            }
+
+            //sleep 
+            for(let i in app.session.world_state.avatars)
+            {
+                let avatar = app.session.world_state.avatars[i];
+                let session_player = app.session.world_state_avatars.session_players[i];
+
+                if(avatar.sleeping && app.session.world_state.time_remaining <= app.session.parameter_set.night_length)
+                {
+                    let health_sprite = PIXI.Sprite.from(app.pixi_textures["health_tex"]);
+                    health_sprite.scale.set(0.4);
+
+                    app.add_text_emitters("+" + app.session.parameter_set.sleep_benefit, 
+                                            session_player.current_location.x, 
+                                            session_player.current_location.y,
+                                            session_player.current_location.x,
+                                            session_player.current_location.y - 100,
+                                            0xFFFFFF,
+                                            28,
+                                            health_sprite);
+                }
             }
 
             app.update_avatar_inventory();

@@ -532,7 +532,6 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
 
-
     async def update_move_fruit_to_avatar(self, event):
         '''
         update move fruit to avatar
@@ -543,7 +542,6 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
         
-
     async def move_fruit_to_house(self, event):
         '''
         move fruit from one avatar to or from a house
@@ -589,7 +587,6 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
 
-
     async def update_move_fruit_to_house(self, event):
         '''
         update field's effort settings
@@ -634,7 +631,7 @@ class SubjectUpdatesMixin():
             result["target_player"] = self.world_state_local["avatars"][str(target_player_id)]
                        
         else:
-            logger.info(f"move_fruit_to_house: invalid amounts from sync, {event['message_text']}")
+            logger.info(f"attack_avatar: invalid amounts from sync, {event['message_text']}")
             return
 
         await self.send_message(message_to_self=None, message_to_group=result,
@@ -643,6 +640,50 @@ class SubjectUpdatesMixin():
     async def update_attack_avatar(self, event):
         '''
         update attack avatar
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+
+    async def sleep(self, event):
+        '''
+        avtar sleeps
+        '''
+        
+        if self.controlling_channel != self.channel_name:
+            return
+
+        logger = logging.getLogger(__name__)
+
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]       
+            
+        except:
+            logger.info(f"sleep: invalid data, {event['message_text']}")
+            return
+        
+        v = await sync_to_async(sync_sleep)(self.session_id, player_id)
+
+        result = {"status" : v["status"], "error_message" : v["error_message"]}
+
+        if v["world_state"]:
+            self.world_state_local = v["world_state"]
+
+            result["source_player_id"] = player_id
+            result["source_player"] = self.world_state_local["avatars"][str(player_id)]
+                       
+        else:
+            logger.info(f"sleep: invalid amounts from sync, {event['message_text']}")
+            return
+
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+    
+    async def update_sleep(self, event):
+        '''
+        update avatar sleep
         '''
 
         event_data = event["group_data"]
@@ -870,6 +911,36 @@ def sync_attack_avatar(session_id, player_id, target_house_id):
             source_player["health"] = str(source_player["health"])
             target_player["health"] = str(target_player["health"])
             
+            session.save()
+
+            world_state = session.world_state
+        session.save()
+
+        world_state = session.world_state
+
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+
+def sync_sleep(session_id, player_id):
+    '''
+    sync sleep
+    '''
+
+    status = "success"
+    error_message = []
+    world_state = None
+
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
+        parameter_set = session.parameter_set.json()
+
+        source_player = session.world_state['avatars'][str(player_id)]
+
+        if session.world_state['time_remaining'] > parameter_set["night_length"]+5:
+            status = "fail"
+        
+        if status == "success":
+            source_player["sleeping"] = True
+  
             session.save()
 
             world_state = session.world_state
