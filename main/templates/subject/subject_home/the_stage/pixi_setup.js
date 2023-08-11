@@ -33,7 +33,7 @@ setup_pixi(){
         app.setup_pixi_houses();
         app.setup_pixi_subjects();       
         app.setup_pixi_wall();       
-        
+       
         if(app.pixi_mode!="subject")
         {
             app.update_zoom();
@@ -41,6 +41,7 @@ setup_pixi(){
         }
         else
         {
+            app.setup_pixi_night();
             app.setup_pixi_minimap();
             app.setup_subject_status_overlay();
         }
@@ -173,6 +174,7 @@ game_loop(delta)
         app.update_offsets_player(delta);
         app.update_mini_map(delta);
         app.check_for_collisions();
+        app.update_pixi_night();
     }
     
     if(app.pixi_mode=="staff")

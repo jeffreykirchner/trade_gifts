@@ -23,6 +23,12 @@ class ParameterSetForm(forms.ModelForm):
                                        widget=forms.NumberInput(attrs={"v-model":"parameter_set.period_length",
                                                                        "step":"1",
                                                                        "min":"1"}))
+    
+    night_length = forms.IntegerField(label='Night Length (seconds)',
+                                      min_value=1,
+                                      widget=forms.NumberInput(attrs={"v-model":"parameter_set.night_length",
+                                                                      "step":"1",
+                                                                      "min":"1"}))
 
     show_instructions = forms.ChoiceField(label='Show Instructions',
                                        choices=((True, 'Yes'), (False,'No' )),
@@ -130,6 +136,14 @@ class ParameterSetForm(forms.ModelForm):
                                        widget=forms.NumberInput(attrs={"v-model":"parameter_set.attack_damage",
                                                                        "step":"0.1",
                                                                        "min":"0.1"}))
+    
+    sleep_benefit = forms.DecimalField(label='Sleep Benefit (Health)',
+                                       max_digits=3,
+                                       decimal_places=1,
+                                       min_value=0.1,
+                                       widget=forms.NumberInput(attrs={"v-model":"parameter_set.sleep_benefit",
+                                                                       "step":"0.1",
+                                                                       "min":"0.1"}))
 
     world_width = forms.IntegerField(label='World Width (pixels)',
                                      min_value=1,
@@ -187,10 +201,10 @@ class ParameterSetForm(forms.ModelForm):
 
     class Meta:
         model=ParameterSet
-        fields =['period_count', 'period_length', 'show_instructions', 'instruction_set', 
+        fields =['period_count', 'period_length', 'night_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'test_mode', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'health_loss_per_second', 'heath_gain_per_sleep_second',
-                 'consumption_alpha', 'consumption_beta', 'cents_per_second', 'attack_damage', 'attack_cost', 'world_width', 'world_height',
+                 'consumption_alpha', 'consumption_beta', 'cents_per_second', 'attack_damage', 'attack_cost', 'sleep_benefit', 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale','production_effort']
                  
 

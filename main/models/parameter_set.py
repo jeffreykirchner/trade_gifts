@@ -24,7 +24,8 @@ class ParameterSet(models.Model):
     instruction_set = models.ForeignKey(InstructionSet, on_delete=models.CASCADE, related_name="parameter_sets")
 
     period_count = models.IntegerField(verbose_name='Number of periods', default=20)                          #number of periods in the experiment
-    period_length = models.IntegerField(verbose_name='Period Length, Production', default=60           )      #period length in seconds
+    period_length = models.IntegerField(verbose_name='Period Length, Production', default=60)                 #period length in seconds
+    night_length = models.IntegerField(verbose_name='Night Length', default=10)                               #night length in seconds
     
     private_chat = models.BooleanField(default=True, verbose_name='Private Chat')                             #if true subjects can privately chat one on one
     show_instructions = models.BooleanField(default=True, verbose_name='Show Instructions')                   #if true show instructions
@@ -63,6 +64,8 @@ class ParameterSet(models.Model):
     attack_cost = models.DecimalField(verbose_name='Attack Cost to Health', decimal_places=1, max_digits=3, default=5.0)     #attack cost
     attack_damage = models.DecimalField(verbose_name='Attack Damage to Health', decimal_places=1, max_digits=3, default=7.0) #attack damage
 
+    sleep_benefit = models.DecimalField(verbose_name='Sleep Benefit to Health', decimal_places=1, max_digits=3, default=3.0) #sleep benefit
+
     reconnection_limit = models.IntegerField(verbose_name='Age Warning', default=25)                        #stop trying to reconnect after this many failed attempts
 
     test_mode = models.BooleanField(default=False, verbose_name='Test Mode')                                #if true subject screens will do random auto testing
@@ -91,6 +94,7 @@ class ParameterSet(models.Model):
         try:
             self.period_count = new_ps.get("period_count")
             self.period_length = new_ps.get("period_length")
+            self.night_length = new_ps.get("night_length")
 
             self.private_chat = False
 
@@ -129,6 +133,8 @@ class ParameterSet(models.Model):
 
             self.attack_cost = new_ps.get("attack_cost", 5.0)
             self.attack_damage = new_ps.get("attack_damage", 7.0)
+
+            self.sleep_benefit = new_ps.get("sleep_benefit", 3.0)
             
             self.reconnection_limit = new_ps.get("reconnection_limit", None)
 
@@ -260,6 +266,7 @@ class ParameterSet(models.Model):
         self.json_for_session["period_count"] = self.period_count
 
         self.json_for_session["period_length"] = self.period_length
+        self.json_for_session["night_length"] = self.night_length
 
         self.json_for_session["private_chat"] = "False"
         self.json_for_session["show_instructions"] = "True" if self.show_instructions else "False"
@@ -298,6 +305,8 @@ class ParameterSet(models.Model):
 
         self.json_for_session["attack_cost"] = self.attack_cost
         self.json_for_session["attack_damage"] = self.attack_damage
+
+        self.json_for_session["sleep_benefit"] = self.sleep_benefit
 
         self.json_for_session["reconnection_limit"] = self.reconnection_limit
 

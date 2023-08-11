@@ -21,6 +21,8 @@ var pixi_walls = {};                           //walls
 var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
+var pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
+                  text_night_coming : "Night is approching ... "};                                        //night
 
 //prevent right click
 document.addEventListener('contextmenu', event => event.preventDefault());
@@ -579,6 +581,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/avatars.js"%}
         {%include "subject/subject_home/the_stage/helpers.js"%}
         {%include "subject/subject_home/the_stage/subject.js"%}
+        {%include "subject/subject_home/the_stage/night.js"%}
     
         /** clear form error messages
         */
