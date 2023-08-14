@@ -210,6 +210,12 @@ var app = Vue.createApp({
                 case "update_attack_avatar":
                     app.take_update_attack_avatar(message_data);
                     break;
+                case "update_sleep":
+                    app.take_update_sleep(message_data);
+                    break;
+                case "update_rescue_subject":
+                    app.take_rescue_subject(message_data);
+                    break;
                 
             }
 
@@ -403,34 +409,14 @@ var app = Vue.createApp({
 
                 //update houses
                 app.session.world_state.houses = message_data.houses;
-
-                //
-                //health_sprite.anchor.set(1, 0.5)
-                //health_sprite.eventMode = 'passive';
-                //health_sprite.scale.set(0.4);
-
-                for(let i in app.session.world_state.houses)
-                {
-                    let house = app.session.world_state.houses[i]
-                    let session_player = app.session.world_state_avatars.session_players[house.session_player];
-                    let parameter_set_player = app.session.parameter_set.parameter_set_players[session_player.parameter_set_player_id];
-                    
-                    let health_sprite = PIXI.Sprite.from(app.pixi_textures["health_tex"]);
-                    health_sprite.scale.set(0.4);
-
-                    app.add_text_emitters("+" + house.health_consumed, 
-                        session_player.current_location.x, 
-                        session_player.current_location.y,
-                        session_player.current_location.x,
-                        session_player.current_location.y - 100,
-                        0xFFFFFF,
-                        28,
-                        health_sprite);
-                }
+                app.do_house_health_emitters();              
 
                 app.update_field_inventory();
                 app.update_house_inventory();
             }
+
+            //sleep 
+            app.do_avatar_sleep_emitters();
 
             app.update_avatar_inventory();
 
@@ -445,29 +431,6 @@ var app = Vue.createApp({
             Vue.nextTick(() => {
                 app.update_subject_status_overlay();
             });
-
-
-            //period has changed display earnings
-            // if(message_data.time_remaining == 1)
-            // {
-            //     Vue.nextTick(() => {
-            //         let current_location = app.session.world_state_avatars.session_players[app.session_player.id].current_location;
-
-            //         app.add_text_emitters("+" + period_earnings + "¢", 
-            //                 current_location.x, 
-            //                 current_location.y,
-            //                 current_location.x,
-            //                 current_location.y-100,
-            //                 0xFFFFFF,
-            //                 28,
-            //                 null)                    
-            //     });               
-            // }
-
-            // if(period_change)
-            // {
-            //     app.setup_pixi_minimap();
-            // }
 
             //update player states
             for(p in message_data.session_player_status)

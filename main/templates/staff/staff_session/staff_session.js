@@ -227,6 +227,12 @@ var app = Vue.createApp({
                 case "update_attack_avatar":
                     app.take_update_attack_avatar(message_data);
                     break;
+                case "update_sleep":
+                    app.take_update_sleep(message_data);
+                    break;
+                case "update_rescue_subject":
+                    app.take_rescue_subject(message_data);
+                    break;
             }
 
             app.first_load_done = true;
@@ -386,7 +392,6 @@ var app = Vue.createApp({
 
             let period_change = false;
 
-
             // app.session.started = result.started;
             app.session.world_state.current_period = message_data.current_period;
             app.session.world_state.time_remaining = message_data.time_remaining;
@@ -418,12 +423,16 @@ var app = Vue.createApp({
 
                 //update houses
                 app.session.world_state.houses = message_data.houses;
+                app.do_house_health_emitters();
                 
                 app.update_field_inventory();
                 app.update_house_inventory();
             }
 
             app.update_avatar_inventory();
+
+            //sleep 
+            app.do_avatar_sleep_emitters();
 
             app.take_update_earnings(message_data.earnings);
 
@@ -447,9 +456,6 @@ var app = Vue.createApp({
                     app.session.world_state_avatars.session_players[p].current_location = server_location;
                 }
             }
-
-            //update player location on server side
-            //app.send_world_state_update();
         },
        
         //do nothing on when enter pressed for post

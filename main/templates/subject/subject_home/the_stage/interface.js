@@ -33,30 +33,45 @@ take_target_location_update(message_data)
  */
  subject_pointer_up(event)
  {
-     if(!app.session.world_state.hasOwnProperty('started')) return;
-     let local_pos = event.data.getLocalPosition(event.currentTarget);
-     let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
- 
-     if(event.button == 0)
-     {
- 
-         if(local_player.frozen)
-         {
-             app.add_text_emitters("No movement while interacting.", 
-                             local_player.current_location.x, 
-                             local_player.current_location.y,
-                             local_player.current_location.x,
-                             local_player.current_location.y-100,
-                             0xFFFFFF,
-                             28,
-                             null);
-             return;
-         }
-         
-         local_player.target_location.x = local_pos.x;
-         local_player.target_location.y = local_pos.y;
- 
-         app.target_location_update();
+    if(!app.session.world_state.hasOwnProperty('started')) return;
+    let local_pos = event.data.getLocalPosition(event.currentTarget);
+    let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
+    let avatar = app.session.world_state.avatars[app.session_player.id];
+    
+    //check if asleep
+    if(avatar.sleeping)
+    {
+        app.add_text_emitters("No actions while sleeping.", 
+                            local_player.current_location.x, 
+                            local_player.current_location.y,
+                            local_player.current_location.x,
+                            local_player.current_location.y-100,
+                            0xFFFFFF,
+                            28,
+                            null);
+        return;
+    }
+
+    if(event.button == 0)
+    {
+
+        if(local_player.frozen)
+        {
+            app.add_text_emitters("No movement while interacting.", 
+                            local_player.current_location.x, 
+                            local_player.current_location.y,
+                            local_player.current_location.x,
+                            local_player.current_location.y-100,
+                            0xFFFFFF,
+                            28,
+                            null);
+            return;
+        }
+        
+        local_player.target_location.x = local_pos.x;
+        local_player.target_location.y = local_pos.y;
+
+        app.target_location_update();
      }
      else if(event.button == 2)
      {
@@ -144,23 +159,25 @@ take_target_location_update(message_data)
         //check if click on a house
         for(i in app.session.world_state.houses)
         {
-            if(app.session.world_state.houses[i].session_player != app.session_player.id) return;
-
-            let obj = pixi_houses[i].house_container;
-            let rect={x:obj.x-obj.width/2, y:obj.y-obj.height/2, width:obj.width, height:obj.height};
-            let pt={x:local_pos.x, y:local_pos.y};
-
-            
-            if(app.check_point_in_rectagle(pt, rect))
+            if(app.session.world_state.houses[i].session_player == app.session_player.id)
             {
-                //check subject close enough for interaction
-                if(app.check_for_circle_rect_intersection({x:local_player.current_location.x, 
-                                                           y:local_player.current_location.y, 
-                                                           radius:app.session.parameter_set.interaction_range},
-                                                      rect))
+
+                let obj = pixi_houses[i].house_container;
+                let rect={x:obj.x-obj.width/2, y:obj.y-obj.height/2, width:obj.width, height:obj.height};
+                let pt={x:local_pos.x, y:local_pos.y};
+
+                
+                if(app.check_point_in_rectagle(pt, rect))
                 {
-                    app.subject_house_click(i);              
-                    return;
+                    //check subject close enough for interaction
+                    if(app.check_for_circle_rect_intersection({x:local_player.current_location.x, 
+                                                            y:local_player.current_location.y, 
+                                                            radius:app.session.parameter_set.interaction_range},
+                                                        rect))
+                    {
+                        app.subject_house_click(i);              
+                        return;
+                    }
                 }
             }
 

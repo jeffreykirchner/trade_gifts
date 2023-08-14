@@ -200,7 +200,7 @@ take_update_subject(message_data){
 
 /** show edit subject modal
 */
-show_edit_subject:function(id){
+show_edit_subject(id){
 
     if(!app.session.started) return;
 
@@ -223,7 +223,7 @@ show_edit_subject:function(id){
 
 /** hide edit subject modal
 */
-hide_edit_subject:function(){
+hide_edit_subject(){
     if(app.cancel_modal)
     {
        
@@ -328,4 +328,32 @@ take_update_survey_complete(message_data){
 
     let session_player = app.session.session_players[result.player_id];
     session_player.survey_complete = true;
+},
+
+/**
+ * rescue subject if stuck
+ */
+send_rescue_subject()
+{
+    if (!confirm('Return subject to their starting location?')) {
+        return;
+    }
+
+    let player_id = app.staff_edit_name_etc_form.id;
+
+    app.send_message("rescue_subject", {player_id:player_id});
+},
+
+/**
+ * take rescue subject
+ */
+take_rescue_subject(message_data)
+{
+    let session_player = app.session.world_state_avatars.session_players[message_data.player_id];
+
+    session_player.current_location = message_data.new_location; 
+    session_player.target_location.x = message_data.new_location.x+1;
+    session_player.target_location.y = message_data.new_location.y+1;
+
+    app.edit_subject_modal.hide();
 },

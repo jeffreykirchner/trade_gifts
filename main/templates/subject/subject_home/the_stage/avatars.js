@@ -31,10 +31,16 @@ setup_pixi_subjects(){
         gear_sprite.tint = parameter_set_player.hex_color;
         gear_sprite.eventMode = 'passive';    
 
-        //face
+        //face neutral
         let face_sprite = PIXI.Sprite.from(app.pixi_textures.sprite_sheet_2.textures["face_1.png"]);
         face_sprite.anchor.set(0.5);
         face_sprite.eventMode = 'passive';
+
+        //face sleep
+        let face_sleep_sprite = PIXI.Sprite.from(app.pixi_textures["face_sleep_tex"]);
+        face_sleep_sprite.anchor.set(0.5);
+        face_sleep_sprite.eventMode = 'passive';
+        face_sleep_sprite.visible = false;
 
         let text_style = {
             fontFamily: 'Arial',
@@ -138,6 +144,7 @@ setup_pixi_subjects(){
         //add to container
         avatar_container.addChild(gear_sprite);
         avatar_container.addChild(face_sprite);
+        avatar_container.addChild(face_sleep_sprite);
         avatar_container.addChild(id_label);
         avatar_container.addChild(status_label);
 
@@ -164,6 +171,9 @@ setup_pixi_subjects(){
         pixi_avatars[i][parameter_set_player.good_two] = good_two_label;
         pixi_avatars[i][parameter_set_player.good_three] = good_three_label;
         pixi_avatars[i].health_label = health_label;
+        pixi_avatars[i].face_sprite = face_sprite;
+        pixi_avatars[i].face_sleep_sprite = face_sleep_sprite;
+
 
         avatar_container.scale.set(app.session.parameter_set.avatar_scale);
 
@@ -293,6 +303,7 @@ move_player(delta)
     for(let i in app.session.world_state_avatars.session_players){
 
         let obj = app.session.world_state_avatars.session_players[i];
+        let avatar = app.session.world_state.avatars[i];
         let avatar_container = pixi_avatars[i].avatar_container;
         let gear_sprite = pixi_avatars[i].gear_sprite;
         let status_label = pixi_avatars[i].status_label;
@@ -338,6 +349,11 @@ move_player(delta)
             status_label.text = "Interaction ... " + obj.interaction;
             status_label.visible = true;
         }
+        else if(avatar.sleeping)
+        {
+            status_label.text = "ZZZ ... ";
+            status_label.visible = true;
+        }
         else if(obj.cool_down > 0)
         {
             status_label.text = "Cooling ... " + obj.cool_down;
@@ -346,6 +362,18 @@ move_player(delta)
         else
         {
             status_label.visible = false;
+        }
+
+        //update face
+        if(avatar.sleeping)
+        {
+            pixi_avatars[i].face_sprite.visible = false;
+            pixi_avatars[i].face_sleep_sprite.visible = true;
+        }
+        else
+        {
+            pixi_avatars[i].face_sprite.visible = true;
+            pixi_avatars[i].face_sleep_sprite.visible = false;
         }
     }
 
@@ -389,7 +417,8 @@ move_player(delta)
         // let avatar_container = obj.pixi.chat_container;
         let offset = {x:chat_container.width*.5, y:chat_container.height*.45};
 
-        if(app.session.world_state_avatars.session_players[obj.nearest_player].current_location.x < obj.current_location.x)
+        if(obj.nearest_player && 
+           app.session.world_state_avatars.session_players[obj.nearest_player].current_location.x < obj.current_location.x)
         {
             chat_container.position.set(obj.current_location.x + offset.x,
                                         obj.current_location.y - offset.y);
@@ -736,4 +765,31 @@ take_update_attack_avatar(message_data)
 
     }
     
+},
+
+/**
+ * avatar sleep emitters
+ */
+do_avatar_sleep_emitters()
+{
+    for(let i in app.session.world_state.avatars)
+    {
+        let avatar = app.session.world_state.avatars[i];
+        let session_player = app.session.world_state_avatars.session_players[i];
+
+        if(avatar.sleeping && app.session.world_state.time_remaining <= app.session.parameter_set.night_length)
+        {
+            let health_sprite = PIXI.Sprite.from(app.pixi_textures["health_tex"]);
+            health_sprite.scale.set(0.4);
+
+            app.add_text_emitters("+" + app.session.parameter_set.sleep_benefit + " health from sleep.",
+                                    session_player.current_location.x, 
+                                    session_player.current_location.y,
+                                    session_player.current_location.x,
+                                    session_player.current_location.y - 100,
+                                    0xFFFFFF,
+                                    28,
+                                    health_sprite);
+        }
+    }
 },

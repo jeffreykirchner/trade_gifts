@@ -383,3 +383,51 @@ select_all_fruit_house()
         app.selected_house.good_three_move = house[app.selected_house.good_three];
     }
 },
+
+/**
+ * send sleep to server
+ */
+send_sleep()
+{
+    app.send_message("sleep", {}, "group");
+},
+
+/**
+ * take update from server about sleeping
+ */
+take_update_sleep(message_data)
+{
+    let source_player_id = message_data.source_player_id;
+
+    app.session.world_state.avatars[source_player_id].sleeping = true;
+
+    if(app.is_subject && source_player_id == app.session_player.id)
+    {
+        app.house_modal.toggle();
+    }
+},
+
+/**
+ * show health emitters
+ */
+do_house_health_emitters()
+{
+    for(let i in app.session.world_state.houses)
+    {
+        let house = app.session.world_state.houses[i]
+        let session_player = app.session.world_state_avatars.session_players[house.session_player];
+        let parameter_set_player = app.session.parameter_set.parameter_set_players[session_player.parameter_set_player_id];
+        
+        let health_sprite = PIXI.Sprite.from(app.pixi_textures["health_tex"]);
+        health_sprite.scale.set(0.4);
+
+        app.add_text_emitters("+" + house.health_consumed + " health from house.", 
+            session_player.current_location.x, 
+            session_player.current_location.y,
+            session_player.current_location.x,
+            session_player.current_location.y - 100,
+            0xFFFFFF,
+            28,
+            health_sprite);
+    }
+},

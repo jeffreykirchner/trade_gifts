@@ -123,3 +123,15 @@ update_subject_status_overlay()
     subject_status_overlay_container.getChildAt(4).text = app.session.world_state.time_remaining;
     subject_status_overlay_container.getChildAt(5).text = Number(app.session.world_state.avatars[app.session_player.id].earnings).toFixed(2);
 },
+
+/**
+ * take rescue subject
+ */
+take_rescue_subject(message_data)
+{
+    let session_player = app.session.world_state_avatars.session_players[message_data.player_id];
+
+    session_player.current_location = message_data.new_location; 
+    session_player.target_location.x = message_data.new_location.x+1;
+    session_player.target_location.y = message_data.new_location.y+1;
+},
