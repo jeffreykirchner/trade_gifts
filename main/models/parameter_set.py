@@ -46,7 +46,8 @@ class ParameterSet(models.Model):
     house_height = models.IntegerField(verbose_name='Height of house in pixels', default=500)                #house height in pixels
 
     avatar_scale = models.DecimalField(verbose_name='Avatar Scale', decimal_places=2, max_digits=3, default=1) #avatar scale
-    
+    avatar_bound_box_percent = models.DecimalField(verbose_name='Avatar Bound Box Percent', decimal_places=2, max_digits=3, default=0.75) #avatar bound box percent for interaction
+
     production_effort = models.IntegerField(verbose_name='Production Effort', default=10)                     # the amount of effort a subject can put into production
 
     interaction_length = models.IntegerField(verbose_name='Interaction Length', default=10)                   #interaction length in seconds
@@ -116,6 +117,7 @@ class ParameterSet(models.Model):
             self.house_height = new_ps.get("house_height", 500)
 
             self.avatar_scale = new_ps.get("avatar_scale", 1)
+            self.avatar_bound_box_percent = new_ps.get("avatar_bound_box_percent", 0.75)
 
             self.production_effort = new_ps.get("production_effort", 10)
 
@@ -288,6 +290,7 @@ class ParameterSet(models.Model):
         self.json_for_session["house_height"] = self.house_height
 
         self.json_for_session["avatar_scale"] = self.avatar_scale
+        self.json_for_session["avatar_bound_box_percent"] = self.avatar_bound_box_percent
 
         self.json_for_session["production_effort"] = self.production_effort
 

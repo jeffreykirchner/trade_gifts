@@ -177,22 +177,37 @@ setup_pixi_subjects(){
 
         avatar_container.scale.set(app.session.parameter_set.avatar_scale);
 
-        //bounding box outline
-        
+        //bounding box with avatar scaller        
         let bounding_box = new PIXI.Graphics();
     
-        bounding_box.lineStyle(1, 0x000000);
+        bounding_box.lineStyle(2, "orchid");
         //bounding_box.beginFill(0xBDB76B);
-        bounding_box.drawRect(0, 0, avatar_container.width*.5, avatar_container.height*.5);
+        bounding_box.drawRect(0, 0, avatar_container.width * app.session.parameter_set.avatar_bound_box_percent * app.session.parameter_set.avatar_scale, 
+                                    avatar_container.height * app.session.parameter_set.avatar_bound_box_percent * app.session.parameter_set.avatar_scale);
         bounding_box.endFill();
         bounding_box.pivot.set(bounding_box.width/2, bounding_box.height/2);
         bounding_box.position.set(0, 0);
+        bounding_box.visible = false;
 
         avatar_container.addChild(bounding_box);
         pixi_avatars[i].bounding_box = bounding_box;
+
+        //bound box view
+        let bounding_box_view = new PIXI.Graphics();
+    
+        bounding_box_view.lineStyle(2, "orchid");
+        //bounding_box.beginFill(0xBDB76B);
+        bounding_box_view.drawRect(0, 0, avatar_container.width * app.session.parameter_set.avatar_bound_box_percent, 
+                                    avatar_container.height * app.session.parameter_set.avatar_bound_box_percent);
+        bounding_box_view.endFill();
+        bounding_box_view.pivot.set(bounding_box_view.width/2, bounding_box_view.height/2);
+        bounding_box_view.position.set(0, 0);
+
+        avatar_container.addChild(bounding_box_view);
+        
         if(!app.draw_bounding_boxes)
         {
-            bounding_box.visible = false;
+            bounding_box_view.visible = false;
         }
 
         pixi_avatars[i].avatar_container = avatar_container;
@@ -314,7 +329,12 @@ move_player(delta)
             //move player towards target
             if(!obj.frozen)
             {
-                app.move_object(delta=delta, obj=obj, move_speed=app.move_speed, wall_limited=true, container=pixi_avatars[i].bounding_box);
+                app.move_object(delta=delta,
+                                obj=obj, 
+                                move_speed=app.move_speed, 
+                                wall_limited=true, 
+                                container=pixi_avatars[i].bounding_box,
+                                scale = app.session.parameter_set.avatar_scale);
             }
 
             //update the sprite locations

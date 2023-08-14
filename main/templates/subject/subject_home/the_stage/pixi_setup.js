@@ -283,7 +283,7 @@ setup_tractor_beam(source_id, target_id)
 /**
  * move the object towards its target location
  */
-move_object(delta, obj, move_speed, wall_limited=false, container=null)
+move_object(delta, obj, move_speed, wall_limited=false, container=null, scale=1)
 {
     let noX = false;
     let noY = false;
