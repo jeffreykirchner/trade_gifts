@@ -230,6 +230,9 @@ var app = Vue.createApp({
                 case "update_sleep":
                     app.take_update_sleep(message_data);
                     break;
+                case "update_rescue_subject":
+                    app.take_rescue_subject(message_data);
+                    break;
             }
 
             app.first_load_done = true;

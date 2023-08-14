@@ -213,6 +213,9 @@ var app = Vue.createApp({
                 case "update_sleep":
                     app.take_update_sleep(message_data);
                     break;
+                case "update_rescue_subject":
+                    app.take_rescue_subject(message_data);
+                    break;
                 
             }
 
@@ -414,7 +417,7 @@ var app = Vue.createApp({
 
             //sleep 
             app.do_avatar_sleep_emitters();
-            
+
             app.update_avatar_inventory();
 
             // app.session.world_state.finished = message_data.finished;

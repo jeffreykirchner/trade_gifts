@@ -159,11 +159,9 @@ class SubjectUpdatesMixin():
         if self.controlling_channel != self.channel_name:
             return
         
-        # logger = logging.getLogger(__name__) 
+        logger = logging.getLogger(__name__) 
         # logger.info(f"target_location_update: world state controller {self.controlling_channel} channel name {self.channel_name}")
-        
-        logger = logging.getLogger(__name__)
-        
+                
         event_data =  event["message_text"]
 
         try:
