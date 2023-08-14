@@ -417,7 +417,8 @@ move_player(delta)
         // let avatar_container = obj.pixi.chat_container;
         let offset = {x:chat_container.width*.5, y:chat_container.height*.45};
 
-        if(app.session.world_state_avatars.session_players[obj.nearest_player].current_location.x < obj.current_location.x)
+        if(obj.nearest_player && 
+           app.session.world_state_avatars.session_players[obj.nearest_player].current_location.x < obj.current_location.x)
         {
             chat_container.position.set(obj.current_location.x + offset.x,
                                         obj.current_location.y - offset.y);
