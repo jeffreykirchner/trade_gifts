@@ -289,8 +289,8 @@ var app = Vue.createApp({
          */
         do_reload()
         {
-            app.setup_pixi_subjects();
-            app.setup_pixi_minimap();
+            // app.setup_pixi_subjects();
+            // app.setup_pixi_minimap();
             app.update_subject_status_overlay();
             app.update_field_inventory();
             app.update_avatar_inventory();
@@ -307,7 +307,7 @@ var app = Vue.createApp({
         *    @param message_data {json} session day in json format
         */
         take_get_session(message_data){
-            app.destory_setup_pixi_subjects();
+            // app.destory_setup_pixi_subjects();
             
             app.session = message_data.session;
             app.session_player = message_data.session_player;
