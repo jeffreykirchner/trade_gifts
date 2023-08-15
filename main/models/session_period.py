@@ -195,11 +195,11 @@ class SessionPeriod(models.Model):
                 if g2 < 0:
                     g2 = 0
 
-                obj[field_type["good_one"]] = math.floor(g1)
-                obj[field_type["good_two"]] = math.floor(g2)
+                obj[field_type["good_one_ft"]] = math.floor(g1)
+                obj[field_type["good_two_ft"]] = math.floor(g2)
             else:
-                obj[field_type["good_one"]] = 0
-                obj[field_type["good_two"]] = 0
+                obj[field_type["good_one_ft"]] = 0
+                obj[field_type["good_two_ft"]] = 0
 
             
             # for j in main.globals.Goods.choices:

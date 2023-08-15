@@ -22,7 +22,7 @@
 
                 <div class="row align-items-center text-center fw-bold mt-2" v-if="selected_field.field" id="div_id_good_one_harvest">
                     <div class="col-4 text-center">
-                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_one.toLowerCase() + '.png'" />
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_one_ft.toLowerCase() + '.png'" />
                     </div>  
                     <div class="col fw-bold text-start">
                         <input type="number" 
@@ -40,7 +40,7 @@
                 <div class="row align-items-center text-center fw-bold mt-2" v-if="selected_field.field" id="div_id_good_two_harvest">
                     
                     <div class="col-4 text-center">
-                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_two.toLowerCase() + '.png'" />
+                        <img class="field_modal_icons" v-bind:src="'/static/' + selected_field.field_type.good_two_ft.toLowerCase() + '.png'" />
                     </div>  
                     <div class="col text-start">
                         <input type="number" 
@@ -82,12 +82,12 @@
 
                     <div class="row">
                         <div class="col text-start h5">                           
-                            <img class="field_modal_icons_2" v-bind:src="'/static/' + selected_field.field_type.good_one.toLowerCase() + '.png'" />
+                            <img class="field_modal_icons_2" v-bind:src="'/static/' + selected_field.field_type.good_one_ft.toLowerCase() + '.png'" />
                             [[selected_field.good_one_production_effort]] Pts
                         </div>
                         <div class="col text-end h5">
                             [[selected_field.good_two_production_effort]] Pts
-                            <img class="field_modal_icons_2" v-bind:src="'/static/' + selected_field.field_type.good_two.toLowerCase() + '.png'" />
+                            <img class="field_modal_icons_2" v-bind:src="'/static/' + selected_field.field_type.good_two_ft.toLowerCase() + '.png'" />
                         </div>
                     </div>
 
