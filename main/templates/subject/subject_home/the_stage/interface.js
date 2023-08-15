@@ -37,6 +37,19 @@ take_target_location_update(message_data)
     let local_pos = event.data.getLocalPosition(event.currentTarget);
     let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
     let avatar = app.session.world_state.avatars[app.session_player.id];
+
+    //check that pointer is clicked in valid location
+    let valid_click = false;
+
+    for(i in pixi_grounds)
+    {
+        if(app.check_point_in_rectagle(local_pos,pixi_grounds[i].rect))
+        {
+            valid_click = true;
+        }
+    }
+
+    if(!valid_click) return;
     
     //check if asleep
     if(avatar.sleeping)

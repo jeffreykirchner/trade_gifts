@@ -30,3 +30,25 @@ setup_pixi_wall()
         pixi_container_main.addChild(pixi_walls[i].wall_container);
     }
 },
+
+/**
+ * check wall intersection
+ */
+check_walls_intersection(rect1)
+{
+    for(let i in app.session.parameter_set.parameter_set_walls)
+    {
+        let temp_wall = app.session.parameter_set.parameter_set_walls[i];
+        let rect2={x:temp_wall.start_x,
+                y:temp_wall.start_y,
+                width:temp_wall.width,
+                height:temp_wall.height};
+
+        if(app.check_for_rect_intersection(rect1, rect2))
+        {  
+            return true;
+        }
+    }
+
+    return false;
+},

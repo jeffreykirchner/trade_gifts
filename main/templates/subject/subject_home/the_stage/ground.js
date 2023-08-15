@@ -30,6 +30,7 @@ setup_pixi_ground()
         ground_container.addChild(outline);
 
         pixi_grounds[i].ground_container = ground_container;
+        pixi_grounds[i].rect = {x:ground.x, y:ground.y, width:ground.width, height:ground.height};
 
         pixi_container_main.addChild(pixi_grounds[i].ground_container);
     }

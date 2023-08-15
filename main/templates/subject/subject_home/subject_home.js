@@ -23,6 +23,8 @@ var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
 var pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
                   text_night_coming : "Night is approching ... "};                                        //night
+var wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
+var wall_search_objects = [];
 
 //prevent right click
 document.addEventListener('contextmenu', event => event.preventDefault());
@@ -101,7 +103,7 @@ var app = Vue.createApp({
                     stage_height : 10000,
                     scroll_direction : {x:0, y:0},
                     draw_bounding_boxes: false,
-
+                    
                     //forms
                     interaction_form : {direction:null, amount:null},
 
@@ -545,6 +547,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/helpers.js"%}
         {%include "subject/subject_home/the_stage/subject.js"%}
         {%include "subject/subject_home/the_stage/night.js"%}
+        {%include "subject/subject_home/the_stage/move_objects.js"%}
     
         /** clear form error messages
         */

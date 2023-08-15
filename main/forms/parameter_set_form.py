@@ -187,7 +187,15 @@ class ParameterSetForm(forms.ModelForm):
                                       min_value=0.01,
                                       widget=forms.NumberInput(attrs={"v-model":"parameter_set.avatar_scale",
                                                                       "step":"0.01",
-                                                                      "min":"0.01"}))
+                                                                      "min":"0.01"})) 
+    
+    avatar_bound_box_percent = forms.DecimalField(label='Avatar Bounding Box Percent',
+                                                    max_digits=3,
+                                                    decimal_places=2,
+                                                    min_value=0.01,
+                                                    widget=forms.NumberInput(attrs={"v-model":"parameter_set.avatar_bound_box_percent",
+                                                                                    "step":"0.01",
+                                                                                    "min":"0.01"}))
     
     production_effort = forms.IntegerField(label='Production Effort',
                                          min_value=1,
@@ -205,7 +213,7 @@ class ParameterSetForm(forms.ModelForm):
                  'survey_required', 'survey_link', 'test_mode', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'health_loss_per_second', 'heath_gain_per_sleep_second',
                  'consumption_alpha', 'consumption_beta', 'cents_per_second', 'attack_damage', 'attack_cost', 'sleep_benefit', 'world_width', 'world_height',
-                 'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale','production_effort']
+                 'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort']
                  
 
     def clean_survey_link(self):

@@ -100,8 +100,8 @@ class TimerMixin():
 
             #current locations
             result["current_locations"] = {}
-            for i in self.world_state_local["session_players"]:
-                result["current_locations"][i] = self.world_state_local["session_players"][i]["current_location"]
+            for i in self.world_state_avatars_local["session_players"]:
+                result["current_locations"][i] = self.world_state_avatars_local["session_players"][str(i)]["current_location"]
 
             session_player_status = {}
 
