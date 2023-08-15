@@ -707,8 +707,8 @@ def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_t
         field_type = parameter_set['parameter_set_field_types'][str(field['parameter_set_field_type'])]
         player = session.world_state['avatars'][str(player_id)]
 
-        good_one = field_type['good_one']
-        good_two = field_type['good_two']
+        good_one = field_type['good_one_ft']
+        good_two = field_type['good_two_ft']
 
         if field[good_one] < good_one_harvest:
             status = "fail"

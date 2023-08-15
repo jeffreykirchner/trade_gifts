@@ -16,7 +16,7 @@ setup_pixi_fields()
 
         let field_container = new PIXI.Container();
         field_container.eventMode = 'passive';
-        // field_container.zIndex = 0;
+        field_container.zIndex = 80;
         
         field_container.position.set(field.x, field.y)
 
@@ -45,7 +45,7 @@ setup_pixi_fields()
         info_label.anchor.set(.5, 1);
 
         //good one        
-        let good_one_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_one+"_tex"]);
+        let good_one_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_one_ft+"_tex"]);
         good_one_sprite.anchor.set(1, 0.5);
         good_one_sprite.eventMode = 'passive';
 
@@ -68,7 +68,7 @@ setup_pixi_fields()
         good_one_effort_label.anchor.set(0.5, 1);
 
         //good two        
-        let good_two_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_two+"_tex"]);
+        let good_two_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_two_ft+"_tex"]);
         good_two_sprite.anchor.set(1, 0.5);
         good_two_sprite.eventMode = 'passive';
 
@@ -118,8 +118,8 @@ setup_pixi_fields()
         //add to pixi_fields
         pixi_fields[field_id].field_container = field_container;
         pixi_fields[field_id].owner_label = owner_label;
-        pixi_fields[field_id][parameter_set_field_type.good_one] = good_one_label;
-        pixi_fields[field_id][parameter_set_field_type.good_two] = good_two_label;
+        pixi_fields[field_id][parameter_set_field_type.good_one_ft] = good_one_label;
+        pixi_fields[field_id][parameter_set_field_type.good_two_ft] = good_two_label;
         pixi_fields[field_id].good_one_effort_label = good_one_effort_label;
         pixi_fields[field_id].good_two_effort_label = good_two_effort_label;
 
@@ -146,8 +146,8 @@ update_field_inventory()
         const parameter_set_field_type = app.session.parameter_set.parameter_set_field_types[parameter_set_field.parameter_set_field_type];
         const field = app.session.world_state["fields"][field_id];
 
-        pixi_fields[field_id][parameter_set_field_type.good_one].text = field[parameter_set_field_type.good_one];
-        pixi_fields[field_id][parameter_set_field_type.good_two].text = field[parameter_set_field_type.good_two];
+        pixi_fields[field_id][parameter_set_field_type.good_one_ft].text = field[parameter_set_field_type.good_one_ft];
+        pixi_fields[field_id][parameter_set_field_type.good_two_ft].text = field[parameter_set_field_type.good_two_ft];
 
         pixi_fields[field_id].good_one_effort_label.text = field.good_one_effort + " Effort Pts";
         pixi_fields[field_id].good_two_effort_label.text = field.good_two_effort + " Effort Pts";
@@ -165,8 +165,8 @@ subject_field_click(field_id)
     app.selected_field.good_one_harvest = 0;
     app.selected_field.good_two_harvest = 0;
 
-    app.selected_field.good_one_available = app.selected_field.field[app.selected_field.field_type.good_one];
-    app.selected_field.good_two_available = app.selected_field.field[app.selected_field.field_type.good_two];
+    app.selected_field.good_one_available = app.selected_field.field[app.selected_field.field_type.good_one_ft];
+    app.selected_field.good_two_available = app.selected_field.field[app.selected_field.field_type.good_two_ft];
 
     app.clear_main_form_errors();
     app.field_modal.toggle();
@@ -232,17 +232,17 @@ send_field_harvest()
         return;
     }
 
-    if(app.selected_field.good_one_harvest > field[field_type.good_one] || app.selected_field.good_one_harvest < 0)
+    if(app.selected_field.good_one_harvest > field[field_type.good_one_ft] || app.selected_field.good_one_harvest < 0)
     {
         app.display_errors({good_one_harvest: ["Invalid Amount"]});
-        app.selected_field.good_one_available = field[field_type.good_one];        
+        app.selected_field.good_one_available = field[field_type.good_one_ft];        
         return;
     }
 
-    if(app.selected_field.good_two_harvest > field[field_type.good_two] || app.selected_field.good_two_harvest < 0)
+    if(app.selected_field.good_two_harvest > field[field_type.good_two_ft] || app.selected_field.good_two_harvest < 0)
     {
         app.display_errors({good_two_harvest: ["Invalid Amount"]});
-        app.selected_field.good_two_available = field[field_type.good_two];
+        app.selected_field.good_two_available = field[field_type.good_two_ft];
         return;
     }
 
@@ -270,11 +270,11 @@ take_field_harvest(message_data)
 
         field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type];
 
-        field[field_type.good_one] = message_data.field[field_type.good_one];
-        field[field_type.good_two] = message_data.field[field_type.good_two];
+        field[field_type.good_one_ft] = message_data.field[field_type.good_one_ft];
+        field[field_type.good_two_ft] = message_data.field[field_type.good_two_ft];
 
-        avatar[field_type.good_one] = message_data.avatar[field_type.good_one];
-        avatar[field_type.good_two] = message_data.avatar[field_type.good_two];
+        avatar[field_type.good_one_ft] = message_data.avatar[field_type.good_one_ft];
+        avatar[field_type.good_two_ft] = message_data.avatar[field_type.good_two_ft];
 
         app.update_field_inventory();
         app.update_avatar_inventory();
@@ -284,7 +284,7 @@ take_field_harvest(message_data)
         {
             element = {source_change:"-" + good_one_harvest,
                        target_change:"+" + good_one_harvest, 
-                       texture:app.pixi_textures[field_type.good_one+"_tex"]  }
+                       texture:app.pixi_textures[field_type.good_one_ft+"_tex"]  }
             elements.push(element);
         }
 
@@ -292,7 +292,7 @@ take_field_harvest(message_data)
         {
             element = {source_change:"-" + good_two_harvest,
                        target_change:"+" + good_two_harvest,
-                       texture:app.pixi_textures[field_type.good_two+"_tex"]  }
+                       texture:app.pixi_textures[field_type.good_two_ft+"_tex"]  }
             elements.push(element);
         }
 
@@ -318,8 +318,8 @@ select_all_fruit()
 {
     field_type = app.session.parameter_set.parameter_set_field_types[app.selected_field.field.parameter_set_field_type];
 
-    app.selected_field.good_one_harvest = app.selected_field.field[field_type.good_one];
-    app.selected_field.good_two_harvest = app.selected_field.field[field_type.good_two];
+    app.selected_field.good_one_harvest = app.selected_field.field[field_type.good_one_ft];
+    app.selected_field.good_two_harvest = app.selected_field.field[field_type.good_two_ft];
 },
 
 /**

@@ -11,7 +11,7 @@ setup_pixi_houses()
 
         let house_container = new PIXI.Container();
         house_container.eventMode = 'passive';
-        // house_container.zIndex = 0;
+        house_container.zIndex = 80;
         
         house_container.position.set(parameter_set_player.house_x, parameter_set_player.house_y)
 

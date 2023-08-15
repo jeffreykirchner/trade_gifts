@@ -21,8 +21,8 @@ class ParameterSetFieldType(models.Model):
     info = models.TextField(verbose_name='Info', default="Description of Field Type")
     display_text = models.TextField(verbose_name='Info', blank=True, null=True, default="Display Text")
 
-    good_one = models.CharField(verbose_name='Good One', max_length=100, choices=Goods.choices, default=Goods.CHERRY)
-    good_two = models.CharField(verbose_name='Good Two', max_length=100, choices=Goods.choices, default=Goods.BLUEBERRY)
+    good_one_ft = models.CharField(verbose_name='Good One', max_length=100, choices=Goods.choices, default=Goods.CHERRY)
+    good_two_ft = models.CharField(verbose_name='Good Two', max_length=100, choices=Goods.choices, default=Goods.BLUEBERRY)
 
     start_on_period = models.IntegerField(verbose_name='Start on Period', default=1)                   #ending location x and y
     reset_every_n_periods = models.IntegerField(verbose_name='Reset Every N Periods', default=2)       #ending location x and y
@@ -54,8 +54,8 @@ class ParameterSetFieldType(models.Model):
         self.info = new_ps.get("info")
         self.display_text = new_ps.get("display_text")
         
-        self.good_one = new_ps.get("good_one")
-        self.good_two = new_ps.get("good_two")
+        self.good_one_ft = new_ps.get("good_one_ft")
+        self.good_two_ft = new_ps.get("good_two_ft")
 
         self.start_on_period = new_ps.get("start_on_period")
         self.reset_every_n_periods = new_ps.get("reset_every_n_periods")
@@ -101,8 +101,8 @@ class ParameterSetFieldType(models.Model):
             "id" : self.id,
             "info" : self.info,
             "display_text" : self.display_text,
-            "good_one" : self.good_one,
-            "good_two" : self.good_two,
+            "good_one_ft" : self.good_one_ft,
+            "good_two_ft" : self.good_two_ft,
             "start_on_period" : self.start_on_period,
             "reset_every_n_periods" : self.reset_every_n_periods,
             "good_one_alpha" : self.good_one_alpha,
