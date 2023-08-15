@@ -290,6 +290,8 @@ move_object(delta, obj, move_speed, wall_limited=false, container=null, scale=1)
     let temp_move_speed = (move_speed * delta);
 
     let temp_current_location = Object.assign({}, obj.current_location);
+    let y_only_move = Object.assign({}, obj.current_location);
+    let x_only_move = Object.assign({}, obj.current_location);
 
     let temp_angle = Math.atan2(obj.target_location.y - obj.current_location.y,
                                 obj.target_location.x - obj.current_location.x)
@@ -299,39 +301,224 @@ move_object(delta, obj, move_speed, wall_limited=false, container=null, scale=1)
             obj.current_location.y = obj.target_location.y;
         else
             obj.current_location.y += temp_move_speed * Math.sin(temp_angle);
+
+        y_only_move.y = obj.current_location.y;
     }
 
     if(!noX){
         if(Math.abs(obj.target_location.x - obj.current_location.x) < temp_move_speed)
             obj.current_location.x = obj.target_location.x;
         else
-            obj.current_location.x += temp_move_speed * Math.cos(temp_angle);        
+            obj.current_location.x += temp_move_speed * Math.cos(temp_angle);  
+        
+        x_only_move.x = obj.current_location.x;
     }
 
     //if wall limited prevent object from moving through
     if(wall_limited)
     {
-        wall_limit_hit = false;
+        let wall_limit_hit = false;
 
         let rect1={x:obj.current_location.x - container.width/2,
                    y:obj.current_location.y - container.height/2,
                    width:container.width,
                    height:container.height};  
         
-        for(let i in app.session.parameter_set.parameter_set_walls)
+        if(app.check_walls_intersection(rect1))
         {
-            let temp_wall = app.session.parameter_set.parameter_set_walls[i];
-            let rect2={x:temp_wall.start_x,
-                    y:temp_wall.start_y,
-                    width:temp_wall.width,
-                    height:temp_wall.height};
+            obj.current_location =  Object.assign({}, temp_current_location);  
+            wall_limit_hit = true;
+        }
 
-            if(app.check_for_rect_intersection(rect1, rect2))
+        if(wall_limit_hit)
+        {
+            //reset rect
+            rect1={x:obj.current_location.x - container.width/2,
+                        y:obj.current_location.y - container.height/2,
+                        width:container.width,
+                        height:container.height};
+
+            let v = app.search_for_path_around_walls(rect1,obj.current_location, obj.target_location);       
+
+            if(v)
             {
-                obj.current_location =  Object.assign({}, temp_current_location);
+                obj.current_location = v;
+            }
+
+        }
+
+    }
+},
+
+/**
+ * check wall intersection
+ */
+
+check_walls_intersection(rect1)
+{
+    for(let i in app.session.parameter_set.parameter_set_walls)
+    {
+        let temp_wall = app.session.parameter_set.parameter_set_walls[i];
+        let rect2={x:temp_wall.start_x,
+                y:temp_wall.start_y,
+                width:temp_wall.width,
+                height:temp_wall.height};
+
+        if(app.check_for_rect_intersection(rect1, rect2))
+        {  
+            return true;
+        }
+    }
+
+    return false;
+},
+
+/**
+ * seach for path around walls
+ */
+search_for_path_around_walls(starting_rect, current_location, target_location)
+{
+    if(wall_search.counter>0) return;
+
+
+    wall_search = {counter:0, search_grid:{}}
+
+    let v = {rect:{x:Math.floor(starting_rect.x), y:Math.floor(starting_rect.y), width: Math.floor(starting_rect.width), height:Math.floor(starting_rect.height)}, 
+             searched:false, shortest_path:10000, parent:null, contact:false};
+    wall_search.search_grid["x_" + Math.floor(starting_rect.x) + "_y_" + Math.floor(starting_rect.y)] = v;
+
+    for(a=0;a<1;a++)
+    {
+        let new_search_grid = {};
+        wall_search.counter += 1;
+        //expand grid
+        for(i in wall_search.search_grid)
+        {
+            let search_grid = wall_search.search_grid[i];
+            let temp_x = search_grid.rect.x-Math.floor(starting_rect.width);
+            let temp_y = search_grid.rect.y-Math.floor(starting_rect.height);
+
+            for(j=0;j<3;j++)
+            {
+                for(k=0;k<3;k++)
+                {
+                    if(j ==2 && k ==2) continue;
+
+                    let v = "x_" + temp_x + "_y_" + temp_y;
+                    let rect1 = {x:temp_x, y:temp_y, width:Math.floor(starting_rect.width), height:Math.floor(starting_rect.height)};
+
+                    if(v in wall_search.search_grid)
+                    {
+                        if(wall_search.search_grid[v].shortest_path > search_grid.shortest_path+1)
+                        {
+                            wall_search.search_grid[v].shortest_path = search_gridshortest_path+1;
+                            wall_search.search_grid[v].parent = search_grid;
+                        }
+                    }
+                    else if(!app.check_walls_intersection(rect1)) 
+                    {
+                        new_search_grid[v] = {rect:rect1, searched:false, shortest_path:i.shortest_path+1, parent:i, contact:false};
+                    }
+
+                    temp_x += Math.floor(starting_rect.width);
+                }
+
+                temp_y += Math.floor(starting_rect.height);
+            }
+        }
+
+        //add new grid to existing grid
+        let contact_found = false;
+        for(i in new_search_grid)
+        {
+            wall_search.search_grid[i] = new_search_grid[i];
+
+            if(app.check_point_in_rectagle(target_location, wall_search.search_grid[i].rect))
+            {
+                wall_search.search_grid[i].contact = true;
+                contact_found = true;
                 break;
             }
         }
+
+        if(contact_found) break;
     }
+
+    // pt = app.search_for_path_around_walls_2(starting_rect,current_location, target_location);
+
+    // if(pt) return pt;
+
+    for(i in wall_search.search_grid)
+    {
+        let box = new PIXI.Graphics();
+        let rect = wall_search.search_grid[i].rect;
+    
+        box.lineStyle(1, "black");
+        //bounding_box.beginFill(0xBDB76B);
+        box.drawRect(rect.x, rect.y, rect.width, rect.height);
+        box.endFill();
+
+        pixi_container_main.addChild(box);
+    }
+
+    return null;
+},
+
+/**
+ * seach for path around walls 2
+ */
+search_for_path_around_walls_2(rect, pt1, pt2)
+{
+    if(wall_search.counter > 500) 
+        return null;
+    //app.wall_search.searched[pt1.toString()] = true;
+
+    let rect2={x:pt1.x - rect.width/2,
+               y:pt1.y - rect.height/2,
+               width:rect.width,
+               height:rect.height};
+
+    if("x_" + pt1.x + "_y_" + pt1.y in wall_search.searched) return null;
+    if(app.get_distance(pt1, pt2) > 500) return null;
+
+    wall_search.searched["x_" + pt1.x + "_y_" + pt1.y] = rect2;    
+    wall_search.counter += 1;
+
+    //rect2 is in wall return null
+    if(app.check_walls_intersection(rect2)) 
+        return null
+
+    //rect2 is in target return pt1
+    if(app.check_point_in_rectagle(pt2, rect2)) 
+        return pt1;
+
+    //move to adjacent points
+    let v1 = app.search_for_path_around_walls_2(rect, {x:pt1.x-50, y:pt1.y-50}, pt2);
+    if(v1) return {x:pt1.x-50, y:pt1.y-50};
+
+    let v2 = app.search_for_path_around_walls_2(rect, {x:pt1.x+50, y:pt1.y+50}, pt2);    
+    if(v2) return {x:pt1.x+50, y:pt1.y+50};
+
+    let v3 = app.search_for_path_around_walls_2(rect, {x:pt1.x-50, y:pt1.y+50}, pt2);
+    if(v3) return {x:pt1.x-50, y:pt1.y+50};
+
+    let v4 = app.search_for_path_around_walls_2(rect, {x:pt1.x+50, y:pt1.y-50}, pt2);
+    if(v4) return {x:pt1.x+50, y:pt1.y-50};
+
+    let v5 = app.search_for_path_around_walls_2(rect, {x:pt1.x-50, y:pt1.y}, pt2);
+    if(v5) return {x:pt1.x-50, y:pt1.y};
+
+    let v6 = app.search_for_path_around_walls_2(rect, {x:pt1.x+50, y:pt1.y}, pt2);
+    if(v6) return {x:pt1.x+50, y:pt1.y};
+
+    let v7 = app.search_for_path_around_walls_2(rect, {x:pt1.x, y:pt1.y-50}, pt2);
+    if(v7) return {x:pt1.x, y:pt1.y-50};
+
+    let v8 = app.search_for_path_around_walls_2(rect, {x:pt1.x, y:pt1.y+50}, pt2);
+    if(v8) return {x:pt1.x, y:pt1.y+50};
+
+    return null;
+    
+
 },
 
