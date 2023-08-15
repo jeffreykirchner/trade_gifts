@@ -102,7 +102,7 @@ var app = Vue.createApp({
                     stage_width : 10000,
                     stage_height : 10000,
                     scroll_direction : {x:0, y:0},
-                    draw_bounding_boxes: true,
+                    draw_bounding_boxes: false,
                     
                     //forms
                     interaction_form : {direction:null, amount:null},
@@ -547,6 +547,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/helpers.js"%}
         {%include "subject/subject_home/the_stage/subject.js"%}
         {%include "subject/subject_home/the_stage/night.js"%}
+        {%include "subject/subject_home/the_stage/move_objects.js"%}
     
         /** clear form error messages
         */

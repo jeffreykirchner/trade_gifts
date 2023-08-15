@@ -483,6 +483,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/staff.js"%}
         {%include "subject/subject_home/the_stage/helpers.js"%}
         {%include "subject/subject_home/the_stage/night.js"%}
+        {%include "subject/subject_home/the_stage/move_objects.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages
