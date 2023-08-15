@@ -388,9 +388,9 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
     wall_search.current_location = Object.assign({}, current_location);
     wall_search.target_location = Object.assign({}, target_location);
 
-    let v = {rect:{x:Math.floor(starting_rect.x), y:Math.floor(starting_rect.y), width: Math.floor(starting_rect.width), height:Math.floor(starting_rect.height)}, 
+    let v = {rect:{x:starting_rect.x, y:starting_rect.y, width: starting_rect.width, height:starting_rect.height}, 
              searched:false, shortest_path:0, parent:null, contact:false};
-    wall_search.search_grid["x_" + Math.floor(starting_rect.x) + "_y_" + Math.floor(starting_rect.y)] = v;
+    wall_search.search_grid["x_" + starting_rect.x + "_y_" + starting_rect.y] = v;
 
     for(a=0;a<15;a++)
     {
@@ -400,8 +400,8 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
         for(let i in wall_search.search_grid)
         {
             let search_grid = wall_search.search_grid[i];
-            let temp_x = search_grid.rect.x-Math.floor(starting_rect.width);
-            let temp_y = search_grid.rect.y-Math.floor(starting_rect.height);
+            let temp_x = search_grid.rect.x-starting_rect.width;
+            let temp_y = search_grid.rect.y-starting_rect.height;
 
             for(let j=0;j<3;j++)
             {
@@ -410,7 +410,7 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
                     if(j == 0 && k==1 || j==1 && k==0 || j==1 && k==2 || j==2 && k==1)
                     {
                         let v = "x_" + temp_x + "_y_" + temp_y;
-                        let rect1 = {x:temp_x, y:temp_y, width:Math.floor(starting_rect.width), height:Math.floor(starting_rect.height)};
+                        let rect1 = {x:temp_x, y:temp_y, width:starting_rect.width, height:starting_rect.height};
 
                         if(v in wall_search.search_grid)
                         {
@@ -436,11 +436,11 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
 
                     }
 
-                    temp_x += Math.floor(starting_rect.width);
+                    temp_x += starting_rect.width;
                 }
 
-                temp_x = search_grid.rect.x-Math.floor(starting_rect.width);
-                temp_y += Math.floor(starting_rect.height);
+                temp_x = search_grid.rect.x-starting_rect.width;
+                temp_y += starting_rect.height;
             }
         }
 
