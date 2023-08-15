@@ -16,7 +16,7 @@ setup_pixi_fields()
 
         let field_container = new PIXI.Container();
         field_container.eventMode = 'passive';
-        // field_container.zIndex = 0;
+        field_container.zIndex = 80;
         
         field_container.position.set(field.x, field.y)
 
