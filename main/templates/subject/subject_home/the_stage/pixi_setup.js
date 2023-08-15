@@ -285,37 +285,35 @@ setup_tractor_beam(source_id, target_id)
  */
 move_object(delta, obj, move_speed, wall_limited=false, container=null, scale=1)
 {
-    let noX = false;
-    let noY = false;
     let temp_move_speed = (move_speed * delta);
 
     let temp_current_location = Object.assign({}, obj.current_location);
-    let y_only_move = Object.assign({}, obj.current_location);
-    let x_only_move = Object.assign({}, obj.current_location);
 
-    let temp_angle = Math.atan2(obj.target_location.y - obj.current_location.y,
-                                obj.target_location.x - obj.current_location.x)
+    let target_location_local = Object.assign({}, obj.target_location);
+    if("nav_point" in obj && obj.nav_point) 
+    target_location_local = Object.assign({}, obj.nav_point);
 
-    if(!noY){
-        if(Math.abs(obj.target_location.y - obj.current_location.y) < temp_move_speed)
-            obj.current_location.y = obj.target_location.y;
-        else
-            obj.current_location.y += temp_move_speed * Math.sin(temp_angle);
+    let temp_angle = Math.atan2(target_location_local.y - obj.current_location.y,
+                                target_location_local.x - obj.current_location.x)
 
-        y_only_move.y = obj.current_location.y;
-    }
+    //y
+    if(Math.abs(target_location_local.y - obj.current_location.y) < temp_move_speed)
+        obj.current_location.y = target_location_local.y;
+    else
+        obj.current_location.y += temp_move_speed * Math.sin(temp_angle);
+ 
+    //x
+    if(Math.abs(target_location_local.x - obj.current_location.x) < temp_move_speed)
+        obj.current_location.x = target_location_local.x;
+    else
+        obj.current_location.x += temp_move_speed * Math.cos(temp_angle);  
 
-    if(!noX){
-        if(Math.abs(obj.target_location.x - obj.current_location.x) < temp_move_speed)
-            obj.current_location.x = obj.target_location.x;
-        else
-            obj.current_location.x += temp_move_speed * Math.cos(temp_angle);  
-        
-        x_only_move.x = obj.current_location.x;
-    }
+    //if nav point reached remove it.
+    if("nav_point" in obj && obj.nav_point && obj.current_location.x == obj.nav_point.x && obj.current_location.y == obj.nav_point.y)
+        obj.nav_point = null;
 
     //if wall limited prevent object from moving through
-    if(wall_limited)
+    if(wall_limited && !obj.nav_point)
     {
         let wall_limit_hit = false;
 
@@ -338,11 +336,11 @@ move_object(delta, obj, move_speed, wall_limited=false, container=null, scale=1)
                         width:container.width,
                         height:container.height};
 
-            let v = app.search_for_path_around_walls(rect1,obj.current_location, obj.target_location);       
+            let v = app.search_for_path_around_walls(rect1, obj.current_location, obj.target_location);       
 
             if(v)
             {
-                obj.current_location = v;
+                obj.nav_point = v;
             }
 
         }
@@ -378,10 +376,17 @@ check_walls_intersection(rect1)
  */
 search_for_path_around_walls(starting_rect, current_location, target_location)
 {
-    if(wall_search.counter>0) return;
+    // if(wall_search.counter>0) return;
+
+    if(wall_search.current_location.x == current_location.x && wall_search.current_location.y == current_location.y &&
+        wall_search.target_location.x == target_location.x && wall_search.target_location.y == target_location.y)
+        return null;
 
     let contact_found = null;
-    wall_search = {counter:0, search_grid:{}}
+    wall_search.counter = 0;
+    wall_search.search_grid = {};
+    wall_search.current_location = Object.assign({}, current_location);
+    wall_search.target_location = Object.assign({}, target_location);
 
     let v = {rect:{x:Math.floor(starting_rect.x), y:Math.floor(starting_rect.y), width: Math.floor(starting_rect.width), height:Math.floor(starting_rect.height)}, 
              searched:false, shortest_path:0, parent:null, contact:false};
@@ -411,13 +416,22 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
                         {
                             if(wall_search.search_grid[v].shortest_path > search_grid.shortest_path+1)
                             {
-                                wall_search.search_grid[v].shortest_path = search_gridshortest_path+1;
-                                wall_search.search_grid[v].parent = search_grid;
+                                wall_search.search_grid[v].shortest_path = search_grid.shortest_path+1;
+                                wall_search.search_grid[v].parent = i;
+                            }
+                            else if(wall_search.search_grid[v].shortest_path+1 < search_grid.shortest_path)
+                            {
+                                search_grid.shortest_path = wall_search.search_grid[v].shortest_path+1;
+                                search_grid.parent = v;
                             }
                         }
                         else if(!app.check_walls_intersection(rect1)) 
                         {
-                            new_search_grid[v] = {rect:rect1, searched:false, shortest_path:i.shortest_path+1, parent:i, contact:false};
+                            new_search_grid[v] = {rect:rect1, 
+                                                  searched:false, 
+                                                  shortest_path:search_grid.shortest_path+1, 
+                                                  parent:i, 
+                                                  contact:false};
                         }
 
                     }
@@ -452,9 +466,16 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
 
     // if(pt) return pt;
 
-    let draw_grid = false;
+    let draw_grid = true;
     //draw grid
     if(draw_grid)
+        for(i=0;i<wall_search_objects.length;i++)
+        {
+            wall_search_objects[i].destroy();
+        }
+
+        wall_search_objects = [];
+
         for(i in wall_search.search_grid)
         {
             //outline
@@ -466,7 +487,8 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
             //bounding_box.beginFill(0xBDB76B);
             box.drawRect(rect.x, rect.y, rect.width, rect.height);
             // box.endFill();
-
+            
+            wall_search_objects.push(box);
             pixi_container_main.addChild(box);
 
             //line to parent
@@ -479,6 +501,7 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
                 line_to_parent.moveTo(rect.x + rect.width/2, rect.y + rect.height/2);
                 line_to_parent.lineTo(search_grid_parent.rect.x + search_grid_parent.rect.width/2, search_grid_parent.rect.y + search_grid_parent.rect.height/2);
                 
+                wall_search_objects.push(line_to_parent);
                 pixi_container_main.addChild(line_to_parent);
             }
 
@@ -502,12 +525,12 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
                 if(draw_grid)
                 {
                     let line_to_parent = new PIXI.Graphics();
-                    line_to_parent.lineStyle(2, "purple");
-                
+                    line_to_parent.lineStyle(2, "purple");                
 
-                    line_to_parent.moveTo(pt1);
-                    line_to_parent.lineTo(pt2);
+                    line_to_parent.moveTo(pt1.x, pt1.y);
+                    line_to_parent.lineTo(pt2.x, pt2.y);
 
+                    wall_search_objects.push(line_to_parent);
                     pixi_container_main.addChild(line_to_parent);
                 }
 

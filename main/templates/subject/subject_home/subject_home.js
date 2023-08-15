@@ -23,7 +23,8 @@ var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
 var pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
                   text_night_coming : "Night is approching ... "};                                        //night
-var wall_search = {counter:0};
+var wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
+var wall_search_objects = [];
 
 //prevent right click
 document.addEventListener('contextmenu', event => event.preventDefault());
