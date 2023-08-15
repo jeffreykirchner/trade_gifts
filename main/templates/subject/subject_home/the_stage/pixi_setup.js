@@ -380,55 +380,58 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
 {
     if(wall_search.counter>0) return;
 
-
+    let contact_found = null;
     wall_search = {counter:0, search_grid:{}}
 
     let v = {rect:{x:Math.floor(starting_rect.x), y:Math.floor(starting_rect.y), width: Math.floor(starting_rect.width), height:Math.floor(starting_rect.height)}, 
-             searched:false, shortest_path:10000, parent:null, contact:false};
+             searched:false, shortest_path:0, parent:null, contact:false};
     wall_search.search_grid["x_" + Math.floor(starting_rect.x) + "_y_" + Math.floor(starting_rect.y)] = v;
 
-    for(a=0;a<1;a++)
+    for(a=0;a<15;a++)
     {
         let new_search_grid = {};
         wall_search.counter += 1;
         //expand grid
-        for(i in wall_search.search_grid)
+        for(let i in wall_search.search_grid)
         {
             let search_grid = wall_search.search_grid[i];
             let temp_x = search_grid.rect.x-Math.floor(starting_rect.width);
             let temp_y = search_grid.rect.y-Math.floor(starting_rect.height);
 
-            for(j=0;j<3;j++)
+            for(let j=0;j<3;j++)
             {
-                for(k=0;k<3;k++)
+                for(let k=0;k<3;k++)
                 {
-                    if(j ==2 && k ==2) continue;
-
-                    let v = "x_" + temp_x + "_y_" + temp_y;
-                    let rect1 = {x:temp_x, y:temp_y, width:Math.floor(starting_rect.width), height:Math.floor(starting_rect.height)};
-
-                    if(v in wall_search.search_grid)
+                    if(j == 0 && k==1 || j==1 && k==0 || j==1 && k==2 || j==2 && k==1)
                     {
-                        if(wall_search.search_grid[v].shortest_path > search_grid.shortest_path+1)
+                        let v = "x_" + temp_x + "_y_" + temp_y;
+                        let rect1 = {x:temp_x, y:temp_y, width:Math.floor(starting_rect.width), height:Math.floor(starting_rect.height)};
+
+                        if(v in wall_search.search_grid)
                         {
-                            wall_search.search_grid[v].shortest_path = search_gridshortest_path+1;
-                            wall_search.search_grid[v].parent = search_grid;
+                            if(wall_search.search_grid[v].shortest_path > search_grid.shortest_path+1)
+                            {
+                                wall_search.search_grid[v].shortest_path = search_gridshortest_path+1;
+                                wall_search.search_grid[v].parent = search_grid;
+                            }
                         }
-                    }
-                    else if(!app.check_walls_intersection(rect1)) 
-                    {
-                        new_search_grid[v] = {rect:rect1, searched:false, shortest_path:i.shortest_path+1, parent:i, contact:false};
+                        else if(!app.check_walls_intersection(rect1)) 
+                        {
+                            new_search_grid[v] = {rect:rect1, searched:false, shortest_path:i.shortest_path+1, parent:i, contact:false};
+                        }
+
                     }
 
                     temp_x += Math.floor(starting_rect.width);
                 }
 
+                temp_x = search_grid.rect.x-Math.floor(starting_rect.width);
                 temp_y += Math.floor(starting_rect.height);
             }
         }
 
         //add new grid to existing grid
-        let contact_found = false;
+        
         for(i in new_search_grid)
         {
             wall_search.search_grid[i] = new_search_grid[i];
@@ -436,89 +439,94 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
             if(app.check_point_in_rectagle(target_location, wall_search.search_grid[i].rect))
             {
                 wall_search.search_grid[i].contact = true;
-                contact_found = true;
+                contact_found = i;
                 break;
             }
         }
 
-        if(contact_found) break;
+        if(contact_found) 
+            break;
     }
 
     // pt = app.search_for_path_around_walls_2(starting_rect,current_location, target_location);
 
     // if(pt) return pt;
 
-    for(i in wall_search.search_grid)
-    {
-        let box = new PIXI.Graphics();
-        let rect = wall_search.search_grid[i].rect;
-    
-        box.lineStyle(1, "black");
-        //bounding_box.beginFill(0xBDB76B);
-        box.drawRect(rect.x, rect.y, rect.width, rect.height);
-        box.endFill();
+    let draw_grid = false;
+    //draw grid
+    if(draw_grid)
+        for(i in wall_search.search_grid)
+        {
+            //outline
+            let search_grid = wall_search.search_grid[i];
+            let box = new PIXI.Graphics();
+            let rect = search_grid.rect;
+        
+            box.lineStyle(1, "black");
+            //bounding_box.beginFill(0xBDB76B);
+            box.drawRect(rect.x, rect.y, rect.width, rect.height);
+            // box.endFill();
 
-        pixi_container_main.addChild(box);
+            pixi_container_main.addChild(box);
+
+            //line to parent
+            if(search_grid.parent)
+            {
+                let line_to_parent = new PIXI.Graphics();
+                let search_grid_parent = wall_search.search_grid[search_grid.parent];
+                line_to_parent.lineStyle(1, "gray");
+
+                line_to_parent.moveTo(rect.x + rect.width/2, rect.y + rect.height/2);
+                line_to_parent.lineTo(search_grid_parent.rect.x + search_grid_parent.rect.width/2, search_grid_parent.rect.y + search_grid_parent.rect.height/2);
+                
+                pixi_container_main.addChild(line_to_parent);
+            }
+
+        }
+
+    //find path to startart
+    if(contact_found)
+    {
+        let go = true;
+        while(go)
+        {
+            let search_grid = wall_search.search_grid[contact_found];
+
+            if(search_grid.parent)
+            {
+                let search_grid_parent = wall_search.search_grid[search_grid.parent];
+
+                let pt1 = {x:search_grid.rect.x + search_grid.rect.width/2, y:search_grid.rect.y + search_grid.rect.height/2};
+                let pt2 = {x:search_grid_parent.rect.x + search_grid_parent.rect.width/2, y:search_grid_parent.rect.y + search_grid_parent.rect.height/2};
+
+                if(draw_grid)
+                {
+                    let line_to_parent = new PIXI.Graphics();
+                    line_to_parent.lineStyle(2, "purple");
+                
+
+                    line_to_parent.moveTo(pt1);
+                    line_to_parent.lineTo(pt2);
+
+                    pixi_container_main.addChild(line_to_parent);
+                }
+
+                if(search_grid_parent.parent)
+                {
+                    contact_found = search_grid.parent;
+                }
+                else
+                {
+                    return pt1;
+                }
+            }
+            else
+            {
+                go = false;
+            }
+        }
     }
 
     return null;
-},
-
-/**
- * seach for path around walls 2
- */
-search_for_path_around_walls_2(rect, pt1, pt2)
-{
-    if(wall_search.counter > 500) 
-        return null;
-    //app.wall_search.searched[pt1.toString()] = true;
-
-    let rect2={x:pt1.x - rect.width/2,
-               y:pt1.y - rect.height/2,
-               width:rect.width,
-               height:rect.height};
-
-    if("x_" + pt1.x + "_y_" + pt1.y in wall_search.searched) return null;
-    if(app.get_distance(pt1, pt2) > 500) return null;
-
-    wall_search.searched["x_" + pt1.x + "_y_" + pt1.y] = rect2;    
-    wall_search.counter += 1;
-
-    //rect2 is in wall return null
-    if(app.check_walls_intersection(rect2)) 
-        return null
-
-    //rect2 is in target return pt1
-    if(app.check_point_in_rectagle(pt2, rect2)) 
-        return pt1;
-
-    //move to adjacent points
-    let v1 = app.search_for_path_around_walls_2(rect, {x:pt1.x-50, y:pt1.y-50}, pt2);
-    if(v1) return {x:pt1.x-50, y:pt1.y-50};
-
-    let v2 = app.search_for_path_around_walls_2(rect, {x:pt1.x+50, y:pt1.y+50}, pt2);    
-    if(v2) return {x:pt1.x+50, y:pt1.y+50};
-
-    let v3 = app.search_for_path_around_walls_2(rect, {x:pt1.x-50, y:pt1.y+50}, pt2);
-    if(v3) return {x:pt1.x-50, y:pt1.y+50};
-
-    let v4 = app.search_for_path_around_walls_2(rect, {x:pt1.x+50, y:pt1.y-50}, pt2);
-    if(v4) return {x:pt1.x+50, y:pt1.y-50};
-
-    let v5 = app.search_for_path_around_walls_2(rect, {x:pt1.x-50, y:pt1.y}, pt2);
-    if(v5) return {x:pt1.x-50, y:pt1.y};
-
-    let v6 = app.search_for_path_around_walls_2(rect, {x:pt1.x+50, y:pt1.y}, pt2);
-    if(v6) return {x:pt1.x+50, y:pt1.y};
-
-    let v7 = app.search_for_path_around_walls_2(rect, {x:pt1.x, y:pt1.y-50}, pt2);
-    if(v7) return {x:pt1.x, y:pt1.y-50};
-
-    let v8 = app.search_for_path_around_walls_2(rect, {x:pt1.x, y:pt1.y+50}, pt2);
-    if(v8) return {x:pt1.x, y:pt1.y+50};
-
-    return null;
-    
-
 },
 
