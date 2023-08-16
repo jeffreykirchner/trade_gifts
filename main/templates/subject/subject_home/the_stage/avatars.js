@@ -568,6 +568,14 @@ subject_avatar_click(target_player_id)
 },
 
 /**
+ * avatar modal is hidden
+ */
+hide_avatar_modal()
+{
+    
+},
+
+/**
  * send interaction to server
  */
 send_move_fruit_to_avatar()
@@ -671,19 +679,14 @@ take_update_move_fruit_to_avatar(message_data)
         
         if(app.is_subject && source_player_id == app.session_player.id)
         {
-            app.avatar_modal.toggle();
+            app.avatar_modal.hide();      
+            app.selected_avatar.avatar = null;     
         }
     }
     else
     {
 
     }
-},
-
-/** hide choice grid modal modal
-*/
-hide_avatar_modal(){
-    
 },
 
 /**
@@ -752,10 +755,15 @@ take_update_attack_avatar(message_data)
 
         app.update_avatar_inventory();
 
-        if(app.is_subject && source_player_id == app.session_player.id)
+        if(app.is_subject)
         {
-            app.avatar_attack_modal.hide();
+            if( source_player_id == app.session_player.id)
+            {
+                app.avatar_attack_modal.hide();
+                app.selected_avatar.avatar = null;
+            }
 
+            //transfer beam
             let elements = [];
 
             let fist_texture = app.pixi_textures["fist_left_tex"];

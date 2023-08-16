@@ -181,8 +181,8 @@ class SessionPeriod(models.Model):
                         good_two_harvest_total = 0
 
                         for j in obj["harvest_history"][str(last_period_id)]:
-                            good_one_harvest_total += j[field_type["good_one"]]
-                            good_two_harvest_total += j[field_type["good_two"]]
+                            good_one_harvest_total += j[field_type["good_one_ft"]]
+                            good_two_harvest_total += j[field_type["good_two_ft"]]
 
                         g1 -= good_one_harvest_total
                         g2 -= good_two_harvest_total

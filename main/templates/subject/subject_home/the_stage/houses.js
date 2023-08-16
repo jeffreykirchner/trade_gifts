@@ -184,6 +184,14 @@ subject_house_click(target_house_id)
 },
 
 /**
+ * hide house modal
+ */
+hide_house_modal()
+{
+    app.selected_house.house = null;
+},
+
+/**
  * send move fruit house
  */
 send_move_fruit_house()
@@ -403,7 +411,7 @@ take_update_sleep(message_data)
 
     if(app.is_subject && source_player_id == app.session_player.id)
     {
-        app.house_modal.toggle();
+        app.house_modal.hide();
     }
 },
 
