@@ -418,6 +418,13 @@ class SubjectUpdatesMixin():
         else:
             logger.info(f"field_harvest: invalid amounts from sync, {event['message_text']}")
             return
+        
+        await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                           session_player_id=player_id,
+                                           type="field_harvest",
+                                           period_number=self.world_state_local["current_period"],
+                                           time_remaining=self.world_state_local["time_remaining"],
+                                           data=result)
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -474,6 +481,13 @@ class SubjectUpdatesMixin():
             logger.info(f"field_effort: invalid amounts from sync, {event['message_text']}")
             return
         
+        await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                           session_player_id=player_id,
+                                           type="field_effort",
+                                           period_number=self.world_state_local["current_period"],
+                                           time_remaining=self.world_state_local["time_remaining"],
+                                           data=result)
+        
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
 
@@ -526,6 +540,12 @@ class SubjectUpdatesMixin():
             logger.info(f"move_fruit_to_avatar: invalid amounts from sync, {event['message_text']}")
             return
 
+        await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                           session_player_id=player_id,
+                                           type="move_fruit_to_avatar",
+                                           period_number=self.world_state_local["current_period"],
+                                           time_remaining=self.world_state_local["time_remaining"],
+                                           data=result)
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -581,6 +601,12 @@ class SubjectUpdatesMixin():
             logger.info(f"move_fruit_to_house: invalid amounts from sync, {event['message_text']}")
             return
 
+        await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                           session_player_id=player_id,
+                                           type="move_fruit_to_house",
+                                           period_number=self.world_state_local["current_period"],
+                                           time_remaining=self.world_state_local["time_remaining"],
+                                           data=result)
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -631,6 +657,13 @@ class SubjectUpdatesMixin():
         else:
             logger.info(f"attack_avatar: invalid amounts from sync, {event['message_text']}")
             return
+        
+        await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                           session_player_id=player_id,
+                                           type="attack_avatar",
+                                           period_number=self.world_state_local["current_period"],
+                                           time_remaining=self.world_state_local["time_remaining"],
+                                           data=result)
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -675,6 +708,13 @@ class SubjectUpdatesMixin():
         else:
             logger.info(f"sleep: invalid amounts from sync, {event['message_text']}")
             return
+        
+        await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                           session_player_id=player_id,
+                                           type="sleep",
+                                           period_number=self.world_state_local["current_period"],
+                                           time_remaining=self.world_state_local["time_remaining"],
+                                           data=result)
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
