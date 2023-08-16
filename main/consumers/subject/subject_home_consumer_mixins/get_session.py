@@ -32,6 +32,14 @@ class GetSessionMixin():
             else:        
                 result = await sync_to_async(take_get_session_subject, thread_sensitive=self.thread_sensitive)(self.session_player_id)                
 
+            # remove field history
+            for f in result["session"]["world_state"]["fields"]:
+                result["session"]["world_state"]["fields"][f]["harvest_history"] = None
+
+            result["session"]["world_state"]["timer_history"] = None
+            result["session"]["world_state"]["session_periods"] = None
+            result["session"]["world_state"]["session_periods_order"] = None
+
             await self.send_message(message_to_self=result, message_to_subjects=None, message_to_staff=None, 
                                     message_type=event['type'], send_to_client=True, send_to_group=False)
     

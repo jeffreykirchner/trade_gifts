@@ -129,7 +129,6 @@ class Session(models.Model):
         setup world state
         '''
         self.world_state = {
-                            "session_players":{},
                             "fields":{},
                             "houses":{},
                             "avatars":{},

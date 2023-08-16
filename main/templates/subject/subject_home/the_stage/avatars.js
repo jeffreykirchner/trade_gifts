@@ -7,7 +7,7 @@ setup_pixi_subjects(){
     if(!app.session.started) return;
     
     let current_z_index = 1000;
-    let current_period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
+    
     for(const i in app.session.world_state_avatars.session_players)
     {      
         let subject = app.session.world_state_avatars.session_players[i];
@@ -233,7 +233,7 @@ setup_pixi_subjects(){
         chat_container.addChild(chat_bubble_sprite);
         chat_container.addChild(chat_bubble_text);
 
-        chat_bubble_text.position.set(-20, -chat_container.height*.09)
+        chat_bubble_text.position.set(-15 * app.session.parameter_set.avatar_scale, -chat_container.height*.09)
         chat_bubble_text.anchor.set(0.5);
 
         pixi_avatars[i].chat_container = chat_container;
