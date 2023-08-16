@@ -7,7 +7,7 @@ setup_pixi_subjects(){
     if(!app.session.started) return;
     
     let current_z_index = 1000;
-    let current_period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
+    
     for(const i in app.session.world_state_avatars.session_players)
     {      
         let subject = app.session.world_state_avatars.session_players[i];

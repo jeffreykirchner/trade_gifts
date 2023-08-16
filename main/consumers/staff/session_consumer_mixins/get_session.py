@@ -37,7 +37,15 @@ class GetSessionMixin():
         for p in result["session_players"]:
             session_player = result["session_players"][p]
             self.session_players_local[str(session_player["player_key"])] = {"id" : p}
+        
+        # remove field history
+        for f in result["world_state"]["fields"]:
+            result["world_state"]["fields"][f]["harvest_history"] = None
 
+        result["world_state"]["timer_history"] = None
+        result["world_state"]["session_periods"] = None
+        result["world_state"]["session_periods_order"] = None
+           
         self.session_id = result["id"]
         self.parameter_set_local = result["parameter_set"]
 
