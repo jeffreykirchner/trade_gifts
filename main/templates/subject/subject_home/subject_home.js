@@ -67,7 +67,7 @@ var app = Vue.createApp({
                                        good_three:null,
                                        },
                     
-                    selected_house : {avatar:null,
+                    selected_house : {house:null,
                                       parameter_set_player:null,
                                       good_one_move:0,
                                       good_two_move:0,
@@ -252,6 +252,8 @@ var app = Vue.createApp({
 
             document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
             document.getElementById('avatar_modal').addEventListener('hidden.bs.modal', app.hide_avatar_modal);
+            document.getElementById('field_modal').addEventListener('hidden.bs.modal', app.hide_field_modal);
+            document.getElementById('house_modal').addEventListener('hidden.bs.modal', app.hide_house_modal);
 
             {%if session.parameter_set.test_mode%} setTimeout(app.do_test_mode, app.random_number(1000 , 1500)); {%endif%}
 

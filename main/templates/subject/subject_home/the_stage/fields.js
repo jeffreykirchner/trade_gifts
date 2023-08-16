@@ -190,6 +190,15 @@ subject_field_click(field_id)
 },
 
 /**
+ * handle field modal hide
+ */
+hide_field_modal()
+{
+    app.selected_field.field = null;
+    app.selected_field.field_type = null;
+},
+
+/**
  * handle update to effort slider
  */
 update_effort_slider()
@@ -302,7 +311,7 @@ take_field_harvest(message_data)
         
         if(app.is_subject && message_data.avatar.id == app.session_player.id)
         {
-            app.field_modal.toggle();
+            app.field_modal.hide();
         }
     }
     else
@@ -349,7 +358,7 @@ take_field_effort(message_data)
 
     if(message_data.avatar.id == app.session_player.id)
     {
-        app.field_modal.toggle();
+        app.field_modal.hide();
     }
 
 },

@@ -133,7 +133,8 @@ class TimerMixin():
                                                type="timer_tick",
                                                period_number=self.world_state_local["current_period"],
                                                time_remaining=self.world_state_local["time_remaining"],
-                                               data=self.world_state_local)
+                                               data={"world_state_local" : self.world_state_local,
+                                                     "world_state_local_avatars" : self.world_state_local,})
             
             await self.send_message(message_to_self=False, message_to_group=result,
                                     message_type="time", send_to_client=False, send_to_group=True)
@@ -241,7 +242,7 @@ def sync_continue_timer(event, session_id):
                 session = session.get_current_session_period().do_timer_actions(time_remaining)
                 session = session.get_current_session_period().do_production()
 
-                for i in session.world_state["session_players"]:
+                for i in session.world_state["avatars"]:
                     # session.world_state["session_players"][i]["earnings"] += session.world_state["session_players"][i]["inventory"][current_period_id]
 
                     earnings[i] = {}
