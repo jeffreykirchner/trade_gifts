@@ -44,7 +44,8 @@
                                 </td>
                                 <td v-on:click="show_edit_parameter_set_field(p)" 
                                     class="player_table_cell">
-                                    <span v-if="temp_p.parameter_set_field_type">
+                                    <span v-if="temp_p.parameter_set_field_type && 
+                                                temp_p.parameter_set_field_type in  parameter_set.parameter_set_field_types">
                                         [[parameter_set.parameter_set_field_types[temp_p.parameter_set_field_type].info]]
                                     </span>
                                 </td>

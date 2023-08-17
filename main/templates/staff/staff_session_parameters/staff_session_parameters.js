@@ -36,11 +36,16 @@ var app = Vue.createApp({
                         id:0,
                     },
 
-                    parameterset_form_ids: {{parameterset_form_ids|safe}},
-                    parameterset_player_form_ids: {{parameterset_player_form_ids|safe}},
-                    parameterset_wall_form_ids: {{parameterset_wall_form_ids|safe}},
-                    parameterset_ground_form_ids: {{parameterset_ground_form_ids|safe}},
-                    parameterset_field_type_form_ids: {{parameterset_field_type_form_ids|safe}},
+                    current_parameter_set_group : {
+                        id:0,
+                    },
+
+                    parameter_set_form_ids: {{parameter_set_form_ids|safe}},
+                    parameter_set_player_form_ids: {{parameter_set_player_form_ids|safe}},
+                    parameter_set_wall_form_ids: {{parameter_set_wall_form_ids|safe}},
+                    parameter_set_ground_form_ids: {{parameter_set_ground_form_ids|safe}},
+                    parameter_set_field_type_form_ids: {{parameter_set_field_type_form_ids|safe}},
+                    parameter_set_group_form_ids: {{parameter_set_group_form_ids|safe}},
 
                     upload_file: null,
                     upload_file_name:'Choose File',
@@ -132,6 +137,7 @@ var app = Vue.createApp({
             app.edit_parameterset_ground_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_ground_modal'), {keyboard: false}) 
             app.edit_parameterset_field_type_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_field_type_modal'), {keyboard: false})  
             app.edit_parameterset_field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_field_modal'), {keyboard: false})  
+            app.edit_parameterset_group_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_group_modal'), {keyboard: false})
 
             document.getElementById('import_parameters_modal').addEventListener('hidden.bs.modal', app.hide_import_parameters);
             document.getElementById('edit_parameterset_modal').addEventListener('hidden.bs.modal', app.hide_edit_parameter_set);
@@ -175,6 +181,7 @@ var app = Vue.createApp({
         {%include "staff/staff_session_parameters/grounds/grounds.js"%}
         {%include "staff/staff_session_parameters/field_types/field_types.js"%}
         {%include "staff/staff_session_parameters/fields/fields.js"%}
+        {%include "staff/staff_session_parameters/groups/groups.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages
@@ -187,42 +194,49 @@ var app = Vue.createApp({
                 if(e) e.remove();
             }
 
-            s = app.parameterset_form_ids;
+            s = app.parameter_set_form_ids;
             for(let i in s)
             {
                 let e = document.getElementById("id_errors_" + s[i]);
                 if(e) e.remove();
             }
 
-            s = app.parameterset_player_form_ids;
+            s = app.parameter_set_player_form_ids;
             for(let i in s)
             {
                 let e = document.getElementById("id_errors_" + s[i]);
                 if(e) e.remove();
             }
 
-            s = app.parameterset_wall_form_ids;
+            s = app.parameter_set_wall_form_ids;
             for(let i in s)
             {
                 let e = document.getElementById("id_errors_" + s[i]);
                 if(e) e.remove();
             }
 
-            s = app.parameterset_ground_form_ids;
+            s = app.parameter_set_ground_form_ids;
             for(let i in s)
             {
                 let e = document.getElementById("id_errors_" + s[i]);
                 if(e) e.remove();
             }
 
-            s = app.parameterset_field_type_form_ids;
+            s = app.parameter_set_field_type_form_ids;
             for(let i in s)
             {
                 let e = document.getElementById("id_errors_" + s[i]);
                 if(e) e.remove();
             }
 
-            s = app.parameterset_field_form_ids;
+            s = app.parameter_set_field_form_ids;
+            for(let i in s)
+            {
+                let e = document.getElementById("id_errors_" + s[i]);
+                if(e) e.remove();
+            }
+
+            s = app.parameter_set_group_form_ids;
             for(let i in s)
             {
                 let e = document.getElementById("id_errors_" + s[i]);
