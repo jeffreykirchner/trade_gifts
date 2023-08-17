@@ -235,6 +235,7 @@ send_field_harvest()
     let field = app.session.world_state.fields[app.selected_field.field.id];
     let field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type];
 
+    let failed = false;
     if(app.selected_field.good_one_harvest <= 0 && app.selected_field.good_two_harvest <= 0)
     {
         app.display_errors({good_one_harvest: ["Invalid Amount"], good_two_harvest: ["Invalid Amount"]});
@@ -245,15 +246,17 @@ send_field_harvest()
     {
         app.display_errors({good_one_harvest: ["Invalid Amount"]});
         app.selected_field.good_one_available = field[field_type.good_one_ft];        
-        return;
+        failed = true;
     }
 
     if(app.selected_field.good_two_harvest > field[field_type.good_two_ft] || app.selected_field.good_two_harvest < 0)
     {
         app.display_errors({good_two_harvest: ["Invalid Amount"]});
         app.selected_field.good_two_available = field[field_type.good_two_ft];
-        return;
+        failed = true;
     }
+
+    if(failed) return;
 
     app.send_message("field_harvest", 
                      {"field_id" : app.selected_field.field.id,
