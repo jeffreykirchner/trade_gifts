@@ -1,5 +1,5 @@
 '''
-parameterset wall edit form
+parameterset wall field form
 '''
 
 from django import forms

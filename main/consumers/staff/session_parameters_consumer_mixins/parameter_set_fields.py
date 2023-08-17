@@ -13,7 +13,7 @@ from ..session_parameters_consumer_mixins.get_parameter_set import take_get_para
 
 class ParameterSetFieldsMixin():
     '''
-    parameter set plaeyer mixin
+    parameter set group mixin
     '''
 
     async def update_parameter_set_field(self, event):

@@ -28,9 +28,9 @@ send_update_parameter_set(){
 
     let form_data = {}
 
-    for(i=0;i<app.parameterset_form_ids.length;i++)
+    for(i=0;i<app.parameter_set_form_ids.length;i++)
     {
-        v=app.parameterset_form_ids[i];
+        v=app.parameter_set_form_ids[i];
         form_data[v]=app.parameter_set[v];
     }
 
@@ -55,6 +55,7 @@ take_update_parameter_set(message_data){
         app.edit_parameterset_ground_modal.hide();
         app.edit_parameterset_field_type_modal.hide();
         app.edit_parameterset_field_modal.hide();
+        app.edit_parameterset_group_modal.hide();
     } 
     else
     {

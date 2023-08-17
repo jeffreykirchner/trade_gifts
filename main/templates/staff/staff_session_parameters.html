@@ -50,6 +50,7 @@
 {%include "staff/staff_session_parameters/control/upload_parameters_modal.html"%}
 {%include "staff/staff_session_parameters/control/import_parameters_modal.html"%}
 {%include "staff/staff_session_parameters/fields/edit_parameterset_field_modal.html"%}
+{%include "staff/staff_session_parameters/groups/edit_parameterset_group_modal.html"%}
 {%include "help_modal.html"%}
 
 <!-- cards -->
@@ -61,7 +62,16 @@
         {%include "staff/staff_session_parameters/players/players_card.html"%}                  
     </div> 
     <div class="col-md">
-        {%include "staff/staff_session_parameters/control/control_card.html"%}  
+        <div class="row">
+            <div class="col">
+                {%include "staff/staff_session_parameters/control/control_card.html"%}  
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col">
+                {%include "staff/staff_session_parameters/groups/groups_card.html"%}
+            </div>
+        </div>        
     </div>              
 </div>
 

@@ -15,7 +15,7 @@ class ParameterSetFieldTypeForm(forms.ModelForm):
   '''
 
   info = forms.CharField(label='Info',
-                          widget=forms.TextInput(attrs={"v-model":"current_parameter_set_field_type.info",}))
+                         widget=forms.TextInput(attrs={"v-model":"current_parameter_set_field_type.info",}))
   
   display_text = forms.CharField(label='Display Text',
                                   widget=forms.TextInput(attrs={"v-model":"current_parameter_set_field_type.display_text",}))

@@ -65,6 +65,7 @@ def take_update_parameter_set_player(data):
     form_data = data["form_data"]
 
     try:        
+        session = Session.objects.get(id=session_id)
         parameter_set_player = ParameterSetPlayer.objects.get(id=parameterset_player_id)
     except ObjectDoesNotExist:
         logger.warning(f"take_update_parameter_set_player parameterset_player, not found ID: {parameterset_player_id}")
@@ -75,6 +76,7 @@ def take_update_parameter_set_player(data):
     logger.info(f'form_data_dict : {form_data_dict}')
 
     form = ParameterSetPlayerForm(form_data_dict, instance=parameter_set_player)
+    form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
 
     if form.is_valid():         
         form.save()              

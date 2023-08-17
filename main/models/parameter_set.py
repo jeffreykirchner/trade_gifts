@@ -143,6 +143,15 @@ class ParameterSet(models.Model):
             self.instruction_set = InstructionSet.objects.get(label=new_ps.get("instruction_set")["label"])
 
             self.save()
+            #parameter set fields
+            self.parameter_set_fields_a.all().delete()
+            new_parameter_set_fields = new_ps.get("parameter_set_fields")
+            new_parameter_set_field_types_map = {}
+
+            for i in new_parameter_set_fields:
+                p = main.models.ParameterSetField.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_fields[i])
+                new_parameter_set_field_types_map[i] = p.id
 
             #parameter set players
             self.parameter_set_players.all().delete()
@@ -152,8 +161,15 @@ class ParameterSet(models.Model):
 
             for i in new_parameter_set_players:
                 p = main.models.ParameterSetPlayer.objects.create(parameter_set=self)
-                p.from_dict(new_parameter_set_players[i])
+                v = new_parameter_set_players[i]
+                p.from_dict(v)
+
                 new_parameter_set_players_map[i] = p.id
+
+                if v.get("parameter_set_group", None) != None:
+                    p.parameter_set_group_id=new_parameter_set_field_types_map[str(v["parameter_set_group"])]
+
+                p.save()
 
             self.update_player_count()
 
@@ -321,7 +337,8 @@ class ParameterSet(models.Model):
                              update_walls=False, 
                              update_grounds=False, 
                              update_field_types=False,
-                             update_fields=False):
+                             update_fields=False,
+                             update_groups=False):
         '''
         update json model
         '''
@@ -345,6 +362,10 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_fields_order"] = list(self.parameter_set_fields_a.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_fields"] = {str(p.id) : p.json() for p in self.parameter_set_fields_a.all()}
 
+        if update_groups:
+            self.json_for_session["parameter_set_groups_order"] = list(self.parameter_set_groups.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_groups"] = {str(p.id) : p.json() for p in self.parameter_set_groups.all()}
+
         self.save()
 
     def json(self, update_required=False):
@@ -359,7 +380,8 @@ class ParameterSet(models.Model):
                                 update_walls=True, 
                                 update_grounds=True, 
                                 update_field_types=True, 
-                                update_fields=True)
+                                update_fields=True,
+                                update_groups=True)
 
         return self.json_for_session
     
