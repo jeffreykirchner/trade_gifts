@@ -145,6 +145,10 @@ class ParameterSetForm(forms.ModelForm):
                                                                        "step":"0.1",
                                                                        "min":"0.1"}))
 
+    allow_stealing = forms.ChoiceField(label='Allow Stealing',
+                                       choices=((True, 'Yes'), (False,'No' )),
+                                       widget=forms.Select(attrs={"v-model":"parameter_set.allow_stealing",}))
+
     world_width = forms.IntegerField(label='World Width (pixels)',
                                      min_value=1,
                                      widget=forms.NumberInput(attrs={"v-model":"parameter_set.world_width",
@@ -212,7 +216,7 @@ class ParameterSetForm(forms.ModelForm):
         fields =['period_count', 'period_length', 'night_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'test_mode', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'health_loss_per_second', 'heath_gain_per_sleep_second',
-                 'consumption_alpha', 'consumption_beta', 'cents_per_second', 'attack_damage', 'attack_cost', 'sleep_benefit', 'world_width', 'world_height',
+                 'consumption_alpha', 'consumption_beta', 'cents_per_second', 'attack_damage', 'attack_cost', 'sleep_benefit', 'allow_stealing', 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort']
                  
 

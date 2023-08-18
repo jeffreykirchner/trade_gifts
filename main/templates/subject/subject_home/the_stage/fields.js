@@ -159,8 +159,28 @@ update_field_inventory()
  */
 subject_field_click(field_id)
 {
+    let field = app.session.world_state.fields[field_id];
+
+    let source_parameter_set_player = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id];
+    let target_parameter_set_player = app.session.parameter_set.parameter_set_players[field.parameter_set_player];
+    let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
+    
+    if(app.session.parameter_set.allow_stealing == "False" && 
+       source_parameter_set_player.parameter_set_group != target_parameter_set_player.parameter_set_group)
+    {
+        app.add_text_emitters("You cannot interact with other group's fields.", 
+                                local_player.current_location.x, 
+                                local_player.current_location.y,
+                                local_player.current_location.x,
+                                local_player.current_location.y-100,
+                                0xFFFFFF,
+                                28,
+                                null);
+        return;
+    }
+
     // console.log("subject field click", field_id);
-    app.selected_field.field = app.session.world_state.fields[field_id];
+    app.selected_field.field = field;
     app.selected_field.field_type = app.session.parameter_set.parameter_set_field_types[app.selected_field.field.parameter_set_field_type];
     app.selected_field.good_one_harvest = 0;
     app.selected_field.good_two_harvest = 0;

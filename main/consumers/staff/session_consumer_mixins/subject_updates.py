@@ -404,7 +404,7 @@ class SubjectUpdatesMixin():
         
         result = {"status" : v["status"], "error_message" : v["error_message"]}
 
-        if v["world_state"]:
+        if v["world_state"] and v["status"]=="success":
             self.world_state_local = v["world_state"]
             result["field"] = {"id" : field_id}
             result["avatar"] = {"id" : player_id}
@@ -416,7 +416,7 @@ class SubjectUpdatesMixin():
                 result["field"][good] = self.world_state_local["fields"][str(field_id)][good]
                 result["avatar"][good] = self.world_state_local["avatars"][str(player_id)][good]
         else:
-            logger.info(f"field_harvest: invalid amounts from sync, {event['message_text']}")
+            logger.info(f"field_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
             return
         
         await SessionEvent.objects.acreate(session_id=self.session_id, 
@@ -747,10 +747,19 @@ def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_t
         field_type = parameter_set['parameter_set_field_types'][str(field['parameter_set_field_type'])]
         player = session.world_state['avatars'][str(player_id)]
 
+        source_parameter_set_player = parameter_set["parameter_set_players"][str(player["parameter_set_player_id"])]
+        target_parameter_set_player = parameter_set["parameter_set_players"][str(field["parameter_set_player"])]
+
+        #check for stealing
+        if(parameter_set["allow_stealing"] == "False" and 
+           source_parameter_set_player["parameter_set_group"] != target_parameter_set_player["parameter_set_group"]):
+            status = "fail"
+            error_message.append({"id":"good_one_harvest", "message": "You cannot interact with other group's fields."})
+
         good_one = field_type['good_one_ft']
         good_two = field_type['good_two_ft']
 
-        if field[good_one] < good_one_harvest:
+        if field[good_one] < good_one_harvest and status == "success":
             status = "fail"
             error_message.append({"id":"good_two_harvest", "message": "Invalid harvest amount."})
 

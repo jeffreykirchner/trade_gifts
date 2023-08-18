@@ -167,6 +167,14 @@
         </div>
         <div class="row">
             <div class="col-7 text-end">
+                {{parameter_set_form.allow_stealing.label}}:                
+            </div>
+            <div class="col text-start">
+                <span v-if="parameter_set.allow_stealing=='True'">Yes</span><span v-else>No</span>                         
+            </div>  
+        </div>
+        <div class="row">
+            <div class="col-7 text-end">
                 {{parameter_set_form.world_width.label}}:                
             </div>
             <div class="col text-start">
