@@ -172,28 +172,23 @@ take_target_location_update(message_data)
         //check if click on a house
         for(i in app.session.world_state.houses)
         {
-            if(app.session.world_state.houses[i].session_player == app.session_player.id)
+            let obj = pixi_houses[i].house_container;
+            let rect={x:obj.x-obj.width/2, y:obj.y-obj.height/2, width:obj.width, height:obj.height};
+            let pt={x:local_pos.x, y:local_pos.y};
+
+            
+            if(app.check_point_in_rectagle(pt, rect))
             {
-
-                let obj = pixi_houses[i].house_container;
-                let rect={x:obj.x-obj.width/2, y:obj.y-obj.height/2, width:obj.width, height:obj.height};
-                let pt={x:local_pos.x, y:local_pos.y};
-
-                
-                if(app.check_point_in_rectagle(pt, rect))
+                //check subject close enough for interaction
+                if(app.check_for_circle_rect_intersection({x:local_player.current_location.x, 
+                                                        y:local_player.current_location.y, 
+                                                        radius:app.session.parameter_set.interaction_range},
+                                                    rect))
                 {
-                    //check subject close enough for interaction
-                    if(app.check_for_circle_rect_intersection({x:local_player.current_location.x, 
-                                                            y:local_player.current_location.y, 
-                                                            radius:app.session.parameter_set.interaction_range},
-                                                        rect))
-                    {
-                        app.subject_house_click(i);              
-                        return;
-                    }
+                    app.subject_house_click(i);              
+                    return;
                 }
             }
-
         }
 
     }
