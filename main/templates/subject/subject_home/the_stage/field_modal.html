@@ -13,6 +13,7 @@
         <div class="modal-content">
             <div class="modal-header fw-bold">
                 Field:&nbsp;<span v-if="selected_field.field">Owner [[session.parameter_set.parameter_set_players[selected_field.field.parameter_set_player].id_label]]</span>
+                <span v-if="selected_field.field && selected_field.field.session_player==session_player.id">&nbsp;(You)</span>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">   

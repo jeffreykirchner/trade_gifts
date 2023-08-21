@@ -796,9 +796,14 @@ def sync_field_effort(session_id, player_id, field_id, good_one_effort, good_two
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
+        player = session.world_state['avatars'][str(player_id)]
 
-        session.world_state['fields'][str(field_id)]['good_one_effort'] = good_one_effort
-        session.world_state['fields'][str(field_id)]['good_two_effort'] = good_two_effort
+        if session.world_state['fields'][str(field_id)]['session_player'] == player_id:
+            session.world_state['fields'][str(field_id)]['good_one_effort'] = good_one_effort
+            session.world_state['fields'][str(field_id)]['good_two_effort'] = good_two_effort
+        else:
+            status = "fail"
+            error_message.append({"id":"good_one_effort", "message": "You do not own this field."})
 
         session.save()
         world_state = session.world_state
@@ -860,40 +865,57 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
+        world_state = session.world_state
 
         parameter_set = session.parameter_set.json()
-        parameter_set_player_id = str(session.world_state['avatars'][str(player_id)]['parameter_set_player_id'])
-        house = session.world_state['houses'][str(target_house_id)]
-        avatar =  session.world_state['avatars'][str(player_id)]
+        parameter_set_player_id = str(world_state['avatars'][str(player_id)]['parameter_set_player_id'])
 
+        avatar =  world_state['avatars'][str(player_id)]
+
+        house = world_state['houses'][str(target_house_id)]
+        parameter_set_player_id_house = str(world_state['avatars'][str(house['session_player'])]['parameter_set_player_id'])
+        
+        source_group = parameter_set["parameter_set_players"][parameter_set_player_id]["parameter_set_group"]
+        target_group = parameter_set["parameter_set_players"][parameter_set_player_id_house]["parameter_set_group"]
+        
         good_one = parameter_set['parameter_set_players'][parameter_set_player_id]['good_one']
         good_two = parameter_set['parameter_set_players'][parameter_set_player_id]['good_two']
         good_three = parameter_set['parameter_set_players'][parameter_set_player_id]['good_three']
 
-        if direction == "avatar_to_house":
-            if avatar[good_one] < good_one_move:
-                status = "fail"
-                error_message.append({"id":"good_one_move", "message": "Invalid amount."})
+        # house must be in same group as avatar
+        if source_group != target_group:
+            status = "fail"
+            error_message.append({"id":"good_one_move", "message": "You cannot interact with other group's houses."})
 
-            if avatar[good_two] < good_two_move:
-                status = "fail"
-                error_message.append({"id":"good_two_move", "message": "Invalid amount."})
+        if status == "success":
+            if direction == "avatar_to_house":
+                if avatar[good_one] < good_one_move:
+                    status = "fail"
+                    error_message.append({"id":"good_one_move", "message": "Invalid amount."})
 
-            if avatar[good_three] < good_three_move:
-                status = "fail"
-                error_message.append({"id":"good_three_move", "message": "Invalid amount."})
-        else:
-            if house[good_one] < good_one_move:
-                status = "fail"
-                error_message.append({"id":"good_one_move", "message": "Invalid amount."})
+                if avatar[good_two] < good_two_move:
+                    status = "fail"
+                    error_message.append({"id":"good_two_move", "message": "Invalid amount."})
 
-            if house[good_two] < good_two_move:
-                status = "fail"
-                error_message.append({"id":"good_two_move", "message": "Invalid amount."})
+                if avatar[good_three] < good_three_move:
+                    status = "fail"
+                    error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+            elif player_id == house['session_player']:
+                #player owns house
+                if house[good_one] < good_one_move:
+                    status = "fail"
+                    error_message.append({"id":"good_one_move", "message": "Invalid amount."})
 
-            if house[good_three] < good_three_move:
+                if house[good_two] < good_two_move:
+                    status = "fail"
+                    error_message.append({"id":"good_two_move", "message": "Invalid amount."})
+
+                if house[good_three] < good_three_move:
+                    status = "fail"
+                    error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+            else:
                 status = "fail"
-                error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+                error_message.append({"id":"good_one_move", "message": "You cannot move goods out of other player's houses."})
 
         if status == "success":
             if direction == "avatar_to_house":

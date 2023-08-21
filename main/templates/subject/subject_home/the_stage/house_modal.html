@@ -11,19 +11,26 @@
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header fw-bold" v-if="selected_house.house">
-                Your house
+                House:&nbsp;<span v-if="selected_house.house">Owner [[selected_house.parameter_set_player.id_label]]</span>
+                <span v-if="selected_house.house && selected_house.house.session_player==session_player.id">&nbsp;(You)</span>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 
                 <div class="row">
                     <div class="col text-center">
-                        <select class="form-select form-select-lg mb-3 fw-bold text-center" 
+                        <div v-if="selected_house.house && selected_house.house.session_player==session_player.id">
+                            <select class="form-select form-select-lg mb-3 fw-bold text-center" 
                                 aria-label="Avatar to house direction"
                                 v-model="selected_house.direction">
-                            <option value="avatar_to_house">Avatar -> House</option>
-                            <option value="house_to_avatar">House -> Avatar</option>
-                          </select>
+                                <option value="avatar_to_house">Avatar -> House</option>
+                                <option value="house_to_avatar">House -> Avatar</option>
+                            </select>
+                        </div>
+                        <div v-else class="fw-bold text-center h5">
+                            Avatar -> House
+                        </div>
+                        
                     </div>
                 </div>
 
@@ -101,7 +108,7 @@
                     </div>
                 </div>
                 
-                <div class="row text-end mt-3">
+                <div class="row text-end mt-3" v-if="selected_house.house && selected_house.house.session_player==session_player.id">
                     <div class="col text-end">
                         
                         <button type="button"
