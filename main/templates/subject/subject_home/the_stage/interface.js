@@ -37,6 +37,7 @@ take_target_location_update(message_data)
     let local_pos = event.data.getLocalPosition(event.currentTarget);
     let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
     let avatar = app.session.world_state.avatars[app.session_player.id];
+    let parameter_set_player_local = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id];
 
     //check that pointer is clicked in valid location
     let valid_click = false;
@@ -100,19 +101,6 @@ take_target_location_update(message_data)
                             null);
             return;
         }
- 
-        if(local_player.cool_down > 0)
-        {
-            app.add_text_emitters("No actions cooling down.", 
-                            local_player.current_location.x, 
-                            local_player.current_location.y,
-                            local_player.current_location.x,
-                            local_player.current_location.y-100,
-                            0xFFFFFF,
-                            28,
-                            null);
-            return;
-        }
          
         //check if click on another player
         for(i in app.session.world_state_avatars.session_players)
@@ -131,19 +119,27 @@ take_target_location_update(message_data)
                                                             radius:app.session.parameter_set.interaction_range},
                                             rect))
                     {
-                        app.subject_avatar_click(i);
+                        if(local_player.cool_down <= 0)
+                        {
+                            app.subject_avatar_click(i);
+                        }
+                        else
+                        {
+                            app.add_text_emitters("No avatar interactions cooling down.", 
+                                                local_player.current_location.x, 
+                                                local_player.current_location.y,
+                                                local_player.current_location.x,
+                                                local_player.current_location.y-100,
+                                                0xFFFFFF,
+                                                28,
+                                                null);
+                        }
+
                         return;
                     }
                 }
             }
             
-
-            // if(app.get_distance(obj.current_location, local_pos) < 100 &&
-            // app.get_distance(obj.current_location, local_player.current_location) <= app.session.parameter_set.interaction_range+125)
-            // {
-            //     app.subject_avatar_click(i);              
-            //     break;
-            // }
         }
 
         //check if click on a field
@@ -174,18 +170,33 @@ take_target_location_update(message_data)
         {
             let obj = pixi_houses[i].house_container;
             let rect={x:obj.x-obj.width/2, y:obj.y-obj.height/2, width:obj.width, height:obj.height};
-            let pt={x:local_pos.x, y:local_pos.y};
-
+            let pt={x:local_pos.x, y:local_pos.y};    
+            let house = app.session.world_state.houses[i];     
+            let parameter_set_player = app.session.parameter_set.parameter_set_players[i];   
             
             if(app.check_point_in_rectagle(pt, rect))
             {
                 //check subject close enough for interaction
                 if(app.check_for_circle_rect_intersection({x:local_player.current_location.x, 
-                                                        y:local_player.current_location.y, 
+                                                           y:local_player.current_location.y, 
                                                         radius:app.session.parameter_set.interaction_range},
                                                     rect))
                 {
-                    app.subject_house_click(i);              
+                    if(parameter_set_player_local.parameter_set_group == parameter_set_player.parameter_set_group)
+                    {
+                        app.subject_house_click(i);              
+                    }
+                    else
+                    {
+                        app.add_text_emitters("This house is not in your group.", 
+                                                parameter_set_player.house_x, 
+                                                parameter_set_player.house_y,
+                                                parameter_set_player.house_x,
+                                                parameter_set_player.house_y-100,
+                                                0xFFFFFF,
+                                                28,
+                                                null);
+                    }
                     return;
                 }
             }

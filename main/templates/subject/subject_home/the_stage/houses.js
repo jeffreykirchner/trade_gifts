@@ -159,7 +159,11 @@ subject_house_click(target_house_id)
     app.selected_house.target_house_id = target_house_id;
 
     let session_player = app.session.world_state_avatars.session_players[app.session_player.id];
-    parameter_set_player_id = session_player.parameter_set_player_id;
+    let parameter_set_player_id = session_player.parameter_set_player_id;
+
+    let session_player_house = app.session.world_state.avatars[app.session.world_state.houses[target_house_id].session_player];
+    let parameter_set_player_house = app.session.parameter_set.parameter_set_players[session_player_house.parameter_set_player_id];
+
     app.selected_house.parameter_set_player = app.session.parameter_set.parameter_set_players[parameter_set_player_id];
 
     app.selected_house.good_one_move = 0;
@@ -175,9 +179,9 @@ subject_house_click(target_house_id)
     app.selected_house.good_two_avatar_available = app.session.world_state.avatars[app.session_player.id][app.selected_house.good_two];
     app.selected_house.good_three_avatar_available = app.session.world_state.avatars[app.session_player.id][app.selected_house.good_three];
 
-    app.selected_house.good_one_house_available = app.session.world_state.houses[parameter_set_player_id][app.selected_house.good_one];
-    app.selected_house.good_two_house_available = app.session.world_state.houses[parameter_set_player_id][app.selected_house.good_two];
-    app.selected_house.good_three_house_available = app.session.world_state.houses[parameter_set_player_id][app.selected_house.good_three];
+    app.selected_house.good_one_house_available = app.session.world_state.houses[target_house_id][app.selected_house.good_one];
+    app.selected_house.good_two_house_available = app.session.world_state.houses[target_house_id][app.selected_house.good_two];
+    app.selected_house.good_three_house_available = app.session.world_state.houses[target_house_id][app.selected_house.good_three];
 
     app.clear_main_form_errors();
     app.house_modal.toggle();
