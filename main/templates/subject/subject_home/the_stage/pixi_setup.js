@@ -46,6 +46,7 @@ setup_pixi(){
             app.setup_pixi_night();
             app.setup_pixi_minimap();
             app.setup_subject_status_overlay();
+            app.update_pixi_night();
             // app.add_notice("Test Notice", 30,0);
             // app.add_notice("Test Notice2", 30,0);
         }
