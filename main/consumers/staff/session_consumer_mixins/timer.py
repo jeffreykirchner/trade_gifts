@@ -213,12 +213,27 @@ def sync_continue_timer(event, session_id):
 
             session.world_state["timer_history"][-1]["count"] = math.floor(ts.seconds)
 
-            total_time = 0
+            total_time = 0  #total time elapsed
             for i in session.world_state["timer_history"]:
                 total_time += i["count"]
 
-            current_period = math.floor(total_time / parameter_set["period_length"]) + 1
-            time_remaining = parameter_set["period_length"] - (total_time % parameter_set["period_length"])
+            #find current period
+            current_period = 1
+            temp_time = 0          #total of period lengths through current period.
+            for i in range(1, parameter_set["period_count"]+1):
+                temp_time += parameter_set["period_length"]
+
+                #add break times
+                if i % parameter_set["break_frequency"] == 0:
+                    temp_time += parameter_set["break_length"]
+                
+                if temp_time > total_time:
+                    break
+                else:
+                    current_period += 1
+
+            #time remaining in period
+            time_remaining = temp_time - total_time
 
             # if current_period == 2 and time_remaining ==10:
             #     '''test code'''

@@ -17,20 +17,20 @@ setup_pixi_night()
     pixi_night_bg.endFill();
 
     //night label
-    let label = new PIXI.Text("",{fontFamily : 'Arial',
-        fontWeight:'bold',
-        fontSize: 40,   
-        fill: 'white',                             
-        align : 'center'});
+    // let label = new PIXI.Text("",{fontFamily : 'Arial',
+    //     fontWeight:'bold',
+    //     fontSize: 40,   
+    //     fill: 'white',                             
+    //     align : 'center'});
 
-    label.pivot.set(label.width/2, label.height/2);
-    label.x =  pixi_app.screen.width/2;
-    label.y = pixi_app.screen.height - 100;
+    // label.pivot.set(label.width/2, label.height/2);
+    // label.x =  pixi_app.screen.width/2;
+    // label.y = pixi_app.screen.height - 100;
 
-    pixi_night.label = label;
+    // pixi_night.label = label;
 
     pixi_night.container.addChild(pixi_night_bg);
-    pixi_night.container.addChild(pixi_night.label);
+    //pixi_night.container.addChild(pixi_night.label);
 
     pixi_night.container.alpha = 0.5;
     pixi_app.stage.addChild(pixi_night.container);
@@ -41,13 +41,22 @@ setup_pixi_night()
  */
 update_pixi_night()
 {
+    //add notice
+    if(app.session.world_state.time_remaining == app.session.parameter_set.night_length + 5)
+    {
+        app.add_notice(pixi_night.text_night_coming, 
+                       app.session.world_state.current_period, 
+                       app.session.parameter_set.night_length)
+    }
+    else if(app.session.world_state.time_remaining == app.session.parameter_set.night_length)
+    {
+        app.add_notice(pixi_night.text_night, app.session.world_state.current_period, 0)
+    }
+
+    //update night overlay
     if (app.session.world_state.time_remaining <= app.session.parameter_set.night_length)
     {
-        pixi_night.container.visible = true;
-        pixi_night.container.alpha = 0.5;
-        pixi_night.label.text = pixi_night.text_night;
-        pixi_night.label.pivot.set(pixi_night.label.width/2, pixi_night.label.height/2);
-
+        pixi_night.container.visible = true;      
     }
     else if(app.session.world_state.time_remaining <= app.session.parameter_set.night_length + 5)
     {
@@ -55,8 +64,6 @@ update_pixi_night()
 
         pixi_night.container.alpha = alpha_offset * 0.1;
         pixi_night.container.visible = true;
-        pixi_night.label.text = pixi_night.text_night_coming;
-        pixi_night.label.pivot.set(pixi_night.label.width/2, pixi_night.label.height/2);
     }
     else
     {
