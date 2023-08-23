@@ -150,15 +150,16 @@ class ParameterSet(models.Model):
             self.instruction_set = InstructionSet.objects.get(label=new_ps.get("instruction_set")["label"])
 
             self.save()
-            #parameter set fields
-            self.parameter_set_fields_a.all().delete()
-            new_parameter_set_fields = new_ps.get("parameter_set_fields")
-            new_parameter_set_field_types_map = {}
 
-            for i in new_parameter_set_fields:
-                p = main.models.ParameterSetField.objects.create(parameter_set=self)
-                p.from_dict(new_parameter_set_fields[i])
-                new_parameter_set_field_types_map[i] = p.id
+            #parameter set groups
+            self.parameter_set_groups.all().delete()
+            new_parameter_set_groups = new_ps.get("parameter_set_groups")
+            new_parameter_set_field_groups_map = {}
+
+            for i in new_parameter_set_groups:
+                p = main.models.ParameterSetGroup.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_groups[i])
+                new_parameter_set_field_groups_map[i] = p.id
 
             #parameter set players
             self.parameter_set_players.all().delete()
@@ -174,11 +175,25 @@ class ParameterSet(models.Model):
                 new_parameter_set_players_map[i] = p.id
 
                 if v.get("parameter_set_group", None) != None:
-                    p.parameter_set_group_id=new_parameter_set_field_types_map[str(v["parameter_set_group"])]
+                    p.parameter_set_group_id=new_parameter_set_field_groups_map[str(v["parameter_set_group"])]
 
                 p.save()
 
             self.update_player_count()
+
+            #parameter set barriers
+            self.parameter_set_barriers_a.all().delete()
+            new_parameter_set_barriers = new_ps.get("parameter_set_barriers")
+
+            for i in new_parameter_set_barriers:
+                p = main.models.ParameterSetBarrier.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_barriers[i])
+
+                groups = []
+                for g in new_parameter_set_barriers[i]["groups"]:
+                    groups.append(new_parameter_set_field_groups_map[str(g)])
+
+                p.groups.set(*groups)
 
             #parameter set walls
             self.parameter_set_walls.all().delete()
@@ -357,7 +372,8 @@ class ParameterSet(models.Model):
                              update_field_types=False,
                              update_fields=False,
                              update_groups=False,
-                             update_notices=False):
+                             update_notices=False,
+                             update_barriers=False):
         '''
         update json model
         '''
@@ -389,6 +405,10 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_notices_order"] = list(self.parameter_set_notices.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_notices"] = {str(p.id) : p.json() for p in self.parameter_set_notices.all()}
 
+        if update_barriers:
+            self.json_for_session["parameter_set_barriers_order"] = list(self.parameter_set_barriers_a.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_barriers"] = {str(p.id) : p.json() for p in self.parameter_set_barriers_a.all()}
+
         self.save()
 
     def json(self, update_required=False):
@@ -405,7 +425,8 @@ class ParameterSet(models.Model):
                                 update_field_types=True, 
                                 update_fields=True,
                                 update_groups=True,
-                                update_notices=True)
+                                update_notices=True,
+                                update_barriers=True)
 
         return self.json_for_session
     

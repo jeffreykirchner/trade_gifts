@@ -18,6 +18,7 @@ var pixi_fps_label = null;                     //fps label
 var mini_map = {container:null};               //mini map container
 var pixi_avatars = {};                         //avatars
 var pixi_walls = {};                           //walls
+var pixi_barriers = {};                        //barriers
 var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
@@ -583,6 +584,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/night.js"%}
         {%include "subject/subject_home/the_stage/move_objects.js"%}
         {%include "subject/subject_home/the_stage/notices.js"%}
+        {%include "subject/subject_home/the_stage/barriers.js"%}
     
         /** clear form error messages
         */

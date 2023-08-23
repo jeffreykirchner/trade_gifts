@@ -14,6 +14,7 @@ var pixi_transfer_beams_key = 0;
 var pixi_fps_label = null;                     //fps label
 var pixi_avatars = {};                         //avatars
 var pixi_walls = {};                           //walls
+var pixi_barriers = {};                        //barriers
 var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
@@ -484,6 +485,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/helpers.js"%}
         {%include "subject/subject_home/the_stage/night.js"%}
         {%include "subject/subject_home/the_stage/move_objects.js"%}
+        {%include "subject/subject_home/the_stage/barriers.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages
