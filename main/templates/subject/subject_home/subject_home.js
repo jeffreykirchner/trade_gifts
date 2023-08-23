@@ -479,6 +479,16 @@ var app = Vue.createApp({
                                app.session.parameter_set.period_length);
             }
 
+            //add notices
+            for(let i in app.session.parameter_set.parameter_set_notices)
+            {
+                let notice = app.session.parameter_set.parameter_set_notices[i];
+
+                if(notice.start_period == app.session.world_state.current_period && notice.start_time == app.session.world_state.time_remaining)
+                {
+                    app.add_notice(notice.text, notice.end_period, notice.end_time);
+                }
+            }
             //update any notices on screen
             app.update_notices();
 

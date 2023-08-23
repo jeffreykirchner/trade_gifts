@@ -188,6 +188,14 @@ class ParameterSet(models.Model):
                 p = main.models.ParameterSetWall.objects.create(parameter_set=self)
                 p.from_dict(new_parameter_set_walls[i])
 
+            #parameter set notices
+            self.parameter_set_notices.all().delete()
+            new_parameter_set_notices = new_ps.get("parameter_set_notices")
+
+            for i in new_parameter_set_notices:
+                p = main.models.ParameterSetNotice.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_notices[i])
+
             #parameter set grounds
             self.parameter_set_grounds.all().delete()
             new_parameter_set_grounds = new_ps.get("parameter_set_grounds")
@@ -348,7 +356,8 @@ class ParameterSet(models.Model):
                              update_grounds=False, 
                              update_field_types=False,
                              update_fields=False,
-                             update_groups=False):
+                             update_groups=False,
+                             update_notices=False):
         '''
         update json model
         '''
@@ -376,6 +385,10 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_groups_order"] = list(self.parameter_set_groups.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_groups"] = {str(p.id) : p.json() for p in self.parameter_set_groups.all()}
 
+        if update_notices:
+            self.json_for_session["parameter_set_notices_order"] = list(self.parameter_set_notices.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_notices"] = {str(p.id) : p.json() for p in self.parameter_set_notices.all()}
+
         self.save()
 
     def json(self, update_required=False):
@@ -391,7 +404,8 @@ class ParameterSet(models.Model):
                                 update_grounds=True, 
                                 update_field_types=True, 
                                 update_fields=True,
-                                update_groups=True)
+                                update_groups=True,
+                                update_notices=True)
 
         return self.json_for_session
     

@@ -56,6 +56,7 @@ take_update_parameter_set(message_data){
         app.edit_parameterset_field_type_modal.hide();
         app.edit_parameterset_field_modal.hide();
         app.edit_parameterset_group_modal.hide();
+        app.edit_parameterset_notice_modal.hide();
     } 
     else
     {

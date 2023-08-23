@@ -53,11 +53,11 @@ update_notices()
     // remove completed notices
     for(i in completed)
     {
-        delete pixi_notices.notices[i];
+        delete pixi_notices.notices[completed[i]];
     }
 
     // container.pivot.set(container.width/2, container.height/2);
-    container.position.set(pixi_app.screen.width/2, pixi_app.screen.height-5 - container.height);
+    container.position.set(pixi_app.screen.width/2, pixi_app.screen.height-30);
 
     pixi_notices.container = container;
     pixi_app.stage.addChild( pixi_notices.container);

@@ -25,6 +25,7 @@ from main.forms import ParameterSetGroundForm
 from main.forms import ParameterSetFieldTypeForm
 from main.forms import ParameterSetFieldForm
 from main.forms import ParameterSetGroupForm
+from main.forms import ParameterSetNoticeForm
 
 class StaffSessionParametersView(SingleObjectMixin, View):
     '''
@@ -43,44 +44,49 @@ class StaffSessionParametersView(SingleObjectMixin, View):
         session = self.get_object()
 
         parameter_set_form = ParameterSetForm()
-        parameterset_player_form = ParameterSetPlayerForm()
-        parameterset_wall_form = ParameterSetWallForm()
-        parameterset_ground_form = ParameterSetGroundForm()
-        parameterset_field_type_form = ParameterSetFieldTypeForm()
-        parameterset_field_form = ParameterSetFieldForm()
-        parameterset_group_form = ParameterSetGroupForm()
+        parameter_set_player_form = ParameterSetPlayerForm()
+        parameter_set_wall_form = ParameterSetWallForm()
+        parameter_set_ground_form = ParameterSetGroundForm()
+        parameter_set_field_type_form = ParameterSetFieldTypeForm()
+        parameter_set_field_form = ParameterSetFieldForm()
+        parameter_set_group_form = ParameterSetGroupForm()
+        parameter_set_notice_form = ParameterSetNoticeForm()
 
-        parameterset_field_form.fields["parameter_set_player"].queryset = session.parameter_set.parameter_set_players.all()
-        parameterset_field_form.fields["parameter_set_field_type"].queryset = session.parameter_set.parameter_set_field_types.all()
-        parameterset_player_form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
+        parameter_set_field_form.fields["parameter_set_player"].queryset = session.parameter_set.parameter_set_players.all()
+        parameter_set_field_form.fields["parameter_set_field_type"].queryset = session.parameter_set.parameter_set_field_types.all()
+        parameter_set_player_form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
 
         parameter_set_form_ids=[]
         for i in parameter_set_form:
             parameter_set_form_ids.append(i.html_name)
 
         parameter_set_player_form_ids=[]
-        for i in parameterset_player_form:
+        for i in parameter_set_player_form:
             parameter_set_player_form_ids.append(i.html_name)
 
         parameter_set_wall_form_ids=[]
-        for i in parameterset_wall_form:
+        for i in parameter_set_wall_form:
             parameter_set_wall_form_ids.append(i.html_name)
 
         parameter_set_ground_form_ids=[]
-        for i in parameterset_ground_form:
+        for i in parameter_set_ground_form:
             parameter_set_ground_form_ids.append(i.html_name)
 
         parameter_set_field_type_form_ids=[]
-        for i in parameterset_field_type_form:
+        for i in parameter_set_field_type_form:
             parameter_set_field_type_form_ids.append(i.html_name)
 
         parameter_set_field_form_ids=[]
-        for i in parameterset_field_form:
+        for i in parameter_set_field_form:
             parameter_set_field_form_ids.append(i.html_name)
 
         parameter_set_group_form_ids=[]
-        for i in parameterset_group_form:
+        for i in parameter_set_group_form:
             parameter_set_group_form_ids.append(i.html_name)
+
+        parameter_set_notice_form_ids=[]
+        for i in parameter_set_notice_form:
+            parameter_set_notice_form_ids.append(i.html_name)
             
         return render(request=request,
                       template_name=self.template_name,
@@ -88,12 +94,13 @@ class StaffSessionParametersView(SingleObjectMixin, View):
                                "player_key" :  uuid.uuid4(),
                                "id" : session.id,
                                "parameter_set_form" : parameter_set_form,
-                               "parameter_set_player_form" : parameterset_player_form,
-                               "parameter_set_wall_form" : parameterset_wall_form,
-                               "parameter_set_ground_form" : parameterset_ground_form,
-                               "parameter_set_field_type_form" : parameterset_field_type_form, 
-                               "parameter_set_field_form" : parameterset_field_form,
-                               "parameter_set_group_form" : parameterset_group_form,
+                               "parameter_set_player_form" : parameter_set_player_form,
+                               "parameter_set_wall_form" : parameter_set_wall_form,
+                               "parameter_set_ground_form" : parameter_set_ground_form,
+                               "parameter_set_field_type_form" : parameter_set_field_type_form, 
+                               "parameter_set_field_form" : parameter_set_field_form,
+                               "parameter_set_group_form" : parameter_set_group_form,
+                               "parameter_set_notice_form" : parameter_set_notice_form,
                                "parameter_set_form_ids" : parameter_set_form_ids,
                                "parameter_set_player_form_ids" : parameter_set_player_form_ids,
                                "parameter_set_wall_form_ids" : parameter_set_wall_form_ids,
@@ -101,6 +108,7 @@ class StaffSessionParametersView(SingleObjectMixin, View):
                                "parameter_set_field_type_form_ids" : parameter_set_field_type_form_ids,
                                "parameter_set_field_form_ids" : parameter_set_field_form_ids,
                                "parameter_set_group_form_ids" : parameter_set_group_form_ids,
+                               "parameter_set_notice_form_ids" : parameter_set_notice_form_ids,
                                "import_parameters_form" : ImportParametersForm(user=request.user, session_id=session.id),     
                                "websocket_path" : self.websocket_path,
                                "page_key" : f'{self.websocket_path}-{session.id}',
