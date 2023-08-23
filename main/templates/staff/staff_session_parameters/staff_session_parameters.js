@@ -40,12 +40,17 @@ var app = Vue.createApp({
                         id:0,
                     },
 
+                    current_parameter_set_notice : {
+                        id:0,
+                    },
+
                     parameter_set_form_ids: {{parameter_set_form_ids|safe}},
                     parameter_set_player_form_ids: {{parameter_set_player_form_ids|safe}},
                     parameter_set_wall_form_ids: {{parameter_set_wall_form_ids|safe}},
                     parameter_set_ground_form_ids: {{parameter_set_ground_form_ids|safe}},
                     parameter_set_field_type_form_ids: {{parameter_set_field_type_form_ids|safe}},
                     parameter_set_group_form_ids: {{parameter_set_group_form_ids|safe}},
+                    parameter_set_notice_form_ids: {{parameter_set_notice_form_ids|safe}},
 
                     upload_file: null,
                     upload_file_name:'Choose File',
@@ -138,6 +143,7 @@ var app = Vue.createApp({
             app.edit_parameterset_field_type_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_field_type_modal'), {keyboard: false})  
             app.edit_parameterset_field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_field_modal'), {keyboard: false})  
             app.edit_parameterset_group_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_group_modal'), {keyboard: false})
+            app.edit_parameterset_notice_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_notice_modal'), {keyboard: false})
 
             document.getElementById('import_parameters_modal').addEventListener('hidden.bs.modal', app.hide_import_parameters);
             document.getElementById('edit_parameterset_modal').addEventListener('hidden.bs.modal', app.hide_edit_parameter_set);
@@ -182,6 +188,7 @@ var app = Vue.createApp({
         {%include "staff/staff_session_parameters/field_types/field_types.js"%}
         {%include "staff/staff_session_parameters/fields/fields.js"%}
         {%include "staff/staff_session_parameters/groups/groups.js"%}
+        {%include "staff/staff_session_parameters/notices/notices.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages

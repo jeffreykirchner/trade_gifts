@@ -399,6 +399,12 @@ class SubjectUpdatesMixin():
         if good_one_harvest < 0 or good_two_harvest < 0:
             logger.info(f"field_harvest: invalid amounts, {event['message_text']}")
             return
+        
+        if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
+           self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
+
+            logger.info(f"field_harvest: on break, {event['message_text']}")
+            return
 
         v = await sync_to_async(sync_field_harvest)(self.session_id, player_id, field_id, good_one_harvest, good_two_harvest)
         
@@ -521,6 +527,12 @@ class SubjectUpdatesMixin():
             logger.info(f"move_fruit_to_avatar: invalid data, {event['message_text']}")
             return
         
+        if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
+           self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
+
+            logger.info(f"move_fruit_to_avatar: on break, {event['message_text']}")
+            return
+        
         v = await sync_to_async(sync_move_fruit_to_avatar)(self.session_id, player_id, target_player_id, good_one_move, good_two_move, good_three_move)
 
         result = {"status" : v["status"], "error_message" : v["error_message"]}
@@ -581,6 +593,12 @@ class SubjectUpdatesMixin():
             logger.info(f"move_fruit_to_house: invalid data, {event['message_text']}")
             return
         
+        if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
+           self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
+
+            logger.info(f"move_fruit_to_house: on break, {event['message_text']}")
+            return
+        
         v = await sync_to_async(sync_move_fruit_to_house)(self.session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction)
 
         result = {"status" : v["status"], "error_message" : v["error_message"]}
@@ -636,6 +654,12 @@ class SubjectUpdatesMixin():
             target_player_id = event["message_text"]["target_player_id"]
         except:
             logger.info(f"attack_avatar: invalid data, {event['message_text']}")
+            return
+        
+        if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
+           self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
+
+            logger.info(f"attack_avatar: on break, {event['message_text']}")
             return
         
         v = await sync_to_async(sync_attack_avatar)(self.session_id, player_id, target_player_id)

@@ -26,7 +26,9 @@ class ParameterSet(models.Model):
     period_count = models.IntegerField(verbose_name='Number of periods', default=20)                          #number of periods in the experiment
     period_length = models.IntegerField(verbose_name='Period Length, Production', default=60)                 #period length in seconds
     night_length = models.IntegerField(verbose_name='Night Length', default=10)                               #night length in seconds
-    
+    break_frequency = models.IntegerField(verbose_name='Break Frequency', default=7)                          #frequency of breaks
+    break_length = models.IntegerField(verbose_name='Break Length', default=100)                              #length of breaks in seconds
+
     private_chat = models.BooleanField(default=True, verbose_name='Private Chat')                             #if true subjects can privately chat one on one
     show_instructions = models.BooleanField(default=True, verbose_name='Show Instructions')                   #if true show instructions
 
@@ -140,6 +142,8 @@ class ParameterSet(models.Model):
 
             self.sleep_benefit = new_ps.get("sleep_benefit", 3.0)
             self.allow_stealing = True if new_ps.get("allow_stealing") == "True" else False
+            self.break_frequency = new_ps.get("break_frequency", 7)
+            self.break_length = new_ps.get("break_length", 100)
             
             self.reconnection_limit = new_ps.get("reconnection_limit", None)
 
@@ -183,6 +187,14 @@ class ParameterSet(models.Model):
             for i in new_parameter_set_walls:
                 p = main.models.ParameterSetWall.objects.create(parameter_set=self)
                 p.from_dict(new_parameter_set_walls[i])
+
+            #parameter set notices
+            self.parameter_set_notices.all().delete()
+            new_parameter_set_notices = new_ps.get("parameter_set_notices")
+
+            for i in new_parameter_set_notices:
+                p = main.models.ParameterSetNotice.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_notices[i])
 
             #parameter set grounds
             self.parameter_set_grounds.all().delete()
@@ -330,6 +342,8 @@ class ParameterSet(models.Model):
 
         self.json_for_session["sleep_benefit"] = self.sleep_benefit
         self.json_for_session["allow_stealing"] = "True" if self.allow_stealing else "False"
+        self.json_for_session["break_frequency"] = self.break_frequency
+        self.json_for_session["break_length"] = self.break_length
 
         self.json_for_session["reconnection_limit"] = self.reconnection_limit
 
@@ -342,7 +356,8 @@ class ParameterSet(models.Model):
                              update_grounds=False, 
                              update_field_types=False,
                              update_fields=False,
-                             update_groups=False):
+                             update_groups=False,
+                             update_notices=False):
         '''
         update json model
         '''
@@ -370,6 +385,10 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_groups_order"] = list(self.parameter_set_groups.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_groups"] = {str(p.id) : p.json() for p in self.parameter_set_groups.all()}
 
+        if update_notices:
+            self.json_for_session["parameter_set_notices_order"] = list(self.parameter_set_notices.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_notices"] = {str(p.id) : p.json() for p in self.parameter_set_notices.all()}
+
         self.save()
 
     def json(self, update_required=False):
@@ -385,7 +404,8 @@ class ParameterSet(models.Model):
                                 update_grounds=True, 
                                 update_field_types=True, 
                                 update_fields=True,
-                                update_groups=True)
+                                update_groups=True,
+                                update_notices=True)
 
         return self.json_for_session
     

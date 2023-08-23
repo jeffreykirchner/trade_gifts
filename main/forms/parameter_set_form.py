@@ -29,6 +29,18 @@ class ParameterSetForm(forms.ModelForm):
                                       widget=forms.NumberInput(attrs={"v-model":"parameter_set.night_length",
                                                                       "step":"1",
                                                                       "min":"1"}))
+    
+    break_frequency = forms.IntegerField(label='Break Frequency (periods)',
+                                         min_value=1,
+                                         widget=forms.NumberInput(attrs={"v-model":"parameter_set.break_frequency",
+                                                                         "step":"1",
+                                                                         "min":"1"}))
+    
+    break_length = forms.IntegerField(label='Break Length (seconds)',
+                                      min_value=1,
+                                      widget=forms.NumberInput(attrs={"v-model":"parameter_set.break_length",
+                                                                      "step":"1",
+                                                                      "min":"1"}))
 
     show_instructions = forms.ChoiceField(label='Show Instructions',
                                        choices=((True, 'Yes'), (False,'No' )),
@@ -213,7 +225,7 @@ class ParameterSetForm(forms.ModelForm):
 
     class Meta:
         model=ParameterSet
-        fields =['period_count', 'period_length', 'night_length', 'show_instructions', 'instruction_set', 
+        fields =['period_count', 'period_length', 'night_length', 'break_frequency', 'break_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'test_mode', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'health_loss_per_second', 'heath_gain_per_sleep_second',
                  'consumption_alpha', 'consumption_beta', 'cents_per_second', 'attack_damage', 'attack_cost', 'sleep_benefit', 'allow_stealing', 'world_width', 'world_height',

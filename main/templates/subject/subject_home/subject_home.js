@@ -23,6 +23,8 @@ var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
 var pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
                   text_night_coming : "Night is approching ... "};                                        //night
+var pixi_notices = {container:null, notices:{}};                         //notices
+var pixi_notices_key = 0;
 var wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
 var wall_search_objects = [];
 
@@ -94,8 +96,8 @@ var app = Vue.createApp({
                     //pixi
                     canvas_width  : null,
                     canvas_height : null,
-                    move_speed : 4,
-                    animation_speed : 0.5,
+                    move_speed : 5,
+                    animation_speed : 0.6,
                     scroll_speed : 10,
                     pixi_mode : "subject",
                     pixi_scale : 1,
@@ -417,6 +419,11 @@ var app = Vue.createApp({
 
                 app.update_field_inventory();
                 app.update_house_inventory();
+
+                app.avatar_modal.hide();
+                app.avatar_attack_modal.hide();
+                app.field_modal.hide();
+                app.house_modal.hide();
             }
 
             //sleep 
@@ -459,6 +466,31 @@ var app = Vue.createApp({
                     }
                 }
             }
+
+            //update night overlay
+            app.update_pixi_night();
+
+            //add break notice
+            if(app.session.world_state.time_remaining == app.session.parameter_set.period_length + app.session.parameter_set.break_length &&
+               app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
+            {
+                app.add_notice("Break Time: Interactions are disabled. Chat is enabled.", 
+                               app.session.world_state.current_period,
+                               app.session.parameter_set.period_length);
+            }
+
+            //add notices
+            for(let i in app.session.parameter_set.parameter_set_notices)
+            {
+                let notice = app.session.parameter_set.parameter_set_notices[i];
+
+                if(notice.start_period == app.session.world_state.current_period && notice.start_time == app.session.world_state.time_remaining)
+                {
+                    app.add_notice(notice.text, notice.end_period, notice.end_time);
+                }
+            }
+            //update any notices on screen
+            app.update_notices();
 
             //hide interaction modal if interaction is over
             // if(app.session.world_state_avatars.session_players[app.session_player.id].interaction == 0)
@@ -550,6 +582,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/subject.js"%}
         {%include "subject/subject_home/the_stage/night.js"%}
         {%include "subject/subject_home/the_stage/move_objects.js"%}
+        {%include "subject/subject_home/the_stage/notices.js"%}
     
         /** clear form error messages
         */
