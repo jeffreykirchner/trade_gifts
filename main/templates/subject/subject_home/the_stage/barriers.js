@@ -50,19 +50,24 @@ setup_pixi_barrier()
 /**
  * check barrier intersection
  */
-check_barriers_intersection(rect1)
+check_barriers_intersection(rect1, parameter_set_group)
 {
     for(let i in app.session.parameter_set.parameter_set_barriers)
     {
+        
         let temp_barrier = app.session.parameter_set.parameter_set_barriers[i];
-        let rect2={x:temp_barrier.start_x,
-                y:temp_barrier.start_y,
-                width:temp_barrier.width,
-                height:temp_barrier.height};
 
-        if(app.check_for_rect_intersection(rect1, rect2))
-        {  
-            return true;
+        if(temp_barrier.parameter_set_groups.includes(parameter_set_group))
+        {
+            let rect2={x:temp_barrier.start_x,
+                       y:temp_barrier.start_y,
+                       width:temp_barrier.width,
+                       height:temp_barrier.height};
+
+            if(app.check_for_rect_intersection(rect1, rect2))
+            {  
+                return true;
+            }
         }
     }
 

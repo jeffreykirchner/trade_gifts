@@ -34,6 +34,7 @@ move_avatar(delta, player_id, move_speed)
     
     let temp_move_speed = (app.move_speed * delta);
     let obj = app.session.world_state_avatars.session_players[player_id];
+    let parameter_set_group = app.session.parameter_set.parameter_set_players[obj.parameter_set_player_id].parameter_set_group;
     let container=pixi_avatars[player_id].bounding_box
     let scale = app.session.parameter_set.avatar_scale;
 
@@ -72,7 +73,8 @@ move_avatar(delta, player_id, move_speed)
                    width:container.width,
                    height:container.height};  
         
-        if(app.check_walls_intersection(rect1) || app.check_barriers_intersection(rect1, group))
+        if(app.check_walls_intersection(rect1) || 
+           app.check_barriers_intersection(rect1, parameter_set_group))
         {
             obj.current_location =  Object.assign({}, temp_current_location);  
             wall_limit_hit = true;
@@ -86,7 +88,7 @@ move_avatar(delta, player_id, move_speed)
                         width:container.width,
                         height:container.height};
 
-            let v = app.search_for_path_around_walls(rect1, obj.current_location, obj.target_location);       
+            let v = app.search_for_path_around_walls(rect1, obj.current_location, obj.target_location, parameter_set_group);       
 
             if(v)
             {
@@ -101,7 +103,7 @@ move_avatar(delta, player_id, move_speed)
 /**
  * seach for path around walls
  */
-search_for_path_around_walls(starting_rect, current_location, target_location)
+search_for_path_around_walls(starting_rect, current_location, target_location, parameter_set_group)
 {
     
     //target already in bounding rect
@@ -155,7 +157,8 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
                                 search_grid.parent = v;
                             }
                         }
-                        else if(!app.check_walls_intersection(rect1) && !app.check_barriers_intersection(rect1)) 
+                        else if(!app.check_walls_intersection(rect1) && 
+                                !app.check_barriers_intersection(rect1, parameter_set_group)) 
                         {
                             new_search_grid[v] = {rect:rect1, 
                                                   searched:false, 
@@ -201,7 +204,7 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
             break;
     }
 
-    let draw_grid = false;
+    let draw_grid = true;
     //draw grid
     if(draw_grid)
     {
