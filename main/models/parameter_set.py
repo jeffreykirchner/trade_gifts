@@ -190,10 +190,10 @@ class ParameterSet(models.Model):
                 p.from_dict(new_parameter_set_barriers[i])
 
                 groups = []
-                for g in new_parameter_set_barriers[i]["groups"]:
+                for g in new_parameter_set_barriers[i]["parameter_set_groups"]:
                     groups.append(new_parameter_set_field_groups_map[str(g)])
 
-                p.groups.set(*groups)
+                p.parameter_set_groups.set(groups)
 
             #parameter set walls
             self.parameter_set_walls.all().delete()

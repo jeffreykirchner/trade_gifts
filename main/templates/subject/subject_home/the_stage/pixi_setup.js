@@ -11,7 +11,7 @@ setup_pixi(){
     PIXI.Assets.add('sprite_sheet_hf', '{% static "sprite_sheet_hf.json" %}');
     PIXI.Assets.add('grass_tex', '{% static "background_tile_low.jpg"%}');
     PIXI.Assets.add('wall_tex', '{% static "wall.png"%}');
-    PIXI.Assets.add('barrier_tex', '{% static "wall.png"%}');
+    PIXI.Assets.add('barrier_tex', '{% static "barrier.png"%}');
     PIXI.Assets.add('water_tex', '{% static "water_tile.jpg"%}');
     PIXI.Assets.add('bridge_tex', '{% static "bridge.jpg"%}');
     PIXI.Assets.add('Blueberry_tex', '{% static "blueberry.png"%}');
@@ -180,7 +180,7 @@ game_loop(delta)
     {   
         app.update_offsets_player(delta);
         app.update_mini_map(delta);
-        app.check_for_collisions();
+        // app.check_for_collisions();
     }
     
     if(app.pixi_mode=="staff")

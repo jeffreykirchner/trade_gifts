@@ -1,9 +1,41 @@
 /**
  * move the object towards its target location
  */
-move_object(delta, obj, move_speed, wall_limited=false, container=null, scale=1)
+move_object(delta, obj, move_speed)
 {
     let temp_move_speed = (move_speed * delta);
+
+    let temp_current_location = Object.assign({}, obj.current_location);
+
+    let target_location_local = Object.assign({}, obj.target_location);
+    if("nav_point" in obj && obj.nav_point) 
+    target_location_local = Object.assign({}, obj.nav_point);
+
+    let temp_angle = Math.atan2(target_location_local.y - obj.current_location.y,
+                                target_location_local.x - obj.current_location.x)
+
+    //y
+    if(Math.abs(target_location_local.y - obj.current_location.y) < temp_move_speed)
+        obj.current_location.y = target_location_local.y;
+    else
+        obj.current_location.y += temp_move_speed * Math.sin(temp_angle);
+ 
+    //x
+    if(Math.abs(target_location_local.x - obj.current_location.x) < temp_move_speed)
+        obj.current_location.x = target_location_local.x;
+    else
+        obj.current_location.x += temp_move_speed * Math.cos(temp_angle);  
+
+    
+},
+
+move_avatar(delta, player_id, move_speed)
+{
+    
+    let temp_move_speed = (app.move_speed * delta);
+    let obj = app.session.world_state_avatars.session_players[player_id];
+    let container=pixi_avatars[player_id].bounding_box
+    let scale = app.session.parameter_set.avatar_scale;
 
     let temp_current_location = Object.assign({}, obj.current_location);
 
@@ -31,7 +63,7 @@ move_object(delta, obj, move_speed, wall_limited=false, container=null, scale=1)
         obj.nav_point = null;
 
     //if wall limited prevent object from moving through
-    if(wall_limited && !obj.nav_point)
+    if(!obj.nav_point)
     {
         let wall_limit_hit = false;
 
@@ -40,7 +72,7 @@ move_object(delta, obj, move_speed, wall_limited=false, container=null, scale=1)
                    width:container.width,
                    height:container.height};  
         
-        if(app.check_walls_intersection(rect1))
+        if(app.check_walls_intersection(rect1) || app.check_barriers_intersection(rect1, group))
         {
             obj.current_location =  Object.assign({}, temp_current_location);  
             wall_limit_hit = true;
@@ -123,7 +155,7 @@ search_for_path_around_walls(starting_rect, current_location, target_location)
                                 search_grid.parent = v;
                             }
                         }
-                        else if(!app.check_walls_intersection(rect1)) 
+                        else if(!app.check_walls_intersection(rect1) && !app.check_barriers_intersection(rect1)) 
                         {
                             new_search_grid[v] = {rect:rect1, 
                                                   searched:false, 

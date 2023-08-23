@@ -11,19 +11,35 @@ setup_pixi_barrier()
         const barrier = app.session.parameter_set.parameter_set_barriers[barrier_id];
         
         let barrier_container = new PIXI.Container();
+        let rotation = app.degrees_to_radians(barrier.rotation);
         
         barrier_container.position.set(barrier.start_x,barrier.start_y)
+        barrier_container.eventMode = 'none';
 
         //outline
         let outline = new PIXI.Graphics();
         //outline.lineStyle(1, 0x000000);
         scale = 100 / app.pixi_textures.barrier_tex.width;
-        outline.beginTextureFill({texture: app.pixi_textures['barrier_tex'], color:'yellow', matrix:new PIXI.Matrix(scale,0,0,scale,0,0)});
+        let matrix = new PIXI.Matrix(1,0,0,1,0,0);
+        matrix.rotate(rotation);
+        outline.beginTextureFill({texture: app.pixi_textures['barrier_tex'], matrix:matrix});  //, 
         outline.drawRect(0, 0, barrier.width, barrier.height);
        
-        //outline.endFill();
+        let label = new PIXI.Text(barrier.text, {
+            fontFamily: 'Arial',
+            fontSize: 40,
+            fill: 'white',
+            align: 'center',
+            stroke: 'black',
+            strokeThickness: 2,
+        });
+           
+        label.anchor.set(0.5);   
+        label.position.set(barrier.width/2, barrier.height/2);
+        label.rotation = rotation;
 
         barrier_container.addChild(outline);
+        barrier_container.addChild(label);
 
         pixi_barriers[i].barrier_container = barrier_container;
 

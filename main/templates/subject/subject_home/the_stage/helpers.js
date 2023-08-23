@@ -110,3 +110,12 @@ get_distance(point1, point2)
     // Return the distance between the two points.
     return distance;
 },
+
+/**
+ * degrees to radians
+ */
+degrees_to_radians(degrees)
+{
+    let pi = Math.PI;
+    return degrees * (pi/180);
+},
