@@ -287,7 +287,10 @@ class ParameterSet(models.Model):
         '''
         letters = {}
 
-        for i in range(33, 127):
+        for i in range(65, 91):
+            letters[chr(i)] = None
+
+        for i in range(97, 123):
             letters[chr(i)] = None
 
         for i in letters:
@@ -295,8 +298,8 @@ class ParameterSet(models.Model):
                 
                 #find random letter
                 while True:
-                    r = chr(randint(33, 126))
-                    if r.isalpha() and r != i and letters.get(r, "not found") != "not found":
+                    r = chr(randint(33, 122))
+                    if r.isalpha() and r != i and letters.get(r, "not found") != "not found" and letters[r] == None:
                         letters[i] = r
                         letters[r] = i
                         break

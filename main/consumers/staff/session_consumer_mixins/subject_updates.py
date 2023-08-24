@@ -44,7 +44,7 @@ class SubjectUpdatesMixin():
         result = {"value" : "success"}
         event_data = event["message_text"]
         
-        result["text"] = await self.do_limited_chat(event_data["text"]) #event_data["text"]
+        result["text"] = event_data["text"]
         result["text_limited"] = await self.do_limited_chat(event_data["text"])
         result["sender_id"] = self.session_players_local[event["player_key"]]["id"]
 
@@ -62,23 +62,25 @@ class SubjectUpdatesMixin():
 
         output = "limited chat"
         word_list = self.parameter_set_local["chat_rules_word_list"].split("\n")
-        
+        letter_list = self.parameter_set_local["chat_rules_letters"]["letters"]
 
         word_list_re = "|".join(word_list)
 
         regex = re.compile(r'(?=(.))(?:' + word_list_re + ')', flags=re.IGNORECASE)
         output =re.sub(r'\b\w+\b', 
-                       lambda w: w.group() if w.group().lower() in word_list else self.do_limited_chat_2(w.group()), 
+                       lambda w: w.group() if w.group().lower() in word_list else self.do_limited_chat_2(w.group(), letter_list), 
                        text)
 
         return output
     
-    def do_limited_chat_2(self, text):
+    def do_limited_chat_2(self, text, letter_list):
         output = ""
-        letter_list = self.parameter_set_local["chat_rules_letters"]["letters"]
-
+        
         for i in text:
-            output += letter_list[i]
+            if i.isdigit():
+                output += i
+            else:
+                output += letter_list.get(i,"*")
 
         return output
         

@@ -377,10 +377,23 @@ var app = Vue.createApp({
         *    @param message_data {json} session day in json format
         */
         take_update_chat(message_data){
+
+            let text = message_data.text;
+
+            if(app.session.parameter_set.chat_mode == "Limited" && app.follow_subject != -1)
+            {
+                let parameter_set_group_sender = app.session.parameter_set.parameter_set_players[app.session.session_players[message_data.sender_id].parameter_set_player_id].parameter_set_group;
+                let parameter_set_group = app.session.parameter_set.parameter_set_players[app.session.session_players[app.follow_subject].parameter_set_player_id].parameter_set_group;
+        
+                if(parameter_set_group != parameter_set_group_sender)
+                {
+                    text =  message_data.text_limited;
+                }
+            }
             
             app.session.world_state_avatars.session_players[message_data.sender_id].show_chat = true;    
             app.session.world_state_avatars.session_players[message_data.sender_id].chat_time = Date.now();
-            pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text =  message_data.text;
+            pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text = text;
         },
 
         /**

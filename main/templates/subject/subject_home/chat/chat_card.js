@@ -34,10 +34,22 @@ take_chat(message_data){
 */
 take_update_chat(message_data){
     
+    let text = message_data.text;
+
+    if(app.session.parameter_set.chat_mode == "Limited")
+    {
+        let parameter_set_group_sender = app.session.session_players[message_data.sender_id].parameter_set_player.parameter_set_group;
+        let parameter_set_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
+
+        if(parameter_set_group != parameter_set_group_sender)
+        {
+            text =  message_data.text_limited;
+        }
+    }
 
     app.session.world_state_avatars.session_players[message_data.sender_id].show_chat = true;    
     app.session.world_state_avatars.session_players[message_data.sender_id].chat_time = Date.now();
-    pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text =  message_data.text;
+    pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text = text;
 
 },
 
