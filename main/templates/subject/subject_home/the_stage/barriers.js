@@ -3,12 +3,11 @@
  */
 setup_pixi_barrier()
 {
-    for(const i in app.session.parameter_set.parameter_set_barriers_order)
+    for(const i in app.session.parameter_set.parameter_set_barriers)
     {
         pixi_barriers[i] = {};
 
-        const barrier_id = app.session.parameter_set.parameter_set_barriers_order[i];
-        const barrier = app.session.parameter_set.parameter_set_barriers[barrier_id];
+        const barrier = app.session.parameter_set.parameter_set_barriers[i];
         
         let barrier_container = new PIXI.Container();
         let rotation = app.degrees_to_radians(barrier.rotation);
@@ -45,6 +44,8 @@ setup_pixi_barrier()
 
         pixi_container_main.addChild(pixi_barriers[i].barrier_container);
     }
+
+    app.update_barriers();
 },
 
 /**
@@ -73,4 +74,26 @@ check_barriers_intersection(rect1, parameter_set_group)
     }
 
     return false;
+},
+
+/**
+ * update barriers
+ */
+update_barriers()
+{
+    for(let i in app.session.parameter_set.parameter_set_barriers)
+    {
+        let barrier = app.session.parameter_set.parameter_set_barriers[i];
+        let barrier_container = pixi_barriers[i].barrier_container;
+
+        if(app.session.world_state.current_period >= barrier.period_on &&
+           app.session.world_state.current_period < barrier.period_off)
+        {
+            barrier_container.visible = true;
+        }
+        else
+        {
+            barrier_container.visible = false;
+        }
+    }
 },

@@ -16,7 +16,7 @@ class ParameterSetNotice(models.Model):
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_notices")
 
-    text = models.TextField(verbose_name='Info', blank=True, null=True)
+    text = models.CharField(verbose_name='Info', blank=True, null=True, max_length=200, default="Info Here")
 
     start_period = models.IntegerField(verbose_name='Starting Period', default=1)            #location x and y
     start_time = models.IntegerField(verbose_name='Starting Time', default=30)

@@ -18,7 +18,7 @@ class ParameterSetBarrier(models.Model):
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_barriers_a")
     parameter_set_groups = models.ManyToManyField(ParameterSetGroup, related_name="parameter_set_barriers_b")
 
-    info = models.TextField(verbose_name='Info', blank=True, null=True)
+    info = models.CharField(verbose_name='Info', blank=True, null=True, max_length=100, default="Info Here")
 
     start_x = models.IntegerField(verbose_name='Location X', default=50)            #location x and y
     start_y = models.IntegerField(verbose_name='Location Y', default=50)
@@ -26,7 +26,7 @@ class ParameterSetBarrier(models.Model):
     width = models.IntegerField(verbose_name='Width', default=50)                    #width and height
     height = models.IntegerField(verbose_name='Height', default=50)
 
-    text = models.TextField(verbose_name='Text', default="Closed until period N")       #text shown on barrier
+    text = models.CharField(verbose_name='Text', default="Closed until period N", max_length=100)       #text shown on barrier
     rotation = models.IntegerField(verbose_name='Rotation', default=0)                  #rotation of text
 
     period_on = models.IntegerField(verbose_name='Period On', default=1)               #period when barrier is on

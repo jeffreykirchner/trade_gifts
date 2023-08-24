@@ -459,6 +459,9 @@ var app = Vue.createApp({
                     app.session.world_state_avatars.session_players[p].current_location = server_location;
                 }
             }
+
+            //update barriers
+            app.update_barriers();
         },
        
         //do nothing on when enter pressed for post

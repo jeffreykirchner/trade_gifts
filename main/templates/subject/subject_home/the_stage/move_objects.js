@@ -82,6 +82,27 @@ move_avatar(delta, player_id, move_speed)
 
         if(wall_limit_hit)
         {
+            //check if not moving and no path available
+            if("last_wall_limit_hit" in obj)
+            {
+                if(obj.last_wall_limit_hit.current_location.x == obj.current_location.x &&
+                   obj.last_wall_limit_hit.current_location.y == obj.current_location.y &&
+                   obj.last_wall_limit_hit.target_location.x == obj.target_location.x &&
+                   obj.last_wall_limit_hit.target_location.y == obj.target_location.y)
+
+                {
+                    obj.nav_point = null;
+                    return;
+                }
+            }
+            else
+            {
+                obj.last_wall_limit_hit = {};
+            }
+
+            obj.last_wall_limit_hit.current_location = Object.assign({}, obj.current_location);
+            obj.last_wall_limit_hit.target_location = Object.assign({}, obj.target_location);
+
             //reset rect
             rect1={x:obj.current_location.x - container.width/2,
                         y:obj.current_location.y - container.height/2,
@@ -89,7 +110,7 @@ move_avatar(delta, player_id, move_speed)
                         height:container.height};
 
             let v = app.search_for_path_around_walls(rect1, obj.current_location, obj.target_location, parameter_set_group);       
-
+           
             if(v)
             {
                 obj.nav_point = v;
@@ -204,8 +225,8 @@ search_for_path_around_walls(starting_rect, current_location, target_location, p
             break;
     }
 
-    let draw_grid = true;
-    //draw grid
+    let draw_grid = false;
+    //draw grid for testing
     if(draw_grid)
     {
         for(i=0;i<wall_search_objects.length;i++)
