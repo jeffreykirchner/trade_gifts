@@ -1,5 +1,6 @@
 
 import logging
+import re
 
 from asgiref.sync import sync_to_async
 from decimal import Decimal
@@ -43,7 +44,8 @@ class SubjectUpdatesMixin():
         result = {"value" : "success"}
         event_data = event["message_text"]
         
-        result["text"] = event_data["text"]
+        result["text"] = await self.do_limited_chat(event_data["text"]) #event_data["text"]
+        result["text_limited"] = await self.do_limited_chat(event_data["text"])
         result["sender_id"] = self.session_players_local[event["player_key"]]["id"]
 
         await SessionEvent.objects.acreate(session_id=self.session_id, 
@@ -55,6 +57,31 @@ class SubjectUpdatesMixin():
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
+    
+    async def do_limited_chat(self, text):
+
+        output = "limited chat"
+        word_list = self.parameter_set_local["chat_rules_word_list"].split("\n")
+        
+
+        word_list_re = "|".join(word_list)
+
+        regex = re.compile(r'(?=(.))(?:' + word_list_re + ')', flags=re.IGNORECASE)
+        output =re.sub(r'\b\w+\b', 
+                       lambda w: w.group() if w.group().lower() in word_list else self.do_limited_chat_2(w.group()), 
+                       text)
+
+        return output
+    
+    def do_limited_chat_2(self, text):
+        output = ""
+        letter_list = self.parameter_set_local["chat_rules_letters"]["letters"]
+
+        for i in text:
+            output += letter_list[i]
+
+        return output
+        
 
     async def update_chat(self, event):
         '''

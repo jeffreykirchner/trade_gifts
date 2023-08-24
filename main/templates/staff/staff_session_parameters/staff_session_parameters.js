@@ -256,6 +256,20 @@ var app = Vue.createApp({
                 let e = document.getElementById("id_errors_" + s[i]);
                 if(e) e.remove();
             }
+
+            s = app.parameter_set_notice_form_ids;
+            for(let i in s)
+            {
+                let e = document.getElementById("id_errors_" + s[i]);
+                if(e) e.remove();
+            }
+
+            s = app.parameter_set_barrier_form_ids;
+            for(let i in s)
+            {
+                let e = document.getElementById("id_errors_" + s[i]);
+                if(e) e.remove();
+            }
             
         },
 

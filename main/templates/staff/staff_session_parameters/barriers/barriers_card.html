@@ -63,7 +63,9 @@
                                 <td v-on:click="show_edit_parameter_set_barrier(p)" 
                                     class="player_table_cell">
                                     <div v-for="g in temp_p.parameter_set_groups">
-                                        [[parameter_set.parameter_set_groups[g].name]]
+                                        <span v-if="g in parameter_set.parameter_set_groups">
+                                            [[parameter_set.parameter_set_groups[g].name]]
+                                        </span>
                                     </div>
                                     
                                 </td>

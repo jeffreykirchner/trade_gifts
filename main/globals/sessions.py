@@ -5,7 +5,6 @@ gloabal functions related to parameter sets
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-
 class ExperimentPhase(models.TextChoices):
     '''
     experiment phases
@@ -22,3 +21,10 @@ class Goods(models.TextChoices):
     CHERRY = 'Cherry', _('Cherry')
     PINEAPPLE = 'Pineapple', _('Pineapple')
     BLUEBERRY = 'Blueberry', _('Blueberry')
+
+class ChatModes(models.TextChoices):
+    '''
+    experiment chat modes
+    '''
+    FULL = 'Full', _('Full')
+    LIMITED = 'Limited', _('Limited')
