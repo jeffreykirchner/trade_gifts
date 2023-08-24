@@ -24,7 +24,7 @@ setup_pixi_fields()
         let field_sprite = PIXI.Sprite.from(app.pixi_textures["field_tex"]);
         field_sprite.anchor.set(0.5);
         field_sprite.eventMode = 'passive';
-        field_sprite.tint = app.field_color;
+        field_sprite.tint = parameter_set_player.hex_color; //app.field_color;
 
         //owner label
         let owner_label = new PIXI.Text("Owner: " + parameter_set_player.id_label, {

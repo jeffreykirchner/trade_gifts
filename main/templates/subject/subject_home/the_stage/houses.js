@@ -19,7 +19,7 @@ setup_pixi_houses()
         let house_sprite = PIXI.Sprite.from(app.pixi_textures["house_tex"]);
         house_sprite.anchor.set(0.5);
         house_sprite.eventMode = 'passive';
-        house_sprite.tint = 'BlanchedAlmond';
+        house_sprite.tint = parameter_set_player.hex_color //'BlanchedAlmond';
 
         //owner label
         let owner_label = new PIXI.Text("Owner: " + parameter_set_player.id_label, {
