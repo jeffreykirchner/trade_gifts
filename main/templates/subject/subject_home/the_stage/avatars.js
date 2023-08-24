@@ -329,12 +329,7 @@ move_player(delta)
             //move player towards target
             if(!obj.frozen)
             {
-                app.move_object(delta=delta,
-                                obj=obj, 
-                                move_speed=app.move_speed, 
-                                wall_limited=true, 
-                                container=pixi_avatars[i].bounding_box,
-                                scale = app.session.parameter_set.avatar_scale);
+                app.move_avatar(delta,i);
             }
 
             //update the sprite locations

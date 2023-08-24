@@ -40,9 +40,9 @@ check_walls_intersection(rect1)
     {
         let temp_wall = app.session.parameter_set.parameter_set_walls[i];
         let rect2={x:temp_wall.start_x,
-                y:temp_wall.start_y,
-                width:temp_wall.width,
-                height:temp_wall.height};
+                   y:temp_wall.start_y,
+                   width:temp_wall.width,
+                   height:temp_wall.height};
 
         if(app.check_for_rect_intersection(rect1, rect2))
         {  

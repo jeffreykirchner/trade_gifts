@@ -18,6 +18,7 @@ var pixi_fps_label = null;                     //fps label
 var mini_map = {container:null};               //mini map container
 var pixi_avatars = {};                         //avatars
 var pixi_walls = {};                           //walls
+var pixi_barriers = {};                        //barriers
 var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
@@ -429,9 +430,8 @@ var app = Vue.createApp({
             //sleep 
             app.do_avatar_sleep_emitters();
 
+            //update player states
             app.update_avatar_inventory();
-
-            // app.session.world_state.finished = message_data.finished;
         
             //collect names
             if(app.session.world_state.current_experiment_phase == 'Names')
@@ -489,8 +489,12 @@ var app = Vue.createApp({
                     app.add_notice(notice.text, notice.end_period, notice.end_time);
                 }
             }
+
             //update any notices on screen
             app.update_notices();
+
+            //update barriers
+            app.update_barriers();
 
             //hide interaction modal if interaction is over
             // if(app.session.world_state_avatars.session_players[app.session_player.id].interaction == 0)
@@ -583,6 +587,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/night.js"%}
         {%include "subject/subject_home/the_stage/move_objects.js"%}
         {%include "subject/subject_home/the_stage/notices.js"%}
+        {%include "subject/subject_home/the_stage/barriers.js"%}
     
         /** clear form error messages
         */

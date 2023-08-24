@@ -4,6 +4,7 @@ parameter set
 import logging
 import json
 
+from random import randint
 from decimal import Decimal
 
 from django.db import models
@@ -11,7 +12,7 @@ from django.db.utils import IntegrityError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.exceptions import ObjectDoesNotExist
 
-from main import globals
+from main.globals import ChatModes
 
 from main.models import InstructionSet
 
@@ -70,6 +71,10 @@ class ParameterSet(models.Model):
     sleep_benefit = models.DecimalField(verbose_name='Sleep Benefit to Health', decimal_places=1, max_digits=3, default=3.0) #sleep benefit
 
     allow_stealing = models.BooleanField(default=False, verbose_name="Allow Stealing")                      #if true all subjects to steal from other tribes
+
+    chat_mode = models.CharField(verbose_name="Chat Mode", max_length=100, choices=ChatModes.choices, default=ChatModes.FULL)         #chat mode
+    chat_rules_letters = models.JSONField(verbose_name="Chat Letter Mapping", encoder=DjangoJSONEncoder, null=True, blank=True)       #chat rules for limited mode
+    chat_rules_word_list = models.TextField(verbose_name='Chat Words Allowed List', default="", blank=True)             #chat rules for limited mode
 
     reconnection_limit = models.IntegerField(verbose_name='Age Warning', default=25)                        #stop trying to reconnect after this many failed attempts
 
@@ -144,21 +149,29 @@ class ParameterSet(models.Model):
             self.allow_stealing = True if new_ps.get("allow_stealing") == "True" else False
             self.break_frequency = new_ps.get("break_frequency", 7)
             self.break_length = new_ps.get("break_length", 100)
+
+            self.chat_mode = new_ps.get("chat_mode", ChatModes.FULL)
+            self.chat_rules_letters = new_ps.get("chat_rules", {"letters": None})
+            self.chat_rules_word_list = new_ps.get("chat_rules_word_list", "")
             
             self.reconnection_limit = new_ps.get("reconnection_limit", None)
 
             self.instruction_set = InstructionSet.objects.get(label=new_ps.get("instruction_set")["label"])
 
             self.save()
-            #parameter set fields
-            self.parameter_set_fields_a.all().delete()
-            new_parameter_set_fields = new_ps.get("parameter_set_fields")
-            new_parameter_set_field_types_map = {}
 
-            for i in new_parameter_set_fields:
-                p = main.models.ParameterSetField.objects.create(parameter_set=self)
-                p.from_dict(new_parameter_set_fields[i])
-                new_parameter_set_field_types_map[i] = p.id
+            if self.chat_rules_letters["letters"] == None:
+                self.setup_letter_map()
+
+            #parameter set groups
+            self.parameter_set_groups.all().delete()
+            new_parameter_set_groups = new_ps.get("parameter_set_groups")
+            new_parameter_set_groups_map = {}
+
+            for i in new_parameter_set_groups:
+                p = main.models.ParameterSetGroup.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_groups[i])
+                new_parameter_set_groups_map[i] = p.id
 
             #parameter set players
             self.parameter_set_players.all().delete()
@@ -174,11 +187,25 @@ class ParameterSet(models.Model):
                 new_parameter_set_players_map[i] = p.id
 
                 if v.get("parameter_set_group", None) != None:
-                    p.parameter_set_group_id=new_parameter_set_field_types_map[str(v["parameter_set_group"])]
+                    p.parameter_set_group_id=new_parameter_set_groups_map[str(v["parameter_set_group"])]
 
                 p.save()
 
             self.update_player_count()
+
+            #parameter set barriers
+            self.parameter_set_barriers_a.all().delete()
+            new_parameter_set_barriers = new_ps.get("parameter_set_barriers")
+
+            for i in new_parameter_set_barriers:
+                p = main.models.ParameterSetBarrier.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_barriers[i])
+
+                groups = []
+                for g in new_parameter_set_barriers[i]["parameter_set_groups"]:
+                    groups.append(new_parameter_set_groups_map[str(g)])
+
+                p.parameter_set_groups.set(groups)
 
             #parameter set walls
             self.parameter_set_walls.all().delete()
@@ -251,6 +278,35 @@ class ParameterSet(models.Model):
 
         for i in self.parameter_set_players.all():
             i.setup()
+        
+        self.setup_letter_map()
+    
+    def setup_letter_map(self):
+        '''
+        setup letter map for chat
+        '''
+        letters = {}
+
+        for i in range(65, 91):
+            letters[chr(i)] = None
+
+        for i in range(97, 123):
+            letters[chr(i)] = None
+
+        for i in letters:
+            if letters[i] == None:
+                
+                #find random letter
+                while True:
+                    r = chr(randint(33, 122))
+                    if r.isalpha() and r != i and letters.get(r, "not found") != "not found" and letters[r] == None:
+                        letters[i] = r
+                        letters[r] = i
+                        break
+                        
+        self.chat_rules_letters["letters"] = letters
+        self.save() 
+
 
     def add_player(self):
         '''
@@ -345,6 +401,10 @@ class ParameterSet(models.Model):
         self.json_for_session["break_frequency"] = self.break_frequency
         self.json_for_session["break_length"] = self.break_length
 
+        self.json_for_session["chat_mode"] = self.chat_mode
+        self.json_for_session["chat_rules_letters"] = self.chat_rules_letters
+        self.json_for_session["chat_rules_word_list"] = self.chat_rules_word_list
+
         self.json_for_session["reconnection_limit"] = self.reconnection_limit
 
         self.json_for_session["test_mode"] = "True" if self.test_mode else "False"
@@ -357,7 +417,8 @@ class ParameterSet(models.Model):
                              update_field_types=False,
                              update_fields=False,
                              update_groups=False,
-                             update_notices=False):
+                             update_notices=False,
+                             update_barriers=False):
         '''
         update json model
         '''
@@ -389,6 +450,10 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_notices_order"] = list(self.parameter_set_notices.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_notices"] = {str(p.id) : p.json() for p in self.parameter_set_notices.all()}
 
+        if update_barriers:
+            self.json_for_session["parameter_set_barriers_order"] = list(self.parameter_set_barriers_a.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_barriers"] = {str(p.id) : p.json() for p in self.parameter_set_barriers_a.all()}
+
         self.save()
 
     def json(self, update_required=False):
@@ -405,7 +470,8 @@ class ParameterSet(models.Model):
                                 update_field_types=True, 
                                 update_fields=True,
                                 update_groups=True,
-                                update_notices=True)
+                                update_notices=True,
+                                update_barriers=True)
 
         return self.json_for_session
     

@@ -16,6 +16,7 @@ from .parameter_set_ground import ParameterSetGround
 from .parameter_set_field_type import ParameterSetFieldType
 from .parameter_set_field import ParameterSetField
 from .parameter_set_notice import ParameterSetNotice
+from .parameter_set_barrier import ParameterSetBarrier
 
 from .session import Session
 from .session_period import SessionPeriod

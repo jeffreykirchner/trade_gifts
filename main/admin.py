@@ -15,6 +15,8 @@ from main.forms import InstructionSetFormAdmin
 from main.models import Parameters
 from main.models import ParameterSet
 from main.models import ParameterSetPlayer
+from main.models import ParameterSetBarrier
+from main.models import ParameterSetGroup
 
 from main.models import Session
 from main.models import SessionEvent
@@ -49,14 +51,64 @@ class ParameterSetPlayerInline(admin.TabularInline):
 
     extra = 0  
     model = ParameterSetPlayer
-    can_delete = True   
+    can_delete = False   
     show_change_link = True
     fields = ['id_label', 'player_number']
+
+@admin.register(ParameterSetBarrier)
+class ParameterSetBarrierAdmin(admin.ModelAdmin):
+    
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    readonly_fields=['parameter_set']
+    list_display = ['info']
+
+    inlines = [
+        
+    ]
+
+class ParameterSetBarrierInline(admin.TabularInline):
+    
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    extra = 0  
+    model = ParameterSetBarrier
+    can_delete = False   
+    show_change_link = True
+    fields = ['info']
+
+@admin.register(ParameterSetGroup)
+class ParameterSetGroupAdmin(admin.ModelAdmin):
+        
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    readonly_fields=['parameter_set']
+    list_display = ['name']
+
+    inlines = [
+        
+    ]
+
+class ParameterSetGroupInline(admin.TabularInline):
+        
+        def has_add_permission(self, request, obj=None):
+            return False
+    
+        extra = 0  
+        model = ParameterSetGroup
+        can_delete = False   
+        show_change_link = True
+        fields = ['id', 'name']
 
 @admin.register(ParameterSet)
 class ParameterSetAdmin(admin.ModelAdmin):
     inlines = [
         ParameterSetPlayerInline,
+        ParameterSetBarrierInline,
+        ParameterSetGroupInline
       ]
 
     list_display = ['id', 'period_count', 'period_length']

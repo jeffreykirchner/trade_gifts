@@ -1,10 +1,13 @@
 '''
 Parameterset edit form
 '''
+import re
 
 from django import forms
 
 from main.models import ParameterSet
+
+from main.globals import ChatModes
 
 import  main
 
@@ -218,6 +221,16 @@ class ParameterSetForm(forms.ModelForm):
                                          widget=forms.NumberInput(attrs={"v-model":"parameter_set.production_effort",
                                                                           "step":"1",
                                                                           "min":"1"}))
+    
+    chat_mode = forms.ChoiceField(label='Chat Mode',
+                                  choices=ChatModes.choices,
+                                  widget=forms.Select(attrs={"v-model":"parameter_set.chat_mode",}))
+    
+    chat_rules_word_list = forms.CharField(label='Limited Chat Word List (comma, space, tab and/or line separated)',
+                                          required=False,
+                                          widget=forms.Textarea(attrs={"v-model":"parameter_set.chat_rules_word_list",
+                                                                       "rows":"5",}))
+    
                                                  
     test_mode = forms.ChoiceField(label='Test Mode',
                                        choices=((True, 'Yes'), (False,'No' )),
@@ -226,10 +239,11 @@ class ParameterSetForm(forms.ModelForm):
     class Meta:
         model=ParameterSet
         fields =['period_count', 'period_length', 'night_length', 'break_frequency', 'break_length', 'show_instructions', 'instruction_set', 
-                 'survey_required', 'survey_link', 'test_mode', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
+                 'survey_required', 'survey_link', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'health_loss_per_second', 'heath_gain_per_sleep_second',
                  'consumption_alpha', 'consumption_beta', 'cents_per_second', 'attack_damage', 'attack_cost', 'sleep_benefit', 'allow_stealing', 'world_width', 'world_height',
-                 'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort']
+                 'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort',
+                 'chat_mode', 'chat_rules_word_list', 'test_mode']
                  
 
     def clean_survey_link(self):
@@ -259,3 +273,30 @@ class ParameterSetForm(forms.ModelForm):
             raise forms.ValidationError('Invalid Entry')
 
         return prolific_completion_link
+
+    def clean_chat_rules_word_list(self):
+            
+            chat_rules_word_list_start = self.data.get('chat_rules_word_list')
+            chat_rules_word_list_end = []
+
+            chat_rules_word_list_start = chat_rules_word_list_start.splitlines()
+
+            for i in range(len(chat_rules_word_list_start)):
+            
+                v = re.split(r',|\t', chat_rules_word_list_start[i])
+
+                for j in range(len(v)):
+                    t = v[j].strip()
+
+                    if t != '':
+                        chat_rules_word_list_end.append(t)
+            
+            chat_rules_word_list_end.sort()
+
+            output = ""
+            for i in range(len(chat_rules_word_list_end)):
+                output += chat_rules_word_list_end[i].lower()
+                if i != len(chat_rules_word_list_end) - 1:
+                    output += "\n"
+                    
+            return output

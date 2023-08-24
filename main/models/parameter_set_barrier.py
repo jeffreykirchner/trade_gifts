@@ -1,20 +1,22 @@
 '''
-parameterset wall 
+parameterset barrier 
 '''
 
 from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
 
 from main.models import ParameterSet
+from main.models import ParameterSetGroup
 
 import main
 
-class ParameterSetWall(models.Model):
+class ParameterSetBarrier(models.Model):
     '''
-    parameter set wall
+    parameter set barrier
     '''
 
-    parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_walls")
+    parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_barriers_a")
+    parameter_set_groups = models.ManyToManyField(ParameterSetGroup, related_name="parameter_set_barriers_b")
 
     info = models.CharField(verbose_name='Info', blank=True, null=True, max_length=100, default="Info Here")
 
@@ -24,6 +26,12 @@ class ParameterSetWall(models.Model):
     width = models.IntegerField(verbose_name='Width', default=50)                    #width and height
     height = models.IntegerField(verbose_name='Height', default=50)
 
+    text = models.CharField(verbose_name='Text', default="Closed until period N", max_length=100)       #text shown on barrier
+    rotation = models.IntegerField(verbose_name='Rotation', default=0)                  #rotation of text
+
+    period_on = models.IntegerField(verbose_name='Period On', default=1)               #period when barrier is on
+    period_off = models.IntegerField(verbose_name='Period Off', default=14)             #period when barrier is off
+
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
 
@@ -31,8 +39,8 @@ class ParameterSetWall(models.Model):
         return str(self.info)
 
     class Meta:
-        verbose_name = 'Parameter Set Wall'
-        verbose_name_plural = 'Parameter Set Walls'
+        verbose_name = 'Parameter Set Barrier'
+        verbose_name_plural = 'Parameter Set Barriers'
         ordering = ['id']
 
     def from_dict(self, new_ps):
@@ -42,11 +50,17 @@ class ParameterSetWall(models.Model):
         '''
         self.info = new_ps.get("info")
         
-        self.start_x = new_ps.get("start_x")
-        self.start_y = new_ps.get("start_y")
+        self.start_x = new_ps.get("start_x", 50)
+        self.start_y = new_ps.get("start_y", 50)
 
-        self.width = new_ps.get("width")
-        self.height = new_ps.get("height")
+        self.width = new_ps.get("width", 100)
+        self.height = new_ps.get("height", 100)
+
+        self.text = new_ps.get("text", "Closed until period N")
+        self.rotation = new_ps.get("rotation", 0)
+
+        self.period_on = new_ps.get("period_on", 1)
+        self.period_off = new_ps.get("period_off", 14)
 
         self.save()
         
@@ -64,7 +78,7 @@ class ParameterSetWall(models.Model):
         '''
         update parameter set json
         '''
-        self.parameter_set.json_for_session["parameter_set_walls"][self.id] = self.json()
+        self.parameter_set.json_for_session["parameter_set_barriers"][self.id] = self.json()
 
         self.parameter_set.save()
 
@@ -83,6 +97,11 @@ class ParameterSetWall(models.Model):
             "start_y" : self.start_y,
             "width" : self.width,
             "height" : self.height,
+            "text" : self.text,
+            "rotation" : self.rotation,
+            "parameter_set_groups" : [group.id for group in self.parameter_set_groups.all()],
+            "period_on" : self.period_on,
+            "period_off" : self.period_off,
         }
     
     def get_json_for_subject(self, update_required=False):

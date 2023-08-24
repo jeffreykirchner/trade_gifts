@@ -14,6 +14,7 @@ var pixi_transfer_beams_key = 0;
 var pixi_fps_label = null;                     //fps label
 var pixi_avatars = {};                         //avatars
 var pixi_walls = {};                           //walls
+var pixi_barriers = {};                        //barriers
 var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
@@ -376,10 +377,23 @@ var app = Vue.createApp({
         *    @param message_data {json} session day in json format
         */
         take_update_chat(message_data){
+
+            let text = message_data.text;
+
+            if(app.session.parameter_set.chat_mode == "Limited" && app.follow_subject != -1)
+            {
+                let parameter_set_group_sender = app.session.parameter_set.parameter_set_players[app.session.session_players[message_data.sender_id].parameter_set_player_id].parameter_set_group;
+                let parameter_set_group = app.session.parameter_set.parameter_set_players[app.session.session_players[app.follow_subject].parameter_set_player_id].parameter_set_group;
+        
+                if(parameter_set_group != parameter_set_group_sender)
+                {
+                    text =  message_data.text_limited;
+                }
+            }
             
             app.session.world_state_avatars.session_players[message_data.sender_id].show_chat = true;    
             app.session.world_state_avatars.session_players[message_data.sender_id].chat_time = Date.now();
-            pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text =  message_data.text;
+            pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text = text;
         },
 
         /**
@@ -458,6 +472,9 @@ var app = Vue.createApp({
                     app.session.world_state_avatars.session_players[p].current_location = server_location;
                 }
             }
+
+            //update barriers
+            app.update_barriers();
         },
        
         //do nothing on when enter pressed for post
@@ -484,6 +501,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/helpers.js"%}
         {%include "subject/subject_home/the_stage/night.js"%}
         {%include "subject/subject_home/the_stage/move_objects.js"%}
+        {%include "subject/subject_home/the_stage/barriers.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages

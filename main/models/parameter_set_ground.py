@@ -16,7 +16,7 @@ class ParameterSetGround(models.Model):
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_grounds")
 
-    info = models.TextField(verbose_name='Info', blank=True, null=True)
+    info = models.CharField(verbose_name='Info', blank=True, null=True, max_length=100, default="Info Here")
 
     x = models.IntegerField(verbose_name='Location X', default=50)            #starting location x and y
     y = models.IntegerField(verbose_name='Location Y', default=50)

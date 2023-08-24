@@ -18,8 +18,8 @@ class ParameterSetFieldType(models.Model):
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_field_types")
 
-    info = models.TextField(verbose_name='Info', default="Description of Field Type")
-    display_text = models.TextField(verbose_name='Info', blank=True, null=True, default="Display Text")
+    info = models.CharField(verbose_name='Info', default="Description of Field Type", max_length=100)
+    display_text = models.CharField(verbose_name='Info', blank=True, null=True, default="Display Text", max_length=100)
 
     good_one_ft = models.CharField(verbose_name='Good One', max_length=100, choices=Goods.choices, default=Goods.CHERRY)
     good_two_ft = models.CharField(verbose_name='Good Two', max_length=100, choices=Goods.choices, default=Goods.BLUEBERRY)

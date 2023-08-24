@@ -7,3 +7,4 @@ from .goods_to_health import convert_goods_to_health
 
 from .sessions import ExperimentPhase
 from .sessions import Goods
+from .sessions import ChatModes

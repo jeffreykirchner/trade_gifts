@@ -11,6 +11,7 @@ setup_pixi(){
     PIXI.Assets.add('sprite_sheet_hf', '{% static "sprite_sheet_hf.json" %}');
     PIXI.Assets.add('grass_tex', '{% static "background_tile_low.jpg"%}');
     PIXI.Assets.add('wall_tex', '{% static "wall.png"%}');
+    PIXI.Assets.add('barrier_tex', '{% static "barrier.png"%}');
     PIXI.Assets.add('water_tex', '{% static "water_tile.jpg"%}');
     PIXI.Assets.add('bridge_tex', '{% static "bridge.jpg"%}');
     PIXI.Assets.add('Blueberry_tex', '{% static "blueberry.png"%}');
@@ -23,7 +24,7 @@ setup_pixi(){
     PIXI.Assets.add('fist_right_tex', '{% static "fist_right.png"%}');
     PIXI.Assets.add('face_sleep_tex', '{% static "face_sleep_1.png"%}');
 
-    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'sprite_sheet_hf', 'grass_tex', 'wall_tex', 'water_tex',
+    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'sprite_sheet_hf', 'grass_tex', 'wall_tex', 'barrier_tex', 'water_tex',
                                                'bridge_tex', 'sprite_sheet_2', 'Blueberry_tex', 'Pineapple_tex',
                                                'Cherry_tex', 'field_tex', 'house_tex', 'health_tex', 'fist_left_tex', 'fist_right_tex',
                                                'face_sleep_tex'])
@@ -35,6 +36,7 @@ setup_pixi(){
         app.setup_pixi_houses();
         app.setup_pixi_subjects();       
         app.setup_pixi_wall();       
+        app.setup_pixi_barrier();
        
         if(app.pixi_mode!="subject")
         {
@@ -178,7 +180,7 @@ game_loop(delta)
     {   
         app.update_offsets_player(delta);
         app.update_mini_map(delta);
-        app.check_for_collisions();
+        // app.check_for_collisions();
     }
     
     if(app.pixi_mode=="staff")
