@@ -9,6 +9,8 @@ setup_pixi_minimap()
 
     if(mini_map.container) mini_map.container.destroy();
 
+    mini_map.black_outs = {};
+
     app.mini_map_scale = Math.min((pixi_app.screen.width * 0.2)/app.stage_width,  (pixi_app.screen.height * 0.3)/app.stage_height);
 
     let scale = app.mini_map_scale;
@@ -83,16 +85,21 @@ setup_pixi_minimap()
                           (parameter_set_player.house_y + app.session.parameter_set.house_height) * scale);
         temp_house.lineTo(parameter_set_player.house_x * scale, parameter_set_player.house_y * scale);
 
-        // temp_house.drawRect(parameter_set_player.house_x * scale,
-        //                     parameter_set_player.house_y * scale,
-        //                     app.session.parameter_set.house_width * scale,
-        //                     app.session.parameter_set.house_height * scale);
-
         temp_house.endFill();
 
-        //temp_house.pivot.set(temp_house.width/2, temp_house.height/2);
-
         mini_map.container.addChild(temp_house);
+    }
+
+    //black outs
+    for(const i in app.session.parameter_set.parameter_set_grounds){
+        const ground = app.session.parameter_set.parameter_set_grounds[i];
+
+        let temp_ground = new PIXI.Graphics();
+        temp_ground.beginFill("gray");
+        temp_ground.drawRect(ground.x * scale, ground.y * scale, ground.width * scale, ground.height * scale);
+
+        mini_map.black_outs[i] = temp_ground;
+        mini_map.container.addChild(mini_map.black_outs[i]);
     }
 
     //walls
@@ -124,7 +131,7 @@ setup_pixi_minimap()
 
     //add to stage
     mini_map.container.position.set(20, 20);
-    mini_map.container.alpha = 0.9;
+    // mini_map.container.alpha = 0.9;
     pixi_app.stage.addChild(mini_map.container);
 },
 
@@ -136,4 +143,19 @@ update_mini_map(delta)
     let obj = app.session.world_state_avatars.session_players[app.session_player.id]
     mini_map.view_port.position.set(obj.current_location.x * app.mini_map_scale, 
                                     obj.current_location.y * app.mini_map_scale);
+
+    //update black outs
+    for(const i in app.session.parameter_set.parameter_set_grounds){
+        let container = mini_map.black_outs[i];
+
+        if(container.visible){
+           let ground = app.session.parameter_set.parameter_set_grounds[i];
+           let rect = {x:ground.x , y:ground.y, width: ground.width , height: ground.height};
+           let pt = app.session.world_state_avatars.session_players[app.session_player.id].current_location;
+
+           if(app.check_point_in_rectagle(pt, rect)){
+               container.visible = false;
+           }
+        }
+    }
 },
