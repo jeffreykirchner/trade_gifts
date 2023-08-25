@@ -781,7 +781,48 @@ class SubjectUpdatesMixin():
 
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
-                
+
+    async def emoji(self, event):
+        '''
+        avtar emotes
+        '''
+        
+        if self.controlling_channel != self.channel_name:
+            return
+
+        logger = logging.getLogger(__name__)
+
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]       
+            emoji_type = event["message_text"]["emoji_type"]
+        except:
+            logger.info(f"emoji: invalid data, {event['message_text']}")
+            return
+
+        result = {"status" : "success", "error_message" : {}}
+        result["source_player_id"] = player_id
+        result["emoji_type"] = emoji_type
+        
+        await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                           session_player_id=player_id,
+                                           type="emote",
+                                           period_number=self.world_state_local["current_period"],
+                                           time_remaining=self.world_state_local["time_remaining"],
+                                           data=result)
+
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+    
+    async def update_emoji(self, event):
+        '''
+        update avatar emote
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+
 def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_two_harvest):
     '''
     harvest from field

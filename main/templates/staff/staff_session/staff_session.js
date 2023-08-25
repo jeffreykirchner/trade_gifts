@@ -236,6 +236,9 @@ var app = Vue.createApp({
                 case "update_rescue_subject":
                     app.take_rescue_subject(message_data);
                     break;
+                case "update_emoji":
+                    app.take_emoji(message_data);
+                    break;
             }
 
             app.first_load_done = true;
@@ -502,6 +505,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/night.js"%}
         {%include "subject/subject_home/the_stage/move_objects.js"%}
         {%include "subject/subject_home/the_stage/barriers.js"%}
+        {%include "subject/subject_home/the_stage/emoji.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages
