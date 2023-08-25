@@ -122,7 +122,7 @@ take_target_location_update(message_data)
         {
             if(i != app.session_player.id)
             {
-                // let obj = app.session.world_state_avatars.session_players[i];
+                let session_player = app.session.world_state.avatars[i];
                 let obj = pixi_avatars[i].avatar_container;
                 let rect={x:obj.x-obj.width/2, y:obj.y-obj.height/2, width:obj.width, height:obj.height};
                 let pt={x:local_pos.x, y:local_pos.y};
@@ -134,20 +134,20 @@ take_target_location_update(message_data)
                                                             radius:app.session.parameter_set.interaction_range},
                                             rect))
                     {
-                        if(local_player.cool_down <= 0)
+                        if(!session_player.sleeping)
                         {
                             app.subject_avatar_click(i);
                         }
                         else
                         {
-                            app.add_text_emitters("No avatar interactions cooling down.", 
-                                                local_player.current_location.x, 
-                                                local_player.current_location.y,
-                                                local_player.current_location.x,
-                                                local_player.current_location.y-100,
-                                                0xFFFFFF,
-                                                28,
-                                                null);
+                            app.add_text_emitters("The avatar is asleep.", 
+                                                    local_player.current_location.x, 
+                                                    local_player.current_location.y,
+                                                    local_player.current_location.x,
+                                                    local_player.current_location.y-100,
+                                                    0xFFFFFF,
+                                                    28,
+                                                    null);
                         }
 
                         return;
