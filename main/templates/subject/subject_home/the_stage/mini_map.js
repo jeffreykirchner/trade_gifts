@@ -90,7 +90,7 @@ setup_pixi_minimap()
 
         temp_house.endFill();
 
-        temp_house.pivot.set(temp_house.width/2, temp_house.height/2);
+        //temp_house.pivot.set(temp_house.width/2, temp_house.height/2);
 
         mini_map.container.addChild(temp_house);
     }
