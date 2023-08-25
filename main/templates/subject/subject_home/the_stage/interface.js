@@ -217,6 +217,15 @@ take_target_location_update(message_data)
             }
         }
 
+        app.add_text_emitters("No targets within range.", 
+                                local_pos.x, 
+                                local_pos.y,
+                                local_pos.x,
+                                local_pos.y-100,
+                                0xFFFFFF,
+                                28,
+                                null);
+
     }
  },
 
