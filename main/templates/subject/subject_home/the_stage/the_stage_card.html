@@ -97,6 +97,7 @@
                     <button class="btn btn-outline-primary"
                             type="button" 
                             id="send_chat_id" 
+                            title="Send Chat"
                             v-bind:disabled="reconnecting || working || session.started===false || session.world_state.finished"
                             v-on:click="(session.world_state.current_experiment_phase == 'Instructions') ? simulate_chat_instructions() : send_chat()">Chat <i class="far fa-comments"></i>
                     </button>
@@ -107,6 +108,7 @@
                 <button class="btn btn-outline-primary me-1"
                         type="button" 
                         id="send_chat_happy"
+                        title="Send Happy Emoji"
                         v-bind:disabled="reconnecting || working || session.started===false || session.world_state.finished"
                         v-on:click="send_emoji('happy')">Happy <i class="far fa-smile"></i>
                 </button>
@@ -114,6 +116,7 @@
                 <button class="btn btn-outline-primary me-1"
                         type="button" 
                         id="send_chat_sad"
+                        title="Send Sad Emoji"
                         v-bind:disabled="reconnecting || working || session.started===false || session.world_state.finished"
                         v-on:click="send_emoji('sad')">Sad <i class="far fa-frown"></i>
                 </button>
@@ -121,6 +124,7 @@
                 <button class="btn btn-outline-primary"
                         type="button" 
                         id="send_chat_angry"
+                        title="Send Angry Emoji"
                         v-bind:disabled="reconnecting || working || session.started===false || session.world_state.finished"
                         v-on:click="send_emoji('angry')">Angry <i class="far fa-angry"></i>
                 </button>

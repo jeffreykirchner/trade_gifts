@@ -410,8 +410,8 @@ var app = Vue.createApp({
                     field = app.session.world_state.fields[i]
                     field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type]
             
-                    good_one = field_type.good_one;
-                    good_two = field_type.good_two;
+                    good_one = field_type.good_one_ft;
+                    good_two = field_type.good_two_ft;
             
                     app.session.world_state.fields[i][good_one] = message_data.fields[i][good_one];
                     app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
