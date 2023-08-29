@@ -285,7 +285,9 @@ var app = Vue.createApp({
                 let e = document.getElementById("id_errors_" + s[i]);
                 if(e) e.remove();
             }
-            
+
+            let e = document.getElementById("id_errors_levels_input");
+            if(e) e.remove();
         },
 
         /** display form error messages

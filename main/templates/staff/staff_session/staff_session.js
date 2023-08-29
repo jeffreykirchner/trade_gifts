@@ -19,6 +19,7 @@ var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
 var pixi_night = {};                           //night
+var pixi_groves = {};                          //groves
 var wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
 var wall_search_objects = [];
 
@@ -506,6 +507,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/move_objects.js"%}
         {%include "subject/subject_home/the_stage/barriers.js"%}
         {%include "subject/subject_home/the_stage/emoji.js"%}
+        {%include "subject/subject_home/the_stage/groves.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages

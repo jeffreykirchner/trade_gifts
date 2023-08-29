@@ -22,6 +22,7 @@ var pixi_barriers = {};                        //barriers
 var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
+var pixi_groves = {};                          //groves
 var pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
                   text_night_coming : "Night is approching ... "};                                        //night
 var pixi_notices = {container:null, notices:{}};                         //notices
@@ -80,6 +81,9 @@ var app = Vue.createApp({
                                       good_three:null,
                                       direction:"avatar_to_house",
                                      },
+                    
+                    selected_grove : {grove:null,
+                                    },
 
                     end_game_modal_visible : false,
 
@@ -255,11 +259,13 @@ var app = Vue.createApp({
             app.avatar_attack_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_attack_modal'), {keyboard: false})        
             app.field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('field_modal'), {keyboard: false})
             app.house_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('house_modal'), {keyboard: false})
+            app.grove_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('grove_modal'), {keyboard: false})
 
             document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
             document.getElementById('avatar_modal').addEventListener('hidden.bs.modal', app.hide_avatar_modal);
             document.getElementById('field_modal').addEventListener('hidden.bs.modal', app.hide_field_modal);
             document.getElementById('house_modal').addEventListener('hidden.bs.modal', app.hide_house_modal);
+            document.getElementById('grove_modal').addEventListener('hidden.bs.modal', app.hide_grove_modal);
 
             {%if session.parameter_set.test_mode%} setTimeout(app.do_test_mode, app.random_number(1000 , 1500)); {%endif%}
 
@@ -592,6 +598,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/notices.js"%}
         {%include "subject/subject_home/the_stage/barriers.js"%}
         {%include "subject/subject_home/the_stage/emoji.js"%}
+        {%include "subject/subject_home/the_stage/groves.js"%}
     
         /** clear form error messages
         */

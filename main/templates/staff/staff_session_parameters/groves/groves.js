@@ -13,6 +13,9 @@ show_edit_parameter_set_grove(index){
     {
         app.current_parameter_set_grove.levels_input += app.current_parameter_set_grove.levels[i].value + ",";
     }
+
+    //remove last comma
+    app.current_parameter_set_grove.levels_input = app.current_parameter_set_grove.levels_input.slice(0, -1);
     
     app.edit_parameterset_grove_modal.toggle();
 },

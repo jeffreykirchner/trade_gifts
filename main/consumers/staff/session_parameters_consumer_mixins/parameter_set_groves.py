@@ -65,20 +65,43 @@ def take_update_parameter_set_grove(data):
     form_data = data["form_data"]
 
     try:        
-        parameter_set_grove = ParameterSetGrove.objects.get(id=parameterset_grove_id)
+        parameter_set_grove = ParameterSetGrove.objects.get(id=parameterset_grove_id)       
     except ObjectDoesNotExist:
         logger.warning(f"take_update_parameter_set_grove parameterset_grove, not found ID: {parameterset_grove_id}")
         return
     
-    form_data_dict = form_data
-    levels_input = form_data_dict.get("levels").split(",").remove("")
+    try:
+        levels_input = form_data.get("levels_input").split(",")
+
+        while("" in levels_input):
+            levels_input.remove("")
+
+    except ObjectDoesNotExist:
+        logger.warning(f"take_update_parameter_set_grove levels_input, not found ID: {parameterset_grove_id}")
+        {"value":"fail", "errors" : {f"levels_input":["Invalid input."]}} 
+    
+    if len(levels_input) == 0:
+        logger.warning(f"take_update_parameter_set_grove levels_input, not found ID: {parameterset_grove_id}")
+        return {"value":"fail", "errors" : {f"levels_input":["Invalid input."]}} 
+        
+    form_data_dict = form_data    
 
     logger.info(f'form_data_dict : {form_data_dict}')
 
     form = ParameterSetGroveForm(form_data_dict, instance=parameter_set_grove)
 
     if form.is_valid():         
-        form.save()              
+        form.save()           
+
+        parameter_set_grove.levels = {}   
+
+        for i in range(len(levels_input)):
+            v = levels_input[i].strip()
+            if v.isdigit():
+                parameter_set_grove.levels[str(i+1)] = {"value" : int(v), "harvested" : False}
+
+        parameter_set_grove.save()
+
         parameter_set_grove.parameter_set.update_json_fk(update_groves=True)
 
         return {"value" : "success"}                      
@@ -128,6 +151,7 @@ def take_add_parameterset_grove(data):
 
     parameter_set_grove = ParameterSetGrove.objects.create(parameter_set=session.parameter_set)
     parameter_set_grove.setup()
+    parameter_set_grove.from_dict(ParameterSetGrove.objects.last().json())
     session.parameter_set.update_json_fk(update_groves=True)
 
     return {"value" : "success"}
