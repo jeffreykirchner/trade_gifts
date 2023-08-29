@@ -193,6 +193,14 @@ class ParameterSet(models.Model):
 
             self.update_player_count()
 
+            #parameter set groves
+            self.parameter_set_groves_a.all().delete()
+            new_parameter_set_groves = new_ps.get("parameter_set_groves")
+
+            for i in new_parameter_set_groves:
+                p = main.models.ParameterSetGrove.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_groves[i])
+
             #parameter set barriers
             self.parameter_set_barriers_a.all().delete()
             new_parameter_set_barriers = new_ps.get("parameter_set_barriers")
@@ -418,7 +426,8 @@ class ParameterSet(models.Model):
                              update_fields=False,
                              update_groups=False,
                              update_notices=False,
-                             update_barriers=False):
+                             update_barriers=False,
+                             update_groves=False):
         '''
         update json model
         '''
@@ -454,6 +463,10 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_barriers_order"] = list(self.parameter_set_barriers_a.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_barriers"] = {str(p.id) : p.json() for p in self.parameter_set_barriers_a.all()}
 
+        if update_groves:
+            self.json_for_session["parameter_set_groves_order"] = list(self.parameter_set_groves_a.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_groves"] = {str(p.id) : p.json() for p in self.parameter_set_groves_a.all()}
+
         self.save()
 
     def json(self, update_required=False):
@@ -471,7 +484,8 @@ class ParameterSet(models.Model):
                                 update_fields=True,
                                 update_groups=True,
                                 update_notices=True,
-                                update_barriers=True)
+                                update_barriers=True,
+                                update_groves=True)
 
         return self.json_for_session
     
