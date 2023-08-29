@@ -23,6 +23,16 @@
                     </div> 
                     {% endfor %}
                 </form>
+
+                <div class = "col col-md-10 offset-md-1">
+                    <div class>
+                        <div class="form-group mt-2">
+                            <label for="levels_input">Levels (Comma separated)*</label>
+                            <input type="tet" class="form-control" id="levels_input" v-model="current_parameter_set_grove.levels_input">
+                        </div>
+                    </div>
+                </div>
+                
             </div>
             <div class="modal-footer">
                 <button type="button"

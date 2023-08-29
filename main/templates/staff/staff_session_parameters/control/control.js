@@ -70,7 +70,7 @@ take_download_parameters(message_data){
 
 /**upload a parameter set file
 */
-upload_parameter_set:function(){  
+upload_parameter_set(){  
 
     let form_data = new FormData();
     form_data.append('file', app.upload_file);
@@ -97,7 +97,7 @@ upload_parameter_set:function(){
 },
 
 //direct upload button click
-upload_action:function(){
+upload_action(){
     if(app.upload_file == null)
         return;
 
@@ -116,14 +116,14 @@ upload_action:function(){
 },
 
 //file upload
-handle_file_upload:function(){
+handle_file_upload(){
     app.upload_file = app.$refs.file.files[0];
     app.upload_file_name = app.upload_file.name;
 },
 
 /** show upload parameters modal
 */
-show_upload_parameters:function(upload_mode){
+show_upload_parameters(upload_mode){
     app.upload_mode = upload_mode;
     app.upload_parameter_set_messaage = "";
 
@@ -132,6 +132,6 @@ show_upload_parameters:function(upload_mode){
 
 /**hide upload parameters modal
 */
-hide_upload_parameters:function(){
+hide_upload_parameters(){
 
 },

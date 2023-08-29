@@ -1,12 +1,18 @@
 /**show edit parameter set grove
  */
-show_edit_parameter_set_grove:function(index){
+show_edit_parameter_set_grove(index){
     
     if(app.session.started) return;
     if(app.working) return;
 
     app.clear_main_form_errors();
     app.current_parameter_set_grove = Object.assign({}, app.parameter_set.parameter_set_groves[index]);
+    app.current_parameter_set_grove.levels_input = "";
+
+    for(i in app.current_parameter_set_grove.levels)
+    {
+        app.current_parameter_set_grove.levels_input += app.current_parameter_set_grove.levels[i].value + ",";
+    }
     
     app.edit_parameterset_grove_modal.toggle();
 },

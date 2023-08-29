@@ -26,7 +26,7 @@ take_update_session(message_data){
 
 /** show edit session modal
 */
-show_edit_session:function(){
+show_edit_session(){
     app.clear_main_form_errors();
     app.cancel_modal=true;
     app.session_before_edit = Object.assign({}, app.session);
@@ -36,7 +36,7 @@ show_edit_session:function(){
 
 /** hide edit session modal
 */
-hide_edit_session:function(){
+hide_edit_session(){
     if(app.cancel_modal)
     {
         Object.assign(app.session, app.session_before_edit);

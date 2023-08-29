@@ -1,6 +1,6 @@
 /**show edit parameter set barrier
  */
-show_edit_parameter_set_barrier:function(index){
+show_edit_parameter_set_barrier(index){
     
     if(app.session.started) return;
     if(app.working) return;

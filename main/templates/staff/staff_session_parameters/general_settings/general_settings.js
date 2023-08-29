@@ -2,7 +2,7 @@
 
 /**show edit paramter set
  */
-show_edit_parameter_set:function(){
+show_edit_parameter_set(){
     app.clear_main_form_errors();
     app.cancel_modal=true;
     app.paramtersetBeforeEdit = Object.assign({}, app.parameter_set);
@@ -12,7 +12,7 @@ show_edit_parameter_set:function(){
 
 /** hide edit session modal
 */
-hide_edit_parameter_set:function(){
+hide_edit_parameter_set(){
     if(app.cancel_modal)
     {
         Object.assign(app.parameter_set, app.paramtersetBeforeEdit);
@@ -58,6 +58,7 @@ take_update_parameter_set(message_data){
         app.edit_parameterset_group_modal.hide();
         app.edit_parameterset_notice_modal.hide();
         app.edit_parameterset_barrier_modal.hide();
+        app.edit_parameterset_grove_modal.hide();
     } 
     else
     {

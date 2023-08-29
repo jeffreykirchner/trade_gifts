@@ -1,6 +1,6 @@
 /**show edit parameter set ground
  */
-show_edit_parameter_set_ground:function(index){
+show_edit_parameter_set_ground(index){
     
     if(app.session.started) return;
     if(app.working) return;

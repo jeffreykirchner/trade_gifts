@@ -1,6 +1,6 @@
 /**show edit parameter set field_type
  */
-show_edit_parameter_set_field_type:function(index){
+show_edit_parameter_set_field_type(index){
     
     if(app.session.started) return;
     if(app.working) return;

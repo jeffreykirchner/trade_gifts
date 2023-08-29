@@ -1,6 +1,6 @@
 /**show edit parameter set player
  */
-show_edit_parameter_set_player:function(index){
+show_edit_parameter_set_player(index){
     
     if(app.session.started) return;
     if(app.working) return;

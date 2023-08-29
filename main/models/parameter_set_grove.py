@@ -69,9 +69,10 @@ class ParameterSetGrove(models.Model):
         default setup
         '''    
         value = 2
+        self.levels = {}
 
         for i in range(1, 5):
-            self.levels[str(i)]({"value" : value, "harvested" : False})
+            self.levels[str(i)] = {"value" : value, "harvested" : False}
             value *= 2
 
         self.save()

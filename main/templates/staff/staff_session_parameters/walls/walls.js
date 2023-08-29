@@ -1,6 +1,6 @@
 /**show edit parameter set wall
  */
-show_edit_parameter_set_wall:function(index){
+show_edit_parameter_set_wall(index){
     
     if(app.session.started) return;
     if(app.working) return;

@@ -46,28 +46,34 @@
                                 :set="temp_p=parameter_set.parameter_set_groves[p]"
                                 >
                                 <td v-on:click="show_edit_parameter_set_grove(p)" 
-                                    class="grove_table_cell">
-                                    [[temp_p.Good]]
+                                    class="player_table_cell">
+                                    [[temp_p.good]]
                                 </td>
                                 <td v-on:click="show_edit_parameter_set_grove(p)" 
-                                    class="grove_table_cell">
+                                    class="player_table_cell">
                                     [[temp_p.x]], [[temp_p.y]]
                                 </td>
                                 <td v-on:click="show_edit_parameter_set_grove(p)" 
-                                    class="grove_table_cell">
+                                    class="player_table_cell">
                                     [[temp_p.drought_on_period]]
                                 </td>
                                 <td v-on:click="show_edit_parameter_set_grove(p)" 
-                                    class="grove_table_cell">
+                                    class="player_table_cell">
                                     [[temp_p.drought_level]]
                                 </td>
                                 <td v-on:click="show_edit_parameter_set_grove(p)" 
-                                    class="grove_table_cell">
-                                    [[temp_p.color]]
+                                    class="player_table_cell"
+                                    v-bind:style="{color:temp_p.hex_color.replace('0x','#')}">
+                                    [[temp_p.hex_color]]
                                 </td>
                                 <td v-on:click="show_edit_parameter_set_grove(p)" 
-                                    class="grove_table_cell">
-                                    [[temp_p.levels]]
+                                    class="player_table_cell">
+
+                                    <span v-for="(p2, index2) in parameter_set.parameter_set_groves[p].levels" 
+                                        v-bind:key="p2"
+                                        :set="temp_p2=parameter_set.parameter_set_groves[p].levels[p2]">
+                                        [[p2.value]] <span v-if="index2 <= Object.keys(parameter_set.parameter_set_groves[p].levels).length-1">, </span>
+                                    </span>                                    
                                 </td>
                             </tr>
                         </tbody>

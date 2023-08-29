@@ -50,6 +50,7 @@ var app = Vue.createApp({
 
                     current_parameter_set_grove : {
                         id:0,
+                        levels_input: "",
                     },
 
                     parameter_set_form_ids: {{parameter_set_form_ids|safe}},
@@ -272,6 +273,13 @@ var app = Vue.createApp({
             }
 
             s = app.parameter_set_barrier_form_ids;
+            for(let i in s)
+            {
+                let e = document.getElementById("id_errors_" + s[i]);
+                if(e) e.remove();
+            }
+
+            s = app.parameter_set_grove_form_ids;
             for(let i in s)
             {
                 let e = document.getElementById("id_errors_" + s[i]);
