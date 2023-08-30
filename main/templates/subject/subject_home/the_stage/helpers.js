@@ -119,3 +119,34 @@ degrees_to_radians(degrees)
     let pi = Math.PI;
     return degrees * (pi/180);
 },
+
+/**
+ * find point on circle
+ */
+find_point_on_circle(center, radius, angle)
+{
+    let point = {};
+    point.x = center.x + radius * Math.cos(angle);
+    point.y = center.y + radius * Math.sin(angle);
+    return point;
+},
+
+/**
+ * check if circles intersect
+ */
+check_circle_intersection(circle1, circle2)
+{
+    let distance = app.get_distance(circle1.center, circle2.center);
+    if(distance <= circle1.radius + circle2.radius) return true;
+    return false;
+},
+
+/**
+ * check if point is in circle
+ */
+check_point_in_circle(point, circle)
+{
+    let distance = app.get_distance(point, circle.center);
+    if(distance <= circle.radius) return true;
+    return false;
+},

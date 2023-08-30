@@ -3,15 +3,44 @@
  */
 setup_pixi_groves()
 {
-    let grove_size = 300;
+    let grove_size = 150;
+    let ring_size = 50;
 
+    //destory old groves
+    for(i in pixi_groves)
+    {
+        if(grove_container in pixi_groves[i])
+        {
+            pixi_groves[i].grove_container.destroy();
+        }
+    }
+
+    //find max grove size
+    let max_grove_size = 0;
     for(const i in app.session.parameter_set.parameter_set_groves_order)
     {
-
         const grove_id = app.session.parameter_set.parameter_set_groves_order[i];
         const grove = app.session.parameter_set.parameter_set_groves[grove_id];
 
-        pixi_groves[grove_id] = {};
+        let temp_size = 0;
+        for(j in grove.levels)
+        {
+            temp_size ++;
+        }
+
+        if(temp_size > max_grove_size)
+        {
+            max_grove_size = temp_size;
+        }
+    }
+    
+    for(const i in app.session.world_state.groves)
+    {
+
+        // const grove_id = app.session.parameter_set.parameter_set_groves_order[i];
+        const grove = app.session.world_state.groves[i];
+
+        pixi_groves[i] = {};
 
         let grove_container = new PIXI.Container();
         grove_container.eventMode = 'passive';
@@ -19,13 +48,13 @@ setup_pixi_groves()
         
         grove_container.position.set(grove.x, grove.y);
         grove_container.zIndex = 80;
-        pixi_groves[grove_id].grove_container = grove_container;
+        pixi_groves[i].grove_container = grove_container;
 
         //draw grove as a circle
         let temp_size = grove_size;
-        let ring_size = grove_size/(Object.keys(grove.levels).length*1.5);
+        let grove_level_count = 0;
 
-        for(j in grove.levels)
+        for(let j = 1; j <= grove.max_levels; j++)
         {
             let grove_level = grove.levels[j];
             let grove_circle = new PIXI.Graphics();
@@ -34,16 +63,65 @@ setup_pixi_groves()
             grove_circle.lineStyle(2, 0x000000);
             grove_circle.drawCircle(0, 0, temp_size/2);
             grove_circle.endFill();
-            grove_circle.alpha = 1/Object.keys(grove.levels).length;
+            grove_circle.alpha = 1/max_grove_size;
             grove_circle.eventMode = 'passive';
             
-            pixi_groves[grove_id]["grove_circles_"+j] = grove_circle;
-            grove_container.addChild(grove_circle);
+            pixi_groves[i]["grove_circles_"+j] = grove_circle;
+            grove_container.addChildAt(grove_circle, 0);
 
-            temp_size -= ring_size;
+            let good_label = new PIXI.Text(grove_level.value, {
+                fontFamily: 'Arial',
+                fontSize: 14,
+                fill: 'black',
+                // stroke: 'black',
+                // strokeThickness: 2,
+            });
+            good_label.eventMode = 'passive'; 
+            good_label.anchor.set(1, 0.5);
+            good_label_position = app.find_point_on_circle({x:0, y:0}, temp_size/2, 0);
+            good_label.position.set(good_label_position.x-5, good_label_position.y);
+            grove_container.addChildAt(good_label, 0);
+
+            temp_size += ring_size;
         }
 
-        pixi_container_main.addChild(pixi_groves[grove_id].grove_container);
+        grove.radius = (temp_size-ring_size)/2;
+
+        //add base circle
+        temp_size -= ring_size;
+        let grove_base = new PIXI.Graphics();
+        grove_base.beginFill("white");
+        //add line style
+        grove_base.drawCircle(0, 0, temp_size/2);
+        grove_base.endFill();
+        grove_base.eventMode = 'passive';
+
+        grove_container.addChildAt(grove_base, 0);
+
+        //good        
+        let good_sprite = PIXI.Sprite.from(app.pixi_textures[grove.good +"_tex"]);
+        good_sprite.anchor.set(0.5, 1);
+        good_sprite.scale.set(0.6);
+        good_sprite.eventMode = 'passive';
+
+        //good label
+        let good_label = new PIXI.Text("NN", {
+            fontFamily: 'Arial',
+            fontSize: 40,
+            fill: 'white',
+            stroke: 'black',
+            strokeThickness: 2,
+        });
+        good_label.eventMode = 'passive'; 
+        good_label.anchor.set(0.5,0);
+
+        pixi_groves[i].good_label = good_label;
+
+        //add good to container
+        grove_container.addChild(good_sprite);
+        grove_container.addChild(good_label);
+
+        pixi_container_main.addChild(pixi_groves[i].grove_container);
     }
 
     app.update_grove_inventory();
@@ -56,9 +134,20 @@ update_grove_inventory()
 {
     if(!app.session.world_state["started"]) return;
     
-    for(const i in app.session.parameter_set.parameter_set_groves_order)
+    for(const i in app.session.world_state.groves)
     {
-        
+        const grove = app.session.world_state.groves[i];
+
+        let temp_value = 0;
+
+        for(let j = 1; j <= grove.max_levels; j++)
+        {
+            if(grove.levels[j].harvested) break;
+
+            temp_value = grove.levels[j].value;
+        }
+
+        pixi_groves[i].good_label.text = temp_value;
     }
 },
 
@@ -69,52 +158,9 @@ subject_grove_click(grove_id)
 {
     let grove = app.session.world_state.groves[grove_id];
 
-    let source_parameter_set_player = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id];
-    let target_parameter_set_player = app.session.parameter_set.parameter_set_players[grove.parameter_set_player];
-    let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
-    
-    if(app.session.parameter_set.allow_stealing == "False" && 
-       source_parameter_set_player.parameter_set_group != target_parameter_set_player.parameter_set_group)
-    {
-        app.add_text_emitters("You cannot interact with other group's groves.", 
-                                local_player.current_location.x, 
-                                local_player.current_location.y,
-                                local_player.current_location.x,
-                                local_player.current_location.y-100,
-                                0xFFFFFF,
-                                28,
-                                null);
-        return;
-    }
-
-    // console.log("subject grove click", grove_id);
     app.selected_grove.grove = grove;
-    app.selected_grove.grove_type = app.session.parameter_set.parameter_set_grove_types[app.selected_grove.grove.parameter_set_grove_type];
-    app.selected_grove.good_one_harvest = 0;
-    app.selected_grove.good_two_harvest = 0;
-
-    app.selected_grove.good_one_available = app.selected_grove.grove[app.selected_grove.grove_type.good_one_ft];
-    app.selected_grove.good_two_available = app.selected_grove.grove[app.selected_grove.grove_type.good_two_ft];
-
-    app.clear_main_form_errors();
-    app.grove_modal.toggle();
-
-    let total_effort = app.session.parameter_set.production_effort;
-
-    if(app.selected_grove.grove.good_one_effort > total_effort/2)
-    {
-        app.selected_grove.effort_slider = -(app.selected_grove.grove.good_one_effort - total_effort/2);
-    }
-    else if(app.selected_grove.grove.good_two_effort > total_effort/2)
-    {
-        app.selected_grove.effort_slider = app.selected_grove.grove.good_two_effort - total_effort/2;
-    }
-    else
-    {
-        app.selected_grove.effort_slider = 0;
-    }
     
-    app.update_effort_slider();
+    app.grove_modal.toggle();
 },
 
 /**

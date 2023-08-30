@@ -24,7 +24,6 @@ class ParameterSetGrove(models.Model):
 
     good = models.CharField(verbose_name='Good One', max_length=100, choices=Goods.choices, default=Goods.CHERRY, blank=True, null=True )     #good type
     levels = models.JSONField(verbose_name='Levels', encoder=DjangoJSONEncoder, blank=True, null=True)          #levels of good
-    max_levels = models.IntegerField(verbose_name='Max Levels', default=4)          #max levels of good
     drought_on_period = models.IntegerField(verbose_name='Drought On Period', default=14)          #period when drought occurs
     drought_level = models.IntegerField(verbose_name='Drought Level', default=1)          #level of drought
 
@@ -52,7 +51,6 @@ class ParameterSetGrove(models.Model):
 
         self.good = new_ps.get("good")
         self.levels = new_ps.get("levels")
-        self.max_levels = new_ps.get("max_levels")
         self.drought_on_period = new_ps.get("drought_on_period")
         self.drought_level = new_ps.get("drought_level")
 
@@ -72,7 +70,7 @@ class ParameterSetGrove(models.Model):
         self.levels = {}
 
         for i in range(1, 5):
-            self.levels[str(i)] = {"value" : value, "harvested" : False}
+            self.levels[str(i)] = {"value" : value}
             value *= 2
 
         self.save()
@@ -99,7 +97,6 @@ class ParameterSetGrove(models.Model):
             "y" : self.y,
             "good" : self.good,
             "levels" : self.levels,
-            "max_levels" : self.max_levels,
             "drought_on_period" : self.drought_on_period,
             "drought_level" : self.drought_level,
             "hex_color" : self.hex_color,

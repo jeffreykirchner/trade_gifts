@@ -217,6 +217,20 @@ take_target_location_update(message_data)
             }
         }
 
+        //check if click on grove
+        for(i in app.session.world_state.groves)
+        {
+            let grove = app.session.world_state.groves[i];
+            let grove_center = {x:grove.x, y:grove.y};
+            let pt={x:local_pos.x, y:local_pos.y};
+
+            if(app.check_point_in_circle(pt, {center:grove_center,radius:grove.radius}))
+            {
+                app.subject_grove_click(i);
+                return
+            }
+        }
+
         app.add_text_emitters("No targets within range.", 
                                 local_pos.x, 
                                 local_pos.y,
