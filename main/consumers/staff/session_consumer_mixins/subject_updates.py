@@ -676,6 +676,9 @@ class SubjectUpdatesMixin():
         if self.controlling_channel != self.channel_name:
             return
 
+        if self.parameter_set_local["allow_attacks"] == 'False':
+            return
+
         logger = logging.getLogger(__name__)
 
         try:

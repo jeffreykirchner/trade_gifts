@@ -60,6 +60,13 @@ class ParameterSetBarrierAdmin(admin.ModelAdmin):
     
     def has_add_permission(self, request, obj=None):
         return False
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(ParameterSetBarrierAdmin,self).get_form(request, obj,**kwargs)
+
+        #only show parameter set groups for this parameter set
+        form.base_fields['parameter_set_groups'].queryset = ParameterSetGroup.objects.filter(parameter_set=obj.parameter_set)
+        return form
 
     readonly_fields=['parameter_set']
     list_display = ['info']

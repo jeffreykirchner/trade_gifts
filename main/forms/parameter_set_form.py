@@ -136,6 +136,10 @@ class ParameterSetForm(forms.ModelForm):
                                                                           "step":"0.01",
                                                                           "min":"0.01"}))
     
+    allow_attacks = forms.ChoiceField(label='Allow Attacks',
+                                       choices=((True, 'Yes'), (False,'No' )),
+                                       widget=forms.Select(attrs={"v-model":"parameter_set.allow_attacks",}))
+
     attack_cost = forms.DecimalField(label='Attack Cost (Health)',
                                      max_digits=3,
                                      decimal_places=1,
@@ -247,11 +251,10 @@ class ParameterSetForm(forms.ModelForm):
         fields =['period_count', 'period_length', 'night_length', 'break_frequency', 'break_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'health_loss_per_second', 'heath_gain_per_sleep_second',
-                 'consumption_alpha', 'consumption_beta', 'cents_per_second', 'attack_damage', 'attack_cost', 'sleep_benefit', 'allow_stealing', 'world_width', 'world_height',
+                 'consumption_alpha', 'consumption_beta', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'sleep_benefit', 'allow_stealing', 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort', 'max_grove_harvests',
                  'chat_mode', 'chat_rules_word_list', 'test_mode']
                  
-
     def clean_survey_link(self):
         
         try:
