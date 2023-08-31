@@ -1,0 +1,46 @@
+{% load crispy_forms_tags %}
+<!--grove Modal -->
+<div class="modal fade " 
+     id="grove_modal" 
+     data-bs-backdrop="static" 
+     data-bs-keyboard="false" 
+     tabindex="-1" 
+     aria-labelledby="grove_modal" 
+     aria-hidden="true"
+    >
+
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header fw-bold">
+                Grove
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">   
+                <div class="row">
+                    <div class="col text-center h5">Harvest <span v-if="selected_grove.grove">[[selected_grove.grove.good]]</span></div>
+                </div>
+
+                <div class="row align-items-center text-center fw-bold mt-2" v-if="selected_grove.grove" id="div_id_grove_harvest">
+                    <div class="col text-end">
+                        <img class="grove_modal_icons" v-bind:src="'/static/' + selected_grove.grove.good.toLowerCase() + '.png'" />
+                    </div>  
+                    <div class="col h1 text-start">
+                        [[selected_grove.harvest_amount]]
+                    </div>                    
+                </div> 
+                
+                <div class="row mt-4">
+                    <div class="col text-end">
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                v-on:click = "send_grove_harvest()"
+                                title="Harvest the selected grove."                       
+                                v-bind:disabled="reconnecting || working">
+                            Harvest <i class="fas fa-sign-in-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

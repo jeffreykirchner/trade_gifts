@@ -28,7 +28,7 @@ send_delete_session(id){
 /**
  * sort by title
  */
-sort_by_title:function(){
+sort_by_title(){
 
     app.working = true;
 
@@ -44,7 +44,7 @@ sort_by_title:function(){
 /**
  * sort by date
  */
-sort_by_date:function(){
+sort_by_date(){
 
     app.working = true;
 

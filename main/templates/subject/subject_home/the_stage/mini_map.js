@@ -103,7 +103,8 @@ setup_pixi_minimap()
     }
 
     //walls
-    for(const i in app.session.parameter_set.parameter_set_walls){ 
+    for(const i in app.session.parameter_set.parameter_set_walls)
+    { 
 
         const wall = app.session.parameter_set.parameter_set_walls[i];
 

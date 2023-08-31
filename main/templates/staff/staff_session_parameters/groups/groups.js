@@ -1,6 +1,6 @@
 /**show edit parameter set group
  */
-show_edit_parameter_set_group:function(index){
+show_edit_parameter_set_group(index){
     
     if(app.session.started) return;
     if(app.working) return;

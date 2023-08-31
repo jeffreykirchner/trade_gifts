@@ -1,6 +1,6 @@
 /**show edit parameter set notice
  */
-show_edit_parameter_set_notice:function(index){
+show_edit_parameter_set_notice(index){
     
     if(app.session.started) return;
     if(app.working) return;

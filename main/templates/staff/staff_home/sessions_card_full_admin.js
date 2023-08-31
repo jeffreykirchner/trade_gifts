@@ -12,7 +12,7 @@ take_get_sessionsAdmin(message_data){
 },
 
 //sort by title
-sort_by_title_all_sessions:function(){
+sort_by_title_all_sessions(){
 
     app.working = true;
 
@@ -25,7 +25,7 @@ sort_by_title_all_sessions:function(){
     app.working = false;
 },
 
-sort_by_date_all_sessions:function(){
+sort_by_date_all_sessions(){
 
     app.working = true;
 
@@ -37,7 +37,7 @@ sort_by_date_all_sessions:function(){
     app.working = false;
 },
 
-sort_by_owner_all_sessions:function(){
+sort_by_owner_all_sessions(){
 
     app.working = true;
 

@@ -19,6 +19,7 @@ var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
 var pixi_night = {};                           //night
+var pixi_groves = {};                          //groves
 var wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
 var wall_search_objects = [];
 
@@ -239,6 +240,9 @@ var app = Vue.createApp({
                 case "update_emoji":
                     app.take_emoji(message_data);
                     break;
+                case "update_grove_harvest":
+                    app.take_grove_harvest(message_data);
+                    break;
             }
 
             app.first_load_done = true;
@@ -302,6 +306,7 @@ var app = Vue.createApp({
             app.update_field_inventory();
             app.update_avatar_inventory();
             app.update_house_inventory();
+            app.update_grove_inventory();
         },
 
         /** send winsock request to get session info
@@ -506,6 +511,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/move_objects.js"%}
         {%include "subject/subject_home/the_stage/barriers.js"%}
         {%include "subject/subject_home/the_stage/emoji.js"%}
+        {%include "subject/subject_home/the_stage/groves.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages

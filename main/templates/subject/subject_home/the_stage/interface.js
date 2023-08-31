@@ -130,8 +130,8 @@ take_target_location_update(message_data)
                 if(app.check_point_in_rectagle(pt, rect))
                 {
                     if(app.check_for_circle_rect_intersection({x:local_player.current_location.x, 
-                                                            y:local_player.current_location.y, 
-                                                            radius:app.session.parameter_set.interaction_range},
+                                                               y:local_player.current_location.y, 
+                                                               radius:app.session.parameter_set.interaction_range},
                                             rect))
                     {
                         if(!session_player.sleeping)
@@ -214,6 +214,20 @@ take_target_location_update(message_data)
                     }
                     return;
                 }
+            }
+        }
+
+        //check if click on grove
+        for(i in app.session.world_state.groves)
+        {
+            let grove = app.session.world_state.groves[i];
+            let grove_center = {x:grove.x, y:grove.y};
+            let pt={x:local_pos.x, y:local_pos.y};
+
+            if(app.check_point_in_circle(pt, {center:grove_center,radius:grove.radius}))
+            {
+                app.subject_grove_click(i);
+                return
             }
         }
 

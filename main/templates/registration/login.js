@@ -19,7 +19,7 @@
           methods:{
               //get current, last or next month
 
-              login:function(){
+              login(){
                   app.login_button_text = '<i class="fas fa-spinner fa-spin"></i>';
                   app.login_error_text = "";
                   let form = document.querySelector('login_form');

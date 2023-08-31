@@ -1,6 +1,6 @@
 /**show edit parameter set field
  */
-show_edit_parameter_set_field:function(index){
+show_edit_parameter_set_field(index){
     
     if(app.session.started) return;
     if(app.working) return;

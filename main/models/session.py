@@ -132,6 +132,7 @@ class Session(models.Model):
                             "fields":{},
                             "houses":{},
                             "avatars":{},
+                            "groves":{},
                             "current_period":1,
                             "current_experiment_phase":ExperimentPhase.INSTRUCTIONS if self.parameter_set.show_instructions else ExperimentPhase.RUN,
                             "time_remaining":self.parameter_set.period_length,
@@ -169,6 +170,18 @@ class Session(models.Model):
             v["harvest_history"] = {str(i.id):[] for i in self.session_periods.all()}
 
             self.world_state["fields"][str(v["id"])] = v
+
+        #groves
+        for i in parameter_set["parameter_set_groves"]:
+            v = {}
+            v = parameter_set["parameter_set_groves"][i]
+            v["max_levels"] = len(v["levels"])
+            v["radius"] = 0
+
+            for j in v["levels"]:
+                v["levels"][j]["harvested"] = False
+
+            self.world_state["groves"][str(v["id"])] = v
         
         #houses
         for i in parameter_set["parameter_set_players"]:
