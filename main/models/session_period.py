@@ -230,6 +230,8 @@ class SessionPeriod(models.Model):
         '''
         logger = logging.getLogger(__name__)
         
+        world_state = self.session.world_state
+
         #check if growth completed
         if self.growth_completed:
             return self.session
@@ -240,9 +242,14 @@ class SessionPeriod(models.Model):
             self.save()
             return self.session
         
-        #grow groves
+
+        #update groves
         for i in self.session.world_state["groves"]:
             grove = self.session.world_state["groves"][str(i)]
+
+            #check if drought
+            if world_state["current_period"] >= grove["drought_on_period"]:
+                grove["max_levels"] = grove["drought_level"]
 
             for j in grove["levels"]:
                 if int(j) > grove["max_levels"]:
