@@ -417,15 +417,25 @@ var app = Vue.createApp({
                 //update fields.
                 for(let i in message_data.fields)
                 {
-                    field = app.session.world_state.fields[i]
-                    field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type]
+                    let field = app.session.world_state.fields[i]
+                    let field_type = app.session.parameter_set.parameter_set_field_types[field.parameter_set_field_type]
             
-                    good_one = field_type.good_one_ft;
-                    good_two = field_type.good_two_ft;
+                    let good_one = field_type.good_one_ft;
+                    let good_two = field_type.good_two_ft;
             
                     app.session.world_state.fields[i][good_one] = message_data.fields[i][good_one];
                     app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
                 }
+
+                //update groves
+                for(let i in message_data.groves)
+                {
+                    let grove = app.session.world_state.groves[i]
+                    grove.levels = message_data.groves[i].levels;
+                    grove.max_levels = message_data.groves[i].max_levels;
+                }
+
+                app.setup_pixi_groves();
 
                 //update houses
                 app.session.world_state.houses = message_data.houses;

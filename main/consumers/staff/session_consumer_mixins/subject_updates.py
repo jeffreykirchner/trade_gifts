@@ -1178,10 +1178,11 @@ def sync_grove_harvest(session_id, player_id, grove_id):
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
+        parameter_set = session.parameter_set.json()
         player = session.world_state['avatars'][str(player_id)]
         grove = session.world_state['groves'][str(grove_id)]
        
-        status = "fail"       
+        status = "fail"     
 
         #loop backwards through levels
         for i in range(grove["max_levels"], 0, -1):
@@ -1196,8 +1197,14 @@ def sync_grove_harvest(session_id, player_id, grove_id):
         if status == "fail":
             error_message.append({"id":"grove_harvest", "message": "The grove is empty."})
 
+        #check player has enough harvests remaining
+        if status == "success" and player["period_grove_harvests"] >= parameter_set["max_grove_harvests"]:
+            status = "fail"
+            error_message.append({"id":"grove_harvest", "message": "No harvests remaining this period."})
+
         if status == "success":
             player[grove["good"]] += harvest_amount
+            player["period_grove_harvests"] += 1
             session.save()
         
         world_state = session.world_state

@@ -50,3 +50,18 @@ class ParameterSetGroveForm(forms.ModelForm):
         model=ParameterSetGrove
         fields =[ 'x', 'y', 'good', 'drought_on_period', 'drought_level', 'hex_color']
     
+
+    def clean_drought_level(self):
+        
+        try:
+           drought_level = self.data.get('drought_level')
+
+           parameter_set_grove = ParameterSetGrove.objects.get(pk=self.instance.id)
+
+           if drought_level>len(parameter_set_grove.levels):
+                raise forms.ValidationError('Drought level higher than total levels')
+           
+        except ValueError:
+            raise forms.ValidationError('Invalid Entry')
+
+        return drought_level

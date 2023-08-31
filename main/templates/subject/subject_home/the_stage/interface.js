@@ -226,7 +226,22 @@ take_target_location_update(message_data)
 
             if(app.check_point_in_circle(pt, {center:grove_center,radius:grove.radius}))
             {
-                app.subject_grove_click(i);
+                if(avatar.period_grove_harvests>=app.session.parameter_set.max_grove_harvests)
+                {
+                    app.add_text_emitters("You must wait until next period to harvest again.", 
+                                            grove.x, 
+                                            grove.y,
+                                            grove.x,
+                                            grove.y-100,
+                                            0xFFFFFF,
+                                            28,
+                                            null);
+                }
+                else
+                {
+                    app.subject_grove_click(i);
+                }
+               
                 return
             }
         }

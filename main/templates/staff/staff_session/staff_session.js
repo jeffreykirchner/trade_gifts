@@ -445,6 +445,16 @@ var app = Vue.createApp({
                     app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
                 }
 
+                //update groves
+                for(let i in message_data.groves)
+                {
+                    let grove = app.session.world_state.groves[i]
+                    grove.levels = message_data.groves[i].levels;
+                    grove.max_levels = message_data.groves[i].max_levels;
+                }
+
+                app.setup_pixi_groves();
+
                 //update houses
                 app.session.world_state.houses = message_data.houses;
                 app.do_house_health_emitters();

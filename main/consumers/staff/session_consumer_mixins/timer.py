@@ -86,8 +86,8 @@ class TimerMixin():
             result["avatars"] = self.world_state_local["avatars"]
 
             if v["period_is_over"]:
-                #avatar inventorys
                 
+                #fields update
                 result["fields"] = {}
 
                 for i in self.world_state_local["fields"]:
@@ -96,8 +96,15 @@ class TimerMixin():
                         good = j[0]
                         result["fields"][i][good] = self.world_state_local["fields"][i][good]
 
+                #houses update
                 result["houses"] = self.world_state_local["houses"]
 
+                #groves update
+                result["groves"] = {}
+                for i in self.world_state_local["groves"]:
+                    grove = self.world_state_local["groves"][i]
+                    result["groves"][i] = {"levels":grove["levels"], "max_levels":grove["max_levels"]}
+                   
             #current locations
             result["current_locations"] = {}
             for i in self.world_state_avatars_local["session_players"]:
@@ -256,6 +263,7 @@ def sync_continue_timer(event, session_id):
                 session = session.session_periods.get(id=last_period_id).do_consumption()
                 session = session.get_current_session_period().do_timer_actions(time_remaining)
                 session = session.get_current_session_period().do_production()
+                session = session.get_current_session_period().do_grove_growth()
 
                 for i in session.world_state["avatars"]:
                     # session.world_state["session_players"][i]["earnings"] += session.world_state["session_players"][i]["inventory"][current_period_id]

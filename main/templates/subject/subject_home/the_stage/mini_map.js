@@ -65,6 +65,20 @@ setup_pixi_minimap()
         mini_map.container.addChild(temp_field);
     }
 
+    //groves
+    for(const i in app.session.world_state.groves)
+    {
+        const grove = app.session.world_state.groves[i];
+
+        let temp_grove = new PIXI.Graphics();
+        temp_grove.beginFill(app.field_color);
+        // temp_grove.lineStyle(0.75, "black");
+        temp_grove.drawCircle(grove.x * scale, grove.y * scale, grove.radius * scale);
+        temp_grove.endFill();
+
+        mini_map.container.addChild(temp_grove);
+    }
+
     //houses
     for(const i in app.session.parameter_set.parameter_set_players){
         const parameter_set_player = app.session.parameter_set.parameter_set_players[i];
