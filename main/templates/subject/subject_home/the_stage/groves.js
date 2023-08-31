@@ -9,7 +9,7 @@ setup_pixi_groves()
     //destory old groves
     for(i in pixi_groves)
     {
-        if(grove_container in pixi_groves[i])
+        if("grove_container" in pixi_groves[i])
         {
             pixi_groves[i].grove_container.destroy();
         }
@@ -255,6 +255,7 @@ take_grove_harvest(message_data)
 
         avatar = app.session.world_state.avatars[player_id];
         avatar[grove.good] = message_data.avatar[grove.good];
+        avatar.period_grove_harvests = message_data.avatar.period_grove_harvests;
 
         app.update_avatar_inventory();
         app.update_grove_inventory();

@@ -28,6 +28,7 @@ class SessionPeriod(models.Model):
 
     production_completed = models.BooleanField(default=False)   #production completed for this period
     consumption_completed = models.BooleanField(default=False)  #consumption completed for this period
+    growth_completed = models.BooleanField(default=False)       #grove growth completed for this period
 
     timer_actions = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)   #timer actions for this period
 
@@ -151,6 +152,15 @@ class SessionPeriod(models.Model):
         logger = logging.getLogger(__name__)
         # logger.info(f"do_production {self.id}")
 
+        if self.production_completed:
+            return self.session
+        
+        #if no fields, return
+        if len(self.session.world_state["fields"]) == 0:
+            self.production_completed = True
+            self.save()
+            return self.session
+
         parameter_set = self.session.parameter_set.json()
         world_state = self.session.world_state
         current_period = world_state["current_period"]
@@ -213,6 +223,45 @@ class SessionPeriod(models.Model):
         # logger.info(f"do_production {self.id}")
         
         return self.session
+    
+    def do_grove_growth(self):
+        '''
+        do grove growth for this period
+        '''
+        logger = logging.getLogger(__name__)
+        
+        #check if growth completed
+        if self.growth_completed:
+            return self.session
+        
+        #if no groves, return
+        if len(self.session.world_state["groves"]) == 0:
+            self.growth_completed = True
+            self.save()
+            return self.session
+        
+        #grow groves
+        for i in self.session.world_state["groves"]:
+            grove = self.session.world_state["groves"][str(i)]
+
+            for j in grove["levels"]:
+                if int(j) > grove["max_levels"]:
+                    break
+
+                level = grove["levels"][str(j)]
+                if level["harvested"]:
+                    level["harvested"] = False
+                    break
+        
+        #reset avatar grove harvests
+        for i in self.session.world_state["avatars"]:
+            avatar = self.session.world_state["avatars"][str(i)]
+            avatar["period_grove_harvests"] = 0
+
+        self.session.save()
+        return self.session
+        
+
 
     def json(self):
         '''

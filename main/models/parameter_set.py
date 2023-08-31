@@ -52,6 +52,7 @@ class ParameterSet(models.Model):
     avatar_bound_box_percent = models.DecimalField(verbose_name='Avatar Bound Box Percent', decimal_places=2, max_digits=3, default=0.75) #avatar bound box percent for interaction
 
     production_effort = models.IntegerField(verbose_name='Production Effort', default=10)                     # the amount of effort a subject can put into production
+    max_grove_harvests = models.IntegerField(verbose_name='Max Grove Harvests', default=1)                    #the maximum number of times a subject can harvest from a grove
 
     interaction_length = models.IntegerField(verbose_name='Interaction Length', default=10)                   #interaction length in seconds
     cool_down_length = models.IntegerField(verbose_name='Cool Down Length', default=10)                       #cool down length in seconds
@@ -129,6 +130,7 @@ class ParameterSet(models.Model):
             self.avatar_bound_box_percent = new_ps.get("avatar_bound_box_percent", 0.75)
 
             self.production_effort = new_ps.get("production_effort", 10)
+            self.max_grove_harvests = new_ps.get("max_grove_harvests", 1)
 
             self.interaction_length = new_ps.get("interaction_length", 10)
             self.cool_down_length = new_ps.get("cool_down_length", 10)
@@ -287,6 +289,7 @@ class ParameterSet(models.Model):
         for i in self.parameter_set_players.all():
             i.setup()
         
+        self.chat_rules_letters = {"letters": None}
         self.setup_letter_map()
     
     def setup_letter_map(self):
@@ -388,6 +391,7 @@ class ParameterSet(models.Model):
         self.json_for_session["avatar_bound_box_percent"] = self.avatar_bound_box_percent
 
         self.json_for_session["production_effort"] = self.production_effort
+        self.json_for_session["max_grove_harvests"] = self.max_grove_harvests
 
         self.json_for_session["interaction_length"] = self.interaction_length
         self.json_for_session["cool_down_length"] = self.cool_down_length

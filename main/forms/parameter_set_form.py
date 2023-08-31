@@ -222,6 +222,12 @@ class ParameterSetForm(forms.ModelForm):
                                                                           "step":"1",
                                                                           "min":"1"}))
     
+    max_grove_harvests = forms.IntegerField(label='Max Grove Harvests',
+                                            min_value=1,
+                                            widget=forms.NumberInput(attrs={"v-model":"parameter_set.max_grove_harvests",
+                                                                            "step":"1",
+                                                                            "min":"1"}))
+    
     chat_mode = forms.ChoiceField(label='Chat Mode',
                                   choices=ChatModes.choices,
                                   widget=forms.Select(attrs={"v-model":"parameter_set.chat_mode",}))
@@ -242,7 +248,7 @@ class ParameterSetForm(forms.ModelForm):
                  'survey_required', 'survey_link', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'health_loss_per_second', 'heath_gain_per_sleep_second',
                  'consumption_alpha', 'consumption_beta', 'cents_per_second', 'attack_damage', 'attack_cost', 'sleep_benefit', 'allow_stealing', 'world_width', 'world_height',
-                 'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort',
+                 'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort', 'max_grove_harvests',
                  'chat_mode', 'chat_rules_word_list', 'test_mode']
                  
 

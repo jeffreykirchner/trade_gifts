@@ -219,9 +219,11 @@ class Session(models.Model):
             v2['earnings'] = "0"
             v2['health'] = "100"
             v2['sleeping'] = False
+            v2['period_grove_harvests'] = 0
             v2['parameter_set_player_id'] = i['parameter_set_player__id']
             for j in main.globals.Goods.choices:
                 v2[j[0]] = 0
+
             self.world_state["avatars"][str(i['id'])] = v2
             
         self.save()
