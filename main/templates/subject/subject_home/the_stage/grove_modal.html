@@ -12,114 +12,34 @@
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header fw-bold">
-                Grove:&nbsp;<span v-if="selected_grove.grove">Owner [[session.parameter_set.parameter_set_players[selected_grove.grove.parameter_set_player].id_label]]</span>
-                <span v-if="selected_grove.grove && selected_grove.grove.session_player==session_player.id">&nbsp;(You)</span>
+                Grove
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">   
                 <div class="row">
-                    <div class="col text-center h5">Harvest</div>
+                    <div class="col text-center h5">Harvest <span v-if="selected_grove.grove">[[selected_grove.grove.good]]</span></div>
                 </div>
 
-                <div class="row align-items-center text-center fw-bold mt-2" v-if="selected_grove.grove" id="div_id_good_one_harvest">
-                    <div class="col-4 text-center">
-                        <img class="grove_modal_icons" v-bind:src="'/static/' + selected_grove.grove_type.good_one_ft.toLowerCase() + '.png'" />
+                <div class="row align-items-center text-center fw-bold mt-2" v-if="selected_grove.grove" id="div_id_grove_harvest">
+                    <div class="col text-end">
+                        <img class="grove_modal_icons" v-bind:src="'/static/' + selected_grove.grove.good.toLowerCase() + '.png'" />
                     </div>  
-                    <div class="col fw-bold text-start">
-                        <input type="number" 
-                           class="transfer_model_input form-control-lg fw-bold"
-                           v-model="selected_grove.good_one_harvest"
-                           min="0"
-                           max="999"
-                           step="1"
-                           id="good_one_harvest">      
-                           
-                           of [[selected_grove.good_one_available]]
+                    <div class="col h1 text-start">
+                        [[selected_grove.harvest_amount]]
                     </div>                    
-                </div>
-
-                <div class="row align-items-center text-center fw-bold mt-2" v-if="selected_grove.grove" id="div_id_good_two_harvest">
-                    
-                    <div class="col-4 text-center">
-                        <img class="grove_modal_icons" v-bind:src="'/static/' + selected_grove.grove_type.good_two_ft.toLowerCase() + '.png'" />
-                    </div>  
-                    <div class="col text-start">
-                        <input type="number" 
-                            class="transfer_model_input form-control-lg fw-bold"
-                            v-model="selected_grove.good_two_harvest"
-                            min="0"
-                            max="999"
-                            step="1"
-                            id="good_two_harvest">
-
-                            of [[selected_grove.good_two_available]]
-                    </div>
-                </div>   
+                </div> 
                 
                 <div class="row mt-4">
                     <div class="col text-end">
                         <button type="button"
-                                class="btn btn-outline-primary me-2"
-                                v-on:click = "select_all_fruit()"
-                                title="Select all fruit for harvest."                       
-                                v-bind:disabled="reconnecting || working">
-                            Select All <i class="fas fa-check-double"></i>
-                        </button>
-
-                        <button type="button"
                                 class="btn btn-outline-primary"
                                 v-on:click = "send_grove_harvest()"
-                                title="Harvest the selected fruit."                       
+                                title="Harvest the selected grove."                       
                                 v-bind:disabled="reconnecting || working">
-                            Harvest Fruit <i class="fas fa-sign-in-alt"></i>
+                            Harvest <i class="fas fa-sign-in-alt"></i>
                         </button>
                     </div>
                 </div>
-
-                <div v-if="selected_grove.grove && selected_grove.grove.session_player==session_player.id">
-                    <div class="row mt-4 pt-4 border-top">
-                        <div class="col text-center h5">Effort Allocation: [[session.parameter_set.production_effort]] Pts</div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col text-start h5">                           
-                            <img class="grove_modal_icons_2" v-bind:src="'/static/' + selected_grove.grove_type.good_one_ft.toLowerCase() + '.png'" />
-                            [[selected_grove.good_one_production_effort]] Pts
-                        </div>
-                        <div class="col text-end h5">
-                            [[selected_grove.good_two_production_effort]] Pts
-                            <img class="grove_modal_icons_2" v-bind:src="'/static/' + selected_grove.grove_type.good_two_ft.toLowerCase() + '.png'" />
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col text-center">
-                            <input type="range"
-                                    class="form-range" 
-                                    id="effort_range" 
-                                    v-bind:max="session.parameter_set.production_effort/2" 
-                                    v-bind:min="-session.parameter_set.production_effort/2" 
-                                    step="1"
-                                    v-bind:disabled="reconnecting || working"
-                                    v-on:input="update_effort_slider"
-                                    v-model="selected_grove.effort_slider">
-                        </div>
-
-                    </div>
-
-                    <div class="row mt-4">
-                        <div class="col text-end">
-                            <button type="button"
-                                    class="btn btn-outline-primary"
-                                    v-on:click = "send_grove_effort()"
-                                    title="Update Effort."                       
-                                    v-bind:disabled="reconnecting || working">
-                                Update Effort <i class="fas fa-sign-in-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
             </div>
         </div>
     </div>

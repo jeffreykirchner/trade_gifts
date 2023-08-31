@@ -408,7 +408,7 @@ class SubjectUpdatesMixin():
 
     async def field_harvest(self, event):
         '''
-        subject activates tractor beam
+        subject harvests field
        '''
         if self.controlling_channel != self.channel_name:
             return
@@ -466,7 +466,7 @@ class SubjectUpdatesMixin():
         
     async def update_field_harvest(self, event):
         '''
-        subject activates tractor beam update
+        subject updates field harvest
         '''
 
         event_data = event["group_data"]
@@ -823,6 +823,59 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
 
+    async def grove_harvest(self, event):
+        '''
+        subject harvests from grove
+       '''
+        if self.controlling_channel != self.channel_name:
+            return
+        
+        logger = logging.getLogger(__name__)
+        # logger.info(f"grove_harvest: {event}")
+        
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            grove_id = event["message_text"]["grove_id"]
+        except:
+            logger.info(f"grove_harvest: invalid data, {event['message_text']}")
+            return
+
+        v = await sync_to_async(sync_grove_harvest)(self.session_id, player_id, grove_id)
+        
+        result = {"status" : v["status"], "error_message" : v["error_message"]}
+
+        if v["world_state"] and v["status"]=="success":
+            self.world_state_local = v["world_state"]
+            result["grove"] = self.world_state_local["groves"][str(grove_id)]
+            result["player_id"] = player_id
+            result["grove_id"] = grove_id
+            result["harvest_amount"] = v["harvest_amount"]
+            result["avatar"] = self.world_state_local["avatars"][str(player_id)]                
+
+        else:
+            logger.info(f"grove_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
+            return
+        
+        await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                           session_player_id=player_id,
+                                           type="grove_harvest",
+                                           period_number=self.world_state_local["current_period"],
+                                           time_remaining=self.world_state_local["time_remaining"],
+                                           data=result)
+
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+        
+    async def update_grove_harvest(self, event):
+        '''
+        subject harvests from grove update
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+        
 def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_two_harvest):
     '''
     harvest from field
@@ -1112,6 +1165,47 @@ def sync_sleep(session_id, player_id):
         world_state = session.world_state
 
     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+
+def sync_grove_harvest(session_id, player_id, grove_id):
+    '''
+    harvest from grove
+    '''
+
+    status = "success"
+    harvest_amount = 0
+    error_message = []
+    world_state = None
+
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
+        player = session.world_state['avatars'][str(player_id)]
+        grove = session.world_state['groves'][str(grove_id)]
+       
+        status = "fail"       
+
+        #loop backwards through levels
+        for i in range(grove["max_levels"], 0, -1):
+            level = grove["levels"][str(i)]
+
+            if not level["harvested"]:
+                status = "success"               
+                level["harvested"] = True
+                harvest_amount = level["value"]
+                break
+        
+        if status == "fail":
+            error_message.append({"id":"grove_harvest", "message": "The grove is empty."})
+
+        if status == "success":
+            player[grove["good"]] += harvest_amount
+            session.save()
+        
+        world_state = session.world_state
+        
+    return {"status" : status, 
+            "error_message" : error_message, 
+            "world_state" : world_state, 
+            "harvest_amount" : harvest_amount}
 
 
 

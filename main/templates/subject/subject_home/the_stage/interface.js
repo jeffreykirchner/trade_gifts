@@ -130,8 +130,8 @@ take_target_location_update(message_data)
                 if(app.check_point_in_rectagle(pt, rect))
                 {
                     if(app.check_for_circle_rect_intersection({x:local_player.current_location.x, 
-                                                            y:local_player.current_location.y, 
-                                                            radius:app.session.parameter_set.interaction_range},
+                                                               y:local_player.current_location.y, 
+                                                               radius:app.session.parameter_set.interaction_range},
                                             rect))
                     {
                         if(!session_player.sleeping)

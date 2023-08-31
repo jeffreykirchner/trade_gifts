@@ -228,6 +228,9 @@ var app = Vue.createApp({
                 case "update_emoji":
                     app.take_emoji(message_data);
                     break;
+                case "update_grove_harvest":
+                    app.take_grove_harvest(message_data);
+                    break;
                 
             }
 
@@ -309,6 +312,7 @@ var app = Vue.createApp({
             app.update_field_inventory();
             app.update_avatar_inventory();
             app.update_house_inventory();
+            app.update_grove_inventory();
         },
 
         /** send winsock request to get session info
@@ -631,6 +635,9 @@ var app = Vue.createApp({
             if(e) e.remove();
 
             e = document.getElementById("id_errors_attack_avatar_button");
+            if(e) e.remove();
+
+            e = document.getElementById("id_errors_grove_harvest");
             if(e) e.remove();
         },
 

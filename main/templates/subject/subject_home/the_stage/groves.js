@@ -57,18 +57,8 @@ setup_pixi_groves()
         for(let j = 1; j <= grove.max_levels; j++)
         {
             let grove_level = grove.levels[j];
-            let grove_circle = new PIXI.Graphics();
-            grove_circle.beginFill(grove.hex_color);
-            //add line style
-            grove_circle.lineStyle(2, 0x000000);
-            grove_circle.drawCircle(0, 0, temp_size/2);
-            grove_circle.endFill();
-            grove_circle.alpha = 1/max_grove_size;
-            grove_circle.eventMode = 'passive';
-            
-            pixi_groves[i]["grove_circles_"+j] = grove_circle;
-            grove_container.addChildAt(grove_circle, 0);
 
+            //value of level
             let good_label = new PIXI.Text(grove_level.value, {
                 fontFamily: 'Arial',
                 fontSize: 14,
@@ -80,7 +70,32 @@ setup_pixi_groves()
             good_label.anchor.set(1, 0.5);
             good_label_position = app.find_point_on_circle({x:0, y:0}, temp_size/2, 0);
             good_label.position.set(good_label_position.x-5, good_label_position.y);
+
+            //level before harvest           
+            let grove_circle = new PIXI.Graphics();
+            grove_circle.beginFill(grove.hex_color);
+            grove_circle.lineStyle(2, "black");
+            grove_circle.drawCircle(0, 0, temp_size/2);
+            grove_circle.endFill();
+            grove_circle.alpha = 1/max_grove_size;
+            grove_circle.eventMode = 'passive';
+
+            //level after harvest
+            let grove_circle_outline = new PIXI.Graphics();
+            grove_circle_outline.beginFill("white");
+            grove_circle_outline.lineStyle(2, "black");
+            grove_circle_outline.drawCircle(0, 0, temp_size/2);
+            grove_circle_outline.endFill();
+            grove_circle_outline.eventMode = 'passive';
+            grove_circle_outline.alpha = 1/max_grove_size;
+            grove_circle_outline.visible = false;
+            
+            pixi_groves[i]["grove_circles_"+j] = grove_circle;
+            pixi_groves[i]["grove_circles_outline"+j] = grove_circle_outline;
+
             grove_container.addChildAt(good_label, 0);
+            grove_container.addChildAt(grove_circle, 0);
+            grove_container.addChildAt(grove_circle_outline, 0);
 
             temp_size += ring_size;
         }
@@ -90,7 +105,7 @@ setup_pixi_groves()
         //add base circle
         temp_size -= ring_size;
         let grove_base = new PIXI.Graphics();
-        grove_base.beginFill("white");
+        grove_base.beginFill("lightgrey");
         //add line style
         grove_base.drawCircle(0, 0, temp_size/2);
         grove_base.endFill();
@@ -140,11 +155,26 @@ update_grove_inventory()
 
         let temp_value = 0;
 
+        //find next harvestable level
         for(let j = 1; j <= grove.max_levels; j++)
         {
             if(grove.levels[j].harvested) break;
-
             temp_value = grove.levels[j].value;
+        }
+
+        //hide level if harvests
+        for(let j = 1; j <= grove.max_levels; j++)
+        {
+            if(grove.levels[j].harvested)
+            {
+                pixi_groves[i]["grove_circles_"+j].visible = false;
+                pixi_groves[i]["grove_circles_outline"+j].visible = true;
+            }
+            else
+            {
+                pixi_groves[i]["grove_circles_"+j].visible = true;
+                pixi_groves[i]["grove_circles_outline"+j].visible = false;
+            }
         }
 
         pixi_groves[i].good_label.text = temp_value;
@@ -157,6 +187,13 @@ update_grove_inventory()
 subject_grove_click(grove_id)
 {
     let grove = app.session.world_state.groves[grove_id];
+
+    app.selected_grove.harvest_amount=0;
+    for(i=1;i<=grove.max_levels;i++)
+    {
+        if(grove.levels[i].harvested) break;
+        app.selected_grove.harvest_amount = grove.levels[i].value;
+    }
 
     app.selected_grove.grove = grove;
     
@@ -173,30 +210,6 @@ hide_grove_modal()
 },
 
 /**
- * handle update to effort slider
- */
-update_effort_slider()
-{
-    let total_effort = app.session.parameter_set.production_effort;
-    let effort_slider = parseInt(app.selected_grove.effort_slider);
-
-    if(effort_slider < 0){
-
-        app.selected_grove.good_one_production_effort = Math.abs(effort_slider) + total_effort/2;
-        app.selected_grove.good_two_production_effort = total_effort - app.selected_grove.good_one_production_effort;
-
-    }else if(effort_slider > 0){
-
-        app.selected_grove.good_two_production_effort = effort_slider + total_effort/2;
-        app.selected_grove.good_one_production_effort = total_effort - app.selected_grove.good_two_production_effort;
-    }else{
-        effort_slider = 0;
-        app.selected_grove.good_one_production_effort = total_effort/2;
-        app.selected_grove.good_two_production_effort = total_effort/2;
-    }
-},
-
-/**
  * send harvest grove requst
  */
 send_grove_harvest()
@@ -207,35 +220,21 @@ send_grove_harvest()
     app.clear_main_form_errors();
 
     let grove = app.session.world_state.groves[app.selected_grove.grove.id];
-    let grove_type = app.session.parameter_set.parameter_set_grove_types[grove.parameter_set_grove_type];
-
-    let failed = false;
-    if(app.selected_grove.good_one_harvest <= 0 && app.selected_grove.good_two_harvest <= 0)
+    
+    let failed = true;
+    for(let i=1;i<=grove.max_levels;i++)
     {
-        app.display_errors({good_one_harvest: ["Invalid Amount"], good_two_harvest: ["Invalid Amount"]});
+        if(!grove.levels[i].harvested) failed = false;
+    }
+
+    if(failed)
+    {
+        app.display_errors({grove_harvest: ["The grove is empty."]});
         return;
-    }
-
-    if(app.selected_grove.good_one_harvest > grove[grove_type.good_one_ft] || app.selected_grove.good_one_harvest < 0)
-    {
-        app.display_errors({good_one_harvest: ["Invalid Amount"]});
-        app.selected_grove.good_one_available = grove[grove_type.good_one_ft];        
-        failed = true;
-    }
-
-    if(app.selected_grove.good_two_harvest > grove[grove_type.good_two_ft] || app.selected_grove.good_two_harvest < 0)
-    {
-        app.display_errors({good_two_harvest: ["Invalid Amount"]});
-        app.selected_grove.good_two_available = grove[grove_type.good_two_ft];
-        failed = true;
-    }
-
-    if(failed) return;
+    };
 
     app.send_message("grove_harvest", 
-                     {"grove_id" : app.selected_grove.grove.id,
-                      "good_one_harvest" : app.selected_grove.good_one_harvest,
-                      "good_two_harvest" : app.selected_grove.good_two_harvest},
+                     {"grove_id" : app.selected_grove.grove.id},
                       "group");
 },
 
@@ -248,45 +247,32 @@ take_grove_harvest(message_data)
 
     if(message_data.status == "success")
     {
-        avatar = app.session.world_state.avatars[message_data.avatar.id];
-        grove = app.session.world_state.groves[message_data.grove.id];
+        let grove_id = message_data.grove_id;
+        let player_id = message_data.player_id;
+        let harvest_amount = message_data.harvest_amount;
+        app.session.world_state.groves[grove_id].levels = message_data.grove.levels;
+        let grove = app.session.world_state.groves[grove_id];
 
-        good_one_harvest = message_data.good_one_harvest;
-        good_two_harvest = message_data.good_two_harvest;
+        avatar = app.session.world_state.avatars[player_id];
+        avatar[grove.good] = message_data.avatar[grove.good];
 
-        grove_type = app.session.parameter_set.parameter_set_grove_types[grove.parameter_set_grove_type];
-
-        grove[grove_type.good_one_ft] = message_data.grove[grove_type.good_one_ft];
-        grove[grove_type.good_two_ft] = message_data.grove[grove_type.good_two_ft];
-
-        avatar[grove_type.good_one_ft] = message_data.avatar[grove_type.good_one_ft];
-        avatar[grove_type.good_two_ft] = message_data.avatar[grove_type.good_two_ft];
-
-        app.update_grove_inventory();
         app.update_avatar_inventory();
+        app.update_grove_inventory();
 
         elements = [];
-        if(good_one_harvest > 0)
+        if(harvest_amount > 0)
         {
-            element = {source_change:"-" + good_one_harvest,
-                       target_change:"+" + good_one_harvest, 
-                       texture:app.pixi_textures[grove_type.good_one_ft+"_tex"]  }
-            elements.push(element);
-        }
-
-        if(good_two_harvest > 0)
-        {
-            element = {source_change:"-" + good_two_harvest,
-                       target_change:"+" + good_two_harvest,
-                       texture:app.pixi_textures[grove_type.good_two_ft+"_tex"]  }
+            element = {source_change:"-" + harvest_amount,
+                       target_change:"+" + harvest_amount, 
+                       texture:app.pixi_textures[grove.good +"_tex"]  }
             elements.push(element);
         }
 
         app.add_transfer_beam(grove, 
-            app.session.world_state_avatars.session_players[message_data.avatar.id].current_location,
+            app.session.world_state_avatars.session_players[player_id].current_location,
             elements);
         
-        if(app.is_subject && message_data.avatar.id == app.session_player.id)
+        if(app.is_subject && player_id == app.session_player.id)
         {
             app.grove_modal.hide();
         }
@@ -296,50 +282,6 @@ take_grove_harvest(message_data)
 
     }
 },
-
-/**
- * select all fruit for harvest
- */
-select_all_fruit()
-{
-    grove_type = app.session.parameter_set.parameter_set_grove_types[app.selected_grove.grove.parameter_set_grove_type];
-
-    app.selected_grove.good_one_harvest = app.selected_grove.grove[grove_type.good_one_ft];
-    app.selected_grove.good_two_harvest = app.selected_grove.grove[grove_type.good_two_ft];
-},
-
-/**
- * send grove effort update
- */
-send_grove_effort()
-{
-
-    app.send_message("grove_effort", 
-                     {"grove_id" : app.selected_grove.grove.id,
-                      "good_one_effort" : app.selected_grove.good_one_production_effort,
-                      "good_two_effort" : app.selected_grove.good_two_production_effort},
-                      "group");
-},
-
-/**
- * take grove effort update
- */
-take_grove_effort(message_data)
-{
-    grove = app.session.world_state.groves[message_data.grove.id];
-
-    grove.good_one_effort = message_data.good_one_effort;
-    grove.good_two_effort = message_data.good_two_effort;
-
-    app.update_grove_inventory();
-
-    if(message_data.avatar.id == app.session_player.id)
-    {
-        app.grove_modal.hide();
-    }
-
-},
-
 
 
 
