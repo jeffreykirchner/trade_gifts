@@ -149,6 +149,14 @@
                 [[parameter_set.cents_per_second]]                          
             </div>  
         </div>
+         <div class="row">
+            <div class="col-7 text-end">
+                {{parameter_set_form.allow_attacks.label}}:                
+            </div>
+            <div class="col text-start">
+                <span v-if="parameter_set.allow_attacks=='True'">Yes</span><span v-else>No</span>                         
+            </div>  
+        </div>
         <div class="row">
             <div class="col-7 text-end">
                 {{parameter_set_form.attack_cost.label}}:                
