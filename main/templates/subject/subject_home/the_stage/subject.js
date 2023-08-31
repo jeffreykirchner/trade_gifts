@@ -121,7 +121,7 @@ update_subject_status_overlay()
 
     subject_status_overlay_container.getChildAt(3).text = app.session.world_state.current_period;
     subject_status_overlay_container.getChildAt(4).text = app.session.world_state.time_remaining;
-    subject_status_overlay_container.getChildAt(5).text = Number(app.session.world_state.avatars[app.session_player.id].earnings).toFixed(2);
+    subject_status_overlay_container.getChildAt(5).text = Number(app.session.world_state.avatars[app.session_player.id].earnings).toFixed(1);
 },
 
 /**
