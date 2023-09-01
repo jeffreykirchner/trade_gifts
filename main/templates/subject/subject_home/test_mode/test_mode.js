@@ -154,15 +154,52 @@ test_mode_move(){
     if(app.session.world_state.finished) return;
 
     let obj = app.session.world_state_avatars.session_players[app.session_player.id];
-    let current_period_id = app.session.world_state.session_periods_order[app.session.world_state.current_period-1];
+    let current_period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
 
     if(!current_period_id) return;
    
     if(!app.test_mode_location_target || 
         app.get_distance(app.test_mode_location_target,  obj.current_location) <= 25)
     {
-         //if near target location, move to a new one
+        //if near target location, move to a new one
+        let temp_local_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
+        if(app.random_number(1, 2) == 1)
+        {
+            //move to a random house in my group
+            let go = true;
+            while(go)
+            {
+                let temp_id = app.random_number(0,app.session.parameter_set.parameter_set_players_order.length-1);
+                let player_id = app.session.parameter_set.parameter_set_players_order[temp_id];
+                let parameter_set_player = app.session.parameter_set.parameter_set_players[player_id];
 
+                if(parameter_set_player.parameter_set_group == temp_local_group)
+                {
+                    go = false;
+                    app.test_mode_location_target = {x:parameter_set_player.house_x + app.random_number(-100, 100),
+                                                     y:parameter_set_player.house_y + app.random_number(-100, 100)};
+                }
+            }
+        }
+        else
+        {
+            //move to a random grove in my group
+            let go = true;
+            while(go)
+            {
+                let temp_id = app.random_number(0,app.session.parameter_set.parameter_set_groves_order.length-1);
+                let grove_id = app.session.parameter_set.parameter_set_groves_order[temp_id];
+                let parameter_set_grove = app.session.parameter_set.parameter_set_groves[grove_id];
+
+                if(parameter_set_grove.parameter_set_group == temp_local_group)
+                {
+                    go = false;
+                    app.test_mode_location_target = {x:parameter_set_grove.x + app.random_number(-100, 100),
+                                                     y:parameter_set_grove.y + app.random_number(-100, 100)};
+                }
+            }
+        }
+        
 
     }
     else if(app.get_distance(app.test_mode_location_target,  obj.current_location)<1000)
@@ -181,23 +218,5 @@ test_mode_move(){
     }
 
     app.target_location_update();
-},
-
-/**
- * find point given angle and distance
- **/
-get_point_from_angle_distance(start_x, start_y, width, height, distance)
-{
-    let angle = app.get_angle(start_x, start_y, width, height);
-    return {x:start_x + distance * Math.cos(angle), 
-            y:start_y + distance * Math.sin(angle)};
-},
-
-/**
- * find the angle between two points
- */
-get_angle(x1, y1, x2, y2)
-{
-    return Math.atan2(y2 - y1, x2 - x1);
 },
 {%endif%}

@@ -150,3 +150,21 @@ check_point_in_circle(point, circle)
     if(distance <= circle.radius) return true;
     return false;
 },
+
+/**
+ * find point given angle and distance
+ **/
+get_point_from_angle_distance(start_x, start_y, width, height, distance)
+{
+    let angle = app.get_angle(start_x, start_y, width, height);
+    return {x:start_x + distance * Math.cos(angle), 
+            y:start_y + distance * Math.sin(angle)};
+},
+
+/**
+ * find the angle between two points
+ */
+get_angle(x1, y1, x2, y2)
+{
+    return Math.atan2(y2 - y1, x2 - x1);
+},

@@ -203,7 +203,12 @@ class ParameterSet(models.Model):
 
             for i in new_parameter_set_groves:
                 p = main.models.ParameterSetGrove.objects.create(parameter_set=self)
+                v = new_parameter_set_groves[i]
                 p.from_dict(new_parameter_set_groves[i])
+
+                if v.get("parameter_set_group", None) != None:
+                    p.parameter_set_group_id=new_parameter_set_groups_map[str(v["parameter_set_group"])]
+                p.save()
 
             #parameter set barriers
             self.parameter_set_barriers_a.all().delete()

@@ -18,6 +18,7 @@ class ParameterSetGrove(models.Model):
     '''
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_groves_a")
+    parameter_set_group = models.ForeignKey(ParameterSetGroup, on_delete=models.SET_NULL, related_name="parameter_set_groves_b", blank=True, null=True)
 
     x = models.IntegerField(verbose_name='Start Location X', default=50)                #starting location x and y
     y = models.IntegerField(verbose_name='Start Location Y', default=50)
@@ -38,7 +39,7 @@ class ParameterSetGrove(models.Model):
     class Meta:
         verbose_name = 'Parameter Set Grove'
         verbose_name_plural = 'Parameter Set Grove'
-        ordering=['good']
+        ordering=['id']
 
     def from_dict(self, new_ps):
         '''
@@ -100,6 +101,7 @@ class ParameterSetGrove(models.Model):
             "drought_on_period" : self.drought_on_period,
             "drought_level" : self.drought_level,
             "hex_color" : self.hex_color,
+            "parameter_set_group" : self.parameter_set_group.id if self.parameter_set_group else None,
         }
     
     def get_json_for_subject(self, update_required=False):

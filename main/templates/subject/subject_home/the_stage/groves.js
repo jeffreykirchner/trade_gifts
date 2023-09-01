@@ -37,7 +37,7 @@ setup_pixi_groves()
     for(const i in app.session.world_state.groves)
     {
 
-        // const grove_id = app.session.parameter_set.parameter_set_groves_order[i];
+        const parameter_set_grove = app.session.parameter_set.parameter_set_groves[i];
         const grove = app.session.world_state.groves[i];
 
         pixi_groves[i] = {};
@@ -46,7 +46,7 @@ setup_pixi_groves()
         grove_container.eventMode = 'passive';
         grove_container.zIndex = 80;
         
-        grove_container.position.set(grove.x, grove.y);
+        grove_container.position.set(parameter_set_grove.x, parameter_set_grove.y);
         grove_container.zIndex = 80;
         pixi_groves[i].grove_container = grove_container;
 

@@ -36,6 +36,13 @@ class ParameterSetPlayerAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request, obj=None):
         return False
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(ParameterSetPlayerAdmin,self).get_form(request, obj,**kwargs)
+
+        #only show parameter set groups for this parameter set
+        form.base_fields['parameter_set_group'].queryset = ParameterSetGroup.objects.filter(parameter_set=obj.parameter_set)
+        return form
 
     readonly_fields=['parameter_set']
     list_display = ['id_label']
