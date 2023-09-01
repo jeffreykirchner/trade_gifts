@@ -162,7 +162,43 @@ test_mode_move(){
         app.get_distance(app.test_mode_location_target,  obj.current_location) <= 25)
     {
         //if near target location, move to a new one
-        
+        let temp_local_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
+        if(app.random_number(1, 2) == 1)
+        {
+            //move to a random house in my group
+            let go = true;
+            while(go)
+            {
+                let temp_id = app.random_number(0,app.session.parameter_set.parameter_set_players_order.length-1);
+                let player_id = app.session.parameter_set.parameter_set_players_order[temp_id];
+                let parameter_set_player = app.session.parameter_set.parameter_set_players[player_id];
+
+                if(parameter_set_player.parameter_set_group == temp_local_group)
+                {
+                    go = false;
+                    app.test_mode_location_target = {x:parameter_set_player.house_x + app.random_number(-100, 100),
+                                                     y:parameter_set_player.house_y + app.random_number(-100, 100)};
+                }
+            }
+        }
+        else
+        {
+            //move to a random grove in my group
+            let go = true;
+            while(go)
+            {
+                let temp_id = app.random_number(0,app.session.parameter_set.parameter_set_groves_order.length-1);
+                let grove_id = app.session.parameter_set.parameter_set_groves_order[temp_id];
+                let parameter_set_grove = app.session.parameter_set.parameter_set_groves[grove_id];
+
+                if(parameter_set_grove.parameter_set_group == temp_local_group)
+                {
+                    go = false;
+                    app.test_mode_location_target = {x:parameter_set_grove.x + app.random_number(-100, 100),
+                                                     y:parameter_set_grove.y + app.random_number(-100, 100)};
+                }
+            }
+        }
         
 
     }

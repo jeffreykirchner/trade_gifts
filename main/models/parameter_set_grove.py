@@ -39,7 +39,7 @@ class ParameterSetGrove(models.Model):
     class Meta:
         verbose_name = 'Parameter Set Grove'
         verbose_name_plural = 'Parameter Set Grove'
-        ordering=['good', 'id']
+        ordering=['id']
 
     def from_dict(self, new_ps):
         '''
