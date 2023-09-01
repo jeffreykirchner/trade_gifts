@@ -65,6 +65,7 @@ def take_update_parameter_set_grove(data):
     form_data = data["form_data"]
 
     try:        
+        session = Session.objects.get(id=session_id)
         parameter_set_grove = ParameterSetGrove.objects.get(id=parameterset_grove_id)       
     except ObjectDoesNotExist:
         logger.warning(f"take_update_parameter_set_grove parameterset_grove, not found ID: {parameterset_grove_id}")
@@ -89,6 +90,7 @@ def take_update_parameter_set_grove(data):
     logger.info(f'form_data_dict : {form_data_dict}')
 
     form = ParameterSetGroveForm(form_data_dict, instance=parameter_set_grove)
+    form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
 
     if form.is_valid():         
         form.save()           
@@ -149,9 +151,13 @@ def take_add_parameterset_grove(data):
         logger.warning(f"take_add_parameterset_grove session, not found ID: {session_id}")
         return {"value" : "fail"}
 
+    parameter_set_grove_last = ParameterSetGrove.objects.last()
+
     parameter_set_grove = ParameterSetGrove.objects.create(parameter_set=session.parameter_set)
     parameter_set_grove.setup()
-    parameter_set_grove.from_dict(ParameterSetGrove.objects.last().json())
+    parameter_set_grove.from_dict(parameter_set_grove_last.json())
+    parameter_set_grove.parameter_set_group = parameter_set_grove_last.parameter_set_group
+    parameter_set_grove.save()
     session.parameter_set.update_json_fk(update_groves=True)
 
     return {"value" : "success"}

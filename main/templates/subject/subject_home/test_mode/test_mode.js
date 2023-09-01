@@ -154,15 +154,16 @@ test_mode_move(){
     if(app.session.world_state.finished) return;
 
     let obj = app.session.world_state_avatars.session_players[app.session_player.id];
-    let current_period_id = app.session.world_state.session_periods_order[app.session.world_state.current_period-1];
+    let current_period_id = app.session.session_periods_order[app.session.world_state.current_period-1];
 
     if(!current_period_id) return;
    
     if(!app.test_mode_location_target || 
         app.get_distance(app.test_mode_location_target,  obj.current_location) <= 25)
     {
-         //if near target location, move to a new one
-
+        //if near target location, move to a new one
+        
+        
 
     }
     else if(app.get_distance(app.test_mode_location_target,  obj.current_location)<1000)
@@ -181,23 +182,5 @@ test_mode_move(){
     }
 
     app.target_location_update();
-},
-
-/**
- * find point given angle and distance
- **/
-get_point_from_angle_distance(start_x, start_y, width, height, distance)
-{
-    let angle = app.get_angle(start_x, start_y, width, height);
-    return {x:start_x + distance * Math.cos(angle), 
-            y:start_y + distance * Math.sin(angle)};
-},
-
-/**
- * find the angle between two points
- */
-get_angle(x1, y1, x2, y2)
-{
-    return Math.atan2(y2 - y1, x2 - x1);
 },
 {%endif%}
