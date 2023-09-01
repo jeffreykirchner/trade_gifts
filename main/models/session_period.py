@@ -77,7 +77,10 @@ class SessionPeriod(models.Model):
         sleep_benefit = Decimal(parameter_set["sleep_benefit"])
 
         for i in self.timer_actions:
-            if int(i) >= time_remaining and not self.timer_actions[i]["metabolism"]:
+            if int(i) >= time_remaining and \
+               not self.timer_actions[i]["metabolism"] and \
+               int(i) <= parameter_set["period_length"]:
+                
                 self.timer_actions[i]["metabolism"] = True
                 health_loss_count += 1
         

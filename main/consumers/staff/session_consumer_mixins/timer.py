@@ -158,7 +158,6 @@ class TimerMixin():
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
     
-
 def sync_start_timer(event, session_id):
     '''
     start timer action
