@@ -723,6 +723,8 @@ hide_avatar_attack_modal()
  */
 send_attack_avatar()
 {
+    app.working = true;
+    
     let target_avatar = app.session.world_state.avatars[app.selected_avatar.target_player_id];
     let source_player = app.session.world_state.avatars[app.session_player.id];
 

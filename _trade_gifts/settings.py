@@ -49,7 +49,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = '_trade_gifts.urls'
-ADMIN_SITE_HEADER = 'Multi User Socket Template Administration'
+ADMIN_SITE_HEADER = 'Trade Gifts Admin'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
