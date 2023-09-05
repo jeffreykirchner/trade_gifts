@@ -124,16 +124,21 @@ do_test_mode_run()
     if(app.session.world_state.finished) return;
         
     if(go)
-        switch (app.random_number(1, 3)){
+        switch (app.random_number(1, 5)){
             case 1:
                 app.do_test_mode_chat();
-                break;
-            
+                break;            
             case 2:                
                 app.test_mode_move();
                 break;
             case 3:
-                
+                test_mode_check_near_grove();
+                break;
+            case 4:
+                test_mode_check_near_house();
+                break;
+            case 5:
+                test_mode_check_near_avatar();
                 break;
         }
 },
@@ -141,7 +146,8 @@ do_test_mode_run()
 /**
  * test mode chat
  */
-do_test_mode_chat(){
+do_test_mode_chat()
+{
 
     app.chat_text = app.random_string(5, 20);
 },
@@ -149,7 +155,8 @@ do_test_mode_chat(){
 /**
  * test mode move to a location
  */
-test_mode_move(){
+test_mode_move()
+{
 
     if(app.session.world_state.finished) return;
 
@@ -218,5 +225,29 @@ test_mode_move(){
     }
 
     app.target_location_update();
+},
+
+/**
+ * if near grove open harvest modal
+ */
+test_mode_check_near_grove()
+{
+
+},
+
+/**
+ * if near house open house modal
+ */
+test_mode_check_near_house()
+{
+    
+},
+
+/**
+ * if near avatar open avatar modal
+ */
+test_mode_check_near_avatar()
+{
+
 },
 {%endif%}

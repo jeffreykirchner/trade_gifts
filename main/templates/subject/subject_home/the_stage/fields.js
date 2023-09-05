@@ -189,7 +189,8 @@ subject_field_click(field_id)
     app.selected_field.good_two_available = app.selected_field.field[app.selected_field.field_type.good_two_ft];
 
     app.clear_main_form_errors();
-    app.field_modal.toggle();
+    app.field_modal.show();
+    app.field_modal_open = true;
 
     let total_effort = app.session.parameter_set.production_effort;
 
@@ -216,6 +217,7 @@ hide_field_modal()
 {
     app.selected_field.field = null;
     app.selected_field.field_type = null;
+    app.field_modal_open = false
 },
 
 /**

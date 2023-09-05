@@ -98,6 +98,12 @@ var app = Vue.createApp({
                     house_modal : null,
                     test_mode : {%if session.parameter_set.test_mode%}true{%else%}false{%endif%},
 
+                    avatar_modal_open : false,
+                    avatar_attack_modal_open : false,
+                    field_modal_open : false,
+                    house_modal_open : false,
+                    grove_modal_open : false,
+
                     //pixi
                     canvas_width  : null,
                     canvas_height : null,
@@ -266,6 +272,7 @@ var app = Vue.createApp({
 
             document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
             document.getElementById('avatar_modal').addEventListener('hidden.bs.modal', app.hide_avatar_modal);
+            document.getElementById('avatar_attack_modal').addEventListener('hidden.bs.modal', app.hide_avatar_attack_modal);
             document.getElementById('field_modal').addEventListener('hidden.bs.modal', app.hide_field_modal);
             document.getElementById('house_modal').addEventListener('hidden.bs.modal', app.hide_house_modal);
             document.getElementById('grove_modal').addEventListener('hidden.bs.modal', app.hide_grove_modal);

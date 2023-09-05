@@ -560,7 +560,8 @@ subject_avatar_click(target_player_id)
     app.selected_avatar.good_three_available = app.session.world_state.avatars[app.session_player.id][app.selected_avatar.good_three];
 
     app.clear_main_form_errors();
-    app.avatar_modal.toggle();
+    app.avatar_modal.show();
+    app.avatar_modal_open = true;
 },
 
 /**
@@ -568,7 +569,7 @@ subject_avatar_click(target_player_id)
  */
 hide_avatar_modal()
 {
-    
+    app.avatar_modal_open = false;
 },
 
 /**
@@ -705,7 +706,16 @@ show_attack_avatar()
 {
     app.clear_main_form_errors();
     app.avatar_modal.hide();
-    app.avatar_attack_modal.toggle();
+    app.avatar_attack_modal.show();
+    app.avatar_attack_modal_open = true;
+},
+
+/**
+ * avatar attack modal is hidden
+ */
+hide_avatar_attack_modal()
+{
+    app.avatar_attack_modal_open = false;
 },
 
 /**

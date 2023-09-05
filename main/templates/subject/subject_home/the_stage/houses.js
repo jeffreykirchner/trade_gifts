@@ -184,7 +184,8 @@ subject_house_click(target_house_id)
     app.selected_house.good_three_house_available = app.session.world_state.houses[target_house_id][app.selected_house.good_three];
 
     app.clear_main_form_errors();
-    app.house_modal.toggle();
+    app.house_modal.show();
+    app.house_modal_open = true;
 },
 
 /**
@@ -193,6 +194,7 @@ subject_house_click(target_house_id)
 hide_house_modal()
 {
     app.selected_house.house = null;
+    app.house_modal_open = false;
 },
 
 /**

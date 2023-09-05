@@ -197,7 +197,8 @@ subject_grove_click(grove_id)
 
     app.selected_grove.grove = grove;
     
-    app.grove_modal.toggle();
+    app.grove_modal.show();
+    app.grove_modal_open = true;
 },
 
 /**
@@ -207,6 +208,7 @@ hide_grove_modal()
 {
     app.selected_grove.grove = null;
     app.selected_grove.grove_type = null;
+    app.grove_modal_open = false;
 },
 
 /**
