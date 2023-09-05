@@ -351,7 +351,7 @@ move_player(delta)
                 {
                     obj.show_chat = false;
                 }
-            }           
+            }
         }
         else
         {
@@ -384,6 +384,7 @@ move_player(delta)
         {
             pixi_avatars[i].face_sprite.visible = false;
             pixi_avatars[i].face_sleep_sprite.visible = true;
+            obj.show_chat = false;
         }
         else
         {

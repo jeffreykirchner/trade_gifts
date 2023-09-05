@@ -3,6 +3,7 @@ send_chat(){
     if(app.working) return;
     if(app.chat_text.trim() == "") return;
     if(app.chat_text.trim().length > 200) return;
+    if(app.session.world_state.avatars[app.session_player.id].sleeping) return;
     
     app.working = true;
     app.send_message("chat", 
