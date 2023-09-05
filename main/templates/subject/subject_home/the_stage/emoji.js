@@ -4,6 +4,7 @@
 send_emoji(emoji_type)
 {
     if(!app.session.world_state["started"]) return;
+    if(app.session.world_state.avatars[app.session_player.id].sleeping) return;
 
     app.working = true;
     
