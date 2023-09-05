@@ -84,7 +84,6 @@ class SubjectUpdatesMixin():
 
         return output
         
-
     async def update_chat(self, event):
         '''
         send chat to clients, if clients can view it
@@ -688,10 +687,17 @@ class SubjectUpdatesMixin():
             logger.info(f"attack_avatar: invalid data, {event['message_text']}")
             return
         
+        #check not on break
         if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
            self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
 
             logger.info(f"attack_avatar: on break, {event['message_text']}")
+            return
+
+        # check cooling status
+        if self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] != 0:
+
+            logger.info(f"attack_avatar: cooling, {event['message_text']}")
             return
         
         v = await sync_to_async(sync_attack_avatar)(self.session_id, player_id, target_player_id)

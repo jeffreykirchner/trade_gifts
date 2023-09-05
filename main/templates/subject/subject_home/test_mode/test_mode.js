@@ -111,37 +111,208 @@ do_test_mode(){
  */
 do_test_mode_run()
 {
+    if(app.session.world_state.finished) return;
+    if(app.session.world_state.avatars[app.session_player.id].sleeping) return;
+
     //do chat
     let go = true;
 
     if(go)
+    {
         if(app.chat_text != "")
         {
             document.getElementById("send_chat_id").click();
             go=false;
         }
-    
-    if(app.session.world_state.finished) return;
+    }
+   
+    if(go)
+    {
+        if(app.avatar_modal_open)
+        {
+            app.do_test_mode_avatar();
+            go=false;
+        }
+        else if(app.house_modal_open)
+        {
+            app.do_test_mode_house();
+            go=false;
+        }
+        else if(app.grove_modal_open)
+        {
+            app.do_test_mode_grove();
+            go=false;
+        }
+        else if(app.field_modal_open)
+        {
+            app.do_test_mode_field();
+            go=false;
+        }
+        else if(app.avatar_attack_modal_open)
+        {
+            app.do_test_mode_avatar_attack();
+            go=false;
+        }
+    }
         
     if(go)
-        switch (app.random_number(1, 3)){
+    {
+        switch (app.random_number(1, 5)){
             case 1:
                 app.do_test_mode_chat();
-                break;
-            
+                break;            
             case 2:                
                 app.test_mode_move();
                 break;
             case 3:
-                
+                app.test_mode_check_near_grove();
+                break;
+            case 4:
+                app.test_mode_check_near_house();
+                break;
+            case 5:
+                app.test_mode_check_near_avatar();
                 break;
         }
+    }
+},
+
+/**
+ * avatar modal is open 
+ * */
+do_test_mode_avatar()
+{
+    if(!app.selected_avatar.avatar) app.avatar_modal.hide();
+
+    if(app.random_number(1, 2) == 1 && 
+       app.session.parameter_set.allow_attacks=='True' &&
+       app.selected_avatar.good_one_move == 0 && 
+       app.selected_avatar.good_two_move == 0 && 
+       app.selected_avatar.good_three_move == 0)
+    {
+        app.show_attack_avatar();
+    }
+    else if (app.selected_avatar.good_one_available>0 || app.selected_avatar.good_two_available>0 || app.selected_avatar.good_three_available>0)
+    {
+        if(app.selected_avatar.good_one_move == 0 && app.selected_avatar.good_two_move == 0 && app.selected_avatar.good_three_move == 0)
+        {
+            app.selected_avatar.good_one_move = app.random_number(0, app.selected_avatar.good_one_available);
+            app.selected_avatar.good_two_move = app.random_number(0, app.selected_avatar.good_two_available);
+            app.selected_avatar.good_three_move = app.random_number(0, app.selected_avatar.good_three_available);
+        }
+        else
+        {
+            app.send_move_fruit_to_avatar();
+        }
+    }
+    else
+    {
+        app.avatar_modal.hide();
+    }
+},
+
+/**
+ * house modal is open
+ */
+do_test_mode_house()
+{
+    if(!app.selected_house.house) app.house_modal.hide();
+    
+    if(app.session.world_state.time_remaining <= app.session.parameter_set.night_length)
+    {
+        app.send_sleep();
+        return;
+    }
+
+    if(app.selected_house.house.session_player = app.session_player.id)
+    {
+        //local player's house
+        if(app.random_number(1, 2) == 1)
+        {
+            app.selected_house.direction = "avatar_to_house";
+        }
+        else
+        {
+            app.selected_house.direction = "house_to_avatar";
+        }
+    }
+   
+    if(app.selected_house.direction == "avatar_to_house")
+    {
+        if(app.selected_house.good_one_avatar_available > 0 || 
+           app.selected_house.good_two_avatar_available > 0 || 
+           app.selected_house.good_three_avatar_available)
+        {
+            app.selected_house.good_one_move = app.random_number(0, app.selected_house.good_one_avatar_available);
+            app.selected_house.good_two_move = app.random_number(0, app.selected_house.good_two_avatar_available);
+            app.selected_house.good_three_move = app.random_number(0, app.selected_house.good_three_avatar_available);
+
+            app.send_move_fruit_house();
+        }
+        else
+        {
+            app.house_modal.hide();
+        }
+    }
+    else
+    {
+        if(app.selected_house.good_one_house_available > 0 || 
+           app.selected_house.good_two_house_available > 0 || 
+           app.selected_house.good_three_house_available)
+        {
+            app.selected_house.good_one_move = app.random_number(0, app.selected_house.good_one_house_available);
+            app.selected_house.good_two_move = app.random_number(0, app.selected_house.good_two_house_available);
+            app.selected_house.good_three_move = app.random_number(0, app.selected_house.good_three_house_available);
+
+            app.send_move_fruit_house();
+        }
+        else
+        {
+            app.house_modal.hide();
+        }
+    }
+},
+
+/**
+ * grove modal is open
+ */
+do_test_mode_grove()
+{
+    if(!app.selected_grove.grove) app.grove_modal.hide();
+
+    app.send_grove_harvest();
+},
+
+/**
+ * field modal is open
+ */
+do_test_mode_field()
+{
+},
+
+/**
+ * avatar attack modal is open
+ */
+do_test_mode_avatar_attack()
+{
+    if(app.random_number(1, 2) == 1 && 
+       app.session.parameter_set.allow_attacks=='True' &&
+       parseFloat(app.session.world_state.avatars[app.session_player.parameter_set_player_id].health)>=parseFloat(app.session.parameter_set.attack_cost) &&
+       app.session.world_state_avatars.session_players[app.session_player.id].cool_down==0)
+    {
+        app.send_attack_avatar();
+    }
+    else
+    {
+        app.avatar_attack_modal.hide();
+    }
 },
 
 /**
  * test mode chat
  */
-do_test_mode_chat(){
+do_test_mode_chat()
+{
 
     app.chat_text = app.random_string(5, 20);
 },
@@ -149,7 +320,8 @@ do_test_mode_chat(){
 /**
  * test mode move to a location
  */
-test_mode_move(){
+test_mode_move()
+{
 
     if(app.session.world_state.finished) return;
 
@@ -218,5 +390,70 @@ test_mode_move(){
     }
 
     app.target_location_update();
+},
+
+/**
+ * if near grove open harvest modal
+ */
+test_mode_check_near_grove()
+{
+    let avatar = app.session.world_state.avatars[app.session_player.id];
+
+    if(avatar.period_grove_harvests>=app.session.parameter_set.max_grove_harvests)
+    {
+        app.grove_modal.hide();
+        return;
+    }
+
+    for(let i=0;i<app.session.parameter_set.parameter_set_groves_order.length;i++)
+    {
+        let grove_id = app.session.parameter_set.parameter_set_groves_order[i];
+        let grove = app.session.parameter_set.parameter_set_groves[grove_id];
+
+        if(app.get_distance(grove, app.session.world_state_avatars.session_players[app.session_player.id].current_location) < app.session.parameter_set.interaction_range)
+        {
+            app.subject_pointer_up_action(2, grove)
+            break;
+        }
+    }
+},
+
+/**
+ * if near house open house modal
+ */
+test_mode_check_near_house()
+{
+    for(let i=0;i<app.session.parameter_set.parameter_set_players_order.length;i++)
+    {
+        let player_id = app.session.parameter_set.parameter_set_players_order[i];
+        let house = app.session.parameter_set.parameter_set_players[player_id];
+        let house_location = {x:house.house_x, y:house.house_y};
+
+        if(app.get_distance(house_location, app.session.world_state_avatars.session_players[app.session_player.id].current_location) < app.session.parameter_set.interaction_range)
+        {
+            app.subject_pointer_up_action(2, house_location)
+            break;
+        }
+    }
+},
+
+/**
+ * if near avatar open avatar modal
+ */
+test_mode_check_near_avatar()
+{
+
+    for(i in app.session.world_state_avatars.session_players) 
+    {
+        let avatar = app.session.world_state_avatars.session_players[i];
+        if(avatar.parameter_set_player_id == app.session_player.id) continue;
+
+        if(app.get_distance(avatar.current_location, app.session.world_state_avatars.session_players[app.session_player.id].current_location) < app.session.parameter_set.interaction_range)
+        {
+            app.subject_pointer_up_action(2, avatar.current_location)
+            break;
+        }
+    }
+        
 },
 {%endif%}

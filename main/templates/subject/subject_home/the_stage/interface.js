@@ -35,6 +35,15 @@ take_target_location_update(message_data)
  {
     if(!app.session.world_state.hasOwnProperty('started')) return;
     let local_pos = event.data.getLocalPosition(event.currentTarget);
+    
+    app.subject_pointer_up_action(event.button, local_pos);
+ },
+
+ /**
+  * stage pointer up actions
+  */
+ subject_pointer_up_action(button, local_pos)
+ {
     let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
     let avatar = app.session.world_state.avatars[app.session_player.id];
     let parameter_set_player_local = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id];
@@ -66,7 +75,7 @@ take_target_location_update(message_data)
         return;
     }
 
-    if(event.button == 0)
+    if(button == 0)
     {
 
         if(local_player.frozen)
@@ -87,7 +96,7 @@ take_target_location_update(message_data)
 
         app.target_location_update();
      }
-     else if(event.button == 2)
+     else if(button == 2)
      {
         if(local_player.frozen)
         {
