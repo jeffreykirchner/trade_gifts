@@ -44,5 +44,5 @@ class SessionFormAdmin(forms.ModelForm):
     class Meta:
         model=Session
         fields = ('parameter_set', 'creator', 'collaborators', 'current_experiment_phase', 'title', 
-                  'world_state', 'world_state_avatars', 'summary_data', 'started', 'shared', 'locked',
+                  'world_state', 'world_state_avatars', 'started', 'shared', 'locked',
                   'soft_delete', 'controlling_channel')

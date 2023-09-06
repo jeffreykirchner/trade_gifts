@@ -63,13 +63,11 @@ class SessionPeriod(models.Model):
         '''
         parameter_set = self.session.parameter_set.json()
         world_state = self.session.world_state
+        summary_data = self.session.summary_data
 
         cents_per_second = parameter_set["cents_per_second"]
 
-        #earnings
-        for i in world_state["avatars"]:
-            avatar = world_state["avatars"][i]
-            avatar["earnings"] = str(Decimal(avatar["earnings"]) + Decimal(avatar["health"]) * Decimal(cents_per_second))
+        id = str(self.id)
 
         #metabolism
         health_loss_count = 0
@@ -86,8 +84,18 @@ class SessionPeriod(models.Model):
         
         if health_loss_count > 0:
             for i in world_state["avatars"]:
-                 
+
+                 #earnings
                 avatar = world_state["avatars"][i]
+                
+                earnings_per_second = Decimal(avatar["health"]) * Decimal(cents_per_second)
+                earnings_per_second *= health_loss_count
+
+                avatar["earnings"] = str(Decimal(avatar["earnings"]) + earnings_per_second)
+
+                #summary data
+                summary_data[id][i]["period_earnings"] = str(Decimal(summary_data[id][i]["period_earnings"]) + earnings_per_second)
+                    
                 current_health = Decimal(avatar["health"])
                 
                 if avatar["sleeping"] and world_state["time_remaining"] <= parameter_set["night_length"]:                   

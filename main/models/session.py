@@ -126,6 +126,7 @@ class Session(models.Model):
 
         self.setup_world_state()
         self.setup_summary_data()
+
     
     def setup_summary_data(self):
         '''
@@ -137,6 +138,8 @@ class Session(models.Model):
         parameter_set_players = self.parameter_set.parameter_set_players.values('id').all()
 
         for i in self.session_periods.all():
+            period_number = i.period_number
+
             self.summary_data[str(i.id)] = {}
 
             for j in parameter_set_players:
@@ -144,7 +147,7 @@ class Session(models.Model):
                 v = self.summary_data[str(i.id)][str(j["id"])]
 
                 v["period_earnings"] = 0
-                v["start_health"] = None
+                v["start_health"] = 100 if period_number==1 else None
                 v["end_health"] = None
                 v["sleep_seconds"]  = 0
 
@@ -364,9 +367,11 @@ class Session(models.Model):
 
             writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
 
-            writer.writerow(["Session ID", "Period", "Client #", "Label", "Earnings ¢"])
+            writer.writerow(["Session ID", "Period", "Client #", "Label", "Earnings ¢", "Start Health", "End Health"])
 
             world_state = self.world_state
+            summary_data = self.summary_data
+
             parameter_set_players = {}
             for i in self.session_players.all().values('id','parameter_set_player__id_label'):
                 parameter_set_players[str(i['id'])] = i
@@ -374,12 +379,14 @@ class Session(models.Model):
             # logger.info(parameter_set_players)
 
             for period_number, period in enumerate(world_state["session_periods"]):
-                for player_number, player in enumerate(world_state["session_players"]):
+                for player_number, player in enumerate(world_state["avatars"]):
                     writer.writerow([self.id, 
                                     period_number+1, 
                                     player_number+1,
                                     parameter_set_players[str(player)]["parameter_set_player__id_label"], 
-                                    world_state["session_players"][player]["inventory"][period]])
+                                    summary_data[period][player]["period_earnings"],
+                                    summary_data[period][player]["start_health"],
+                                    summary_data[period][player]["end_health"]])
                     
             v = output.getvalue()
             output.close()

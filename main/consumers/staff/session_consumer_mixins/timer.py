@@ -200,10 +200,20 @@ def sync_continue_timer(event, session_id):
         #check session over
         if session.world_state["current_period"] >= parameter_set["period_count"] and \
             session.world_state["time_remaining"] <= 1:
+            
+            world_state = session.world_state
+            summary_data = session.summary_data
 
-            session.world_state["current_period"] = parameter_set["period_count"]
-            session.world_state["time_remaining"] = 0
-            session.world_state["timer_running"] = False
+            world_state["current_period"] = parameter_set["period_count"]
+            world_state["time_remaining"] = 0
+            world_state["timer_running"] = False
+
+            current_period_id = session.get_current_session_period().id
+
+            #store data
+            for i in world_state["avatars"]:
+
+                summary_data[str(current_period_id)][i]["end_health"] = world_state["avatars"][i]["health"]
 
             session.save()
             
@@ -264,12 +274,22 @@ def sync_continue_timer(event, session_id):
                 session = session.get_current_session_period().do_production()
                 session = session.get_current_session_period().do_grove_growth()
 
-                for i in session.world_state["avatars"]:
+                summary_data = session.summary_data
+                world_state = session.world_state
+                current_period_id = session.get_current_session_period().id
+
+                for i in world_state["avatars"]:
                     # session.world_state["session_players"][i]["earnings"] += session.world_state["session_players"][i]["inventory"][current_period_id]
 
                     earnings[i] = {}
                     earnings[i]["total_earnings"] = 0
                     earnings[i]["period_earnings"] = 0
+
+                    summary_data[str(last_period_id)][i]["end_health"] = world_state["avatars"][i]["health"]
+                    summary_data[str(current_period_id)][i]["start_health"] = world_state["avatars"][i]["health"]
+
+                session.save()
+
             else:
                 session = session.get_current_session_period().do_timer_actions(time_remaining)
           
