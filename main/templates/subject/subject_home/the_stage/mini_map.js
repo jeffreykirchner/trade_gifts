@@ -155,6 +155,8 @@ setup_pixi_minimap()
  */
 update_mini_map(delta)
 {
+    if(!app.mini_map_scale) return;
+    
     let obj = app.session.world_state_avatars.session_players[app.session_player.id]
     mini_map.view_port.position.set(obj.current_location.x * app.mini_map_scale, 
                                     obj.current_location.y * app.mini_map_scale);

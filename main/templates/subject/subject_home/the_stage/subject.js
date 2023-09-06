@@ -114,6 +114,7 @@ setup_subject_status_overlay()
  */
 update_subject_status_overlay()
 {
+    if(!app.session) return;
     if(!app.session.world_state.hasOwnProperty('started')) return;
 
     if(!subject_status_overlay_container) return;
