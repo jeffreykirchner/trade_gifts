@@ -57,6 +57,8 @@ class Session(models.Model):
     world_state = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Current Session State")       #world state at this point in session
     world_state_avatars = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Current Avatar State")       #world state at this point in session
 
+    summary_data = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Summary Data")       #summary data for session
+
     soft_delete =  models.BooleanField(default=False)                             #hide session if true
 
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -123,6 +125,54 @@ class Session(models.Model):
             i.start()
 
         self.setup_world_state()
+        self.setup_summary_data()
+    
+    def setup_summary_data(self):
+        '''
+        setup summary data
+        '''
+        self.summary_data = {}
+
+        parameter_set_groves = self.parameter_set.parameter_set_groves_a.values('id').all()
+        parameter_set_players = self.parameter_set.parameter_set_players.values('id').all()
+
+        for i in self.session_periods.all():
+            self.summary_data[str(i.id)] = {}
+
+            for j in parameter_set_players:
+                self.summary_data[str(i.id)][str(j["id"])] = {}
+                v = self.summary_data[str(i.id)][str(j["id"])]
+
+                v["period_earnings"] = 0
+                v["start_health"] = None
+                v["end_health"] = None
+                v["sleep_seconds"]  = 0
+
+                #total harvested / consumption
+                for k in main.globals.Goods.choices:
+                    v["harvest_total_" + k[0]] = 0
+                    v["avatar_to_house_" + k[0]] = 0
+                    v["house_to_avatar_" + k[0]] = 0
+                
+                #groves
+                for k in parameter_set_groves:
+                    id = str(k["id"])
+                    v["grove_harvests_count_" + id] = 0
+                    v["grove_harvests_total_" + id] = 0
+
+                #interactions with others
+                for k in parameter_set_players:
+                    id = str(k["id"])
+                    v["attacks_at_" + id] = 0
+                    v["attacks_from_" + id] = 0
+                    v["attacks_cost_at_" + id] = 0
+                    v["attacks_damage_from_" + id] = 0
+
+                    for l in main.globals.Goods.choices:
+                        v["send_avatar_to_avatar_" + l[0]] = 0
+                        v["send_avatar_to_house_" + l[0]] = 0
+
+        self.save()
 
     def setup_world_state(self):
         '''
