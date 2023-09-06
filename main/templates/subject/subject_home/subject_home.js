@@ -319,7 +319,7 @@ var app = Vue.createApp({
             app.update_field_inventory();
             app.update_avatar_inventory();
             app.update_house_inventory();
-            app.update_grove_inventory();
+            app.setup_pixi_groves();
         },
 
         /** send winsock request to get session info
