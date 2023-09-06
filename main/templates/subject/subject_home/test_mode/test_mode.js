@@ -297,7 +297,7 @@ do_test_mode_avatar_attack()
 {
     if(app.random_number(1, 2) == 1 && 
        app.session.parameter_set.allow_attacks=='True' &&
-       parseFloat(app.session.world_state.avatars[app.session_player.parameter_set_player_id].health)>=parseFloat(app.session.parameter_set.attack_cost) &&
+       parseFloat(app.session.world_state.avatars[app.session_player.id].health)>=parseFloat(app.session.parameter_set.attack_cost) &&
        app.session.world_state_avatars.session_players[app.session_player.id].cool_down==0)
     {
         app.send_attack_avatar();
@@ -446,9 +446,9 @@ test_mode_check_near_avatar()
     for(i in app.session.world_state_avatars.session_players) 
     {
         let avatar = app.session.world_state_avatars.session_players[i];
-        if(avatar.parameter_set_player_id == app.session_player.id) continue;
+        if(parseInt(i) == app.session_player.id) continue;
 
-        if(app.get_distance(avatar.current_location, app.session.world_state_avatars.session_players[app.session_player.id].current_location) < app.session.parameter_set.interaction_range)
+        if(app.get_distance(avatar.current_location, app.session.world_state_avatars.session_players[app.session_player.id].current_location) <= app.session.parameter_set.interaction_range)
         {
             app.subject_pointer_up_action(2, avatar.current_location)
             break;
