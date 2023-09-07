@@ -226,7 +226,7 @@ class ParameterSetForm(forms.ModelForm):
                                                                           "step":"1",
                                                                           "min":"1"}))
     
-    max_grove_harvests = forms.IntegerField(label='Max Grove Harvests',
+    max_grove_harvests = forms.IntegerField(label='Max Grove Harvests per Period',
                                             min_value=1,
                                             widget=forms.NumberInput(attrs={"v-model":"parameter_set.max_grove_harvests",
                                                                             "step":"1",

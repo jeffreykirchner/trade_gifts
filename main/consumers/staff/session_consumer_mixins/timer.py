@@ -268,15 +268,19 @@ def sync_continue_timer(event, session_id):
 
             #check if period over
             if period_is_over:
-                
+                summary_data = session.summary_data
+                world_state = session.world_state
+                current_period_id = session.get_current_session_period().id
+
+                #store ending health
+                for i in world_state["avatars"]:
+                    summary_data[str(last_period_id)][i]["end_health"] = world_state["avatars"][i]["health"]
+                    summary_data[str(current_period_id)][i]["start_health"] = world_state["avatars"][i]["health"]
+
                 session = session.session_periods.get(id=last_period_id).do_consumption()
                 session = session.get_current_session_period().do_timer_actions(time_remaining)
                 session = session.get_current_session_period().do_production()
                 session = session.get_current_session_period().do_grove_growth()
-
-                summary_data = session.summary_data
-                world_state = session.world_state
-                current_period_id = session.get_current_session_period().id
 
                 for i in world_state["avatars"]:
                     # session.world_state["session_players"][i]["earnings"] += session.world_state["session_players"][i]["inventory"][current_period_id]
@@ -284,9 +288,9 @@ def sync_continue_timer(event, session_id):
                     earnings[i] = {}
                     earnings[i]["total_earnings"] = 0
                     earnings[i]["period_earnings"] = 0
-
-                    summary_data[str(last_period_id)][i]["end_health"] = world_state["avatars"][i]["health"]
-                    summary_data[str(current_period_id)][i]["start_health"] = world_state["avatars"][i]["health"]
+                    
+                    #store starting health
+                   
 
                 session.save()
 

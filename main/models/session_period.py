@@ -85,7 +85,10 @@ class SessionPeriod(models.Model):
         if health_loss_count > 0:
             for i in world_state["avatars"]:
 
-                 #earnings
+                #data
+                temp_s =  summary_data[id][i]
+
+                #earnings
                 avatar = world_state["avatars"][i]
                 
                 earnings_per_second = Decimal(avatar["health"]) * Decimal(cents_per_second)
@@ -94,15 +97,21 @@ class SessionPeriod(models.Model):
                 avatar["earnings"] = str(Decimal(avatar["earnings"]) + earnings_per_second)
 
                 #summary data
-                summary_data[id][i]["period_earnings"] = str(Decimal(summary_data[id][i]["period_earnings"]) + earnings_per_second)
+                temp_s["period_earnings"] = str(Decimal(temp_s["period_earnings"]) + earnings_per_second)
                     
                 current_health = Decimal(avatar["health"])
                 
-                if avatar["sleeping"] and world_state["time_remaining"] <= parameter_set["night_length"]:                   
-                    avatar["health"] = str(current_health + (sleep_benefit * health_loss_count))
+                if avatar["sleeping"] and world_state["time_remaining"] <= parameter_set["night_length"]:    
+                    total_sleep_benefit = (sleep_benefit * health_loss_count)     
+
+                    avatar["health"] = str(current_health + total_sleep_benefit)
+                    temp_s["health_from_sleep"] = str(Decimal(temp_s["health_from_sleep"]) + total_sleep_benefit)
 
                     if Decimal(avatar["health"]) > 100:
+                        sleep_health_overage = Decimal(avatar["health"]) - 100
                         avatar["health"] = "100"
+
+                        temp_s["health_from_sleep"] = str(Decimal(temp_s["health_from_sleep"]) - sleep_health_overage)
 
                 else:
                     avatar["health"] = str(current_health - (health_loss_count * health_loss_per_second))
@@ -279,8 +288,6 @@ class SessionPeriod(models.Model):
         self.session.save()
         return self.session
         
-
-
     def json(self):
         '''
         json object of model
