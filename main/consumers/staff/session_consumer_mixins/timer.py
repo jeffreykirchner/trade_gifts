@@ -215,10 +215,11 @@ def sync_continue_timer(event, session_id):
                 sd_player = summary_data[str(current_period_id)][i]
                 sd_player["end_health"] = world_state["avatars"][i]["health"]
 
+                avatar = world_state["avatars"][i]
                 #inventory
                 for k in main.globals.Goods.choices:                       
-                    sd_player["house_" + k[0]] = world_state["houses"][i][k[0]]
-                    sd_player["avatar_" + k[0]] =  world_state["avatars"][i][k[0]]
+                    sd_player["house_" + k[0]] = world_state["houses"][avatar["parameter_set_player_id"]][k[0]]
+                    sd_player["avatar_" + k[0]] = avatar[k[0]]
 
             session.save()
             

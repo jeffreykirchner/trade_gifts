@@ -145,7 +145,7 @@ class SessionPeriod(models.Model):
         #convert goods in homes to cash
         for i in self.session.world_state["houses"]:
             house = self.session.world_state["houses"][i]
-            avatar = self.session.world_state["avatars"][i]
+            avatar = self.session.world_state["avatars"][str(house["session_player"])]
 
             avatar["health"] = str(Decimal(avatar["health"]) + Decimal(house["health_value"]))
 
