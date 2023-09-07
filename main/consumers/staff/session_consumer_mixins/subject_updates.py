@@ -976,9 +976,12 @@ def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
-
+        current_period_id = str(session.get_current_session_period().id)
+        
         parameter_set = session.parameter_set.json()
         parameter_set_player_id = str(session.world_state['avatars'][str(player_id)]['parameter_set_player_id'])
+
+        summary_data = session.summary_data[current_period_id][str(player_id)]
 
         good_one = parameter_set['parameter_set_players'][parameter_set_player_id]['good_one']
         good_two = parameter_set['parameter_set_players'][parameter_set_player_id]['good_two']
@@ -1005,6 +1008,11 @@ def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_
             session.world_state['avatars'][str(target_player_id)][good_two] += good_two_move
             session.world_state['avatars'][str(target_player_id)][good_three] += good_three_move
 
+            #data
+            summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_one] += good_one_move
+            summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_two] += good_two_move
+            summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_three] += good_three_move
+
             session.save()
 
             world_state = session.world_state
@@ -1021,7 +1029,9 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
+        current_period_id = str(session.get_current_session_period().id)
         world_state = session.world_state
+        summary_data = session.summary_data[current_period_id][str(player_id)]
 
         parameter_set = session.parameter_set.json()
         parameter_set_player_id = str(world_state['avatars'][str(player_id)]['parameter_set_player_id'])
@@ -1082,6 +1092,11 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
                 house[good_one] += good_one_move
                 house[good_two] += good_two_move
                 house[good_three] += good_three_move
+
+                 #data
+                summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_one] += good_one_move
+                summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_two] += good_two_move
+                summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_three] += good_three_move
             else:
                 avatar[good_one] += good_one_move
                 avatar[good_two] += good_two_move

@@ -177,8 +177,8 @@ class Session(models.Model):
                     v["attacks_damage_from_" + k_s] = 0
 
                     for l in main.globals.Goods.choices:
-                        v["send_avatar_to_avatar_" + l[0]] = 0
-                        v["send_avatar_to_house_" + l[0]] = 0
+                        v["send_avatar_to_avatar_" + k_s + "_good_" + l[0]] = 0
+                        v["send_avatar_to_house_" + k_s + "_good_" + l[0]] = 0
 
         self.save()
 
@@ -378,7 +378,7 @@ class Session(models.Model):
 
             writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
             
-            temp_header = ["Session ID", "Period", "Client #", "Label", "Earnings ¢", "Start Health", "End Health", "Health From Sleep"]
+            temp_header = ["Session ID", "Period", "Client #", "Label", "Earnings ¢", "Start Health", "End Health", "Health From Sleep", "Health From House"]
 
             #good totals
             for k in main.globals.Goods.choices:
@@ -396,6 +396,13 @@ class Session(models.Model):
                 temp_header.append("Attacks From " + str(player_number+1))
                 temp_header.append("Cost of Attacks At " + str(player_number+1))
                 temp_header.append("Damage of Attacks From " + str(player_number+1))
+
+                for k in main.globals.Goods.choices:
+                    temp_header.append("Send " + k[0] + " to Avatar " + str(player_number+1))
+                
+                for k in main.globals.Goods.choices:
+                    temp_header.append("Send " + k[0] + " to House " + str(player_number+1))
+                
 
             #grove harvests
             for grove_number, grove in enumerate(world_state["groves"]):
@@ -418,6 +425,7 @@ class Session(models.Model):
                                     temp_p["start_health"],
                                     temp_p["end_health"],
                                     temp_p["health_from_sleep"],
+                                    temp_p["health_from_house"],
                                     ]
                     
                     #good totals
@@ -436,6 +444,13 @@ class Session(models.Model):
                         temp_row.append(temp_p["attacks_from_" + k])
                         temp_row.append(temp_p["attacks_cost_at_" + k])
                         temp_row.append(temp_p["attacks_damage_from_" + k])
+
+                        for l in main.globals.Goods.choices:
+                            temp_row.append(temp_p["send_avatar_to_avatar_" + k + "_good_" + l[0]])
+                        
+                        for l in main.globals.Goods.choices:
+                            temp_row.append(temp_p["send_avatar_to_house_" + k + "_good_" + l[0]])
+                                            
 
                     #grove harvests
                     for grove_number, grove in enumerate(world_state["groves"]):

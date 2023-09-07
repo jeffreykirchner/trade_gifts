@@ -131,6 +131,9 @@ class SessionPeriod(models.Model):
 
         session = self.do_timer_actions(0)
 
+        current_period_id = self.id
+        summary_data = session.summary_data[str(current_period_id)]
+
         #clear avatar inventory
         for i in self.session.world_state["avatars"]:
             avatar = self.session.world_state["avatars"][i]
@@ -142,11 +145,18 @@ class SessionPeriod(models.Model):
         #convert goods in homes to cash
         for i in self.session.world_state["houses"]:
             house = self.session.world_state["houses"][i]
-            avatar = self.session.world_state["avatars"][str(house["session_player"])]
+            avatar = self.session.world_state["avatars"][i]
 
-            avatar["health"] = Decimal(avatar["health"]) + Decimal(house["health_value"])
-            avatar["health"] = str(min(Decimal(avatar["health"]), 100))
+            avatar["health"] = str(Decimal(avatar["health"]) + Decimal(house["health_value"]))
 
+            summary_data[i]["health_from_house"] = house["health_value"]
+
+            if Decimal(avatar["health"]) > 100:
+                health_overage = Decimal(avatar["health"]) - 100
+                summary_data[i]["health_from_house"] = str(Decimal(summary_data[i]["health_from_house"]) - health_overage)
+                
+                avatar["health"] = "100"
+           
             avatar["sleeping"] = False
 
             house["health_consumed"] = house["health_value"]

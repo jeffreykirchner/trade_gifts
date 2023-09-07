@@ -212,8 +212,13 @@ def sync_continue_timer(event, session_id):
 
             #store data
             for i in world_state["avatars"]:
+                sd_player = summary_data[str(current_period_id)][i]
+                sd_player["end_health"] = world_state["avatars"][i]["health"]
 
-                summary_data[str(current_period_id)][i]["end_health"] = world_state["avatars"][i]["health"]
+                #inventory
+                for k in main.globals.Goods.choices:                       
+                    sd_player["house_" + k[0]] = world_state["houses"][i][k[0]]
+                    sd_player["avatar_" + k[0]] =  world_state["avatars"][i][k[0]]
 
             session.save()
             
@@ -272,10 +277,19 @@ def sync_continue_timer(event, session_id):
                 world_state = session.world_state
                 current_period_id = session.get_current_session_period().id
 
-                #store ending health
+                #store data
                 for i in world_state["avatars"]:
-                    summary_data[str(last_period_id)][i]["end_health"] = world_state["avatars"][i]["health"]
-                    summary_data[str(current_period_id)][i]["start_health"] = world_state["avatars"][i]["health"]
+                    sd_player = summary_data[str(last_period_id)][i]
+
+                    #health
+                    sd_player["end_health"] = world_state["avatars"][i]["health"]
+                    sd_player["start_health"] = world_state["avatars"][i]["health"]
+                    
+                    #inventory
+                    for k in main.globals.Goods.choices:                       
+                        sd_player["house_" + k[0]] = world_state["houses"][i][k[0]]
+                        sd_player["avatar_" + k[0]] =  world_state["avatars"][i][k[0]]
+
 
                 session = session.session_periods.get(id=last_period_id).do_consumption()
                 session = session.get_current_session_period().do_timer_actions(time_remaining)
