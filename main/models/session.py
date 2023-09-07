@@ -6,6 +6,7 @@ from datetime import datetime
 from tinymce.models import HTMLField
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from decimal import Decimal
 
 import logging
 import uuid
@@ -126,6 +127,7 @@ class Session(models.Model):
 
         self.setup_world_state()
         self.setup_summary_data()
+
     
     def setup_summary_data(self):
         '''
@@ -134,43 +136,49 @@ class Session(models.Model):
         self.summary_data = {}
 
         parameter_set_groves = self.parameter_set.parameter_set_groves_a.values('id').all()
-        parameter_set_players = self.parameter_set.parameter_set_players.values('id').all()
+        session_players = self.session_players.values('id').all()
 
         for i in self.session_periods.all():
-            self.summary_data[str(i.id)] = {}
+            period_number = i.period_number
 
-            for j in parameter_set_players:
-                self.summary_data[str(i.id)][str(j["id"])] = {}
-                v = self.summary_data[str(i.id)][str(j["id"])]
+            id = str(i.id)
+
+            self.summary_data[id] = {}
+
+            for j in session_players:
+                j_s = str(j["id"])
+                self.summary_data[id][j_s] = {}
+                v = self.summary_data[id][j_s]
 
                 v["period_earnings"] = 0
-                v["start_health"] = None
+                v["start_health"] = 100 if period_number==1 else None
                 v["end_health"] = None
-                v["sleep_seconds"]  = 0
+                v["health_from_sleep"] = 0
+                v["health_from_house"] = 0
 
                 #total harvested / consumption
                 for k in main.globals.Goods.choices:
                     v["harvest_total_" + k[0]] = 0
-                    v["avatar_to_house_" + k[0]] = 0
-                    v["house_to_avatar_" + k[0]] = 0
+                    v["house_" + k[0]] = 0
+                    v["avatar_" + k[0]] = 0
                 
                 #groves
                 for k in parameter_set_groves:
-                    id = str(k["id"])
-                    v["grove_harvests_count_" + id] = 0
-                    v["grove_harvests_total_" + id] = 0
+                    k_s = str(k["id"])
+                    v["grove_harvests_count_" + k_s] = 0
+                    v["grove_harvests_total_" + k_s] = 0
 
                 #interactions with others
-                for k in parameter_set_players:
-                    id = str(k["id"])
-                    v["attacks_at_" + id] = 0
-                    v["attacks_from_" + id] = 0
-                    v["attacks_cost_at_" + id] = 0
-                    v["attacks_damage_from_" + id] = 0
+                for k in session_players:
+                    k_s = str(k["id"])
+                    v["attacks_at_" + k_s] = 0
+                    v["attacks_from_" + k_s] = 0
+                    v["attacks_cost_at_" + k_s] = 0
+                    v["attacks_damage_from_" + k_s] = 0
 
                     for l in main.globals.Goods.choices:
-                        v["send_avatar_to_avatar_" + l[0]] = 0
-                        v["send_avatar_to_house_" + l[0]] = 0
+                        v["send_avatar_to_avatar_" + k_s + "_good_" + l[0]] = 0
+                        v["send_avatar_to_house_" + k_s + "_good_" + l[0]] = 0
 
         self.save()
 
@@ -359,27 +367,99 @@ class Session(models.Model):
         '''
         logger = logging.getLogger(__name__)
         
-        
         with io.StringIO() as output:
 
-            writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-
-            writer.writerow(["Session ID", "Period", "Client #", "Label", "Earnings ¢"])
-
             world_state = self.world_state
+            summary_data = self.summary_data
+
             parameter_set_players = {}
             for i in self.session_players.all().values('id','parameter_set_player__id_label'):
                 parameter_set_players[str(i['id'])] = i
 
+            writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+            
+            temp_header = ["Session ID", "Period", "Client #", "Label", "Earnings ¢", "Start Health", "End Health", "Health From Sleep", "Health From House"]
+
+            #good totals
+            for k in main.globals.Goods.choices:
+                temp_header.append("Harvest Total " + k[0])
+            
+            for k in main.globals.Goods.choices:
+                temp_header.append("House Final " + k[0])
+            
+            for k in main.globals.Goods.choices:
+                temp_header.append("Avatar Final " + k[0])
+                
+            #avatar interactions
+            for player_number, player in enumerate(world_state["avatars"]):
+                temp_header.append("Attacks At " + str(player_number+1))
+                temp_header.append("Attacks From " + str(player_number+1))
+                temp_header.append("Cost of Attacks At " + str(player_number+1))
+                temp_header.append("Damage of Attacks From " + str(player_number+1))
+
+                for k in main.globals.Goods.choices:
+                    temp_header.append("Send " + k[0] + " to Avatar " + str(player_number+1))
+                
+                for k in main.globals.Goods.choices:
+                    temp_header.append("Send " + k[0] + " to House " + str(player_number+1))
+                
+
+            #grove harvests
+            for grove_number, grove in enumerate(world_state["groves"]):
+                temp_header.append("Grove Harvests Count " + str(grove_number+1))
+                temp_header.append("Grove Harvests Total " + str(grove_number+1))
+            
+            writer.writerow(temp_header)
+
             # logger.info(parameter_set_players)
 
             for period_number, period in enumerate(world_state["session_periods"]):
-                for player_number, player in enumerate(world_state["session_players"]):
-                    writer.writerow([self.id, 
+                for player_number, player in enumerate(world_state["avatars"]):
+                    temp_p = summary_data[period][player]
+
+                    temp_row = [self.id, 
                                     period_number+1, 
                                     player_number+1,
                                     parameter_set_players[str(player)]["parameter_set_player__id_label"], 
-                                    world_state["session_players"][player]["inventory"][period]])
+                                    temp_p["period_earnings"],
+                                    temp_p["start_health"],
+                                    temp_p["end_health"],
+                                    temp_p["health_from_sleep"],
+                                    temp_p["health_from_house"],
+                                    ]
+                    
+                    #good totals
+                    for k in main.globals.Goods.choices:
+                        temp_row.append(temp_p["harvest_total_" + k[0]])
+
+                    for k in main.globals.Goods.choices:
+                        temp_row.append(temp_p["house_" + k[0]])
+
+                    for k in main.globals.Goods.choices:
+                        temp_row.append(temp_p["avatar_" + k[0]])
+
+                    #avatar interactions
+                    for k in world_state["avatars"]:
+                        temp_row.append(temp_p["attacks_at_" + k])
+                        temp_row.append(temp_p["attacks_from_" + k])
+                        temp_row.append(temp_p["attacks_cost_at_" + k])
+                        temp_row.append(temp_p["attacks_damage_from_" + k])
+
+                        for l in main.globals.Goods.choices:
+                            temp_row.append(temp_p["send_avatar_to_avatar_" + k + "_good_" + l[0]])
+                        
+                        for l in main.globals.Goods.choices:
+                            temp_row.append(temp_p["send_avatar_to_house_" + k + "_good_" + l[0]])
+                                            
+
+                    #grove harvests
+                    for grove_number, grove in enumerate(world_state["groves"]):
+                        temp_row.append(temp_p["grove_harvests_count_" + grove])
+                        temp_row.append(temp_p["grove_harvests_total_" + grove])
+
+                    # temp_row.append(Decimal(temp_p["start_health"]) - Decimal(temp_p["end_health"]))
+
+                    writer.writerow(temp_row)
                     
             v = output.getvalue()
             output.close()

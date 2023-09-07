@@ -200,10 +200,25 @@ def sync_continue_timer(event, session_id):
         #check session over
         if session.world_state["current_period"] >= parameter_set["period_count"] and \
             session.world_state["time_remaining"] <= 1:
+            
+            world_state = session.world_state
+            summary_data = session.summary_data
 
-            session.world_state["current_period"] = parameter_set["period_count"]
-            session.world_state["time_remaining"] = 0
-            session.world_state["timer_running"] = False
+            world_state["current_period"] = parameter_set["period_count"]
+            world_state["time_remaining"] = 0
+            world_state["timer_running"] = False
+
+            current_period_id = session.get_current_session_period().id
+
+            #store data
+            for i in world_state["avatars"]:
+                sd_player = summary_data[str(current_period_id)][i]
+                sd_player["end_health"] = world_state["avatars"][i]["health"]
+
+                #inventory
+                for k in main.globals.Goods.choices:                       
+                    sd_player["house_" + k[0]] = world_state["houses"][i][k[0]]
+                    sd_player["avatar_" + k[0]] =  world_state["avatars"][i][k[0]]
 
             session.save()
             
@@ -258,18 +273,41 @@ def sync_continue_timer(event, session_id):
 
             #check if period over
             if period_is_over:
-                
+                summary_data = session.summary_data
+                world_state = session.world_state
+                current_period_id = session.get_current_session_period().id
+
+                #store data
+                for i in world_state["avatars"]:
+                    sd_player = summary_data[str(last_period_id)][i]
+
+                    #health
+                    sd_player["end_health"] = world_state["avatars"][i]["health"]
+                    sd_player["start_health"] = world_state["avatars"][i]["health"]
+                    
+                    #inventory
+                    for k in main.globals.Goods.choices:                       
+                        sd_player["house_" + k[0]] = world_state["houses"][i][k[0]]
+                        sd_player["avatar_" + k[0]] =  world_state["avatars"][i][k[0]]
+
+
                 session = session.session_periods.get(id=last_period_id).do_consumption()
                 session = session.get_current_session_period().do_timer_actions(time_remaining)
                 session = session.get_current_session_period().do_production()
                 session = session.get_current_session_period().do_grove_growth()
 
-                for i in session.world_state["avatars"]:
+                for i in world_state["avatars"]:
                     # session.world_state["session_players"][i]["earnings"] += session.world_state["session_players"][i]["inventory"][current_period_id]
 
                     earnings[i] = {}
                     earnings[i]["total_earnings"] = 0
                     earnings[i]["period_earnings"] = 0
+                    
+                    #store starting health
+                   
+
+                session.save()
+
             else:
                 session = session.get_current_session_period().do_timer_actions(time_remaining)
           

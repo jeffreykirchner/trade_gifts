@@ -63,13 +63,11 @@ class SessionPeriod(models.Model):
         '''
         parameter_set = self.session.parameter_set.json()
         world_state = self.session.world_state
+        summary_data = self.session.summary_data
 
         cents_per_second = parameter_set["cents_per_second"]
 
-        #earnings
-        for i in world_state["avatars"]:
-            avatar = world_state["avatars"][i]
-            avatar["earnings"] = str(Decimal(avatar["earnings"]) + Decimal(avatar["health"]) * Decimal(cents_per_second))
+        id = str(self.id)
 
         #metabolism
         health_loss_count = 0
@@ -86,15 +84,34 @@ class SessionPeriod(models.Model):
         
         if health_loss_count > 0:
             for i in world_state["avatars"]:
-                 
+
+                #data
+                temp_s =  summary_data[id][i]
+
+                #earnings
                 avatar = world_state["avatars"][i]
+                
+                earnings_per_second = Decimal(avatar["health"]) * Decimal(cents_per_second)
+                earnings_per_second *= health_loss_count
+
+                avatar["earnings"] = str(Decimal(avatar["earnings"]) + earnings_per_second)
+
+                #summary data
+                temp_s["period_earnings"] = str(Decimal(temp_s["period_earnings"]) + earnings_per_second)
+                    
                 current_health = Decimal(avatar["health"])
                 
-                if avatar["sleeping"] and world_state["time_remaining"] <= parameter_set["night_length"]:                   
-                    avatar["health"] = str(current_health + (sleep_benefit * health_loss_count))
+                if avatar["sleeping"] and world_state["time_remaining"] <= parameter_set["night_length"]:    
+                    total_sleep_benefit = (sleep_benefit * health_loss_count)     
+
+                    avatar["health"] = str(current_health + total_sleep_benefit)
+                    temp_s["health_from_sleep"] = str(Decimal(temp_s["health_from_sleep"]) + total_sleep_benefit)
 
                     if Decimal(avatar["health"]) > 100:
+                        sleep_health_overage = Decimal(avatar["health"]) - 100
                         avatar["health"] = "100"
+
+                        temp_s["health_from_sleep"] = str(Decimal(temp_s["health_from_sleep"]) - sleep_health_overage)
 
                 else:
                     avatar["health"] = str(current_health - (health_loss_count * health_loss_per_second))
@@ -114,6 +131,9 @@ class SessionPeriod(models.Model):
 
         session = self.do_timer_actions(0)
 
+        current_period_id = self.id
+        summary_data = session.summary_data[str(current_period_id)]
+
         #clear avatar inventory
         for i in self.session.world_state["avatars"]:
             avatar = self.session.world_state["avatars"][i]
@@ -125,11 +145,18 @@ class SessionPeriod(models.Model):
         #convert goods in homes to cash
         for i in self.session.world_state["houses"]:
             house = self.session.world_state["houses"][i]
-            avatar = self.session.world_state["avatars"][str(house["session_player"])]
+            avatar = self.session.world_state["avatars"][i]
 
-            avatar["health"] = Decimal(avatar["health"]) + Decimal(house["health_value"])
-            avatar["health"] = str(min(Decimal(avatar["health"]), 100))
+            avatar["health"] = str(Decimal(avatar["health"]) + Decimal(house["health_value"]))
 
+            summary_data[i]["health_from_house"] = house["health_value"]
+
+            if Decimal(avatar["health"]) > 100:
+                health_overage = Decimal(avatar["health"]) - 100
+                summary_data[i]["health_from_house"] = str(Decimal(summary_data[i]["health_from_house"]) - health_overage)
+                
+                avatar["health"] = "100"
+           
             avatar["sleeping"] = False
 
             house["health_consumed"] = house["health_value"]
@@ -271,8 +298,6 @@ class SessionPeriod(models.Model):
         self.session.save()
         return self.session
         
-
-
     def json(self):
         '''
         json object of model
