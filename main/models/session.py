@@ -524,7 +524,7 @@ class Session(models.Model):
         if type == "chat":
             return data["text"]
         elif type == "grove_harvest":
-            return f'{data["harvest_amount"]} {data["grove"]["good"]}' 
+            return f'{data["harvest_amount"]} {data["grove"]["good"]} from {data["grove"]["info"]}' 
         elif type == "attack_avatar":
             return f'{session_players[str(data["source_player_id"])]["player_number"]} @ {session_players[str(data["target_player_id"])]["player_number"]}' 
         elif type == "move_fruit_to_avatar":
