@@ -122,6 +122,7 @@ class SessionPeriod(models.Model):
                         avatar["health"] = "0"
 
             self.save()
+            self.session.save()
         
         return self.session
 
@@ -300,13 +301,6 @@ class SessionPeriod(models.Model):
 
         self.session.save()
         return self.session
-
-    def setup_summary_data(self, parameter_set_groves, session_players):
-        '''
-        setup summary data
-        '''
-        
-
 
     def json(self):
         '''
