@@ -1,6 +1,7 @@
 
 import logging
 import re
+import math
 
 from asgiref.sync import sync_to_async
 from decimal import Decimal
@@ -47,6 +48,17 @@ class SubjectUpdatesMixin():
         result["text"] = event_data["text"]
         result["text_limited"] = await self.do_limited_chat(event_data["text"])
         result["sender_id"] = self.session_players_local[event["player_key"]]["id"]
+        result["nearby_players"] = []
+
+        #find nearby players
+        session_players = self.world_state_avatars_local["session_players"]
+        for i in session_players:
+            if i != str(result["sender_id"]):
+                source_pt = [session_players[str(result["sender_id"])]["current_location"]["x"], session_players[str(result["sender_id"])]["current_location"]["y"]]
+                target_pt = [session_players[i]["current_location"]["x"], session_players[i]["current_location"]["y"]]
+                
+                if math.dist(source_pt, target_pt) <= 1000:
+                    result["nearby_players"].append(i)
 
         await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=result["sender_id"],

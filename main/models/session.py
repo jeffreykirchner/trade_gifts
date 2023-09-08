@@ -522,11 +522,17 @@ class Session(models.Model):
         '''
 
         if type == "chat":
-            return data["text"]
+            nearby_text = ""
+            for i in data["nearby_players"]:
+                if nearby_text != "":
+                    nearby_text += ", "
+                nearby_text += f'{session_players[str(i)]["parameter_set_player__id_label"]}'
+
+            return f'{data["text"]} @  {nearby_text}'
         elif type == "grove_harvest":
             return f'{data["harvest_amount"]} {data["grove"]["good"]} from {data["grove"]["info"]}' 
         elif type == "attack_avatar":
-            return f'{session_players[str(data["source_player_id"])]["player_number"]} @ {session_players[str(data["target_player_id"])]["player_number"]}' 
+            return f'{session_players[str(data["source_player_id"])]["parameter_set_player__id_label"]} -> {session_players[str(data["target_player_id"])]["parameter_set_player__id_label"]}' 
         elif type == "move_fruit_to_avatar":
              return f'{data["good_one_move"]} {data["goods"]["good_one"]}, {data["good_two_move"]} {data["goods"]["good_two"]}, {data["good_three_move"]} {data["goods"]["good_three"]}'
         elif type == "move_fruit_house":
