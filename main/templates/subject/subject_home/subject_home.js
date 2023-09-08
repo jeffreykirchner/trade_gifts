@@ -314,7 +314,7 @@ var app = Vue.createApp({
         do_reload()
         {
             app.setup_pixi_subjects();
-            // app.setup_pixi_minimap();
+            app.setup_pixi_minimap();
             app.update_subject_status_overlay();
             app.update_field_inventory();
             app.update_avatar_inventory();
