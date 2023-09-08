@@ -489,23 +489,25 @@ class Session(models.Model):
 
             writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
 
-            writer.writerow(["Session ID", "Period", "Time", "Client #", "Label", "Action", "Info (JSON)", "Timestamp"])
+            writer.writerow(["Session ID", "Period", "Time", "Client #", "Label", "Action","Info (Plain)", "Info (JSON)", "Timestamp"])
 
             # session_events =  main.models.SessionEvent.objects.filter(session__id=self.id).prefetch_related('period_number', 'time_remaining', 'type', 'data', 'timestamp')
             # session_events = session_events.select_related('session_player')
 
             world_state = self.world_state
-            parameter_set_players = {}
+            session_players = {}
             for i in self.session_players.all().values('id','player_number','parameter_set_player__id_label'):
-                parameter_set_players[str(i['id'])] = i
+                session_players[str(i['id'])] = i
 
             for p in self.session_events.all().exclude(type="timer_tick"):
+
                 writer.writerow([self.id,
                                 p.period_number, 
                                 p.time_remaining, 
-                                parameter_set_players[str(p.session_player_id)]["player_number"], 
-                                parameter_set_players[str(p.session_player_id)]["parameter_set_player__id_label"], 
+                                session_players[str(p.session_player_id)]["player_number"], 
+                                session_players[str(p.session_player_id)]["parameter_set_player__id_label"], 
                                 p.type, 
+                                self.action_data_parse(p.type, p.data, session_players),
                                 p.data, 
                                 p.timestamp])
             
@@ -513,6 +515,24 @@ class Session(models.Model):
             output.close()
 
         return v
+
+    def action_data_parse(self, type, data, session_players):
+        '''
+        return plain text version of action
+        '''
+
+        if type == "chat":
+            return data["text"]
+        elif type == "grove_harvest":
+            return f'{data["harvest_amount"]} {data["grove"]["good"]}' 
+        elif type == "attack_avatar":
+            return f'{session_players[str(data["source_player_id"])]["player_number"]} @ {session_players[str(data["target_player_id"])]["player_number"]}' 
+        elif type == "move_fruit_to_avatar":
+             return f'{data["good_one_move"]} {data["goods"]["good_one"]}, {data["good_two_move"]} {data["goods"]["good_two"]}, {data["good_three_move"]} {data["goods"]["good_three"]}'
+        elif type == "move_fruit_house":
+            return f'{data["direction"]}: {data["good_one_move"]} {data["goods"]["good_one"]}, {data["good_two_move"]} {data["goods"]["good_two"]}, {data["good_three_move"]} {data["goods"]["good_three"]}'
+
+        return ""
     
     def get_download_recruiter_csv(self):
         '''
@@ -526,9 +546,9 @@ class Session(models.Model):
             for i in self.session_players.all().values('id','student_id'):
                 parameter_set_players[str(i['id'])] = i
 
-            for p in self.world_state["session_players"]:
+            for p in self.world_state["avatars"]:
                 writer.writerow([parameter_set_players[p]["student_id"],
-                                 self.world_state["session_players"][p]["earnings"]])
+                                 self.world_state["avatars"][p]["earnings"]])
 
             v = output.getvalue()
             output.close()
@@ -550,17 +570,17 @@ class Session(models.Model):
             # for p in session_players:
             #     writer.writerow([self.id, self.get_start_date_string(), p.player_number,p.name, p.student_id, p.earnings/100])
 
-            parameter_set_players = {}
+            session_players = {}
             for i in self.session_players.all().values('id', 'player_number', 'name', 'student_id'):
-                parameter_set_players[str(i['id'])] = i
+                session_players[str(i['id'])] = i
 
-            for p in self.world_state["session_players"]:
+            for p in self.world_state["avatars"]:
                 writer.writerow([self.id,
                                  self.get_start_date_string(),
-                                 parameter_set_players[p]["player_number"],
-                                 parameter_set_players[p]["name"],
-                                 parameter_set_players[p]["student_id"],
-                                 self.world_state["session_players"][p]["earnings"]])
+                                 session_players[p]["player_number"],
+                                 session_players[p]["name"],
+                                 session_players[p]["student_id"],
+                                 self.world_state["avatars"][p]["earnings"]])
 
             v = output.getvalue()
             output.close()

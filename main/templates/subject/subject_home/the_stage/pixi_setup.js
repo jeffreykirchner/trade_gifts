@@ -75,7 +75,7 @@ reset_pixi_app(){
     pixi_app = new PIXI.Application({resizeTo : canvas,
                                         backgroundColor : 0xFFFFFF,
                                         autoResize: true,
-                                        antialias: false,
+                                        antialias: true,
                                         resolution: 1,
                                         view: canvas });
 
