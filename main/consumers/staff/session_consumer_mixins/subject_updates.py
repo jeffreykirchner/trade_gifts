@@ -575,6 +575,7 @@ class SubjectUpdatesMixin():
             result["good_one_move"] = good_one_move
             result["good_two_move"] = good_two_move
             result["good_three_move"] = good_three_move
+            result["goods"] = v["goods"]
             
         else:
             logger.info(f"move_fruit_to_avatar: invalid amounts from sync, {event['message_text']}")
@@ -642,6 +643,7 @@ class SubjectUpdatesMixin():
             result["good_two_move"] = good_two_move
             result["good_three_move"] = good_three_move
             result["direction"] = direction
+            result["goods"] = v["goods"]
             
         else:
             logger.info(f"move_fruit_to_house: invalid amounts from sync, {event['message_text']}")
@@ -649,7 +651,7 @@ class SubjectUpdatesMixin():
 
         await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
-                                           type="move_fruit_to_house",
+                                           type="move_fruit_house",
                                            period_number=self.world_state_local["current_period"],
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
@@ -1018,7 +1020,10 @@ def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_
 
             world_state = session.world_state
 
-    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+    return {"status" : status, 
+            "error_message" : error_message, 
+            "world_state" : world_state, 
+            "goods" : {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}}
 
 def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction):
     '''
@@ -1114,7 +1119,10 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
 
             world_state = session.world_state
 
-    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+    return {"status" : status, 
+            "error_message" : error_message, 
+            "world_state" : world_state,
+            "goods" : {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}}
 
 def sync_attack_avatar(session_id, player_id, target_house_id):
     '''

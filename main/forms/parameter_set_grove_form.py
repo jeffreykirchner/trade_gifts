@@ -18,6 +18,9 @@ class ParameterSetGroveForm(forms.ModelForm):
     parameter_set_group = forms.ModelChoiceField(label='Group',
                                                  queryset=ParameterSetGroup.objects.none(),
                                                  widget=forms.Select(attrs={"v-model":"current_parameter_set_grove.parameter_set_group",}))
+    
+    info = forms.CharField(label='Info',
+                            widget=forms.TextInput(attrs={"v-model":"current_parameter_set_grove.info",}))
 
     x = forms.IntegerField(label='Starting Location X',
                             min_value=0,
@@ -52,7 +55,7 @@ class ParameterSetGroveForm(forms.ModelForm):
     
     class Meta:
         model=ParameterSetGrove
-        fields =['parameter_set_group','hex_color', 'x', 'y', 'good', 'drought_on_period', 'drought_level']
+        fields =['info', 'parameter_set_group','hex_color', 'x', 'y', 'good', 'drought_on_period', 'drought_level']
     
     def clean_drought_level(self):
         

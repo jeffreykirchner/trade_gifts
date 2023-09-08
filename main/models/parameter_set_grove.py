@@ -20,6 +20,8 @@ class ParameterSetGrove(models.Model):
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_groves_a")
     parameter_set_group = models.ForeignKey(ParameterSetGroup, on_delete=models.SET_NULL, related_name="parameter_set_groves_b", blank=True, null=True)
 
+    info = models.CharField(verbose_name='Info', blank=True, null=True, max_length=100, default="Info Here")
+
     x = models.IntegerField(verbose_name='Start Location X', default=50)                #starting location x and y
     y = models.IntegerField(verbose_name='Start Location Y', default=50)
 
@@ -46,7 +48,7 @@ class ParameterSetGrove(models.Model):
         copy source values into this period
         source : dict object of parameterset grove
         '''
-
+        self.info = new_ps.get("info")
         self.x = new_ps.get("x")
         self.y = new_ps.get("y")
 
@@ -94,6 +96,7 @@ class ParameterSetGrove(models.Model):
         return{
 
             "id" : self.id,
+            "info" : self.info,
             "x" : self.x,
             "y" : self.y,
             "good" : self.good,
