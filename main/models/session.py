@@ -58,7 +58,7 @@ class Session(models.Model):
     world_state = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Current Session State")       #world state at this point in session
     world_state_avatars = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Current Avatar State")       #world state at this point in session
 
-    summary_data = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Summary Data")       #summary data for session
+    # summary_data = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Summary Data")       #summary data for session
 
     soft_delete =  models.BooleanField(default=False)                             #hide session if true
 
@@ -133,55 +133,67 @@ class Session(models.Model):
         '''
         setup summary data
         '''
+        
+        parameter_set_groves = self.parameter_set.parameter_set_groves_a.values('id').all()
+        session_players = self.session_players.values('id','parameter_set_player__id').all()
+
         self.summary_data = {}
 
-        parameter_set_groves = self.parameter_set.parameter_set_groves_a.values('id').all()
-        session_players = self.session_players.values('id').all()
+        # parameter_set_groves = self.parameter_set.parameter_set_groves_a.values('id').all()
+        # session_players = self.session.session_players.values('id').all()
 
-        for i in self.session_periods.all():
-            period_number = i.period_number
+        # period_number = self.period_number
 
-            id = str(i.id)
+        id = self.id
 
-            self.summary_data[id] = {}
+        summary_data = {}
 
-            for j in session_players:
-                j_s = str(j["id"])
-                self.summary_data[id][j_s] = {}
-                v = self.summary_data[id][j_s]
+        for j in session_players:
+            j_s = str(j["id"])
+            summary_data[j_s] = {}
+            v = summary_data[j_s]
+           
+            v["period_earnings"] = 0
+            v["start_health"] = None
+            v["end_health"] = None
+            v["health_from_sleep"] = 0
+            v["health_from_house"] = 0
 
-                v["period_earnings"] = 0
-                v["start_health"] = 100 if period_number==1 else None
-                v["end_health"] = None
-                v["health_from_sleep"] = 0
-                v["health_from_house"] = 0
+            #total harvested / consumption
+            for k in main.globals.Goods.choices:
+                v["harvest_total_" + k[0]] = 0
+                v["house_" + k[0]] = 0
+                v["avatar_" + k[0]] = 0
+            
+            #groves
+            for k in parameter_set_groves:
+                k_s = str(k["id"])
+                v["grove_harvests_count_" + k_s] = 0
+                v["grove_harvests_total_" + k_s] = 0
 
-                #total harvested / consumption
-                for k in main.globals.Goods.choices:
-                    v["harvest_total_" + k[0]] = 0
-                    v["house_" + k[0]] = 0
-                    v["avatar_" + k[0]] = 0
-                
-                #groves
-                for k in parameter_set_groves:
-                    k_s = str(k["id"])
-                    v["grove_harvests_count_" + k_s] = 0
-                    v["grove_harvests_total_" + k_s] = 0
+            #interactions with others
+            for k in session_players:
+                k_s = str(k["id"])
+                v["attacks_at_" + k_s] = 0
+                v["attacks_from_" + k_s] = 0
+                v["attacks_cost_at_" + k_s] = 0
+                v["attacks_damage_from_" + k_s] = 0
 
-                #interactions with others
-                for k in session_players:
-                    k_s = str(k["id"])
-                    v["attacks_at_" + k_s] = 0
-                    v["attacks_from_" + k_s] = 0
-                    v["attacks_cost_at_" + k_s] = 0
-                    v["attacks_damage_from_" + k_s] = 0
+                for l in main.globals.Goods.choices:
+                    v["send_avatar_to_avatar_" + k_s + "_good_" + l[0]] = 0
+                    v["send_avatar_to_house_" + str(k["parameter_set_player__id"]) + "_good_" + l[0]] = 0
 
-                    for l in main.globals.Goods.choices:
-                        v["send_avatar_to_avatar_" + k_s + "_good_" + l[0]] = 0
-                        v["send_avatar_to_house_" + k_s + "_good_" + l[0]] = 0
 
-        self.save()
+        self.session_periods.all().update(summary_data=summary_data)
 
+        session_period_1 = self.session_periods.get(period_number=1)
+
+        #set starting health
+        for i in session_period_1.summary_data:
+            session_period_1.summary_data[i]["start_health"] = 100
+
+        session_period_1.save()
+        
     def setup_world_state(self):
         '''
         setup world state
@@ -370,8 +382,7 @@ class Session(models.Model):
         with io.StringIO() as output:
 
             world_state = self.world_state
-            summary_data = self.summary_data
-
+           
             parameter_set_players = {}
             for i in self.session_players.all().values('id','parameter_set_player__id_label'):
                 parameter_set_players[str(i['id'])] = i
@@ -414,8 +425,10 @@ class Session(models.Model):
             # logger.info(parameter_set_players)
 
             for period_number, period in enumerate(world_state["session_periods"]):
+                summary_data = self.session_periods.get(id=period).summary_data
+
                 for player_number, player in enumerate(world_state["avatars"]):
-                    temp_p = summary_data[period][player]
+                    temp_p = summary_data[player]
 
                     temp_row = [self.id, 
                                     period_number+1, 
@@ -440,6 +453,8 @@ class Session(models.Model):
 
                     #avatar interactions
                     for k in world_state["avatars"]:
+                        parameter_set_player_id =  str(world_state["avatars"][k]["parameter_set_player_id"])
+
                         temp_row.append(temp_p["attacks_at_" + k])
                         temp_row.append(temp_p["attacks_from_" + k])
                         temp_row.append(temp_p["attacks_cost_at_" + k])
@@ -449,7 +464,7 @@ class Session(models.Model):
                             temp_row.append(temp_p["send_avatar_to_avatar_" + k + "_good_" + l[0]])
                         
                         for l in main.globals.Goods.choices:
-                            temp_row.append(temp_p["send_avatar_to_house_" + k + "_good_" + l[0]])
+                            temp_row.append(temp_p["send_avatar_to_house_" + parameter_set_player_id + "_good_" + l[0]])
                                             
 
                     #grove harvests
