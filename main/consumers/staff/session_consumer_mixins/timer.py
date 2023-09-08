@@ -195,6 +195,7 @@ def sync_continue_timer(event, session_id):
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
+        current_period = session.get_current_session_period()
         parameter_set = session.parameter_set.json()
 
         #check session over
@@ -202,7 +203,6 @@ def sync_continue_timer(event, session_id):
             session.world_state["time_remaining"] <= 1:
             
             world_state = session.world_state
-            summary_data = session.summary_data
 
             world_state["current_period"] = parameter_set["period_count"]
             world_state["time_remaining"] = 0
@@ -212,7 +212,7 @@ def sync_continue_timer(event, session_id):
 
             #store data
             for i in world_state["avatars"]:
-                sd_player = summary_data[str(current_period_id)][i]
+                sd_player = current_period.summary_data[i]
                 sd_player["end_health"] = world_state["avatars"][i]["health"]
 
                 avatar = world_state["avatars"][i]
@@ -222,6 +222,7 @@ def sync_continue_timer(event, session_id):
                     sd_player["avatar_" + k[0]] = avatar[k[0]]
 
             session.save()
+            current_period.save()
             
             session = session.get_current_session_period().do_consumption()
             session.world_state["current_experiment_phase"] = ExperimentPhase.NAMES
@@ -274,13 +275,14 @@ def sync_continue_timer(event, session_id):
 
             #check if period over
             if period_is_over:
-                summary_data = session.summary_data
+               
                 world_state = session.world_state
-                current_period_id = session.get_current_session_period().id
+                last_period = session.session_periods.get(id=last_period_id)
+                summary_data = last_period.summary_data
 
                 #store data
                 for i in world_state["avatars"]:
-                    sd_player = summary_data[str(last_period_id)][i]
+                    sd_player = summary_data[i]
 
                     #health
                     sd_player["end_health"] = world_state["avatars"][i]["health"]
@@ -292,8 +294,9 @@ def sync_continue_timer(event, session_id):
                         sd_player["house_" + k[0]] = world_state["houses"][str(avatar["parameter_set_player_id"])][k[0]]
                         sd_player["avatar_" + k[0]] =  avatar[k[0]]
 
+                last_period.save()
 
-                session = session.session_periods.get(id=last_period_id).do_consumption()
+                session = last_period.do_consumption()
                 session = session.get_current_session_period().do_timer_actions(time_remaining)
                 session = session.get_current_session_period().do_production()
                 session = session.get_current_session_period().do_grove_growth()

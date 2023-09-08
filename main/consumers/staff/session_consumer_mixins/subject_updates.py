@@ -976,12 +976,12 @@ def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
-        current_period_id = str(session.get_current_session_period().id)
+        current_period = session.get_current_session_period()
         
         parameter_set = session.parameter_set.json()
         parameter_set_player_id = str(session.world_state['avatars'][str(player_id)]['parameter_set_player_id'])
 
-        summary_data = session.summary_data[current_period_id][str(player_id)]
+        summary_data = current_period.summary_data[str(player_id)]
 
         good_one = parameter_set['parameter_set_players'][parameter_set_player_id]['good_one']
         good_two = parameter_set['parameter_set_players'][parameter_set_player_id]['good_two']
@@ -1014,6 +1014,7 @@ def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_
             summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_three] += good_three_move
 
             session.save()
+            current_period.save()
 
             world_state = session.world_state
 
@@ -1029,9 +1030,9 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
-        current_period_id = str(session.get_current_session_period().id)
+        current_period = session.get_current_session_period()
         world_state = session.world_state
-        summary_data = session.summary_data[current_period_id][str(player_id)]
+        summary_data = current_period.summary_data[str(player_id)]
 
         parameter_set = session.parameter_set.json()
         parameter_set_player_id = str(world_state['avatars'][str(player_id)]['parameter_set_player_id'])
@@ -1109,6 +1110,7 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
             house["health_value"] = convert_goods_to_health(house[good_one], house[good_two], house[good_three], parameter_set)
 
             session.save()
+            current_period.save()
 
             world_state = session.world_state
 
@@ -1125,7 +1127,7 @@ def sync_attack_avatar(session_id, player_id, target_house_id):
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
-        session_period_id = str(session.get_current_session_period().id)
+        current_period = session.get_current_session_period()
         parameter_set = session.parameter_set.json()
 
         player_id_s = str(player_id)
@@ -1144,9 +1146,9 @@ def sync_attack_avatar(session_id, player_id, target_house_id):
 
         if status == "success":
             #data for summary
-            summary_data = session.summary_data[session_period_id]
-            summary_data_source = summary_data[player_id_s]
-            summary_data_target = summary_data[target_house_id_s]
+
+            summary_data_source = current_period.summary_data[player_id_s]
+            summary_data_target = current_period.summary_data[target_house_id_s]
 
             attack_cost = Decimal(parameter_set["attack_cost"])
             attack_damage = Decimal(parameter_set["attack_damage"])
@@ -1175,6 +1177,7 @@ def sync_attack_avatar(session_id, player_id, target_house_id):
             target_player["health"] = str(target_player["health"])
             
             session.save()
+            current_period.save()
 
             world_state = session.world_state
         session.save()
@@ -1225,7 +1228,7 @@ def sync_grove_harvest(session_id, player_id, grove_id):
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
-        session_period_id = str(session.get_current_session_period().id)
+        current_period = session.get_current_session_period()
         parameter_set = session.parameter_set.json()
 
         player_id_s = str(player_id)
@@ -1255,7 +1258,7 @@ def sync_grove_harvest(session_id, player_id, grove_id):
             error_message.append({"id":"grove_harvest", "message": "No harvests remaining this period."})
 
         if status == "success":
-            summary_data = session.summary_data[session_period_id][player_id_s]
+            summary_data = current_period.summary_data[player_id_s]
 
             player[grove["good"]] += harvest_amount
             player["period_grove_harvests"] += 1
@@ -1265,6 +1268,7 @@ def sync_grove_harvest(session_id, player_id, grove_id):
             summary_data["harvest_total_" + grove["good"]] += harvest_amount
 
             session.save()
+            current_period.save()
         
         world_state = session.world_state
         

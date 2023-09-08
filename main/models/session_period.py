@@ -32,6 +32,8 @@ class SessionPeriod(models.Model):
 
     timer_actions = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)   #timer actions for this period
 
+    summary_data = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Summary Data")       #summary data for session period
+
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
 
@@ -63,7 +65,7 @@ class SessionPeriod(models.Model):
         '''
         parameter_set = self.session.parameter_set.json()
         world_state = self.session.world_state
-        summary_data = self.session.summary_data
+        summary_data = self.summary_data
 
         cents_per_second = parameter_set["cents_per_second"]
 
@@ -86,7 +88,7 @@ class SessionPeriod(models.Model):
             for i in world_state["avatars"]:
 
                 #data
-                temp_s =  summary_data[id][i]
+                temp_s =  summary_data[i]
 
                 #earnings
                 avatar = world_state["avatars"][i]
@@ -120,7 +122,6 @@ class SessionPeriod(models.Model):
                         avatar["health"] = "0"
 
             self.save()
-            self.session.save()    
         
         return self.session
 
@@ -132,7 +133,7 @@ class SessionPeriod(models.Model):
         session = self.do_timer_actions(0)
 
         current_period_id = self.id
-        summary_data = session.summary_data[str(current_period_id)]
+        summary_data = self.summary_data
 
         #clear avatar inventory
         for i in self.session.world_state["avatars"]:
@@ -144,16 +145,18 @@ class SessionPeriod(models.Model):
 
         #convert goods in homes to cash
         for i in self.session.world_state["houses"]:
+            
             house = self.session.world_state["houses"][i]
-            avatar = self.session.world_state["avatars"][str(house["session_player"])]
+            session_player_id = str(house["session_player"])
+            avatar = self.session.world_state["avatars"][session_player_id]
 
             avatar["health"] = str(Decimal(avatar["health"]) + Decimal(house["health_value"]))
 
-            summary_data[i]["health_from_house"] = house["health_value"]
+            summary_data[session_player_id]["health_from_house"] = house["health_value"]
 
             if Decimal(avatar["health"]) > 100:
                 health_overage = Decimal(avatar["health"]) - 100
-                summary_data[i]["health_from_house"] = str(Decimal(summary_data[i]["health_from_house"]) - health_overage)
+                summary_data[session_player_id]["health_from_house"] = str(Decimal(summary_data[session_player_id]["health_from_house"]) - health_overage)
                 
                 avatar["health"] = "100"
            
@@ -297,7 +300,14 @@ class SessionPeriod(models.Model):
 
         self.session.save()
         return self.session
+
+    def setup_summary_data(self, parameter_set_groves, session_players):
+        '''
+        setup summary data
+        '''
         
+
+
     def json(self):
         '''
         json object of model

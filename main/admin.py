@@ -211,7 +211,7 @@ class SessionPeriodAdmin(admin.ModelAdmin):
 
     readonly_fields=['session','period_number']
     list_display = ['session', 'period_number']
-    fields = ['session','period_number', 'production_completed', 'consumption_completed', 'timer_actions']
+    fields = ['session','period_number', 'production_completed', 'consumption_completed', 'timer_actions','summary_data']
 
 class SessionPeriodInline(admin.TabularInline):
 
