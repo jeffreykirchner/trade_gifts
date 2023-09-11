@@ -136,7 +136,8 @@ class Session(models.Model):
         
         parameter_set_patches = self.parameter_set.parameter_set_patches_a.values('id').all()
         session_players = self.session_players.values('id','parameter_set_player__id').all()
-
+        parameter_set = self.parameter_set.json()
+        
         self.summary_data = {}
 
         # parameter_set_patches = self.parameter_set.parameter_set_patches_a.values('id').all()
@@ -190,7 +191,7 @@ class Session(models.Model):
 
         #set starting health
         for i in session_period_1.summary_data:
-            session_period_1.summary_data[i]["start_health"] = 100
+            session_period_1.summary_data[i]["start_health"] = parameter_set["starting_health"]
 
         session_period_1.save()
         
@@ -287,7 +288,7 @@ class Session(models.Model):
 
             v2 = {}
             v2['earnings'] = "0"
-            v2['health'] = "100"
+            v2['health'] = parameter_set["starting_health"]
             v2['sleeping'] = False
             v2['period_patch_harvests'] = 0
             v2['parameter_set_player_id'] = i['parameter_set_player__id']

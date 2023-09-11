@@ -58,6 +58,7 @@ class ParameterSet(models.Model):
     cool_down_length = models.IntegerField(verbose_name='Cool Down Length', default=10)                       #cool down length in seconds
     interaction_range = models.IntegerField(verbose_name='Interaction Range', default=300)                    #interaction range in pixels
 
+    starting_health = models.IntegerField(verbose_name='Starting Health', default=75)                                                            #starting health
     health_loss_per_second = models.DecimalField(verbose_name='Health Loss per Second', decimal_places=2, max_digits=3, default=1.00)            #health loss per second
     heath_gain_per_sleep_second = models.DecimalField(verbose_name='Health Gain per Sleep Second', decimal_places=2, max_digits=4, default=5.00) #health gain per sleep second
 
@@ -138,6 +139,7 @@ class ParameterSet(models.Model):
             self.cool_down_length = new_ps.get("cool_down_length", 10)
             self.interaction_range = new_ps.get("interaction_range", 300)
 
+            self.starting_health = new_ps.get("starting_health", 75)
             self.health_loss_per_second = new_ps.get("health_loss_per_second", 1.00)
             self.heath_gain_per_sleep_second = new_ps.get("heath_gain_per_sleep_second", 5.00)
 
@@ -406,6 +408,7 @@ class ParameterSet(models.Model):
         self.json_for_session["cool_down_length"] = self.cool_down_length
         self.json_for_session["interaction_range"] = self.interaction_range
 
+        self.json_for_session["starting_health"] = self.starting_health
         self.json_for_session["health_loss_per_second"] = self.health_loss_per_second
         self.json_for_session["heath_gain_per_sleep_second"] = self.heath_gain_per_sleep_second
 
