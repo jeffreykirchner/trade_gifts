@@ -1,11 +1,11 @@
 {% load crispy_forms_tags %}
-<!--Edit Grove Modal -->
+<!--Edit Patch Modal -->
 <div class="modal fade"
-     id="edit_parameterset_grove_modal"
+     id="edit_parameterset_patch_modal"
      data-bs-backdrop="static"
      data-bs-keyboard="false"
      tabindex="-1"
-     aria-labelledby="edit_parameterset_grove_modal"
+     aria-labelledby="edit_parameterset_patch_modal"
      aria-hidden="true">
 
     <div class="modal-dialog">
@@ -14,8 +14,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="parameter_set_grove_form" v-on:submit.prevent="onSubmit">
-                    {% for i in parameter_set_grove_form %}
+                <form id="parameter_set_patch_form" v-on:submit.prevent="onSubmit">
+                    {% for i in parameter_set_patch_form %}
                     <div class="row">
                         <div class = "col col-md-10 offset-md-1">  
                             {{ i|as_crispy_field }}         
@@ -28,7 +28,7 @@
                     <div id="div_id_levels_input">
                         <div class="form-group mt-2">
                             <label for="id_levels_input">Levels (Comma separated)*</label>
-                            <input type="tet" class="form-control" id="id_levels_input" v-model="current_parameter_set_grove.levels_input">
+                            <input type="tet" class="form-control" id="id_levels_input" v-model="current_parameter_set_patch.levels_input">
                         </div>
                     </div>
                 </div>
@@ -37,15 +37,15 @@
             <div class="modal-footer">
                 <button type="button"
                         class="btn btn-outline-danger"
-                        title="Remove grove from parameter set."
-                        v-on:click = "send_remove_parameter_set_grove()"
+                        title="Remove patch from parameter set."
+                        v-on:click = "send_remove_parameter_set_patch()"
                         v-bind:disabled="reconnecting || working">
-                    Delete Grove <i class="far fa-trash-alt"></i>
+                    Delete Patch <i class="far fa-trash-alt"></i>
                 </button>
                 <button type="button"
                         class="btn btn-outline-primary"
-                        title="Update grove settings."
-                        v-on:click = "send_update_parameter_set_grove()"
+                        title="Update patch settings."
+                        v-on:click = "send_update_parameter_set_patch()"
                         v-bind:disabled="reconnecting || working">
                     Update <i class="fas fa-sign-in-alt"></i>
                 </button>

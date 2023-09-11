@@ -846,42 +846,42 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
 
-    async def grove_harvest(self, event):
+    async def patch_harvest(self, event):
         '''
-        subject harvests from grove
+        subject harvests from patch
        '''
         if self.controlling_channel != self.channel_name:
             return
         
         logger = logging.getLogger(__name__)
-        # logger.info(f"grove_harvest: {event}")
+        # logger.info(f"patch_harvest: {event}")
         
         try:
             player_id = self.session_players_local[event["player_key"]]["id"]        
-            grove_id = event["message_text"]["grove_id"]
+            patch_id = event["message_text"]["patch_id"]
         except:
-            logger.info(f"grove_harvest: invalid data, {event['message_text']}")
+            logger.info(f"patch_harvest: invalid data, {event['message_text']}")
             return
 
-        v = await sync_to_async(sync_grove_harvest)(self.session_id, player_id, grove_id)
+        v = await sync_to_async(sync_patch_harvest)(self.session_id, player_id, patch_id)
         
         result = {"status" : v["status"], "error_message" : v["error_message"]}
 
         if v["world_state"] and v["status"]=="success":
             self.world_state_local = v["world_state"]
-            result["grove"] = self.world_state_local["groves"][str(grove_id)]
+            result["patch"] = self.world_state_local["patches"][str(patch_id)]
             result["player_id"] = player_id
-            result["grove_id"] = grove_id
+            result["patch_id"] = patch_id
             result["harvest_amount"] = v["harvest_amount"]
             result["avatar"] = self.world_state_local["avatars"][str(player_id)]                
 
         else:
-            logger.info(f"grove_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
+            logger.info(f"patch_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
             return
         
         await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
-                                           type="grove_harvest",
+                                           type="patch_harvest",
                                            period_number=self.world_state_local["current_period"],
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
@@ -889,9 +889,9 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
         
-    async def update_grove_harvest(self, event):
+    async def update_patch_harvest(self, event):
         '''
-        subject harvests from grove update
+        subject harvests from patch update
         '''
 
         event_data = event["group_data"]
@@ -1236,9 +1236,9 @@ def sync_sleep(session_id, player_id):
 
     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 
-def sync_grove_harvest(session_id, player_id, grove_id):
+def sync_patch_harvest(session_id, player_id, patch_id):
     '''
-    harvest from grove
+    harvest from patch
     '''
 
     status = "success"
@@ -1252,16 +1252,16 @@ def sync_grove_harvest(session_id, player_id, grove_id):
         parameter_set = session.parameter_set.json()
 
         player_id_s = str(player_id)
-        grove_id_s = str(grove_id)
+        patch_id_s = str(patch_id)
 
         player = session.world_state['avatars'][player_id_s]
-        grove = session.world_state['groves'][grove_id_s]
+        patch = session.world_state['patches'][patch_id_s]
        
         status = "fail"     
 
         #loop backwards through levels
-        for i in range(grove["max_levels"], 0, -1):
-            level = grove["levels"][str(i)]
+        for i in range(patch["max_levels"], 0, -1):
+            level = patch["levels"][str(i)]
 
             if not level["harvested"]:
                 status = "success"               
@@ -1270,22 +1270,22 @@ def sync_grove_harvest(session_id, player_id, grove_id):
                 break
         
         if status == "fail":
-            error_message.append({"id":"grove_harvest", "message": "The grove is empty."})
+            error_message.append({"id":"patch_harvest", "message": "The patch is empty."})
 
         #check player has enough harvests remaining
-        if status == "success" and player["period_grove_harvests"] >= parameter_set["max_grove_harvests"]:
+        if status == "success" and player["period_patch_harvests"] >= parameter_set["max_patch_harvests"]:
             status = "fail"
-            error_message.append({"id":"grove_harvest", "message": "No harvests remaining this period."})
+            error_message.append({"id":"patch_harvest", "message": "No harvests remaining this period."})
 
         if status == "success":
             summary_data = current_period.summary_data[player_id_s]
 
-            player[grove["good"]] += harvest_amount
-            player["period_grove_harvests"] += 1
+            player[patch["good"]] += harvest_amount
+            player["period_patch_harvests"] += 1
 
-            summary_data["grove_harvests_count_" + grove_id_s] += 1
-            summary_data["grove_harvests_total_" + grove_id_s] += harvest_amount
-            summary_data["harvest_total_" + grove["good"]] += harvest_amount
+            summary_data["patch_harvests_count_" + patch_id_s] += 1
+            summary_data["patch_harvests_total_" + patch_id_s] += harvest_amount
+            summary_data["harvest_total_" + patch["good"]] += harvest_amount
 
             session.save()
             current_period.save()

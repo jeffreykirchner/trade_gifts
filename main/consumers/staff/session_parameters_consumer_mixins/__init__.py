@@ -8,4 +8,4 @@ from .parameter_set_fields import ParameterSetFieldsMixin
 from .parameter_set_groups import ParameterSetGroupsMixin
 from .parameter_set_notices import ParameterSetNoticesMixin
 from .parameter_set_barriers import ParameterSetBarriersMixin
-from .parameter_set_groves import ParameterSetGrovesMixin
+from .parameter_set_patches import ParameterSetPatchesMixin

@@ -27,7 +27,7 @@ from main.forms import ParameterSetFieldForm
 from main.forms import ParameterSetGroupForm
 from main.forms import ParameterSetNoticeForm
 from main.forms import ParameterSetBarrierForm
-from main.forms import ParameterSetGroveForm
+from main.forms import ParameterSetPatchForm
 
 class StaffSessionParametersView(SingleObjectMixin, View):
     '''
@@ -54,13 +54,13 @@ class StaffSessionParametersView(SingleObjectMixin, View):
         parameter_set_group_form = ParameterSetGroupForm()
         parameter_set_notice_form = ParameterSetNoticeForm()
         parameter_set_barrier_form = ParameterSetBarrierForm()
-        parameter_set_grove_form = ParameterSetGroveForm()
+        parameter_set_patch_form = ParameterSetPatchForm()
 
         parameter_set_field_form.fields["parameter_set_player"].queryset = session.parameter_set.parameter_set_players.all()
         parameter_set_field_form.fields["parameter_set_field_type"].queryset = session.parameter_set.parameter_set_field_types.all()
         parameter_set_player_form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
         parameter_set_barrier_form.fields["parameter_set_groups"].queryset = session.parameter_set.parameter_set_groups.all()
-        parameter_set_grove_form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
+        parameter_set_patch_form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
 
         parameter_set_form_ids=[]
         for i in parameter_set_form:
@@ -98,9 +98,9 @@ class StaffSessionParametersView(SingleObjectMixin, View):
         for i in parameter_set_barrier_form:
             parameter_set_barrier_form_ids.append(i.html_name)
 
-        parameter_set_grove_form_ids=[]
-        for i in parameter_set_grove_form:
-            parameter_set_grove_form_ids.append(i.html_name)
+        parameter_set_patch_form_ids=[]
+        for i in parameter_set_patch_form:
+            parameter_set_patch_form_ids.append(i.html_name)
             
         return render(request=request,
                       template_name=self.template_name,
@@ -116,7 +116,7 @@ class StaffSessionParametersView(SingleObjectMixin, View):
                                "parameter_set_group_form" : parameter_set_group_form,
                                "parameter_set_notice_form" : parameter_set_notice_form,
                                "parameter_set_barrier_form" : parameter_set_barrier_form,
-                               "parameter_set_grove_form" : parameter_set_grove_form,
+                               "parameter_set_patch_form" : parameter_set_patch_form,
                                "parameter_set_form_ids" : parameter_set_form_ids,
                                "parameter_set_player_form_ids" : parameter_set_player_form_ids,
                                "parameter_set_wall_form_ids" : parameter_set_wall_form_ids,
@@ -126,7 +126,7 @@ class StaffSessionParametersView(SingleObjectMixin, View):
                                "parameter_set_group_form_ids" : parameter_set_group_form_ids,
                                "parameter_set_notice_form_ids" : parameter_set_notice_form_ids,
                                "parameter_set_barrier_form_ids" : parameter_set_barrier_form_ids,
-                               "parameter_set_grove_form_ids" : parameter_set_grove_form_ids,
+                               "parameter_set_patch_form_ids" : parameter_set_patch_form_ids,
                                "import_parameters_form" : ImportParametersForm(user=request.user, session_id=session.id),     
                                "websocket_path" : self.websocket_path,
                                "page_key" : f'{self.websocket_path}-{session.id}',

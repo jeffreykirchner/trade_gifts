@@ -1,11 +1,11 @@
 <div class="card">                  
     <div class="card-header fw-bold">                
         <span class="align-middle">
-            Groves ([[ Object.keys(parameter_set.parameter_set_groves).length]]) 
+            Patches ([[ Object.keys(parameter_set.parameter_set_patches).length]]) 
         </span>      
 
         <span class="float-end">
-            <button type="button" class="btn btn-link ms-4" title="Show Help Doc" v-on:click="send_load_help_doc('Staff Parameters Groves')">
+            <button type="button" class="btn btn-link ms-4" title="Show Help Doc" v-on:click="send_load_help_doc('Staff Parameters Patches')">
                 <i class="far fa-question-circle"></i> 
             </button>
         </span> 
@@ -14,7 +14,7 @@
     <div class="card-body" >        
 
         <div class="row justify-content-center">
-            <!-- grove settings -->
+            <!-- patch settings -->
             <div class="col-md-auto text-center">                
                 <div class="table-responsive">
                     <table class="table table-condensed"> 
@@ -43,32 +43,32 @@
                                 </th>                   
                             </tr>
                         </thead>
-                        <tbody id="grove_list">
-                            <tr v-for="(p, index) in parameter_set.parameter_set_groves_order" 
+                        <tbody id="patch_list">
+                            <tr v-for="(p, index) in parameter_set.parameter_set_patches_order" 
                                 v-bind:key="p"
-                                :set="temp_p=parameter_set.parameter_set_groves[p]"
+                                :set="temp_p=parameter_set.parameter_set_patches[p]"
                                 >
-                                <td v-on:click="show_edit_parameter_set_grove(p)" 
+                                <td v-on:click="show_edit_parameter_set_patch(p)" 
                                     class="player_table_cell">
                                     [[temp_p.info]]
                                 </td>
-                                <td v-on:click="show_edit_parameter_set_grove(p)" 
+                                <td v-on:click="show_edit_parameter_set_patch(p)" 
                                     class="player_table_cell">
                                     [[temp_p.good]]
                                 </td>
-                                <td v-on:click="show_edit_parameter_set_grove(p)" 
+                                <td v-on:click="show_edit_parameter_set_patch(p)" 
                                     class="player_table_cell">
                                     [[temp_p.x]], [[temp_p.y]]
                                 </td>
-                                <td v-on:click="show_edit_parameter_set_grove(p)" 
+                                <td v-on:click="show_edit_parameter_set_patch(p)" 
                                     class="player_table_cell">
                                     [[temp_p.drought_on_period]]
                                 </td>
-                                <td v-on:click="show_edit_parameter_set_grove(p)" 
+                                <td v-on:click="show_edit_parameter_set_patch(p)" 
                                     class="player_table_cell">
                                     [[temp_p.drought_level]]
                                 </td>
-                                <td v-on:click="show_edit_parameter_set_grove(p)" 
+                                <td v-on:click="show_edit_parameter_set_patch(p)" 
                                     class="player_table_cell">                                    
                                     <span v-if="temp_p.parameter_set_group && 
                                                 temp_p.parameter_set_group in parameter_set.parameter_set_groups">
@@ -79,13 +79,13 @@
                                         [[temp_p.hex_color]]
                                     </span>
                                 </td>
-                                <td v-on:click="show_edit_parameter_set_grove(p)" 
+                                <td v-on:click="show_edit_parameter_set_patch(p)" 
                                     class="player_table_cell">
 
-                                    <span v-for="(p2, index2) in parameter_set.parameter_set_groves[p].levels" 
+                                    <span v-for="(p2, index2) in parameter_set.parameter_set_patches[p].levels" 
                                         v-bind:key="p2"
-                                        :set="temp_p2=parameter_set.parameter_set_groves[p].levels[p2]">
-                                        [[p2.value]] <span v-if="index2 <= Object.keys(parameter_set.parameter_set_groves[p].levels).length-1">, </span>
+                                        :set="temp_p2=parameter_set.parameter_set_patches[p].levels[p2]">
+                                        [[p2.value]] <span v-if="index2 <= Object.keys(parameter_set.parameter_set_patches[p].levels).length-1">, </span>
                                     </span>                                    
                                 </td>
                             </tr>
@@ -100,9 +100,9 @@
             <div class="col-md-auto">
                 <button class="btn btn-outline-success btn-sm"
                         type="button"
-                        title="Add grove"
+                        title="Add patch"
                         v-bind:disabled="session.started || reconnecting || working"
-                        v-on:click="send_add_parameter_set_grove()">
+                        v-on:click="send_add_parameter_set_patch()">
                         Add <i class="fas fa-plus"></i>
                 </button>
             </div>

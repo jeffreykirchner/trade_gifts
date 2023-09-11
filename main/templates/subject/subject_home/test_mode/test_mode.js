@@ -138,9 +138,9 @@ do_test_mode_run()
             app.do_test_mode_house();
             go=false;
         }
-        else if(app.grove_modal_open)
+        else if(app.patch_modal_open)
         {
-            app.do_test_mode_grove();
+            app.do_test_mode_patch();
             go=false;
         }
         else if(app.field_modal_open)
@@ -165,7 +165,7 @@ do_test_mode_run()
                 app.test_mode_move();
                 break;
             case 3:
-                app.test_mode_check_near_grove();
+                app.test_mode_check_near_patch();
                 break;
             case 4:
                 app.test_mode_check_near_house();
@@ -274,13 +274,13 @@ do_test_mode_house()
 },
 
 /**
- * grove modal is open
+ * patch modal is open
  */
-do_test_mode_grove()
+do_test_mode_patch()
 {
-    if(!app.selected_grove.grove) app.grove_modal.hide();
+    if(!app.selected_patch.patch) app.patch_modal.hide();
 
-    app.send_grove_harvest();
+    app.send_patch_harvest();
 },
 
 /**
@@ -355,19 +355,19 @@ test_mode_move()
         }
         else
         {
-            //move to a random grove in my group
+            //move to a random patch in my group
             let go = true;
             while(go)
             {
-                let temp_id = app.random_number(0,app.session.parameter_set.parameter_set_groves_order.length-1);
-                let grove_id = app.session.parameter_set.parameter_set_groves_order[temp_id];
-                let parameter_set_grove = app.session.parameter_set.parameter_set_groves[grove_id];
+                let temp_id = app.random_number(0,app.session.parameter_set.parameter_set_patches_order.length-1);
+                let patch_id = app.session.parameter_set.parameter_set_patches_order[temp_id];
+                let parameter_set_patch = app.session.parameter_set.parameter_set_patches[patch_id];
 
-                if(parameter_set_grove.parameter_set_group == temp_local_group)
+                if(parameter_set_patch.parameter_set_group == temp_local_group)
                 {
                     go = false;
-                    app.test_mode_location_target = {x:parameter_set_grove.x + app.random_number(-100, 100),
-                                                     y:parameter_set_grove.y + app.random_number(-100, 100)};
+                    app.test_mode_location_target = {x:parameter_set_patch.x + app.random_number(-100, 100),
+                                                     y:parameter_set_patch.y + app.random_number(-100, 100)};
                 }
             }
         }
@@ -393,26 +393,26 @@ test_mode_move()
 },
 
 /**
- * if near grove open harvest modal
+ * if near patch open harvest modal
  */
-test_mode_check_near_grove()
+test_mode_check_near_patch()
 {
     let avatar = app.session.world_state.avatars[app.session_player.id];
 
-    if(avatar.period_grove_harvests>=app.session.parameter_set.max_grove_harvests)
+    if(avatar.period_patch_harvests>=app.session.parameter_set.max_patch_harvests)
     {
-        app.grove_modal.hide();
+        app.patch_modal.hide();
         return;
     }
 
-    for(let i=0;i<app.session.parameter_set.parameter_set_groves_order.length;i++)
+    for(let i=0;i<app.session.parameter_set.parameter_set_patches_order.length;i++)
     {
-        let grove_id = app.session.parameter_set.parameter_set_groves_order[i];
-        let grove = app.session.parameter_set.parameter_set_groves[grove_id];
+        let patch_id = app.session.parameter_set.parameter_set_patches_order[i];
+        let patch = app.session.parameter_set.parameter_set_patches[patch_id];
 
-        if(app.get_distance(grove, app.session.world_state_avatars.session_players[app.session_player.id].current_location) < app.session.parameter_set.interaction_range)
+        if(app.get_distance(patch, app.session.world_state_avatars.session_players[app.session_player.id].current_location) < app.session.parameter_set.interaction_range)
         {
-            app.subject_pointer_up_action(2, grove)
+            app.subject_pointer_up_action(2, patch)
             break;
         }
     }

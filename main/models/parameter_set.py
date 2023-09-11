@@ -52,7 +52,7 @@ class ParameterSet(models.Model):
     avatar_bound_box_percent = models.DecimalField(verbose_name='Avatar Bound Box Percent', decimal_places=2, max_digits=3, default=0.75) #avatar bound box percent for interaction
 
     production_effort = models.IntegerField(verbose_name='Production Effort', default=10)                     # the amount of effort a subject can put into production
-    max_grove_harvests = models.IntegerField(verbose_name='Max Grove Harvests', default=1)                    #the maximum number of times a subject can harvest from a grove
+    max_patch_harvests = models.IntegerField(verbose_name='Max Patch Harvests', default=1)                    #the maximum number of times a subject can harvest from a patch
 
     interaction_length = models.IntegerField(verbose_name='Interaction Length', default=10)                   #interaction length in seconds
     cool_down_length = models.IntegerField(verbose_name='Cool Down Length', default=10)                       #cool down length in seconds
@@ -132,7 +132,7 @@ class ParameterSet(models.Model):
             self.avatar_bound_box_percent = new_ps.get("avatar_bound_box_percent", 0.75)
 
             self.production_effort = new_ps.get("production_effort", 10)
-            self.max_grove_harvests = new_ps.get("max_grove_harvests", 1)
+            self.max_patch_harvests = new_ps.get("max_patch_harvests", 1)
 
             self.interaction_length = new_ps.get("interaction_length", 10)
             self.cool_down_length = new_ps.get("cool_down_length", 10)
@@ -199,14 +199,14 @@ class ParameterSet(models.Model):
 
             self.update_player_count()
 
-            #parameter set groves
-            self.parameter_set_groves_a.all().delete()
-            new_parameter_set_groves = new_ps.get("parameter_set_groves")
+            #parameter set patches
+            self.parameter_set_patches_a.all().delete()
+            new_parameter_set_patches = new_ps.get("parameter_set_patches")
 
-            for i in new_parameter_set_groves:
-                p = main.models.ParameterSetGrove.objects.create(parameter_set=self)
-                v = new_parameter_set_groves[i]
-                p.from_dict(new_parameter_set_groves[i])
+            for i in new_parameter_set_patches:
+                p = main.models.ParameterSetPatch.objects.create(parameter_set=self)
+                v = new_parameter_set_patches[i]
+                p.from_dict(new_parameter_set_patches[i])
 
                 if v.get("parameter_set_group", None) != None:
                     p.parameter_set_group_id=new_parameter_set_groups_map[str(v["parameter_set_group"])]
@@ -400,7 +400,7 @@ class ParameterSet(models.Model):
         self.json_for_session["avatar_bound_box_percent"] = self.avatar_bound_box_percent
 
         self.json_for_session["production_effort"] = self.production_effort
-        self.json_for_session["max_grove_harvests"] = self.max_grove_harvests
+        self.json_for_session["max_patch_harvests"] = self.max_patch_harvests
 
         self.json_for_session["interaction_length"] = self.interaction_length
         self.json_for_session["cool_down_length"] = self.cool_down_length
@@ -442,7 +442,7 @@ class ParameterSet(models.Model):
                              update_groups=False,
                              update_notices=False,
                              update_barriers=False,
-                             update_groves=False):
+                             update_patches=False):
         '''
         update json model
         '''
@@ -478,9 +478,9 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_barriers_order"] = list(self.parameter_set_barriers_a.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_barriers"] = {str(p.id) : p.json() for p in self.parameter_set_barriers_a.all()}
 
-        if update_groves:
-            self.json_for_session["parameter_set_groves_order"] = list(self.parameter_set_groves_a.all().values_list('id', flat=True))
-            self.json_for_session["parameter_set_groves"] = {str(p.id) : p.json() for p in self.parameter_set_groves_a.all()}
+        if update_patches:
+            self.json_for_session["parameter_set_patches_order"] = list(self.parameter_set_patches_a.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_patches"] = {str(p.id) : p.json() for p in self.parameter_set_patches_a.all()}
 
         self.save()
 
@@ -500,7 +500,7 @@ class ParameterSet(models.Model):
                                 update_groups=True,
                                 update_notices=True,
                                 update_barriers=True,
-                                update_groves=True)
+                                update_patches=True)
 
         return self.json_for_session
     
