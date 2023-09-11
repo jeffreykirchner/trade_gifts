@@ -232,26 +232,32 @@ take_target_location_update(message_data)
             let grove = app.session.world_state.groves[i];
             let grove_center = {x:grove.x, y:grove.y};
             let pt={x:local_pos.x, y:local_pos.y};
+            let local_player_center = {x:local_player.current_location.x, y:local_player.current_location.y};
 
-            if(app.check_point_in_circle(pt, {center:grove_center,radius:grove.radius}))
+            if(app.check_circle_intersection({center:grove_center,radius:grove.radius},
+                                             {center:local_player_center,radius:app.session.parameter_set.interaction_range}))
             {
-                if(avatar.period_grove_harvests>=app.session.parameter_set.max_grove_harvests)
+
+                if(app.check_point_in_circle(pt, {center:grove_center,radius:grove.radius}))
                 {
-                    app.add_text_emitters("You must wait until next period to harvest again.", 
-                                            grove.x, 
-                                            grove.y,
-                                            grove.x,
-                                            grove.y-100,
-                                            0xFFFFFF,
-                                            28,
-                                            null);
+                    if(avatar.period_grove_harvests>=app.session.parameter_set.max_grove_harvests)
+                    {
+                        app.add_text_emitters("You must wait until next period to harvest again.", 
+                                                grove.x, 
+                                                grove.y,
+                                                grove.x,
+                                                grove.y-100,
+                                                0xFFFFFF,
+                                                28,
+                                                null);
+                    }
+                    else
+                    {
+                        app.subject_grove_click(i);
+                    }
+                    
+                    return
                 }
-                else
-                {
-                    app.subject_grove_click(i);
-                }
-               
-                return
             }
         }
 

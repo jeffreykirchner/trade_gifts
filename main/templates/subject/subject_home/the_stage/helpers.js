@@ -148,6 +148,7 @@ check_point_in_circle(point, circle)
 {
     let distance = app.get_distance(point, circle.center);
     if(distance <= circle.radius) return true;
+    
     return false;
 },
 
