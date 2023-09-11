@@ -262,6 +262,8 @@ send_move_fruit_house()
         return;
     }
 
+    app.working = true;
+
     app.send_message("move_fruit_to_house", 
                     {"good_one_move" : app.selected_house.good_one_move,
                      "good_two_move" : app.selected_house.good_two_move,
@@ -403,6 +405,7 @@ select_all_fruit_house()
  */
 send_sleep()
 {
+    app.working = true;
     app.send_message("sleep", {}, "group");
 },
 

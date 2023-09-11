@@ -613,6 +613,8 @@ send_move_fruit_to_avatar()
         return;
     }
 
+    app.working = true;
+
     app.send_message("move_fruit_to_avatar", 
                     {"good_one_move" : app.selected_avatar.good_one_move,
                      "good_two_move" : app.selected_avatar.good_two_move,
@@ -723,7 +725,6 @@ hide_avatar_attack_modal()
  */
 send_attack_avatar()
 {
-    app.working = true;
     
     let target_avatar = app.session.world_state.avatars[app.selected_avatar.target_player_id];
     let source_player = app.session.world_state.avatars[app.session_player.id];
@@ -740,6 +741,8 @@ send_attack_avatar()
         return;
     }
 
+    app.working = true;
+    
     app.send_message("attack_avatar", 
                     {"target_player_id" : app.selected_avatar.target_player_id},
                      "group"); 

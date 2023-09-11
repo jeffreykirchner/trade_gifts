@@ -96,6 +96,14 @@ class ParameterSetForm(forms.ModelForm):
                                                                           "step":"1",
                                                                           "min":"1"}))
     
+    starting_health = forms.IntegerField(label='Starting Health (0-100)',
+                                            min_value=0,
+                                            max_value=100,
+                                            widget=forms.NumberInput(attrs={"v-model":"parameter_set.starting_health",
+                                                                            "step":"1",
+                                                                            "min":"0",
+                                                                            "max":"100"}))
+
     health_loss_per_second = forms.DecimalField(label='Health Loss Per Second',
                                                 max_digits=3,
                                                 decimal_places=2,
@@ -255,7 +263,7 @@ class ParameterSetForm(forms.ModelForm):
         model=ParameterSet
         fields =['period_count', 'period_length', 'night_length', 'break_frequency', 'break_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
-                 'interaction_length', 'interaction_range', 'cool_down_length', 'health_loss_per_second', 'heath_gain_per_sleep_second',
+                 'interaction_length', 'interaction_range', 'cool_down_length', 'starting_health', 'health_loss_per_second', 'heath_gain_per_sleep_second',
                  'consumption_alpha', 'consumption_beta', 'consumption_multiplier', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'sleep_benefit', 'allow_stealing', 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort', 'max_patch_harvests',
                  'chat_mode', 'chat_rules_word_list', 'test_mode']
