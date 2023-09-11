@@ -234,6 +234,8 @@ send_patch_harvest()
         app.display_errors({patch_harvest: ["The patch is empty."]});
         return;
     };
+    
+    app.working = true;
 
     app.send_message("patch_harvest", 
                      {"patch_id" : app.selected_patch.patch.id},

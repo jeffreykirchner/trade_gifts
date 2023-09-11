@@ -280,6 +280,8 @@ send_field_harvest()
 
     if(failed) return;
 
+    app.working = true;
+
     app.send_message("field_harvest", 
                      {"field_id" : app.selected_field.field.id,
                       "good_one_harvest" : app.selected_field.good_one_harvest,
@@ -361,7 +363,8 @@ select_all_fruit()
  */
 send_field_effort()
 {
-
+    app.working = true;
+    
     app.send_message("field_effort", 
                      {"field_id" : app.selected_field.field.id,
                       "good_one_effort" : app.selected_field.good_one_production_effort,
