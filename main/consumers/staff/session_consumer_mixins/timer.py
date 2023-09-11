@@ -99,11 +99,11 @@ class TimerMixin():
                 #houses update
                 result["houses"] = self.world_state_local["houses"]
 
-                #groves update
-                result["groves"] = {}
-                for i in self.world_state_local["groves"]:
-                    grove = self.world_state_local["groves"][i]
-                    result["groves"][i] = {"levels":grove["levels"], "max_levels":grove["max_levels"]}
+                #patches update
+                result["patches"] = {}
+                for i in self.world_state_local["patches"]:
+                    patch = self.world_state_local["patches"][i]
+                    result["patches"][i] = {"levels":patch["levels"], "max_levels":patch["max_levels"]}
                    
             #current locations
             result["current_locations"] = {}
@@ -299,7 +299,7 @@ def sync_continue_timer(event, session_id):
                 session = last_period.do_consumption()
                 session = session.get_current_session_period().do_timer_actions(time_remaining)
                 session = session.get_current_session_period().do_production()
-                session = session.get_current_session_period().do_grove_growth()
+                session = session.get_current_session_period().do_patch_growth()
 
                 for i in world_state["avatars"]:
                     # session.world_state["session_players"][i]["earnings"] += session.world_state["session_players"][i]["inventory"][current_period_id]

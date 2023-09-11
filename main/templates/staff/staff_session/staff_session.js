@@ -19,7 +19,7 @@ var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
 var pixi_night = {};                           //night
-var pixi_groves = {};                          //groves
+var pixi_patches = {};                          //patches
 var wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
 var wall_search_objects = [];
 
@@ -240,8 +240,8 @@ var app = Vue.createApp({
                 case "update_emoji":
                     app.take_emoji(message_data);
                     break;
-                case "update_grove_harvest":
-                    app.take_grove_harvest(message_data);
+                case "update_patch_harvest":
+                    app.take_patch_harvest(message_data);
                     break;
             }
 
@@ -306,7 +306,7 @@ var app = Vue.createApp({
             app.update_field_inventory();
             app.update_avatar_inventory();
             app.update_house_inventory();
-            app.setup_pixi_groves();
+            app.setup_pixi_patches();
         },
 
         /** send winsock request to get session info
@@ -445,15 +445,15 @@ var app = Vue.createApp({
                     app.session.world_state.fields[i][good_two] = message_data.fields[i][good_two];
                 }
 
-                //update groves
-                for(let i in message_data.groves)
+                //update patches
+                for(let i in message_data.patches)
                 {
-                    let grove = app.session.world_state.groves[i]
-                    grove.levels = message_data.groves[i].levels;
-                    grove.max_levels = message_data.groves[i].max_levels;
+                    let patch = app.session.world_state.patches[i]
+                    patch.levels = message_data.patches[i].levels;
+                    patch.max_levels = message_data.patches[i].max_levels;
                 }
 
-                app.setup_pixi_groves();
+                app.setup_pixi_patches();
 
                 //update houses
                 app.session.world_state.houses = message_data.houses;
@@ -521,7 +521,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/move_objects.js"%}
         {%include "subject/subject_home/the_stage/barriers.js"%}
         {%include "subject/subject_home/the_stage/emoji.js"%}
-        {%include "subject/subject_home/the_stage/groves.js"%}
+        {%include "subject/subject_home/the_stage/patch.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages

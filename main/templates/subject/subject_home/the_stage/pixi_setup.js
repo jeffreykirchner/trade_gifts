@@ -36,7 +36,7 @@ setup_pixi(){
         app.setup_pixi_sheets(textures);
         app.setup_pixi_ground();
         app.setup_pixi_fields();
-        app.setup_pixi_groves();
+        app.setup_pixi_patches();
         app.setup_pixi_houses();
         app.setup_pixi_subjects();       
         app.setup_pixi_wall();       

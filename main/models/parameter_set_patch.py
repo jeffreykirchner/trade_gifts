@@ -1,5 +1,5 @@
 '''
-parameterset grove 
+parameterset patch 
 '''
 
 from django.db import models
@@ -12,13 +12,13 @@ from main.globals import Goods
 
 import main
 
-class ParameterSetGrove(models.Model):
+class ParameterSetPatch(models.Model):
     '''
-    parameter set groves 
+    parameter set patches 
     '''
 
-    parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_groves_a")
-    parameter_set_group = models.ForeignKey(ParameterSetGroup, on_delete=models.SET_NULL, related_name="parameter_set_groves_b", blank=True, null=True)
+    parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_patches_a")
+    parameter_set_group = models.ForeignKey(ParameterSetGroup, on_delete=models.SET_NULL, related_name="parameter_set_patches_b", blank=True, null=True)
 
     info = models.CharField(verbose_name='Info', blank=True, null=True, max_length=100, default="Info Here")
 
@@ -30,7 +30,7 @@ class ParameterSetGrove(models.Model):
     drought_on_period = models.IntegerField(verbose_name='Drought On Period', default=14)          #period when drought occurs
     drought_level = models.IntegerField(verbose_name='Drought Level', default=1)          #level of drought
 
-    hex_color = models.CharField(verbose_name='Hex Color', max_length = 8, default="0x000000")                   #color of grove
+    hex_color = models.CharField(verbose_name='Hex Color', max_length = 8, default="0x000000")                   #color of patch
 
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
@@ -39,14 +39,14 @@ class ParameterSetGrove(models.Model):
         return str(self.id)
 
     class Meta:
-        verbose_name = 'Parameter Set Grove'
-        verbose_name_plural = 'Parameter Set Grove'
+        verbose_name = 'Parameter Set Patch'
+        verbose_name_plural = 'Parameter Set Patch'
         ordering=['id']
 
     def from_dict(self, new_ps):
         '''
         copy source values into this period
-        source : dict object of parameterset grove
+        source : dict object of parameterset patch
         '''
         self.info = new_ps.get("info")
         self.x = new_ps.get("x")
@@ -82,7 +82,7 @@ class ParameterSetGrove(models.Model):
         '''
         update parameter set json
         '''
-        self.parameter_set.json_for_session["parameter_set_groves"][self.id] = self.json()
+        self.parameter_set.json_for_session["parameter_set_patches"][self.id] = self.json()
 
         self.parameter_set.save()
 
@@ -112,7 +112,7 @@ class ParameterSetGrove(models.Model):
         return json object for subject screen, return cached version if unchanged
         '''
         try:
-            v = self.parameter_set.json_for_session["parameter_set_groves"][str(self.id)]
+            v = self.parameter_set.json_for_session["parameter_set_patches"][str(self.id)]
         except KeyError:
             v= {}
 

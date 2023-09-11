@@ -134,12 +134,12 @@ class Session(models.Model):
         setup summary data
         '''
         
-        parameter_set_groves = self.parameter_set.parameter_set_groves_a.values('id').all()
+        parameter_set_patches = self.parameter_set.parameter_set_patches_a.values('id').all()
         session_players = self.session_players.values('id','parameter_set_player__id').all()
 
         self.summary_data = {}
 
-        # parameter_set_groves = self.parameter_set.parameter_set_groves_a.values('id').all()
+        # parameter_set_patches = self.parameter_set.parameter_set_patches_a.values('id').all()
         # session_players = self.session.session_players.values('id').all()
 
         # period_number = self.period_number
@@ -165,11 +165,11 @@ class Session(models.Model):
                 v["house_" + k[0]] = 0
                 v["avatar_" + k[0]] = 0
             
-            #groves
-            for k in parameter_set_groves:
+            #patches
+            for k in parameter_set_patches:
                 k_s = str(k["id"])
-                v["grove_harvests_count_" + k_s] = 0
-                v["grove_harvests_total_" + k_s] = 0
+                v["patch_harvests_count_" + k_s] = 0
+                v["patch_harvests_total_" + k_s] = 0
 
             #interactions with others
             for k in session_players:
@@ -202,7 +202,7 @@ class Session(models.Model):
                             "fields":{},
                             "houses":{},
                             "avatars":{},
-                            "groves":{},
+                            "patches":{},
                             "current_period":1,
                             "current_experiment_phase":ExperimentPhase.INSTRUCTIONS if self.parameter_set.show_instructions else ExperimentPhase.RUN,
                             "time_remaining":self.parameter_set.period_length,
@@ -241,17 +241,17 @@ class Session(models.Model):
 
             self.world_state["fields"][str(v["id"])] = v
 
-        #groves
-        for i in parameter_set["parameter_set_groves"]:
+        #patches
+        for i in parameter_set["parameter_set_patches"]:
             v = {}
-            v = parameter_set["parameter_set_groves"][i]
+            v = parameter_set["parameter_set_patches"][i]
             v["max_levels"] = len(v["levels"])
             v["radius"] = 0
 
             for j in v["levels"]:
                 v["levels"][j]["harvested"] = False
 
-            self.world_state["groves"][str(v["id"])] = v
+            self.world_state["patches"][str(v["id"])] = v
         
         #houses
         for i in parameter_set["parameter_set_players"]:
@@ -289,7 +289,7 @@ class Session(models.Model):
             v2['earnings'] = "0"
             v2['health'] = "100"
             v2['sleeping'] = False
-            v2['period_grove_harvests'] = 0
+            v2['period_patch_harvests'] = 0
             v2['parameter_set_player_id'] = i['parameter_set_player__id']
             for j in main.globals.Goods.choices:
                 v2[j[0]] = 0
@@ -415,10 +415,10 @@ class Session(models.Model):
                     temp_header.append("Send " + k[0] + " to House " + str(player_number+1))
                 
 
-            #grove harvests
-            for grove_number, grove in enumerate(world_state["groves"]):
-                temp_header.append("Grove Harvests Count " + str(grove_number+1))
-                temp_header.append("Grove Harvests Total " + str(grove_number+1))
+            #patch harvests
+            for patch_number, patch in enumerate(world_state["patches"]):
+                temp_header.append("Patch Harvests Count " + str(patch_number+1))
+                temp_header.append("Patch Harvests Total " + str(patch_number+1))
             
             writer.writerow(temp_header)
 
@@ -467,10 +467,10 @@ class Session(models.Model):
                             temp_row.append(temp_p["send_avatar_to_house_" + parameter_set_player_id + "_good_" + l[0]])
                                             
 
-                    #grove harvests
-                    for grove_number, grove in enumerate(world_state["groves"]):
-                        temp_row.append(temp_p["grove_harvests_count_" + grove])
-                        temp_row.append(temp_p["grove_harvests_total_" + grove])
+                    #patch harvests
+                    for patch_number, patch in enumerate(world_state["patches"]):
+                        temp_row.append(temp_p["patch_harvests_count_" + patch])
+                        temp_row.append(temp_p["patch_harvests_total_" + patch])
 
                     # temp_row.append(Decimal(temp_p["start_health"]) - Decimal(temp_p["end_health"]))
 
@@ -529,8 +529,8 @@ class Session(models.Model):
                 nearby_text += f'{session_players[str(i)]["parameter_set_player__id_label"]}'
 
             return f'{data["text"]} @  {nearby_text}'
-        elif type == "grove_harvest":
-            return f'{data["harvest_amount"]} {data["grove"]["good"]} from {data["grove"]["info"]}' 
+        elif type == "patch_harvest":
+            return f'{data["harvest_amount"]} {data["patch"]["good"]} from {data["patch"]["info"]}' 
         elif type == "attack_avatar":
             return f'{session_players[str(data["source_player_id"])]["parameter_set_player__id_label"]} -> {session_players[str(data["target_player_id"])]["parameter_set_player__id_label"]}' 
         elif type == "move_fruit_to_avatar":

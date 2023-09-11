@@ -226,34 +226,34 @@ take_target_location_update(message_data)
             }
         }
 
-        //check if click on grove
-        for(i in app.session.world_state.groves)
+        //check if click on patch
+        for(i in app.session.world_state.patches)
         {
-            let grove = app.session.world_state.groves[i];
-            let grove_center = {x:grove.x, y:grove.y};
+            let patch = app.session.world_state.patches[i];
+            let patch_center = {x:patch.x, y:patch.y};
             let pt={x:local_pos.x, y:local_pos.y};
             let local_player_center = {x:local_player.current_location.x, y:local_player.current_location.y};
 
-            if(app.check_circle_intersection({center:grove_center,radius:grove.radius},
+            if(app.check_circle_intersection({center:patch_center,radius:patch.radius},
                                              {center:local_player_center,radius:app.session.parameter_set.interaction_range}))
             {
 
-                if(app.check_point_in_circle(pt, {center:grove_center,radius:grove.radius}))
+                if(app.check_point_in_circle(pt, {center:patch_center,radius:patch.radius}))
                 {
-                    if(avatar.period_grove_harvests>=app.session.parameter_set.max_grove_harvests)
+                    if(avatar.period_patch_harvests>=app.session.parameter_set.max_patch_harvests)
                     {
                         app.add_text_emitters("You must wait until next period to harvest again.", 
-                                                grove.x, 
-                                                grove.y,
-                                                grove.x,
-                                                grove.y-100,
+                                                patch.x, 
+                                                patch.y,
+                                                patch.x,
+                                                patch.y-100,
                                                 0xFFFFFF,
                                                 28,
                                                 null);
                     }
                     else
                     {
-                        app.subject_grove_click(i);
+                        app.subject_patch_click(i);
                     }
                     
                     return
