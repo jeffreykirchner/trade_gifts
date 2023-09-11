@@ -34,7 +34,7 @@ class TestSubjectConsumer(TestCase):
 
         logger.info('setup tests')
 
-        self.session = Session.objects.all().first()
+        self.session = Session.objects.get(title="test 2")
 
     async def set_up_communicators(self):
         '''

@@ -127,6 +127,11 @@ class ParameterSetForm(forms.ModelForm):
                                           widget=forms.NumberInput(attrs={"v-model":"parameter_set.consumption_beta",
                                                                           "step":"0.01",
                                                                           "min":"0.01"}))
+
+    consumption_multiplier = forms.CharField(label='Consumption 3rd Good Multiplier',
+                                             required=False,
+                                             widget=forms.Textarea(attrs={"v-model":"parameter_set.consumption_multiplier",
+                                                                          "rows":"5",}))
     
     cents_per_second = forms.DecimalField(label='Cents Per Second',
                                           max_digits=7,
@@ -251,7 +256,7 @@ class ParameterSetForm(forms.ModelForm):
         fields =['period_count', 'period_length', 'night_length', 'break_frequency', 'break_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'health_loss_per_second', 'heath_gain_per_sleep_second',
-                 'consumption_alpha', 'consumption_beta', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'sleep_benefit', 'allow_stealing', 'world_width', 'world_height',
+                 'consumption_alpha', 'consumption_beta', 'consumption_multiplier', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'sleep_benefit', 'allow_stealing', 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort', 'max_grove_harvests',
                  'chat_mode', 'chat_rules_word_list', 'test_mode']
                  
@@ -306,6 +311,33 @@ class ParameterSetForm(forms.ModelForm):
             for i in range(len(chat_rules_word_list_end)):
                 output += chat_rules_word_list_end[i].lower()
                 if i != len(chat_rules_word_list_end) - 1:
+                    output += "\n"
+                    
+            return output
+
+    def clean_consumption_multiplier(self):
+            
+            consumption_multiplier_start = self.data.get('consumption_multiplier')
+            consumption_multiplier_end = []
+
+            consumption_multiplier_start = consumption_multiplier_start.splitlines()
+
+            for i in range(len(consumption_multiplier_start)):
+            
+                v = re.split(r',|\t', consumption_multiplier_start[i])
+
+                for j in range(len(v)):
+                    t = v[j].strip()
+
+                    if t != '':
+                        consumption_multiplier_end.append(t)
+            
+            consumption_multiplier_end.sort()
+
+            output = ""
+            for i in range(len(consumption_multiplier_end)):
+                output += consumption_multiplier_end[i].lower()
+                if i != len(consumption_multiplier_end) - 1:
                     output += "\n"
                     
             return output
