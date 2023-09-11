@@ -63,6 +63,7 @@ class ParameterSet(models.Model):
 
     consumption_alpha = models.DecimalField(verbose_name='Consumption Alpha', decimal_places=5, max_digits=7, default=1.0)    #consumption alpha
     consumption_beta = models.DecimalField(verbose_name='Consumption Beta', decimal_places=5, max_digits=7, default=1.0)      #consumption beta
+    consumption_multiplier = models.TextField(verbose_name='Consumption 3rd Good', default="", blank=True)                    #3rd good multiplier
 
     cents_per_second = models.DecimalField(verbose_name='Cents per Second', decimal_places=5, max_digits=7, default=0.016) #cents per second
 
@@ -142,6 +143,7 @@ class ParameterSet(models.Model):
 
             self.consumption_alpha = new_ps.get("consumption_alpha", 1.0)
             self.consumption_beta = new_ps.get("consumption_beta", 1.0)
+            self.consumption_multiplier = new_ps.get("consumption_multiplier", "")
 
             self.cents_per_second = new_ps.get("cents_per_second", 0.016)
 
@@ -409,6 +411,7 @@ class ParameterSet(models.Model):
 
         self.json_for_session["consumption_alpha"] = self.consumption_alpha
         self.json_for_session["consumption_beta"] = self.consumption_beta
+        self.json_for_session["consumption_multiplier"] = self.consumption_multiplier
 
         self.json_for_session["cents_per_second"] = self.cents_per_second
 

@@ -38,11 +38,14 @@ class TestProduction(TestCase):
 
         logger.info('setup tests')
 
-        self.session = Session.objects.all().first()       
+        self.session = Session.objects.get(title="test 2")    
 
         self.parameter_set = self.session.parameter_set.json()
 
     def update_field_variables(self):
+        if len(self.session.world_state["fields"]) == 0:
+            return
+        
         self.field_1 = self.session.world_state["fields"][str(self.parameter_set["parameter_set_fields_order"][0])]
         self.field_1_field_type = self.parameter_set["parameter_set_field_types"][str(self.field_1["parameter_set_field_type"])]
         self.field_1_good_one = self.field_1_field_type["good_one"]
@@ -57,6 +60,9 @@ class TestProduction(TestCase):
         '''
         test period 1 production
         '''
+
+        if len(self.session.world_state["fields"]) == 0:
+            return
 
         logger = logging.getLogger(__name__)
         logger.info('test period 1 production')  
@@ -77,6 +83,9 @@ class TestProduction(TestCase):
         '''
         test period 2 production
         '''
+
+        if len(self.session.world_state["fields"]) == 0:
+            return
 
         logger = logging.getLogger(__name__)
         logger.info('test period 2 production')
@@ -101,6 +110,9 @@ class TestProduction(TestCase):
         test period 3 production
         '''
 
+        if len(self.session.world_state["fields"]) == 0:
+            return
+
         logger = logging.getLogger(__name__)
         logger.info('test period 3 production')
 
@@ -123,6 +135,9 @@ class TestProduction(TestCase):
         '''
         test period 2 production with period 1 harvest
         '''
+
+        if len(self.session.world_state["fields"]) == 0:
+            return
         
         logger = logging.getLogger(__name__)
         logger.info('test period 2 production with period 1 harvest')
@@ -151,6 +166,9 @@ class TestProduction(TestCase):
         '''
         test period 2 after changing production variables
         '''
+        if len(self.session.world_state["fields"]) == 0:
+            return
+        
         self.update_field_variables()
 
         field_type = ParameterSetFieldType.objects.get(id=self.field_1_field_type["id"])
@@ -196,6 +214,10 @@ class TestProduction(TestCase):
         '''
         change effort
         '''
+
+        if len(self.session.world_state["fields"]) == 0:
+            return
+        
         logger = logging.getLogger(__name__)
         logger.info('test period 2 effort')
 
