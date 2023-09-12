@@ -81,7 +81,9 @@ def take_update_parameter_set(data):
         form.save()    
 
         if session.parameter_set.good_mode == GoodModes.TWO:
-            session.parameter_set.parameter_set_players.update(good_three=None)           
+            session.parameter_set.parameter_set_players.filter(good_one=Goods.PINEAPPLE).update(good_one=Goods.CHERRY)
+            session.parameter_set.parameter_set_players.filter(good_two=Goods.PINEAPPLE).update(good_two=Goods.CHERRY)
+            session.parameter_set.parameter_set_players.update(good_three=None)                       
 
             session.parameter_set.parameter_set_field_types.filter(good_one_ft=Goods.PINEAPPLE).update(good_one_ft=Goods.CHERRY)
             session.parameter_set.parameter_set_field_types.filter(good_two_ft=Goods.PINEAPPLE).update(good_two_ft=Goods.CHERRY)
