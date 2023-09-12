@@ -69,20 +69,23 @@ setup_pixi_houses()
         good_two_label.eventMode = 'passive'; 
         good_two_label.anchor.set(0, 0.5);
 
-        //good three        
-        let good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
-        good_three_sprite.anchor.set(1, 0.5);
-        good_three_sprite.eventMode = 'passive';
+        //good three       
+        if(app.session.parameter_set.good_mode == "Three")
+        { 
+            var good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
+            good_three_sprite.anchor.set(1, 0.5);
+            good_three_sprite.eventMode = 'passive';
 
-        let good_three_label = new PIXI.Text("000", {
-            fontFamily: 'Arial',
-            fontSize: 60,
-            fill: 'white',
-            stroke: 'black',
-            strokeThickness: 2,
-        });
-        good_three_label.eventMode = 'passive'; 
-        good_three_label.anchor.set(0, 0.5);
+            var good_three_label = new PIXI.Text("000", {
+                fontFamily: 'Arial',
+                fontSize: 60,
+                fill: 'white',
+                stroke: 'black',
+                strokeThickness: 2,
+            });
+            good_three_label.eventMode = 'passive'; 
+            good_three_label.anchor.set(0, 0.5);
+        }
 
         house_container.addChild(house_sprite);
         house_container.addChild(owner_label);
@@ -94,28 +97,43 @@ setup_pixi_houses()
         house_container.addChild(good_two_sprite);
         house_container.addChild(good_two_label);
 
-        house_container.addChild(good_three_sprite);
-        house_container.addChild(good_three_label);
+        if(app.session.parameter_set.good_mode == "Three")
+        {
+            house_container.addChild(good_three_sprite);
+            house_container.addChild(good_three_label);
+        }
         
         owner_label.position.set(0, -house_sprite.height/4);
         health_label.position.set(0, house_sprite.height/2 - 5);
 
-        let good_spacer = house_sprite.height/5+2;
-        good_one_sprite.position.set(-10, house_sprite.height/2 - good_spacer*3);
-        good_one_label.position.set(0, house_sprite.height/2 - good_spacer*3);
+        if(app.session.parameter_set.good_mode == "Three")
+        {
+            let good_spacer = house_sprite.height/5+2;
+            good_one_sprite.position.set(-10, house_sprite.height/2 - good_spacer*3);
+            good_one_label.position.set(0, house_sprite.height/2 - good_spacer*3);
 
-        good_two_sprite.position.set(-10, house_sprite.height/2 - good_spacer*2);
-        good_two_label.position.set(0, house_sprite.height/2 - good_spacer*2);
+            good_two_sprite.position.set(-10, house_sprite.height/2 - good_spacer*2);
+            good_two_label.position.set(0, house_sprite.height/2 - good_spacer*2);
 
-        good_three_sprite.position.set(-10, house_sprite.height/2 - good_spacer);
-        good_three_label.position.set(0, house_sprite.height/2 - good_spacer);
+            good_three_sprite.position.set(-10, house_sprite.height/2 - good_spacer);
+            good_three_label.position.set(0, house_sprite.height/2 - good_spacer);
+        }
+        else
+        {
+            let good_spacer = house_sprite.height/4+2;
+            good_one_sprite.position.set(-10, house_sprite.height/2 - good_spacer*2);
+            good_one_label.position.set(0, house_sprite.height/2 - good_spacer*2);
+
+            good_two_sprite.position.set(-10, house_sprite.height/2 - good_spacer);
+            good_two_label.position.set(0, house_sprite.height/2 - good_spacer);
+        }
 
         pixi_houses[i].house_container = house_container;
         pixi_houses[i].owner_label = owner_label;
         pixi_houses[i].health_label = health_label;
         pixi_houses[i][parameter_set_player.good_one] = good_one_label;
         pixi_houses[i][parameter_set_player.good_two] = good_two_label;
-        pixi_houses[i][parameter_set_player.good_three] = good_three_label;
+        if(app.session.parameter_set.good_mode == "Three") pixi_houses[i][parameter_set_player.good_three] = good_three_label;
 
         pixi_houses[i].house_container.width = app.session.parameter_set.house_width;
         pixi_houses[i].house_container.height = app.session.parameter_set.house_height;
@@ -140,7 +158,7 @@ update_house_inventory()
 
         pixi_houses[i][parameter_set_player.good_one].text = house[parameter_set_player.good_one];
         pixi_houses[i][parameter_set_player.good_two].text = house[parameter_set_player.good_two];
-        pixi_houses[i][parameter_set_player.good_three].text = house[parameter_set_player.good_three];
+        if(app.session.parameter_set.good_mode == "Three") pixi_houses[i][parameter_set_player.good_three].text = house[parameter_set_player.good_three];
 
         pixi_houses[i].health_label.text = "Health: +" + house.health_value;
     }
