@@ -281,18 +281,19 @@ class SessionPeriod(models.Model):
         for i in self.session.world_state["patches"]:
             patch = self.session.world_state["patches"][str(i)]
 
-            #check if drought
-            if world_state["current_period"] >= patch["drought_on_period"]:
-                patch["max_levels"] = patch["drought_level"]
+            #check if shock
+            if world_state["current_period"] == patch["shock_on_period"]:
+                patch["levels"] = patch["shock_levels"]
+                patch["max_levels"] = len(patch["levels"])
 
-            for j in patch["levels"]:
-                if int(j) > patch["max_levels"]:
-                    break
+            # for j in patch["levels"]:
+            #     if int(j) > patch["max_levels"]:
+            #         break
 
-                level = patch["levels"][str(j)]
-                if level["harvested"]:
-                    level["harvested"] = False
-                    break
+            #     level = patch["levels"][str(j)]
+            #     if level["harvested"]:
+            #         level["harvested"] = False
+            #         break
         
         #reset avatar patch harvests
         for i in self.session.world_state["avatars"]:

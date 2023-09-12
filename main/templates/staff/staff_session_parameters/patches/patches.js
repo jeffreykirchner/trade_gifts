@@ -8,7 +8,9 @@ show_edit_parameter_set_patch(index){
     app.clear_main_form_errors();
     app.current_parameter_set_patch = Object.assign({}, app.parameter_set.parameter_set_patches[index]);
     app.current_parameter_set_patch.levels_input = "";
+    app.current_parameter_set_patch.shock_levels_input = "";
 
+    //starting levels
     for(i in app.current_parameter_set_patch.levels)
     {
         app.current_parameter_set_patch.levels_input += app.current_parameter_set_patch.levels[i].value + ",";
@@ -16,6 +18,15 @@ show_edit_parameter_set_patch(index){
 
     //remove last comma
     app.current_parameter_set_patch.levels_input = app.current_parameter_set_patch.levels_input.slice(0, -1);
+
+    //shock levels
+    for(i in app.current_parameter_set_patch.shock_levels)
+    {
+        app.current_parameter_set_patch.shock_levels_input += app.current_parameter_set_patch.shock_levels[i].value + ",";
+    }
+
+    //remove last comma
+    app.current_parameter_set_patch.shock_levels_input = app.current_parameter_set_patch.shock_levels_input.slice(0, -1);
     
     app.edit_parameterset_patch_modal.toggle();
 },
