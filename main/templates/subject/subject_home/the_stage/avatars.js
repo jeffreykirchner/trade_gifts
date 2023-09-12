@@ -106,22 +106,25 @@ setup_pixi_subjects(){
         good_two_sprite.position.set(-5,0);
 
         //good three
-        let good_three_container = new PIXI.Container();
-        good_three_container.eventMode = 'passive';
-        good_three_container.alpha = 0.75;
-        let good_three_label = new PIXI.Text("000", text_style_2);
-        good_three_label.eventMode = 'passive';
-        good_three_label.anchor.set(0, 0.5);
+        if(app.session.parameter_set.good_mode == "Three")
+        {
+            var good_three_container = new PIXI.Container();
+            good_three_container.eventMode = 'passive';
+            good_three_container.alpha = 0.75;
+            var good_three_label = new PIXI.Text("000", text_style_2);
+            good_three_label.eventMode = 'passive';
+            good_three_label.anchor.set(0, 0.5);
 
-        let good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
-        good_three_sprite.anchor.set(1, 0.5);
-        good_three_sprite.eventMode = 'passive';
+            var good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
+            good_three_sprite.anchor.set(1, 0.5);
+            good_three_sprite.eventMode = 'passive';
 
-        good_three_container.addChild(good_three_label);
-        good_three_container.addChild(good_three_sprite);
-        good_three_label.position.set(+5,0);
-        good_three_sprite.position.set(-5,0);
-        good_three_sprite.pivot.set(0.5,0.5);
+            good_three_container.addChild(good_three_label);
+            good_three_container.addChild(good_three_sprite);
+            good_three_label.position.set(+5,0);
+            good_three_sprite.position.set(-5,0);
+            good_three_sprite.pivot.set(0.5,0.5);
+        }
 
         //health
         let health_container = new PIXI.Container();
@@ -150,7 +153,8 @@ setup_pixi_subjects(){
 
         avatar_container.addChild(good_one_container);
         avatar_container.addChild(good_two_container);
-        avatar_container.addChild(good_three_container);
+
+        if(app.session.parameter_set.good_mode == "Three") avatar_container.addChild(good_three_container);
 
         avatar_container.addChild(health_container);
         
@@ -159,9 +163,17 @@ setup_pixi_subjects(){
         id_label.position.set(0, -gear_sprite.height * 0.2);
         status_label.position.set(0, +gear_sprite.height/2-30);
 
-        good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2 - 10);
-        good_two_container.position.set(0+25, -gear_sprite.height/2 - 10);
-        good_three_container.position.set(gear_sprite.width/2+5+25, -gear_sprite.height/2 - 10);
+        if(app.session.parameter_set.good_mode == "Three")
+        {
+            good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2 - 10);
+            good_two_container.position.set(0+25, -gear_sprite.height/2 - 10);
+            good_three_container.position.set(gear_sprite.width/2+5+25, -gear_sprite.height/2 - 10);
+        }
+        else
+        {
+            good_one_container.position.set(-50, -gear_sprite.height/2 - 10);
+            good_two_container.position.set(+110, -gear_sprite.height/2 - 10);
+        }
 
         health_container.position.set(10, -gear_sprite.height/2 - 115);
 
@@ -169,7 +181,7 @@ setup_pixi_subjects(){
         pixi_avatars[i].gear_sprite = gear_sprite;
         pixi_avatars[i][parameter_set_player.good_one] = good_one_label;
         pixi_avatars[i][parameter_set_player.good_two] = good_two_label;
-        pixi_avatars[i][parameter_set_player.good_three] = good_three_label;
+        if(app.session.parameter_set.good_mode == "Three") pixi_avatars[i][parameter_set_player.good_three] = good_three_label;
         pixi_avatars[i].health_label = health_label;
         pixi_avatars[i].face_sprite = face_sprite;
         pixi_avatars[i].face_sleep_sprite = face_sleep_sprite;
@@ -528,7 +540,8 @@ update_avatar_inventory()
 
         pixi_avatars[i][parameter_set_player.good_one].text = avatar[parameter_set_player.good_one];
         pixi_avatars[i][parameter_set_player.good_two].text = avatar[parameter_set_player.good_two];
-        pixi_avatars[i][parameter_set_player.good_three].text = avatar[parameter_set_player.good_three];
+
+        if(app.session.parameter_set.good_mode == "Three") pixi_avatars[i][parameter_set_player.good_three].text = avatar[parameter_set_player.good_three];
 
         pixi_avatars[i].health_label.text = Number(avatar.health).toFixed(1);
     }

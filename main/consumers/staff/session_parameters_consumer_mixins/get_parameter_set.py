@@ -8,6 +8,9 @@ from main.forms import ParameterSetForm
 
 from main.models import Session
 
+from main.globals import GoodModes
+from main.globals import Goods
+
 class GetParameterSetMixin():
     '''
     mixin for parameter set
@@ -76,6 +79,20 @@ def take_update_parameter_set(data):
 
     if form.is_valid():              
         form.save()    
+
+        if session.parameter_set.good_mode == GoodModes.TWO:
+            session.parameter_set.parameter_set_players.update(good_three=None)           
+
+            session.parameter_set.parameter_set_field_types.filter(good_one_ft=Goods.PINEAPPLE).update(good_one_ft=Goods.CHERRY)
+            session.parameter_set.parameter_set_field_types.filter(good_two_ft=Goods.PINEAPPLE).update(good_two_ft=Goods.CHERRY)
+           
+            session.parameter_set.parameter_set_patches_a.filter(good=Goods.PINEAPPLE).update(good=Goods.CHERRY)
+
+            session.parameter_set.update_json_fk(update_field_types=True, update_patches=True)
+        else:
+            session.parameter_set.parameter_set_players.filter(good_three=None).update(good_three=Goods.PINEAPPLE)
+
+        session.parameter_set.update_json_fk(update_players=True)
         session.parameter_set.update_json_local()
 
         return {"value" : "success"}                      

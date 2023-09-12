@@ -50,7 +50,9 @@
                     </div>
                 </div>
 
-                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar" id="div_id_good_three_move">
+                <div class="row align-items-center text-center fw-bold"
+                     v-if="selected_avatar.avatar && session.parameter_set.good_mode == 'Three'" 
+                     id="div_id_good_three_move">
                     <div class="col-4 text-center">
                         <img class="field_modal_icons" v-bind:src="'/static/' + selected_avatar.good_three.toLowerCase() + '.png'" />
                     </div>  
