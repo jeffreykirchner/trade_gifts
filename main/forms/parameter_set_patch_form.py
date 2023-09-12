@@ -38,36 +38,36 @@ class ParameterSetPatchForm(forms.ModelForm):
                                 choices=Goods.choices,
                                 widget=forms.Select(attrs={"v-model":"current_parameter_set_patch.good",}))
     
-    drought_on_period = forms.IntegerField(label='Drought On Period',
+    shock_on_period = forms.IntegerField(label='Shock On Period',
                                             min_value=2,
-                                            widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_patch.drought_on_period",
+                                            widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_patch.shock_on_period",
                                                                             "step":"1",
                                                                             "min":"2"}))
     
-    drought_level = forms.IntegerField(label='Drought Level',
-                                        min_value=1,
-                                        widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_patch.drought_level",
-                                                                        "step":"1",
-                                                                        "min":"1"}))
+    # shock_levels = forms.IntegerField(label='Shock Level',
+    #                                     min_value=1,
+    #                                     widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_patch.shock_levels",
+    #                                                                     "step":"1",
+    #                                                                     "min":"1"}))
     
     hex_color = forms.CharField(label='Hex Color',
                                 widget=forms.TextInput(attrs={"v-model":"current_parameter_set_patch.hex_color",}))
     
     class Meta:
         model=ParameterSetPatch
-        fields =['info', 'parameter_set_group','hex_color', 'x', 'y', 'good', 'drought_on_period', 'drought_level']
+        fields =['info', 'parameter_set_group','hex_color', 'x', 'y', 'good', 'shock_on_period']
     
-    def clean_drought_level(self):
+    # def clean_shock_levels(self):
         
-        try:
-           drought_level = self.data.get('drought_level')
+    #     try:
+    #        shock_levels = self.data.get('shock_levels')
 
-           parameter_set_patch = ParameterSetPatch.objects.get(pk=self.instance.id)
+    #        parameter_set_patch = ParameterSetPatch.objects.get(pk=self.instance.id)
 
-           if drought_level>len(parameter_set_patch.levels):
-                raise forms.ValidationError('Drought level higher than total levels')
+    #        if shock_levels>len(parameter_set_patch.levels):
+    #             raise forms.ValidationError('Shock level higher than total levels')
            
-        except ValueError:
-            raise forms.ValidationError('Invalid Entry')
+    #     except ValueError:
+    #         raise forms.ValidationError('Invalid Entry')
 
-        return drought_level
+    #     return shock_levels

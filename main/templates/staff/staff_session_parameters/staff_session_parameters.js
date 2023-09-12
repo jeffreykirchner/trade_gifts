@@ -288,6 +288,9 @@ var app = Vue.createApp({
 
             let e = document.getElementById("id_errors_levels_input");
             if(e) e.remove();
+
+            e = document.getElementById("id_errors_shock_levels_input");
+            if(e) e.remove();
         },
 
         /** display form error messages

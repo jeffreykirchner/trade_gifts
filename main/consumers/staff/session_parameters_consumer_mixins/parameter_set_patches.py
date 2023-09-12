@@ -71,6 +71,7 @@ def take_update_parameter_set_patch(data):
         logger.warning(f"take_update_parameter_set_patch parameterset_patch, not found ID: {parameterset_patch_id}")
         return
     
+    #starting levels
     try:
         levels_input = form_data.get("levels_input").split(",")
 
@@ -84,6 +85,21 @@ def take_update_parameter_set_patch(data):
     if len(levels_input) == 0:
         logger.warning(f"take_update_parameter_set_patch levels_input, not found ID: {parameterset_patch_id}")
         return {"value":"fail", "errors" : {f"levels_input":["Invalid input."]}} 
+    
+    #shock levels
+    try:
+        shock_levels_input = form_data.get("shock_levels_input").split(",")
+
+        while("" in shock_levels_input):
+            shock_levels_input.remove("")
+
+    except ObjectDoesNotExist:
+        logger.warning(f"take_update_parameter_set_patch shock_levels_input, not found ID: {parameterset_patch_id}")
+        {"value":"fail", "errors" : {f"shock_levels_input":["Invalid input."]}}
+
+    if len(shock_levels_input) == 0:
+        logger.warning(f"take_update_parameter_set_patch shock_levels_input, not found ID: {parameterset_patch_id}")
+        return {"value":"fail", "errors" : {f"shock_levels_input":["Invalid input."]}}
         
     form_data_dict = form_data    
 
@@ -95,12 +111,21 @@ def take_update_parameter_set_patch(data):
     if form.is_valid():         
         form.save()           
 
+        #starting levels
         parameter_set_patch.levels = {}   
 
         for i in range(len(levels_input)):
             v = levels_input[i].strip()
             if v.isdigit():
                 parameter_set_patch.levels[str(i+1)] = {"value" : int(v), "harvested" : False}
+
+        #shock levels
+        parameter_set_patch.shock_levels = {}
+
+        for i in range(len(shock_levels_input)):
+            v = shock_levels_input[i].strip()
+            if v.isdigit():
+                parameter_set_patch.shock_levels[str(i+1)] = {"value" : int(v), "harvested" : False}
 
         parameter_set_patch.save()
 

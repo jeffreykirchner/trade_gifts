@@ -26,9 +26,9 @@ class ParameterSetPatch(models.Model):
     y = models.IntegerField(verbose_name='Start Location Y', default=50)
 
     good = models.CharField(verbose_name='Good One', max_length=100, choices=Goods.choices, default=Goods.CHERRY, blank=True, null=True )     #good type
-    levels = models.JSONField(verbose_name='Levels', encoder=DjangoJSONEncoder, blank=True, null=True)          #levels of good
-    drought_on_period = models.IntegerField(verbose_name='Drought On Period', default=14)          #period when drought occurs
-    drought_level = models.IntegerField(verbose_name='Drought Level', default=1)          #level of drought
+    levels = models.JSONField(verbose_name='Levels', encoder=DjangoJSONEncoder, blank=True, null=True)                                        #levels of good pre shock
+    shock_on_period = models.IntegerField(verbose_name='Shock On Period', default=14)          #period when shock occurs
+    shock_levels = models.JSONField(verbose_name='Shock Levels', encoder=DjangoJSONEncoder, blank=True, null=True)                                   #levels of good after shock
 
     hex_color = models.CharField(verbose_name='Hex Color', max_length = 8, default="0x000000")                   #color of patch
 
@@ -54,8 +54,8 @@ class ParameterSetPatch(models.Model):
 
         self.good = new_ps.get("good")
         self.levels = new_ps.get("levels")
-        self.drought_on_period = new_ps.get("drought_on_period")
-        self.drought_level = new_ps.get("drought_level")
+        self.shock_on_period = new_ps.get("shock_on_period")
+        self.shock_levels = new_ps.get("shock_levels")
 
         self.hex_color = new_ps.get("hex_color")
 
@@ -71,9 +71,11 @@ class ParameterSetPatch(models.Model):
         '''    
         value = 2
         self.levels = {}
+        self.shock_levels = {}
 
         for i in range(1, 5):
             self.levels[str(i)] = {"value" : value}
+            self.shock_levels[str(i)] = {"value" : value}
             value *= 2
 
         self.save()
@@ -101,8 +103,8 @@ class ParameterSetPatch(models.Model):
             "y" : self.y,
             "good" : self.good,
             "levels" : self.levels,
-            "drought_on_period" : self.drought_on_period,
-            "drought_level" : self.drought_level,
+            "shock_on_period" : self.shock_on_period,
+            "shock_levels" : self.shock_levels,
             "hex_color" : self.hex_color,
             "parameter_set_group" : self.parameter_set_group.id if self.parameter_set_group else None,
         }

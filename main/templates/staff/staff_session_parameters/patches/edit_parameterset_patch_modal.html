@@ -27,8 +27,17 @@
                 <div class = "col col-md-10 offset-md-1">
                     <div id="div_id_levels_input">
                         <div class="form-group mt-2">
-                            <label for="id_levels_input">Levels (Comma separated)*</label>
-                            <input type="tet" class="form-control" id="id_levels_input" v-model="current_parameter_set_patch.levels_input">
+                            <label for="id_levels_input">Starting Levels (Comma separated)*</label>
+                            <input type="text" class="form-control" id="id_levels_input" v-model="current_parameter_set_patch.levels_input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class = "col col-md-10 offset-md-1">
+                    <div id="div_id_shock_levels_input">
+                        <div class="form-group mt-2">
+                            <label for="id_levels_input">Shock Levels (Comma separated)*</label>
+                            <input type="text" class="form-control" id="id_shock_levels_input" v-model="current_parameter_set_patch.shock_levels_input">
                         </div>
                     </div>
                 </div>

@@ -30,17 +30,17 @@
                                     Location (X,Y)
                                 </th>         
                                 <th scope="col" class = "m-1 p-1">
-                                    Drought On Period
-                                </th>
-                                <th scope="col" class = "m-1 p-1">
-                                    Drought Level
-                                </th>
+                                    Shock On Period
+                                </th>                                
                                 <th scope="col" class = "m-1 p-1">
                                     Group
                                 </th>
                                 <th scope="col" class = "m-1 p-1">
-                                    Production Levels
-                                </th>                   
+                                    Starting Levels
+                                </th>   
+                                <th scope="col" class = "m-1 p-1">
+                                    Shock Levels
+                                </th>                
                             </tr>
                         </thead>
                         <tbody id="patch_list">
@@ -62,12 +62,8 @@
                                 </td>
                                 <td v-on:click="show_edit_parameter_set_patch(p)" 
                                     class="player_table_cell">
-                                    [[temp_p.drought_on_period]]
-                                </td>
-                                <td v-on:click="show_edit_parameter_set_patch(p)" 
-                                    class="player_table_cell">
-                                    [[temp_p.drought_level]]
-                                </td>
+                                    [[temp_p.shock_on_period]]
+                                </td>                               
                                 <td v-on:click="show_edit_parameter_set_patch(p)" 
                                     class="player_table_cell">                                    
                                     <span v-if="temp_p.parameter_set_group && 
@@ -86,6 +82,15 @@
                                         v-bind:key="p2"
                                         :set="temp_p2=parameter_set.parameter_set_patches[p].levels[p2]">
                                         [[p2.value]] <span v-if="index2 <= Object.keys(parameter_set.parameter_set_patches[p].levels).length-1">, </span>
+                                    </span>                                    
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_patch(p)" 
+                                    class="player_table_cell">
+
+                                    <span v-for="(p2, index2) in parameter_set.parameter_set_patches[p].shock_levels" 
+                                        v-bind:key="p2"
+                                        :set="temp_p2=parameter_set.parameter_set_patches[p].shock_levels[p2]">
+                                        [[p2.value]] <span v-if="index2 <= Object.keys(parameter_set.parameter_set_patches[p].shock_levels).length-1">, </span>
                                     </span>                                    
                                 </td>
                             </tr>
