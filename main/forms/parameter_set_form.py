@@ -8,6 +8,7 @@ from django import forms
 from main.models import ParameterSet
 
 from main.globals import ChatModes
+from main.globals import GoodModes
 
 import  main
 
@@ -254,6 +255,10 @@ class ParameterSetForm(forms.ModelForm):
                                           widget=forms.Textarea(attrs={"v-model":"parameter_set.chat_rules_word_list",
                                                                        "rows":"5",}))
     
+    good_mode = forms.ChoiceField(label='Good Mode',
+                                  choices=GoodModes.choices,
+                                  widget=forms.Select(attrs={"v-model":"parameter_set.good_mode",}))
+
                                                  
     test_mode = forms.ChoiceField(label='Test Mode',
                                        choices=((True, 'Yes'), (False,'No' )),
@@ -266,7 +271,7 @@ class ParameterSetForm(forms.ModelForm):
                  'interaction_length', 'interaction_range', 'cool_down_length', 'starting_health', 'health_loss_per_second', 'heath_gain_per_sleep_second',
                  'consumption_alpha', 'consumption_beta', 'consumption_multiplier', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'sleep_benefit', 'allow_stealing', 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort', 'max_patch_harvests',
-                 'chat_mode', 'chat_rules_word_list', 'test_mode']
+                 'chat_mode', 'chat_rules_word_list', 'good_mode', 'test_mode']
                  
     def clean_survey_link(self):
         

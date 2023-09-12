@@ -19,12 +19,20 @@ class Goods(models.TextChoices):
     experiment phases
     '''
     CHERRY = 'Cherry', _('Cherry')
-    PINEAPPLE = 'Pineapple', _('Pineapple')
     BLUEBERRY = 'Blueberry', _('Blueberry')
-
+    PINEAPPLE = 'Pineapple', _('Pineapple')
+    
 class ChatModes(models.TextChoices):
     '''
     experiment chat modes
     '''
     FULL = 'Full', _('Full')
     LIMITED = 'Limited', _('Limited')
+
+class GoodModes(models.TextChoices):
+    '''
+    two or three good mode
+    '''
+    TWO = 'Two', _('Two')
+    THREE = 'Three', _('Three')
+

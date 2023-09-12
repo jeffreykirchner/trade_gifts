@@ -56,7 +56,7 @@ class ParameterSetPlayerForm(forms.ModelForm):
     
     good_three = forms.ChoiceField(label='Good Three',
                                    required=False,
-                                   choices=Goods.choices,
+                                   choices=Goods.choices + [(None, None)],
                                    widget=forms.Select(attrs={"v-model":"current_parameter_set_player.good_three",}))
     
     hex_color = forms.CharField(label='Hex Color (e.g. 0x00AABB)',

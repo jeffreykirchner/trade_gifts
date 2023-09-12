@@ -13,6 +13,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.core.exceptions import ObjectDoesNotExist
 
 from main.globals import ChatModes
+from main.globals import GoodModes
 
 from main.models import InstructionSet
 
@@ -79,6 +80,8 @@ class ParameterSet(models.Model):
     chat_mode = models.CharField(verbose_name="Chat Mode", max_length=100, choices=ChatModes.choices, default=ChatModes.FULL)         #chat mode
     chat_rules_letters = models.JSONField(verbose_name="Chat Letter Mapping", encoder=DjangoJSONEncoder, null=True, blank=True)       #chat rules for limited mode
     chat_rules_word_list = models.TextField(verbose_name='Chat Words Allowed List', default="", blank=True)             #chat rules for limited mode
+
+    good_mode = models.CharField(verbose_name="Good Mode", max_length=100, choices=GoodModes.choices, default=GoodModes.THREE)         #two or three good mode
 
     reconnection_limit = models.IntegerField(verbose_name='Age Warning', default=25)                        #stop trying to reconnect after this many failed attempts
 
@@ -161,6 +164,8 @@ class ParameterSet(models.Model):
             self.chat_mode = new_ps.get("chat_mode", ChatModes.FULL)
             self.chat_rules_letters = new_ps.get("chat_rules", {"letters": None})
             self.chat_rules_word_list = new_ps.get("chat_rules_word_list", "")
+
+            self.good_mode = new_ps.get("good_mode", GoodModes.THREE)
             
             self.reconnection_limit = new_ps.get("reconnection_limit", None)
 
@@ -430,6 +435,8 @@ class ParameterSet(models.Model):
         self.json_for_session["chat_mode"] = self.chat_mode
         self.json_for_session["chat_rules_letters"] = self.chat_rules_letters
         self.json_for_session["chat_rules_word_list"] = self.chat_rules_word_list
+
+        self.json_for_session["good_mode"] = self.good_mode
 
         self.json_for_session["reconnection_limit"] = self.reconnection_limit
 
