@@ -48,7 +48,7 @@ setup_pixi_subjects(){
             fill: 'black',
             // align: 'left',
             // stroke: 'black',
-            strokeThickness: 2,
+            strokeThickness: 1,
         };
 
         let text_style_2 = {
@@ -160,7 +160,7 @@ setup_pixi_subjects(){
         
         //position in container
         face_sprite.position.set(0, -gear_sprite.height * 0.03);
-        id_label.position.set(0, -gear_sprite.height * 0.2);
+        id_label.position.set(0, gear_sprite.height * 0.15);
         status_label.position.set(0, +gear_sprite.height/2-30);
 
         if(app.session.parameter_set.good_mode == "Three")
