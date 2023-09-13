@@ -22,7 +22,7 @@ setup_pixi_houses()
         house_sprite.tint = parameter_set_player.hex_color //'BlanchedAlmond';
 
         //owner label
-        let owner_label = new PIXI.Text("Owner: " + parameter_set_player.id_label, {
+        let owner_label = new PIXI.Text(parameter_set_player.id_label, {
             fontFamily: 'Arial',
             fontSize: 30,
             fill: 'black',

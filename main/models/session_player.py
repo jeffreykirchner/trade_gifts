@@ -100,11 +100,30 @@ class SessionPlayer(models.Model):
         return a proccessed list of instructions to the subject
         '''
 
+        parameter_set = self.parameter_set_player.parameter_set.json()
+        parameter_set_player = parameter_set["parameter_set_players"][str(self.parameter_set_player.id)]
+        group_name = parameter_set["parameter_set_groups"][str(parameter_set_player["parameter_set_group"])]["name"]
+
         instructions = [i.json() for i in self.parameter_set_player.parameter_set.instruction_set.instructions.all()]
  
         for i in instructions:
-            i["text_html"] = i["text_html"].replace("#player_number#", self.parameter_set_player.id_label)
-            i["text_html"] = i["text_html"].replace("#player_count-1#", str(self.parameter_set_player.parameter_set.parameter_set_players.count()-1))
+            i["text_html"] = i["text_html"].replace("#player_count-1#", str(len(parameter_set["parameter_set_players"])-1))
+            i["text_html"] = i["text_html"].replace("#id_label#", parameter_set_player["id_label"])
+            i["text_html"] = i["text_html"].replace("#cents_per_second#", str(round_half_away_from_zero(parameter_set["cents_per_second"],3)))
+            i["text_html"] = i["text_html"].replace("#health_loss_per_second#", str(round_half_away_from_zero(parameter_set["health_loss_per_second"],3)))
+            i["text_html"] = i["text_html"].replace("#healthpoints_6_6#", str(main.globals.convert_goods_to_health(6,6,0,parameter_set)))
+            i["text_html"] = i["text_html"].replace("#healthpoints_10_2#", str(main.globals.convert_goods_to_health(10,2,0,parameter_set)))
+            i["text_html"] = i["text_html"].replace("#night_length#", str(parameter_set["night_length"]))
+            i["text_html"] = i["text_html"].replace("#heath_gain_per_sleep_second#", str(round_half_away_from_zero(parameter_set["heath_gain_per_sleep_second"],3)))
+            i["text_html"] = i["text_html"].replace("#attack_cost#", str(round_half_away_from_zero(parameter_set["attack_cost"],3)))
+            i["text_html"] = i["text_html"].replace("#attack_damage#", str(round_half_away_from_zero(parameter_set["attack_damage"],3)))
+            i["text_html"] = i["text_html"].replace("#cool_down_length#", str(parameter_set["cool_down_length"]))
+            i["text_html"] = i["text_html"].replace("#number_of_groups#", str(len(parameter_set["parameter_set_groups"])))
+            i["text_html"] = i["text_html"].replace("#group_name#", group_name)
+            i["text_html"] = i["text_html"].replace("#break_frequency#", str(parameter_set["break_frequency"]))
+            i["text_html"] = i["text_html"].replace("#break_length#", str(parameter_set["break_length"]))
+
+
 
         return instructions
     
