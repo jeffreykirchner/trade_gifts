@@ -5,11 +5,11 @@
  */
 get_instruction_page(pageNumber){
 
-    for(let i=0;i<app.instruction_pages.length;i++)
+    for(let i=0;i<app.instructions.instruction_pages.length;i++)
     {
-        if(app.instruction_pages[i].page_number==pageNumber)
+        if(app.instructions.instruction_pages[i].page_number==pageNumber)
         {
-            return app.instruction_pages[i].text_html;
+            return app.instructions.instruction_pages[i].text_html;
         }
     }
 
@@ -83,17 +83,34 @@ process_instruction_page(){
 
     //update view when instructions changes
     switch(app.session_player.current_instruction){
-        case 1:            
+        case app.instructions.action_page_move:      
+            return;      
             break; 
-        case 2:
+        case app.instructions.action_page_harvest:
+            return;      
+            break;  
+        case app.instructions.action_page_house:
+            app.session.world_state.time_remaining = app.session.parameter_set.period_length;
+            app.session.world_state.avatars[app.session_player.id].sleeping = false;
+            app.update_subject_status_overlay();
+            app.update_pixi_night();
+            app.remove_all_notices();
+            return;
             break;
-        case 3:            
+        case app.instructions.action_page_sleep:
+            app.session.world_state.time_remaining = app.session.parameter_set.night_length;
+            app.update_subject_status_overlay();
+            app.update_pixi_night();
+            app.update_notices();
+            return;      
             break;
-        case 4:
-            break; 
-        case 5:           
-            break;
-        case 6:
+        case app.instructions.action_page_attacks:
+            app.session.world_state.time_remaining = app.session.parameter_set.period_length;
+            app.session.world_state.avatars[app.session_player.id].sleeping = false;
+            app.update_subject_status_overlay();
+            app.update_pixi_night();
+            app.remove_all_notices();
+            return;      
             break;
     }
 

@@ -280,15 +280,105 @@ send_move_fruit_house()
         return;
     }
 
-    app.working = true;
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        app.send_move_fruit_house_instructions();
+    }
+    else
+    {
+        app.working = true;
+        
+        app.send_message("move_fruit_to_house", 
+                        {"good_one_move" : app.selected_house.good_one_move,
+                        "good_two_move" : app.selected_house.good_two_move,
+                        "good_three_move" : app.selected_house.good_three_move,
+                        "direction" : app.selected_house.direction,
+                        "target_house_id" : app.selected_house.target_house_id},
+                        "group"); 
+    }
+},
 
-    app.send_message("move_fruit_to_house", 
-                    {"good_one_move" : app.selected_house.good_one_move,
-                     "good_two_move" : app.selected_house.good_two_move,
-                     "good_three_move" : app.selected_house.good_three_move,
-                     "direction" : app.selected_house.direction,
-                     "target_house_id" : app.selected_house.target_house_id},
-                     "group"); 
+/**
+ * send fruit to/from house instructions
+ */
+send_move_fruit_house_instructions()
+{
+
+    if(app.session_player.current_instruction != app.instructions.action_page_house) return;
+
+    app.session_player.current_instruction_complete = app.instructions.action_page_house;
+
+    // {
+    //     "status": "success",
+    //     "error_message": [],
+    //     "source_player_id": 273,
+    //     "target_house_id": "181",
+    //     "source_player": {
+    //         "Cherry": 0,
+    //         "health": 75,
+    //         "earnings": "0",
+    //         "sleeping": false,
+    //         "Blueberry": 0,
+    //         "Pineapple": 0,
+    //         "period_patch_harvests": 1,
+    //         "parameter_set_player_id": 181
+    //     },
+    //     "target_house": {
+    //         "id": 181,
+    //         "Cherry": 8,
+    //         "Blueberry": 0,
+    //         "Pineapple": 0,
+    //         "health_value": "4.6",
+    //         "session_player": 273
+    //     },
+    //     "good_one_move": 7,
+    //     "good_two_move": 0,
+    //     "good_three_move": 0,
+    //     "direction": "avatar_to_house",
+    //     "goods": {
+    //         "good_one": "Cherry",
+    //         "good_two": "Blueberry"
+    //     }
+    // }
+
+    let good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
+    let good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
+    let good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
+
+    message_data = {status:"success",
+                    source_player_id:app.session_player.id,
+                    target_house_id:app.selected_house.target_house_id,
+                    source_player:app.session.world_state.avatars[app.session_player.id],
+                    target_house:app.session.world_state.houses[app.selected_house.target_house_id],
+                    good_one_move:app.selected_house.good_one_move,
+                    good_two_move:app.selected_house.good_two_move,
+                    good_three_move:app.selected_house.good_three_move,
+                    direction:app.selected_house.direction,
+                    goods:{good_one:good_one, good_two:good_two, good_three:good_three}};
+
+    if(app.selected_house.direction == "avatar_to_house")
+    {
+        message_data.source_player[good_one] -= app.selected_house.good_one_move;
+        message_data.source_player[good_two] -= app.selected_house.good_two_move;
+        message_data.source_player[good_three] -= app.selected_house.good_three_move;
+
+        message_data.target_house[good_one] += app.selected_house.good_one_move;
+        message_data.target_house[good_two] += app.selected_house.good_two_move;
+        message_data.target_house[good_three] += app.selected_house.good_three_move;
+    }
+    else
+    {
+        message_data.source_player[good_one] += app.selected_house.good_one_move;
+        message_data.source_player[good_two] += app.selected_house.good_two_move;
+        message_data.source_player[good_three] += app.selected_house.good_three_move;
+
+        message_data.target_house[good_one] -= app.selected_house.good_one_move;
+        message_data.target_house[good_two] -= app.selected_house.good_two_move;
+        message_data.target_house[good_three] -= app.selected_house.good_three_move;
+    }   
+
+
+    app.take_update_move_fruit_to_house(message_data);
 },
 
 
@@ -423,8 +513,50 @@ select_all_fruit_house()
  */
 send_sleep()
 {
-    app.working = true;
-    app.send_message("sleep", {}, "group");
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        app.send_sleep_instructions();
+    }
+    else
+    {
+        app.working = true;
+        app.send_message("sleep", {}, "group");
+    }
+   
+},
+
+/**
+ * send sleep instructions
+ */
+send_sleep_instructions()
+{
+    if(app.session_player.current_instruction != app.instructions.action_page_sleep) return;
+
+    app.session_player.current_instruction_complete = app.instructions.action_page_sleep;
+
+    // {
+    //     "status": "success",
+    //     "error_message": [],
+    //     "source_player_id": 273,
+    //     "source_player": {
+    //         "Cherry": 0,
+    //         "health": "68.00",
+    //         "earnings": "85.1768000",
+    //         "sleeping": true,
+    //         "Blueberry": 0,
+    //         "Pineapple": 0,
+    //         "period_patch_harvests": 0,
+    //         "parameter_set_player_id": 181
+    //     }
+    // }
+
+    message_data = {status:"success",
+                    source_player_id:app.session_player.id,
+                    source_player:app.session.world_state.avatars[app.session_player.id]};
+
+    message_data.source_player.sleeping = true;
+
+    app.take_update_sleep(message_data);
 },
 
 /**

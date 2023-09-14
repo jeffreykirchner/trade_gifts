@@ -104,9 +104,9 @@ class SessionPlayer(models.Model):
         parameter_set_player = parameter_set["parameter_set_players"][str(self.parameter_set_player.id)]
         group_name = parameter_set["parameter_set_groups"][str(parameter_set_player["parameter_set_group"])]["name"]
 
-        instructions = [i.json() for i in self.parameter_set_player.parameter_set.instruction_set.instructions.all()]
+        instruction_pages = [i.json() for i in self.parameter_set_player.parameter_set.instruction_set.instructions.all()]
  
-        for i in instructions:
+        for i in instruction_pages:
             i["text_html"] = i["text_html"].replace("#player_count-1#", str(len(parameter_set["parameter_set_players"])-1))
             i["text_html"] = i["text_html"].replace("#id_label#", parameter_set_player["id_label"])
             i["text_html"] = i["text_html"].replace("#cents_per_second#", str(round_half_away_from_zero(parameter_set["cents_per_second"],3)))
@@ -123,7 +123,8 @@ class SessionPlayer(models.Model):
             i["text_html"] = i["text_html"].replace("#break_frequency#", str(parameter_set["break_frequency"]))
             i["text_html"] = i["text_html"].replace("#break_length#", str(parameter_set["break_length"]))
 
-
+        instructions = self.parameter_set_player.parameter_set.instruction_set.json()
+        instructions["instruction_pages"] = instruction_pages
 
         return instructions
     

@@ -193,6 +193,7 @@ subject_patch_click(patch_id)
     {
         if(patch.levels[i].harvested) break;
         app.selected_patch.harvest_amount = patch.levels[i].value;
+        app.selected_patch.harvest_level = i;
     }
 
     app.selected_patch.patch = patch;
@@ -235,17 +236,100 @@ send_patch_harvest()
         return;
     };
     
-    app.working = true;
 
-    app.send_message("patch_harvest", 
-                     {"patch_id" : app.selected_patch.patch.id},
-                      "group");
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        app.send_patch_harvest_instructions();
+    }
+    else
+    {
+        app.working = true;
+        app.send_message("patch_harvest", 
+                         {"patch_id" : app.selected_patch.patch.id},
+                          "group");
+    }
+},
+
+/**
+ * send harvest patch during instructions
+ */
+send_patch_harvest_instructions()
+{
+    if(app.session_player.current_instruction != app.instructions.action_page_harvest) return;
+
+    app.session_player.current_instruction_complete = app.instructions.action_page_harvest;
+
+    // {
+    //     "status": "success",
+    //     "error_message": [],
+    //     "patch": {
+    //         "x": 500,
+    //         "y": 1000,
+    //         "id": 193,
+    //         "good": "Cherry",
+    //         "info": "G1",
+    //         "levels": {
+    //             "1": {
+    //                 "value": 2,
+    //                 "harvested": false
+    //             },
+    //             "2": {
+    //                 "value": 4,
+    //                 "harvested": false
+    //             },
+    //             "3": {
+    //                 "value": 8,
+    //                 "harvested": true
+    //             }
+    //         },
+    //         "radius": 0,
+    //         "hex_color": "0x00FF00",
+    //         "max_levels": 3,
+    //         "shock_levels": {
+    //             "1": {
+    //                 "value": 0,
+    //                 "harvested": false
+    //             }
+    //         },
+    //         "shock_on_period": 1000,
+    //         "parameter_set_group": 41
+    //     },
+    //     "player_id": 273,
+    //     "patch_id": 193,
+    //     "harvest_amount": 8,
+    //     "avatar": {
+    //         "Cherry": 8,
+    //         "health": 75,
+    //         "earnings": "0",
+    //         "sleeping": false,
+    //         "Blueberry": 0,
+    //         "Pineapple": 0,
+    //         "period_patch_harvests": 1,
+    //         "parameter_set_player_id": 181
+    //     }
+    // }
+
+    let patch = app.selected_patch.patch;
+
+    message_data = {status:"success",
+                    patch:patch,
+                    patch_id:patch.id,
+                    player_id:app.session_player.id,
+                    harvest_amount:app.selected_patch.harvest_amount,
+                    avatar:app.session.world_state.avatars[app.session_player.id],
+                   };
+
+    message_data.patch.levels[app.selected_patch.harvest_level].harvested = true;
+    message_data.avatar[patch.good] = message_data.avatar[patch.good] + app.selected_patch.harvest_amount;
+    message_data.avatar.period_patch_harvests = message_data.avatar.period_patch_harvests + 1;
+
+    app.take_patch_harvest(message_data)
+
 },
 
 /**
  * take patch harvest response
 */
-
 take_patch_harvest(message_data)
 {
 

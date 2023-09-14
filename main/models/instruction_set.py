@@ -65,7 +65,7 @@ class InstructionSet(models.Model):
             "action_page_sleep" : self.action_page_sleep,
             "action_page_attacks" : self.action_page_attacks,
             
-            "instructions" : [i.json() for i in self.instructions.all()],
+            "instruction_pages" : [i.json() for i in self.instructions.all()],
         }
     
     #return json object of class

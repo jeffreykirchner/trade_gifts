@@ -3,6 +3,15 @@
  */
 target_location_update()
 {
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        if(app.session_player.current_instruction == app.instructions.action_page_move)
+        {
+            app.session_player.current_instruction_complete=app.instructions.action_page_move;
+        }
+
+        return;
+    }
 
     let session_player = app.session.world_state_avatars.session_players[app.session_player.id];
 

@@ -626,14 +626,93 @@ send_move_fruit_to_avatar()
         return;
     }
 
-    app.working = true;
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        app.send_move_fruit_to_avatar_instructions();
+    }
+    else
+    {
+        app.working = true;
+        app.send_message("move_fruit_to_avatar", 
+                        {"good_one_move" : app.selected_avatar.good_one_move,
+                        "good_two_move" : app.selected_avatar.good_two_move,
+                        "good_three_move" : app.selected_avatar.good_three_move,
+                        "target_player_id" : app.selected_avatar.target_player_id},
+                        "group"); 
+    }
+},
 
-    app.send_message("move_fruit_to_avatar", 
-                    {"good_one_move" : app.selected_avatar.good_one_move,
-                     "good_two_move" : app.selected_avatar.good_two_move,
-                     "good_three_move" : app.selected_avatar.good_three_move,
-                     "target_player_id" : app.selected_avatar.target_player_id},
-                     "group"); 
+/**
+ * send fruit to avatar instructions
+ */
+send_move_fruit_to_avatar_instructions()
+{
+    if(app.session_player.current_instruction != app.instructions.action_page_attacks) return;
+
+    // {
+    //     "status": "success",
+    //     "error_message": [],
+    //     "source_player_id": 273,
+    //     "target_player_id": "274",
+    //     "source_player": {
+    //         "Cherry": 0,
+    //         "health": "76.50",
+    //         "earnings": "102.6715000",
+    //         "sleeping": false,
+    //         "Blueberry": 0,
+    //         "Pineapple": 0,
+    //         "period_patch_harvests": 1,
+    //         "parameter_set_player_id": 181
+    //     },
+    //     "target_player": {
+    //         "Cherry": 8,
+    //         "health": "66.60",
+    //         "earnings": "101.2129000",
+    //         "sleeping": false,
+    //         "Blueberry": 0,
+    //         "Pineapple": 0,
+    //         "period_patch_harvests": 0,
+    //         "parameter_set_player_id": 182
+    //     },
+    //     "good_one_move": 8,
+    //     "good_two_move": 0,
+    //     "good_three_move": 0,
+    //     "goods": {
+    //         "good_one": "Cherry",
+    //         "good_two": "Blueberry"
+    //     }
+    // }
+
+    let good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
+    let good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
+    let good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
+
+    let message_data = {
+        "status": "success",
+        "error_message": [],
+        "source_player_id": app.session_player.id,
+        "target_player_id": app.selected_avatar.target_player_id,
+        "source_player": app.session.world_state.avatars[app.session_player.id],
+        "target_player": app.session.world_state.avatars[app.selected_avatar.target_player_id],
+        "good_one_move": app.selected_avatar.good_one_move,
+        "good_two_move": app.selected_avatar.good_two_move,
+        "good_three_move": app.selected_avatar.good_three_move,
+        "goods": {
+            "good_one": good_one,
+            "good_two": good_two,
+            "good_three": good_three,
+        }
+    }
+
+    message_data.source_player[good_one] -= app.selected_avatar.good_one_move;
+    message_data.source_player[good_two] -= app.selected_avatar.good_two_move;
+    message_data.source_player[good_three] -= app.selected_avatar.good_three_move;
+
+    message_data.target_player[good_one] += app.selected_avatar.good_one_move;
+    message_data.target_player[good_two] += app.selected_avatar.good_two_move;
+    message_data.target_player[good_three] += app.selected_avatar.good_three_move;
+
+    app.take_update_move_fruit_to_avatar(message_data);
 },
 
 
@@ -754,11 +833,69 @@ send_attack_avatar()
         return;
     }
 
-    app.working = true;
-    
-    app.send_message("attack_avatar", 
-                    {"target_player_id" : app.selected_avatar.target_player_id},
-                     "group"); 
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        app.send_attack_avatar_instructions();
+    }
+    else
+    {
+        app.working = true;
+        
+        app.send_message("attack_avatar", 
+                        {"target_player_id" : app.selected_avatar.target_player_id},
+                        "group"); 
+    }
+},
+
+/**
+ * send avatar attack instructions
+ */
+send_attack_avatar_instructions()
+{
+    if(app.session_player.current_instruction != app.instructions.action_page_attacks) return;
+    app.session_player.current_instruction_complete = app.instructions.action_page_attacks;
+
+    // {
+    //     "status": "success",
+    //     "error_message": [],
+    //     "source_player_id": 273,
+    //     "target_player_id": "274",
+    //     "source_player": {
+    //         "Cherry": 0,
+    //         "health": "71.40",
+    //         "earnings": "102.6715000",
+    //         "sleeping": false,
+    //         "Blueberry": 0,
+    //         "Pineapple": 0,
+    //         "period_patch_harvests": 1,
+    //         "parameter_set_player_id": 181
+    //     },
+    //     "target_player": {
+    //         "Cherry": 8,
+    //         "health": "59.50",
+    //         "earnings": "101.2129000",
+    //         "sleeping": false,
+    //         "Blueberry": 0,
+    //         "Pineapple": 0,
+    //         "period_patch_harvests": 0,
+    //         "parameter_set_player_id": 182
+    //     }
+    // }
+
+    let message_data = {
+        "status": "success",
+        "error_message": [],
+        "source_player_id": app.session_player.id,
+        "target_player_id": app.selected_avatar.target_player_id,
+        "source_player": app.session.world_state.avatars[app.session_player.id],
+        "target_player": app.session.world_state.avatars[app.selected_avatar.target_player_id],
+    }
+
+    message_data.source_player.health = parseFloat(message_data.source_player.health) - app.session.parameter_set.attack_cost;
+    message_data.target_player.health = parseFloat(message_data.target_player.health) - app.session.parameter_set.attack_damage;
+
+    app.take_update_attack_avatar(message_data);
+
 },
 
 /**

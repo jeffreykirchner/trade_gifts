@@ -87,7 +87,7 @@ var app = Vue.createApp({
 
                     end_game_modal_visible : false,
 
-                    instruction_pages : {{instruction_pages|safe}},
+                    instructions : {{instructions|safe}},
                     instruction_pages_show_scroll : false,
 
                     // modals
@@ -351,14 +351,6 @@ var app = Vue.createApp({
                                 
             }
 
-            if(app.session.world_state.current_experiment_phase == 'Instructions')
-            {
-                Vue.nextTick(() => {
-                    app.process_instruction_page();
-                    app.instruction_display_scroll();
-                });
-            }
-
             if(!app.first_load_done)
             {
                 Vue.nextTick(() => {
@@ -369,6 +361,14 @@ var app = Vue.createApp({
             {
                 Vue.nextTick(() => {
                     app.do_reload();
+                });
+            }
+
+            if(app.session.world_state.current_experiment_phase == 'Instructions')
+            {
+                Vue.nextTick(() => {
+                    app.process_instruction_page();
+                    app.instruction_display_scroll();
                 });
             }
         },
