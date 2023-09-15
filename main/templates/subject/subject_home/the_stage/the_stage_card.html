@@ -92,7 +92,7 @@
                            placeholder="Chat Text" 
                            v-model="chat_text"
                            aria-label="Chat Text"                           
-                           v-on:keyup.enter="(session.world_state.current_experiment_phase == 'Instructions') ? simulate_chat_instructions() : send_chat()"
+                           v-on:keyup.enter="send_chat()"
                            aria-describedby="send_chat_id">
                     <button class="btn btn-outline-primary"
                             type="button" 

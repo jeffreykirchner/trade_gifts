@@ -5,13 +5,46 @@ send_chat(){
     if(app.chat_text.trim().length > 200) return;
     if(app.session.world_state.avatars[app.session_player.id].sleeping) return;
     
-    app.working = true;
-    app.send_message("chat", 
-                    {"text" : app.chat_text.trim()},
-                    "group");
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        app.send_chat_instructions();
+    }
+    else
+    {
+        app.working = true;
+        app.send_message("chat", 
+                        {"text" : app.chat_text.trim()},
+                        "group");
+    }
+    
+    app.chat_text = "";                  
+},
 
-    app.chat_text="";   
-                   
+/**
+ * send chat instructions
+ */
+send_chat_instructions()
+{
+
+    // {
+    //     "value": "success",
+    //     "text": "asdfasdf",
+    //     "text_limited": "BSDtBSDt",
+    //     "sender_id": 273,
+    //     "nearby_players": [
+    //         "274"
+    //     ]
+    // }
+
+    let message_data = {
+        "value": "success",
+        "text": app.chat_text.trim(),
+        "text_limited": app.chat_text.trim(),
+        "sender_id": app.session_player.id,
+        "nearby_players": [],
+    };
+
+    app.take_chat(message_data);
 },
 
 /** take result of moving goods

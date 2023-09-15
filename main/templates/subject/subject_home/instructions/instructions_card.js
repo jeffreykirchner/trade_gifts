@@ -81,6 +81,15 @@ take_finish_instructions(message_data){
  */
 process_instruction_page(){
 
+    if(app.session_player.current_instruction != app.instructions.action_page_sleep)
+    {
+        app.session.world_state.time_remaining = app.session.parameter_set.period_length;
+        app.session.world_state.avatars[app.session_player.id].sleeping = false;
+        app.update_subject_status_overlay();
+        app.update_pixi_night();
+        app.remove_all_notices();
+    }
+
     //update view when instructions changes
     switch(app.session_player.current_instruction){
         case app.instructions.action_page_move:      
@@ -89,12 +98,7 @@ process_instruction_page(){
         case app.instructions.action_page_harvest:
             return;      
             break;  
-        case app.instructions.action_page_house:
-            app.session.world_state.time_remaining = app.session.parameter_set.period_length;
-            app.session.world_state.avatars[app.session_player.id].sleeping = false;
-            app.update_subject_status_overlay();
-            app.update_pixi_night();
-            app.remove_all_notices();
+        case app.instructions.action_page_house:           
             return;
             break;
         case app.instructions.action_page_sleep:
@@ -104,12 +108,7 @@ process_instruction_page(){
             app.update_notices();
             return;      
             break;
-        case app.instructions.action_page_attacks:
-            app.session.world_state.time_remaining = app.session.parameter_set.period_length;
-            app.session.world_state.avatars[app.session_player.id].sleeping = false;
-            app.update_subject_status_overlay();
-            app.update_pixi_night();
-            app.remove_all_notices();
+        case app.instructions.action_page_attacks:           
             return;      
             break;
     }
