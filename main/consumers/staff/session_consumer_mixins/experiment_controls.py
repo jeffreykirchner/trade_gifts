@@ -108,6 +108,8 @@ class ExperimentControlsMixin(OperationsMixin):
         '''
         result = await sync_to_async(take_next_phase)(self.session_id, event["message_text"])
 
+        result["world_state_avatars"] = self.world_state_avatars_local
+
         #Send message to staff page
         if result["value"] == "fail":
             await self.send_message(message_to_self=result, message_to_group=None,
@@ -248,6 +250,7 @@ def take_next_phase(session_id, data):
     status = "success"
     
     return {"value" : status,
+            "world_state" : session.world_state,
             "current_experiment_phase" : session.world_state["current_experiment_phase"],
             "finished" : session.world_state["finished"],
             }

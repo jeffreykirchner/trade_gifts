@@ -6,14 +6,41 @@ send_emoji(emoji_type)
     if(!app.session.world_state["started"]) return;
     if(app.session.world_state.avatars[app.session_player.id].sleeping) return;
 
-    app.working = true;
-    
-    app.send_message("emoji", 
-                    {"emoji_type" : emoji_type,
-                     },
-                     "group"); 
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        app.send_emoji_instructions(emoji_type);
+    }
+    else
+    {
+        app.working = true;
+        app.send_message("emoji", 
+                        {"emoji_type" : emoji_type,
+                         },
+                         "group"); 
+    }
 },
 
+/**
+send emoji instructions
+*/
+send_emoji_instructions(emoji_type)
+{
+    // {
+    //     "status": "success",
+    //     "error_message": {},
+    //     "source_player_id": 273,
+    //     "emoji_type": "sad"
+    // }
+
+    let message_data = {
+        "status": "success",
+        "error_message": {},
+        "source_player_id": app.session_player.id,
+        "emoji_type": emoji_type
+    };
+
+    app.take_emoji(message_data);
+},
 
 /**
  * take emote from server

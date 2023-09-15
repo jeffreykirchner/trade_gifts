@@ -633,7 +633,11 @@ class SubjectUpdatesMixin():
             target_house_id = event["message_text"]["target_house_id"]
             good_one_move = int(event["message_text"]["good_one_move"])
             good_two_move = int(event["message_text"]["good_two_move"])
-            good_three_move = int(event["message_text"]["good_three_move"])
+
+            if self.parameter_set_local["good_mode"] == "Three":
+                good_three_move = int(event["message_text"]["good_three_move"])
+            else:
+                good_three_move = 0
             direction = event["message_text"]["direction"]
         except:
             logger.info(f"move_fruit_to_house: invalid data, {event['message_text']}")

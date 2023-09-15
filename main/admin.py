@@ -294,7 +294,15 @@ class InstructionSetAdmin(admin.ModelAdmin):
             base_instruction_set = queryset.first()
 
             instruction_set = InstructionSet()
+
+            instruction_set.action_page_move = base_instruction_set.action_page_move
+            instruction_set.action_page_harvest = base_instruction_set.action_page_harvest
+            instruction_set.action_page_house = base_instruction_set.action_page_house
+            instruction_set.action_page_sleep = base_instruction_set.action_page_sleep
+            instruction_set.action_page_attacks = base_instruction_set.action_page_attacks
+
             instruction_set.save()
+            
             instruction_set.copy_pages(base_instruction_set.instructions)
 
             self.message_user(request,f'{base_instruction_set} has been duplicated', messages.SUCCESS)

@@ -62,3 +62,12 @@ update_notices()
     pixi_notices.container = container;
     pixi_app.stage.addChild( pixi_notices.container);
 },
+
+/**
+ * remove all notices
+ */
+remove_all_notices()
+{
+    pixi_notices.notices = [];
+    app.update_notices();
+},

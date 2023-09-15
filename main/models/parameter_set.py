@@ -23,7 +23,7 @@ class ParameterSet(models.Model):
     '''
     parameter set
     '''    
-    instruction_set = models.ForeignKey(InstructionSet, on_delete=models.CASCADE, related_name="parameter_sets")
+    instruction_set = models.ForeignKey(InstructionSet, on_delete=models.SET_NULL, related_name="parameter_sets", blank=True, null=True)
 
     period_count = models.IntegerField(verbose_name='Number of periods', default=20)                          #number of periods in the experiment
     period_length = models.IntegerField(verbose_name='Period Length, Production', default=60)                 #period length in seconds

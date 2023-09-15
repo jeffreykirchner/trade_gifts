@@ -87,7 +87,7 @@ var app = Vue.createApp({
 
                     end_game_modal_visible : false,
 
-                    instruction_pages : {{instruction_pages|safe}},
+                    instructions : {{instructions|safe}},
                     instruction_pages_show_scroll : false,
 
                     // modals
@@ -351,14 +351,6 @@ var app = Vue.createApp({
                                 
             }
 
-            if(app.session.world_state.current_experiment_phase == 'Instructions')
-            {
-                Vue.nextTick(() => {
-                    app.process_instruction_page();
-                    app.instruction_display_scroll();
-                });
-            }
-
             if(!app.first_load_done)
             {
                 Vue.nextTick(() => {
@@ -369,6 +361,14 @@ var app = Vue.createApp({
             {
                 Vue.nextTick(() => {
                     app.do_reload();
+                });
+            }
+
+            if(app.session.world_state.current_experiment_phase == 'Instructions')
+            {
+                Vue.nextTick(() => {
+                    app.process_instruction_page();
+                    app.instruction_display_scroll();
                 });
             }
         },
@@ -577,6 +577,17 @@ var app = Vue.createApp({
             else
             {
                 app.hide_end_game_modal();
+            }
+
+            if(app.session.world_state.current_experiment_phase == 'Run')
+            {
+                app.session.world_state = message_data.world_state;
+                app.session.world_state_avatars = message_data.world_state_avatars;
+                
+                app.destory_setup_pixi_subjects();
+                app.do_reload();
+                app.update_pixi_night();
+                app.remove_all_notices();
             }
             
             if(app.session.world_state.current_experiment_phase == 'Done' && 

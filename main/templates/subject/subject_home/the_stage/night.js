@@ -41,6 +41,8 @@ setup_pixi_night()
  */
 update_pixi_night()
 {
+    if(!pixi_night.container) return;
+    
     //add notice
     if(app.session.world_state.time_remaining == app.session.parameter_set.night_length + 5)
     {

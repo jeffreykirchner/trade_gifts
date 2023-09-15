@@ -104,7 +104,10 @@
                                 class="btn btn-outline-primary"
                                 v-on:click = "send_move_fruit_house()"
                                 title="Move fruit to selected house."                       
-                                v-bind:disabled="reconnecting || working">
+                                v-bind:disabled="reconnecting || 
+                                                 working ||
+                                                 (session.world_state.current_experiment_phase == 'Instructions' && 
+                                                  session_player.current_instruction != instructions.action_page_house)">
                             Move <i class="fas fa-sign-in-alt"></i>
                         </button>
                     </div>
@@ -117,8 +120,11 @@
                                 class="btn btn-outline-primary"
                                 v-on:click = "send_sleep()"
                                 title="Sleep now?"                       
-                                v-bind:disabled="reconnecting || working ||
-                                                 session.world_state.time_remaining > session.parameter_set.night_length+5">
+                                v-bind:disabled="reconnecting || 
+                                                 working ||
+                                                 session.world_state.time_remaining > session.parameter_set.night_length+5 ||
+                                                 (session.world_state.current_experiment_phase == 'Instructions' && 
+                                                  session_player.current_instruction != instructions.action_page_sleep)">
                                
                             Sleep <i class="fas fa-bed"></i>
                         </button>

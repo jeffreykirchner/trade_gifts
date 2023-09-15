@@ -35,7 +35,10 @@
                                 class="btn btn-outline-primary"
                                 v-on:click = "send_patch_harvest()"
                                 title="Harvest the selected patch."                       
-                                v-bind:disabled="reconnecting || working || selected_patch.harvest_amount==0">
+                                v-bind:disabled="reconnecting || 
+                                                 working || 
+                                                 selected_patch.harvest_amount==0 ||
+                                                 (session.world_state.current_experiment_phase == 'Instructions' && session_player.current_instruction != instructions.action_page_harvest)">
                             Harvest <i class="fas fa-sign-in-alt"></i>
                         </button>
                     </div>

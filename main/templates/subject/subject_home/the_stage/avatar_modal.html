@@ -84,7 +84,11 @@
                                 class="btn btn-outline-primary"
                                 v-on:click = "send_move_fruit_to_avatar()"
                                 title="Move fruit to selected player."                       
-                                v-bind:disabled="reconnecting || working">
+                                v-bind:disabled="reconnecting || 
+                                                 working || 
+                                                 (session.world_state.current_experiment_phase == 'Instructions' && 
+                                                 session_player.current_instruction != instructions.action_page_attacks)">
+
                             Move <i class="fas fa-sign-in-alt"></i>
                         </button>
                     </div>
@@ -97,7 +101,10 @@
                                 class="btn btn-outline-danger"
                                 v-on:click = "show_attack_avatar()"
                                 title="Attack the slected player?"                       
-                                v-bind:disabled="reconnecting || working">
+                                v-bind:disabled="reconnecting || 
+                                                 working ||
+                                                 (session.world_state.current_experiment_phase == 'Instructions' && 
+                                                  session_player.current_instruction != instructions.action_page_attacks)">
                                
                             Attack <i class="fas fa-fist-raised"></i>
                         </button>
