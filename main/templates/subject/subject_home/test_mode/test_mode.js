@@ -73,6 +73,8 @@ do_test_mode(){
     if(app.session_player.instructions_finished) return;
     if(app.working) return;
     
+    let session_player = app.session.world_state_avatars.session_players[app.session_player.id];
+    let parameter_set_player = app.session.parameter_set.parameter_set_players[session_player.parameter_set_player_id]
    
     if(app.session_player.current_instruction == app.session_player.current_instruction_complete)
     {
@@ -85,22 +87,77 @@ do_test_mode(){
     }else
     {
         //take action if needed to complete page
-        switch (app.session_player.current_instruction)
-        {
-            case 1:
-                break;
-            case 2:
-                
-                break;
-            case 3:
-                
-                break;
-            case 4:
-                
-                break;
-            case 5:
-                break;
-        }   
+         //update view when instructions changes
+    switch(app.session_player.current_instruction){
+        case app.instructions.action_page_move:      
+            app.test_mode_move();
+            return;      
+            break; 
+        case app.instructions.action_page_harvest:
+            if(app.patch_modal_open)
+            {
+                app.do_test_mode_patch();
+            }
+            else if( app.test_mode_check_near_patch())
+            {
+                //do nothing
+            }
+            else if(session_player.current_location.x == session_player.target_location.x && 
+                    session_player.current_location.y == session_player.target_location.y)
+            {
+                session_player.target_location = app.test_mode_move_to_patch();
+            } 
+            return;      
+            break;  
+        case app.instructions.action_page_house:      
+            if(app.house_modal_open)
+            {
+                app.do_test_mode_house();
+            }
+            else if( app.test_mode_check_near_house())
+            {
+                //do nothing
+            }
+            else if(session_player.current_location.x == session_player.target_location.x && 
+                    session_player.current_location.y == session_player.target_location.y)
+            {
+                session_player.target_location = {x:parameter_set_player.house_x, y:parameter_set_player.house_y};
+            }  
+            return;
+            break;
+        case app.instructions.action_page_sleep:  
+            if(app.house_modal_open)
+            {
+                app.send_sleep();
+            }
+            else if( app.test_mode_check_near_house())
+            {
+                //do nothing
+            }
+            else if(session_player.current_location.x == session_player.target_location.x && 
+                    session_player.current_location.y == session_player.target_location.y)
+            {
+                session_player.target_location = {x:parameter_set_player.house_x, y:parameter_set_player.house_y};
+            }          
+            return;      
+            break;
+        case app.instructions.action_page_attacks:        
+            if(app.avatar_modal_open)
+            {
+                app.send_attack_avatar();
+            }
+            else if( app.test_mode_check_near_avatar())
+            {
+                //do nothing
+            }
+            else if(session_player.current_location.x == session_player.target_location.x && 
+                    session_player.current_location.y == session_player.target_location.y)
+            {
+                session_player.target_location = app.test_mode_move_to_avatar();
+            }   
+            return;      
+            break;
+    }   
     }
 
     
@@ -334,45 +391,16 @@ test_mode_move()
         app.get_distance(app.test_mode_location_target,  obj.current_location) <= 25)
     {
         //if near target location, move to a new one
-        let temp_local_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
+        
         if(app.random_number(1, 2) == 1)
         {
-            //move to a random house in my group
-            let go = true;
-            while(go)
-            {
-                let temp_id = app.random_number(0,app.session.parameter_set.parameter_set_players_order.length-1);
-                let player_id = app.session.parameter_set.parameter_set_players_order[temp_id];
-                let parameter_set_player = app.session.parameter_set.parameter_set_players[player_id];
-
-                if(parameter_set_player.parameter_set_group == temp_local_group)
-                {
-                    go = false;
-                    app.test_mode_location_target = {x:parameter_set_player.house_x + app.random_number(-100, 100),
-                                                     y:parameter_set_player.house_y + app.random_number(-100, 100)};
-                }
-            }
+            app.test_mode_location_target = app.test_mode_move_to_house();
         }
         else
         {
-            //move to a random patch in my group
-            let go = true;
-            while(go)
-            {
-                let temp_id = app.random_number(0,app.session.parameter_set.parameter_set_patches_order.length-1);
-                let patch_id = app.session.parameter_set.parameter_set_patches_order[temp_id];
-                let parameter_set_patch = app.session.parameter_set.parameter_set_patches[patch_id];
-
-                if(parameter_set_patch.parameter_set_group == temp_local_group)
-                {
-                    go = false;
-                    app.test_mode_location_target = {x:parameter_set_patch.x + app.random_number(-100, 100),
-                                                     y:parameter_set_patch.y + app.random_number(-100, 100)};
-                }
-            }
+            app.test_mode_location_target = app.test_mode_move_to_patch();
         }
         
-
     }
     else if(app.get_distance(app.test_mode_location_target,  obj.current_location)<1000)
     {
@@ -393,6 +421,69 @@ test_mode_move()
 },
 
 /**
+ * move to random house test mode
+ */
+test_mode_move_to_house()
+{
+    let temp_local_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
+    let go = true;
+    while(go)
+    {
+        let temp_id = app.random_number(0,app.session.parameter_set.parameter_set_players_order.length-1);
+        let player_id = app.session.parameter_set.parameter_set_players_order[temp_id];
+        let parameter_set_player = app.session.parameter_set.parameter_set_players[player_id];
+
+        if(parameter_set_player.parameter_set_group == temp_local_group)
+        {
+            return {x:parameter_set_player.house_x + app.random_number(-100, 100),
+                    y:parameter_set_player.house_y + app.random_number(-100, 100)};
+        }
+    }
+},
+
+/**
+ * move to random player test mode
+ */
+test_mode_move_to_avatar()
+{
+    let temp_local_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
+    let go = true;
+    while(go)
+    {
+        let temp_id = app.random_number(0,app.session.parameter_set.parameter_set_players_order.length-1);
+        let player_id = app.session.parameter_set.parameter_set_players_order[temp_id];
+        let parameter_set_player = app.session.parameter_set.parameter_set_players[player_id];
+
+        if(parameter_set_player.parameter_set_group == temp_local_group)
+        {
+            return {x:parameter_set_player.start_x + app.random_number(-100, 100),
+                    y:parameter_set_player.start_y + app.random_number(-100, 100)};
+        }
+    }
+},
+
+/**
+ * move to random patch test mode
+ */
+test_mode_move_to_patch()
+{
+    let temp_local_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
+    let go = true;
+    while(go)
+    {
+        let temp_id = app.random_number(0,app.session.parameter_set.parameter_set_patches_order.length-1);
+        let patch_id = app.session.parameter_set.parameter_set_patches_order[temp_id];
+        let parameter_set_patch = app.session.parameter_set.parameter_set_patches[patch_id];
+
+        if(parameter_set_patch.parameter_set_group == temp_local_group)
+        {
+            return {x:parameter_set_patch.x + app.random_number(-100, 100),
+                    y:parameter_set_patch.y + app.random_number(-100, 100)};
+        }
+    }
+},
+
+/**
  * if near patch open harvest modal
  */
 test_mode_check_near_patch()
@@ -402,7 +493,7 @@ test_mode_check_near_patch()
     if(avatar.period_patch_harvests>=app.session.parameter_set.max_patch_harvests)
     {
         app.patch_modal.hide();
-        return;
+        return false;
     }
 
     for(let i=0;i<app.session.parameter_set.parameter_set_patches_order.length;i++)
@@ -413,9 +504,12 @@ test_mode_check_near_patch()
         if(app.get_distance(patch, app.session.world_state_avatars.session_players[app.session_player.id].current_location) < app.session.parameter_set.interaction_range)
         {
             app.subject_pointer_up_action(2, patch)
-            break;
+
+            return true;
         }
     }
+
+    return false
 },
 
 /**
