@@ -39,6 +39,7 @@ var app = Vue.createApp({
 
     data() {return {chat_socket : "",
                     reconnecting : true,
+                    help_text : "Loading ...",
                     is_subject : true,
                     working : false,
                     reconnection_count : 0,
@@ -165,6 +166,9 @@ var app = Vue.createApp({
                 case "get_session":
                     app.take_get_session(message_data);
                     break; 
+                case "help_doc":
+                    app.take_load_help_doc(message_data);
+                    break;
                 case "update_start_experiment":
                     app.take_update_start_experiment(message_data);
                     break;
@@ -631,6 +635,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/barriers.js"%}
         {%include "subject/subject_home/the_stage/emoji.js"%}
         {%include "subject/subject_home/the_stage/patch.js"%}
+        {%include "js/help_doc.js"%}
     
         /** clear form error messages
         */

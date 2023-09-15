@@ -337,7 +337,16 @@ do_test_mode_patch()
 {
     if(!app.selected_patch.patch) app.patch_modal.hide();
 
-    app.send_patch_harvest();
+    if(app.selected_patch.harvest_amount == 0)
+    {
+        app.patch_modal.hide();        
+    }
+    else
+    {
+        app.send_patch_harvest();
+    }
+
+    
 },
 
 /**
