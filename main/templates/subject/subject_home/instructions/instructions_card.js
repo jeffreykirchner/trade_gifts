@@ -81,6 +81,8 @@ take_finish_instructions(message_data){
  */
 process_instruction_page(){
 
+    let session_player = app.session.world_state_avatars.session_players[app.session_player.id];
+
     //remove night and notices
     if(app.session_player.current_instruction != app.instructions.action_page_sleep)
     {
@@ -92,14 +94,15 @@ process_instruction_page(){
     }
 
     //close chat
-    app.session.world_state_avatars.session_players[app.session_player.id].show_chat = false;
+    session_player.show_chat = false;
 
     //update view when instructions changes
     switch(app.session_player.current_instruction){
         case app.instructions.action_page_move:      
+           
             return;      
             break; 
-        case app.instructions.action_page_harvest:
+        case app.instructions.action_page_harvest: 
             return;      
             break;  
         case app.instructions.action_page_house:           

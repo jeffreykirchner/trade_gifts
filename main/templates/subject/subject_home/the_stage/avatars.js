@@ -920,6 +920,7 @@ take_update_attack_avatar(message_data)
         {
             if( source_player_id == app.session_player.id)
             {
+                app.avatar_modal.hide();
                 app.avatar_attack_modal.hide();
                 app.selected_avatar.avatar = null;
             }
