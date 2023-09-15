@@ -286,14 +286,14 @@ class SessionPeriod(models.Model):
                 patch["levels"] = patch["shock_levels"]
                 patch["max_levels"] = len(patch["levels"])
 
-            # for j in patch["levels"]:
-            #     if int(j) > patch["max_levels"]:
-            #         break
+            for j in patch["levels"]:
+                if int(j) > patch["max_levels"]:
+                    break
 
-            #     level = patch["levels"][str(j)]
-            #     if level["harvested"]:
-            #         level["harvested"] = False
-            #         break
+                level = patch["levels"][str(j)]
+                if level["harvested"]:
+                    level["harvested"] = False
+                    break
         
         #reset avatar patch harvests
         for i in self.session.world_state["avatars"]:
