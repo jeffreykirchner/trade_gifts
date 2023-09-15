@@ -81,6 +81,7 @@ take_finish_instructions(message_data){
  */
 process_instruction_page(){
 
+    //remove night and notices
     if(app.session_player.current_instruction != app.instructions.action_page_sleep)
     {
         app.session.world_state.time_remaining = app.session.parameter_set.period_length;
@@ -89,6 +90,9 @@ process_instruction_page(){
         app.update_pixi_night();
         app.remove_all_notices();
     }
+
+    //close chat
+    app.session.world_state_avatars.session_players[app.session_player.id].show_chat = false;
 
     //update view when instructions changes
     switch(app.session_player.current_instruction){
@@ -118,7 +122,6 @@ process_instruction_page(){
         app.session_player.current_instruction_complete = app.session_player.current_instruction;
     }
 
-        
 },
 
 /**
