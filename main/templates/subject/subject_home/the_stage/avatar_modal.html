@@ -12,7 +12,14 @@
         <div class="modal-content">
             <div class="modal-header fw-bold" v-if="selected_avatar.avatar">
                 Interact with [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                
+                <span class="float-end">
+                    <button type="button" class="btn btn-link ms-4" title="Show Help Doc" v-on:click="send_load_help_doc('Staff avatar modal')">
+                        <i class="far fa-question-circle"></i> 
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </span>
+                
             </div>
             <div class="modal-body">
                 
