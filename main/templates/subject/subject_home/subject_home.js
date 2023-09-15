@@ -578,6 +578,17 @@ var app = Vue.createApp({
             {
                 app.hide_end_game_modal();
             }
+
+            if(app.session.world_state.current_experiment_phase == 'Run')
+            {
+                app.session.world_state = message_data.world_state;
+                app.session.world_state_avatars = message_data.world_state_avatars;
+                
+                app.destory_setup_pixi_subjects();
+                app.do_reload();
+                app.update_pixi_night();
+                app.remove_all_notices();
+            }
             
             if(app.session.world_state.current_experiment_phase == 'Done' && 
                     app.session.parameter_set.survey_required=='True' && 
