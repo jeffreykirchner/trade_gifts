@@ -15,6 +15,13 @@
                 Field:&nbsp;<span v-if="selected_field.field">Owner [[session.parameter_set.parameter_set_players[selected_field.field.parameter_set_player].id_label]]</span>
                 <span v-if="selected_field.field && selected_field.field.session_player==session_player.id">&nbsp;(You)</span>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                <span class="float-end">
+                    <button type="button" class="btn btn-link" title="Show Help" v-on:click="send_load_help_doc_subject('Field')">
+                        <i class="far fa-question-circle"></i> 
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </span>
             </div>
             <div class="modal-body">   
                 <div class="row">

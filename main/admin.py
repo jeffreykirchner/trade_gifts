@@ -11,6 +11,7 @@ from main.forms import ParametersForm
 from main.forms import SessionFormAdmin
 from main.forms import InstructionFormAdmin
 from main.forms import InstructionSetFormAdmin
+from main.forms import HelpDocSubjectFormAdmin
 
 from main.models import Parameters
 from main.models import ParameterSet
@@ -28,6 +29,7 @@ from main.models import  HelpDocs
 
 from main.models.instruction_set import InstructionSet
 from main.models.instruction import Instruction
+from main.models.help_docs_subject import HelpDocsSubject
 
 admin.site.site_header = settings.ADMIN_SITE_HEADER
 
@@ -279,6 +281,16 @@ class InstructionPageInline(admin.TabularInline):
       model = Instruction
       can_delete = True
 
+#instruction set page
+class HelpDocSubjectInline(admin.TabularInline):
+      '''
+      instruction page admin screen
+      '''
+      extra = 0  
+      form = HelpDocSubjectFormAdmin
+      model = HelpDocsSubject
+      can_delete = True
+
 @admin.register(InstructionSet)
 class InstructionSetAdmin(admin.ModelAdmin):
     form = InstructionSetFormAdmin
@@ -304,6 +316,7 @@ class InstructionSetAdmin(admin.ModelAdmin):
             instruction_set.save()
             
             instruction_set.copy_pages(base_instruction_set.instructions)
+            instruction_set.copy_help_docs_subject(base_instruction_set.help_docs_subject)
 
             self.message_user(request,f'{base_instruction_set} has been duplicated', messages.SUCCESS)
 
@@ -311,6 +324,7 @@ class InstructionSetAdmin(admin.ModelAdmin):
 
     inlines = [
         InstructionPageInline,
+        HelpDocSubjectInline,
       ]
     
     actions = [duplicate_set]

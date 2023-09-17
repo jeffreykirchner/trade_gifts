@@ -11,9 +11,16 @@
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header fw-bold" v-if="selected_house.house">
-                House:&nbsp;<span v-if="selected_house.house">Owner [[selected_house.parameter_set_player.id_label]]</span>
-                <span v-if="selected_house.house && selected_house.house.session_player==session_player.id">&nbsp;(You)</span>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                House: Owner [[selected_house.parameter_set_player.id_label]]
+
+                <span v-show="selected_house.house.session_player==session_player.id">(You)</span>
+
+                <span class="float-end">
+                    <button type="button" class="btn btn-link" title="Show Help" v-on:click="send_load_help_doc_subject('House')">
+                        <i class="far fa-question-circle"></i> 
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </span>
             </div>
             <div class="modal-body">
                 

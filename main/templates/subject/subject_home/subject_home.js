@@ -92,6 +92,7 @@ var app = Vue.createApp({
                     instruction_pages_show_scroll : false,
 
                     // modals
+                    help_modal : null,
                     end_game_modal : null,
                     avatar_modal : null,
                     avatar_attack_modal : null,
@@ -166,8 +167,8 @@ var app = Vue.createApp({
                 case "get_session":
                     app.take_get_session(message_data);
                     break; 
-                case "help_doc":
-                    app.take_load_help_doc(message_data);
+                case "help_doc_subject":
+                    app.take_load_help_doc_subject(message_data);
                     break;
                 case "update_start_experiment":
                     app.take_update_start_experiment(message_data);
@@ -273,6 +274,7 @@ var app = Vue.createApp({
             app.field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('field_modal'), {keyboard: false})
             app.house_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('house_modal'), {keyboard: false})
             app.patch_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('patch_modal'), {keyboard: false})
+            app.help_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('help_modal'), {keyboard: false})
 
             document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
             document.getElementById('avatar_modal').addEventListener('hidden.bs.modal', app.hide_avatar_modal);
@@ -635,7 +637,7 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/barriers.js"%}
         {%include "subject/subject_home/the_stage/emoji.js"%}
         {%include "subject/subject_home/the_stage/patch.js"%}
-        {%include "js/help_doc.js"%}
+        {%include "subject/subject_home/help_doc_subject.js"%}
     
         /** clear form error messages
         */
