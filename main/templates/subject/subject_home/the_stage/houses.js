@@ -182,7 +182,7 @@ subject_house_click(target_house_id)
     let session_player_house = app.session.world_state.avatars[app.session.world_state.houses[target_house_id].session_player];
     let parameter_set_player_house = app.session.parameter_set.parameter_set_players[session_player_house.parameter_set_player_id];
 
-    app.selected_house.parameter_set_player = app.session.parameter_set.parameter_set_players[parameter_set_player_id];
+    app.selected_house.parameter_set_player = parameter_set_player_house;
 
     app.selected_house.good_one_move = 0;
     app.selected_house.good_two_move = 0;

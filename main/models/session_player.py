@@ -100,34 +100,45 @@ class SessionPlayer(models.Model):
         return a proccessed list of instructions to the subject
         '''
 
-        parameter_set = self.parameter_set_player.parameter_set.json()
-        parameter_set_player = parameter_set["parameter_set_players"][str(self.parameter_set_player.id)]
-        group_name = parameter_set["parameter_set_groups"][str(parameter_set_player["parameter_set_group"])]["name"]
+       
 
         instruction_pages = [i.json() for i in self.parameter_set_player.parameter_set.instruction_set.instructions.all()]
  
         for i in instruction_pages:
-            i["text_html"] = i["text_html"].replace("#player_count-1#", str(len(parameter_set["parameter_set_players"])-1))
-            i["text_html"] = i["text_html"].replace("#id_label#", parameter_set_player["id_label"])
-            i["text_html"] = i["text_html"].replace("#cents_per_second#", str(round_half_away_from_zero(parameter_set["cents_per_second"],3)))
-            i["text_html"] = i["text_html"].replace("#health_loss_per_second#", str(round_half_away_from_zero(parameter_set["health_loss_per_second"],3)))
-            i["text_html"] = i["text_html"].replace("#healthpoints_6_6#", str(main.globals.convert_goods_to_health(6,6,0,parameter_set)))
-            i["text_html"] = i["text_html"].replace("#healthpoints_10_2#", str(main.globals.convert_goods_to_health(10,2,0,parameter_set)))
-            i["text_html"] = i["text_html"].replace("#night_length#", str(parameter_set["night_length"]))
-            i["text_html"] = i["text_html"].replace("#heath_gain_per_sleep_second#", str(round_half_away_from_zero(parameter_set["heath_gain_per_sleep_second"],3)))
-            i["text_html"] = i["text_html"].replace("#attack_cost#", str(round_half_away_from_zero(parameter_set["attack_cost"],3)))
-            i["text_html"] = i["text_html"].replace("#attack_damage#", str(round_half_away_from_zero(parameter_set["attack_damage"],3)))
-            i["text_html"] = i["text_html"].replace("#cool_down_length#", str(parameter_set["cool_down_length"]))
-            i["text_html"] = i["text_html"].replace("#number_of_groups#", str(len(parameter_set["parameter_set_groups"])))
-            i["text_html"] = i["text_html"].replace("#group_name#", group_name)
-            i["text_html"] = i["text_html"].replace("#break_frequency#", str(parameter_set["break_frequency"]))
-            i["text_html"] = i["text_html"].replace("#break_length#", str(parameter_set["break_length"]))
+            i["text_html"] = self.process_instruction_text(i["text_html"])
 
         instructions = self.parameter_set_player.parameter_set.instruction_set.json()
         instructions["instruction_pages"] = instruction_pages
 
         return instructions
     
+    def process_instruction_text(self, text):
+        '''
+        process instruction text
+        '''
+
+        parameter_set = self.parameter_set_player.parameter_set.json()
+        parameter_set_player = parameter_set["parameter_set_players"][str(self.parameter_set_player.id)]
+        group_name = parameter_set["parameter_set_groups"][str(parameter_set_player["parameter_set_group"])]["name"]
+        
+        text = text.replace("#player_count-1#", str(len(parameter_set["parameter_set_players"])-1))
+        text = text.replace("#id_label#", parameter_set_player["id_label"])
+        text = text.replace("#cents_per_second#", str(round_half_away_from_zero(parameter_set["cents_per_second"],3)))
+        text = text.replace("#health_loss_per_second#", str(round_half_away_from_zero(parameter_set["health_loss_per_second"],3)))
+        text = text.replace("#healthpoints_6_6#", str(main.globals.convert_goods_to_health(6,6,0,parameter_set)))
+        text = text.replace("#healthpoints_10_2#", str(main.globals.convert_goods_to_health(10,2,0,parameter_set)))
+        text = text.replace("#night_length#", str(parameter_set["night_length"]))
+        text = text.replace("#heath_gain_per_sleep_second#", str(round_half_away_from_zero(parameter_set["heath_gain_per_sleep_second"],3)))
+        text = text.replace("#attack_cost#", str(round_half_away_from_zero(parameter_set["attack_cost"],3)))
+        text = text.replace("#attack_damage#", str(round_half_away_from_zero(parameter_set["attack_damage"],3)))
+        text = text.replace("#cool_down_length#", str(parameter_set["cool_down_length"]))
+        text = text.replace("#number_of_groups#", str(len(parameter_set["parameter_set_groups"])))
+        text = text.replace("#group_name#", group_name)
+        text = text.replace("#break_frequency#", str(parameter_set["break_frequency"]))
+        text = text.replace("#break_length#", str(parameter_set["break_length"]))
+
+        return text
+        
     def get_survey_link(self):
         '''
         get survey link
