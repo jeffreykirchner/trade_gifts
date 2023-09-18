@@ -1050,10 +1050,10 @@ def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_
 
             world_state = session.world_state
 
-            if parameter_set["good_mode"] == "Three":
-                goods = {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}
-            else:
-                goods = {"good_one" : good_one, "good_two" : good_two}
+        if parameter_set["good_mode"] == "Three":
+            goods = {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}
+        else:
+            goods = {"good_one" : good_one, "good_two" : good_two}
 
     return {"status" : status, 
             "error_message" : error_message, 
@@ -1173,10 +1173,10 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
 
             world_state = session.world_state
 
-            if parameter_set["good_mode"] == "Three":
-                goods = {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}
-            else:
-                goods = {"good_one" : good_one, "good_two" : good_two}
+        if parameter_set["good_mode"] == "Three":
+            goods = {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}
+        else:
+            goods = {"good_one" : good_one, "good_two" : good_two}
 
 
     return {"status" : status, 
