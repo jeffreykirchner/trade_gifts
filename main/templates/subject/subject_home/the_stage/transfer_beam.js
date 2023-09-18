@@ -3,6 +3,7 @@
  */
 add_transfer_beam(source_location, target_location, elements) //beam_texture, source_amount, target_amount
 {
+    if(elements.length == 0) return;
 
     let transfer_beam = {source_location:source_location, 
                          target_location:target_location, 
@@ -33,32 +34,44 @@ add_transfer_beam(source_location, target_location, elements) //beam_texture, so
     
     element_index = 0;
 
-    for (let i=0; i<tractorCircles; i++)
+    try
     {
-        let temp_x = (myX - Math.cos(tempAngle) * xIncrement * i);
-        let temp_y = (myY - Math.sin(tempAngle) * xIncrement * i);
-        
-        let beam_texture = elements[element_index].texture;
+        for (let i=0; i<tractorCircles; i++)
+        {
+            let temp_x = (myX - Math.cos(tempAngle) * xIncrement * i);
+            let temp_y = (myY - Math.sin(tempAngle) * xIncrement * i);
+            
+            let beam_texture = elements[element_index].texture;
 
-        let token_graphic = PIXI.Sprite.from(beam_texture); //app.pixi_textures.sprite_sheet_2.textures["cherry_small.png"]
-        token_graphic.anchor.set(0.5);
-        token_graphic.eventMode = 'passive';
-        token_graphic.scale.set(tempScale);
-        token_graphic.position.set(temp_x, temp_y);
-        token_graphic.zIndex = 10000;
-        token_graphic.alpha = 0.5;
-        
-        transfer_beam.beam_images.push({token_graphic:token_graphic, scale:tempScale, direction:"up"});       
+            let token_graphic = PIXI.Sprite.from(beam_texture); //app.pixi_textures.sprite_sheet_2.textures["cherry_small.png"]
+            token_graphic.anchor.set(0.5);
+            token_graphic.eventMode = 'passive';
+            token_graphic.scale.set(tempScale);
+            token_graphic.position.set(temp_x, temp_y);
+            token_graphic.zIndex = 10000;
+            token_graphic.alpha = 0.5;
+            
+            transfer_beam.beam_images.push({token_graphic:token_graphic, scale:tempScale, direction:"up"});       
 
-        pixi_container_main.addChild(token_graphic);
+            pixi_container_main.addChild(token_graphic);
 
-        tempScale += scaleIncrement;
+            tempScale += scaleIncrement;
 
-        element_index++;
-        if(element_index >= elements.length) element_index = 0;
+            element_index++;
+            if(element_index >= elements.length) element_index = 0;
+        }
+
+        pixi_transfer_beams[pixi_transfer_beams_key++] = transfer_beam;
+    }
+    catch(error)
+    {
+        console.error(error);
+        console.error("source location " + JSON.stringify(source_location));
+        console.error("target location " + JSON.stringify(target_location));
+        console.error("elements " + JSON.stringify(elements));
     }
 
-    pixi_transfer_beams[pixi_transfer_beams_key++] = transfer_beam;
+    
 },
 
 /**
