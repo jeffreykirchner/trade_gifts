@@ -71,7 +71,6 @@ add_transfer_beam(source_location, target_location, elements) //beam_texture, so
         console.error("elements " + JSON.stringify(elements));
     }
 
-    
 },
 
 /**
