@@ -40,6 +40,8 @@ var app = Vue.createApp({
                     session_events : null,
                     timer_pulse : null,
 
+                    the_feed : [],
+
                     staff_edit_name_etc_form_ids: {{staff_edit_name_etc_form_ids|safe}},
 
                     move_to_next_phase_text : 'Start Next Experiment Phase',
@@ -204,9 +206,6 @@ var app = Vue.createApp({
                 case "update_target_location_update":
                     app.take_target_location_update(message_data);
                     break;
-                case "update_collect_token":
-                    app.take_update_collect_token(message_data);
-                    break;
                 case "update_tractor_beam":
                     app.take_update_tractor_beam(message_data);
                     break;
@@ -247,7 +246,7 @@ var app = Vue.createApp({
 
             app.first_load_done = true;
             app.working = false;
-            //Vue.nextTick(app.update_sdgraph_canvas());
+            app.process_the_feed(message_type, message_data);
         },
 
         /** send websocket message to server
@@ -507,6 +506,7 @@ var app = Vue.createApp({
         {%include "staff/staff_session/data/data_card.js"%}
         {%include "staff/staff_session/interface/interface_card.js"%}
         {%include "staff/staff_session/replay/replay_card.js"%}
+        {%include "staff/staff_session/the_feed/the_feed_card.js"%}
         {%include "subject/subject_home/the_stage/pixi_setup.js"%}
         {%include "subject/subject_home/the_stage/wall.js"%}
         {%include "subject/subject_home/the_stage/ground.js"%}
@@ -521,7 +521,8 @@ var app = Vue.createApp({
         {%include "subject/subject_home/the_stage/move_objects.js"%}
         {%include "subject/subject_home/the_stage/barriers.js"%}
         {%include "subject/subject_home/the_stage/emoji.js"%}
-        {%include "subject/subject_home/the_stage/patch.js"%}
+        {%include "subject/subject_home/the_stage/patch.js"%}      
+        {%include "subject/subject_home/helpers/helpers.js"%}   
         {%include "js/help_doc.js"%}
     
         /** clear form error messages
