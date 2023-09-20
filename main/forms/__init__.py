@@ -18,6 +18,7 @@ from .parameter_set_field_form import ParameterSetFieldForm
 from .parameter_set_notice_form import ParameterSetNoticeForm
 from .parameter_set_barrier_form import ParameterSetBarrierForm
 from .parameter_set_patch_form import ParameterSetPatchForm
+from .parameter_set_hat_form import ParameterSetHatForm
 
 from .session_player_name_etc_form import StaffEditNameEtcForm
 

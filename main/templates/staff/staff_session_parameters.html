@@ -54,6 +54,7 @@
 {%include "staff/staff_session_parameters/notices/edit_parameterset_notice_modal.html"%}
 {%include "staff/staff_session_parameters/barriers/edit_parameterset_barrier_modal.html"%}
 {%include "staff/staff_session_parameters/patches/edit_parameterset_patch_modal.html"%}
+{%include "staff/staff_session_parameters/hats/edit_parameterset_hat_modal.html"%}
 {%include "help_modal.html"%}
 
 <!-- cards -->
@@ -85,7 +86,17 @@
 
 <div class="row justify-content-lg-center mt-4" v-cloak>
     <div class="col-md">
-        {%include "staff/staff_session_parameters/walls/walls_card.html"%}  
+        <div class="row">
+            <div class="col">
+                {%include "staff/staff_session_parameters/walls/walls_card.html"%}  
+            </div>
+
+        </div>
+        <div class="row mt-4">
+            <div class="col">
+                {%include "staff/staff_session_parameters/hats/hats_card.html"%}
+            </div>
+        </div>
     </div>
     <div class="col-md">
         <div class="row">

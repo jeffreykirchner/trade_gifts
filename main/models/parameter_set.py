@@ -254,6 +254,14 @@ class ParameterSet(models.Model):
                 p = main.models.ParameterSetGround.objects.create(parameter_set=self)
                 p.from_dict(new_parameter_set_grounds[i])
 
+            #parameter set hats
+            self.parameter_set_hats.all().delete()
+            new_parameter_set_hats = new_ps.get("parameter_set_hats")
+
+            for i in new_parameter_set_hats:
+                p = main.models.ParameterSetHat.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_hats[i])
+
             #parameter set field types
             self.parameter_set_field_types.all().delete()
             new_parameter_set_field_types = new_ps.get("parameter_set_field_types")
@@ -448,7 +456,8 @@ class ParameterSet(models.Model):
                              update_groups=False,
                              update_notices=False,
                              update_barriers=False,
-                             update_patches=False):
+                             update_patches=False,
+                             update_hats=False):
         '''
         update json model
         '''
@@ -488,6 +497,10 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_patches_order"] = list(self.parameter_set_patches_a.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_patches"] = {str(p.id) : p.json() for p in self.parameter_set_patches_a.all()}
 
+        if update_hats:
+            self.json_for_session["parameter_set_hats_order"] = list(self.parameter_set_hats.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_hats"] = {str(p.id) : p.json() for p in self.parameter_set_hats.all()}
+
         self.save()
 
     def json(self, update_required=False):
@@ -506,7 +519,8 @@ class ParameterSet(models.Model):
                                 update_groups=True,
                                 update_notices=True,
                                 update_barriers=True,
-                                update_patches=True)
+                                update_patches=True,
+                                update_hats=True)
 
         return self.json_for_session
     
