@@ -530,6 +530,14 @@ class Session(models.Model):
                 nearby_text += f'{session_players[str(i)]["parameter_set_player__id_label"]}'
 
             return f'{data["text"]} @  {nearby_text}'
+        elif type == "emote":
+            nearby_text = ""
+            for i in data.get("nearby_players",[]):
+                if nearby_text != "":
+                    nearby_text += ", "
+                nearby_text += f'{session_players[str(i)]["parameter_set_player__id_label"]}'
+
+            return f'{data["emoji_type"]} @  {nearby_text}'
         elif type == "patch_harvest":
             return f'{data["harvest_amount"]} {data["patch"]["good"]} from {data["patch"]["info"]}' 
         elif type == "attack_avatar":

@@ -834,6 +834,17 @@ class SubjectUpdatesMixin():
         result = {"status" : "success", "error_message" : {}}
         result["source_player_id"] = player_id
         result["emoji_type"] = emoji_type
+        result["nearby_players"] = []
+
+        #find nearby players
+        session_players = self.world_state_avatars_local["session_players"]
+        for i in session_players:
+            if i != str(result["source_player_id"]):
+                source_pt = [session_players[str(result["source_player_id"])]["current_location"]["x"], session_players[str(result["source_player_id"])]["current_location"]["y"]]
+                target_pt = [session_players[i]["current_location"]["x"], session_players[i]["current_location"]["y"]]
+                
+                if math.dist(source_pt, target_pt) <= 1000:
+                    result["nearby_players"].append(i)
         
         await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
