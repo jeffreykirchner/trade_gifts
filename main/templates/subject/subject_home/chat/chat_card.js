@@ -13,7 +13,8 @@ send_chat(){
     {
         app.working = true;
         app.send_message("chat", 
-                        {"text" : app.chat_text.trim()},
+                        {"text" : app.chat_text.trim(),
+                        "current_location" : app.session.world_state_avatars.session_players[app.session_player.id].current_location,},
                         "group");
     }
     
@@ -40,7 +41,7 @@ send_chat_instructions()
         "value": "success",
         "text": app.chat_text.trim(),
         "text_limited": app.chat_text.trim(),
-        "sender_id": app.session_player.id,
+        "sender_id": app.session_player.id,       
         "nearby_players": [],
     };
 

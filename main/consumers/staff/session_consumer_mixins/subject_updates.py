@@ -43,11 +43,22 @@ class SubjectUpdatesMixin():
             return
         
         result = {"value" : "success"}
-        event_data = event["message_text"]
+
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]
+            event_data = event["message_text"]
+            current_location = event_data["current_location"]
+        except:
+            logger.info(f"chat: invalid data, {event['message_text']}")
+            return
+
+        #update location 
+        session_player = self.world_state_avatars_local["session_players"][str(player_id)]
+        session_player["current_location"] = current_location
         
         result["text"] = event_data["text"]
         result["text_limited"] = await self.do_limited_chat(event_data["text"])
-        result["sender_id"] = self.session_players_local[event["player_key"]]["id"]
+        result["sender_id"] = player_id
         result["nearby_players"] = []
 
         #find nearby players
@@ -827,9 +838,14 @@ class SubjectUpdatesMixin():
         try:
             player_id = self.session_players_local[event["player_key"]]["id"]       
             emoji_type = event["message_text"]["emoji_type"]
+            current_location = event["message_text"]["current_location"]
         except:
             logger.info(f"emoji: invalid data, {event['message_text']}")
             return
+        
+        #update current location
+        session_player = self.world_state_avatars_local["session_players"][str(player_id)]
+        session_player["current_location"] = current_location
 
         result = {"status" : "success", "error_message" : {}}
         result["source_player_id"] = player_id
