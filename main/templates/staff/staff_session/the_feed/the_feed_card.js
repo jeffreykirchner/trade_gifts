@@ -6,21 +6,23 @@ process_the_feed(message_type, message_data)
     html_text = "";
     let sender_label = "";
     let receiver_label = "";
+    let group_label = "";
 
     switch(message_type) {                
         
         case "update_chat":
 
             sender_label = app.get_parameter_set_player_from_player_id(message_data.sender_id).id_label;
+            source_player_group_label = app.get_parameter_set_group_from_player_id(message_data.sender_id).name;
             receiver_label = "";
 
             for(i in message_data.nearby_players) {
                 if(receiver_label != "") receiver_label += ", ";
-
-                receiver_label += app.get_parameter_set_player_from_player_id(message_data.nearby_players[i]).id_label;
+                group_label = app.get_parameter_set_group_from_player_id(message_data.nearby_players[i]).name;
+                receiver_label += "<b>" + app.get_parameter_set_player_from_player_id(message_data.nearby_players[i]).id_label + "</b>(" + source_player_group_label + ")";
             }
 
-            html_text = "<b>" + sender_label + "@" + receiver_label + "</b>: " +  message_data.text;
+            html_text = "<b>" + sender_label + "</b>(" + source_player_group_label + ") @ " + receiver_label + ": " +  message_data.text;
 
             if(app.session.parameter_set.chat_mode == "Limited")
             {
@@ -102,11 +104,14 @@ process_the_feed(message_type, message_data)
             for(i in message_data.nearby_players) {
                 if(receiver_label != "") receiver_label += ", ";
 
-                receiver_label += app.get_parameter_set_player_from_player_id(message_data.nearby_players[i]).id_label;
+                group_label = app.get_parameter_set_group_from_player_id(message_data.nearby_players[i]).name;
+                receiver_label += "<b>" + app.get_parameter_set_player_from_player_id(message_data.nearby_players[i]).id_label + "</b>(" + group_label + ")";
             }
 
             sender_label = app.get_parameter_set_player_from_player_id(message_data.source_player_id).id_label;
-            html_text = "<b>" + sender_label + "@" + receiver_label + "</b>: <img src='/static/"+  message_data.emoji_type +"_emoji.png' width='20'>";
+            source_player_group_label = app.get_parameter_set_group_from_player_id(message_data.source_player_id).name;
+
+            html_text = "<b>" + sender_label + "</b>(" + source_player_group_label + ") @ " + receiver_label + ": <img src='/static/"+  message_data.emoji_type +"_emoji.png' width='20'>";
             break;
         case "update_patch_harvest":
             sender_label = app.get_parameter_set_player_from_player_id(message_data.player_id).id_label;
