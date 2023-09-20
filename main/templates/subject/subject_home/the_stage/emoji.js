@@ -15,6 +15,7 @@ send_emoji(emoji_type)
         app.working = true;
         app.send_message("emoji", 
                         {"emoji_type" : emoji_type,
+                         "current_location" : app.session.world_state_avatars.session_players[app.session_player.id].current_location,
                          },
                          "group"); 
     }
