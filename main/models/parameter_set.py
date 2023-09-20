@@ -73,8 +73,6 @@ class ParameterSet(models.Model):
     attack_damage = models.DecimalField(verbose_name='Attack Damage to Health', decimal_places=1, max_digits=3, default=7.0) #attack damage
     allow_attacks = models.BooleanField(default=False, verbose_name="Allow Attacks")                                         #if true allow attacks
 
-    sleep_benefit = models.DecimalField(verbose_name='Sleep Benefit to Health', decimal_places=1, max_digits=3, default=3.0) #sleep benefit
-
     allow_stealing = models.BooleanField(default=False, verbose_name="Allow Stealing")                      #if true all subjects to steal from other tribes
 
     chat_mode = models.CharField(verbose_name="Chat Mode", max_length=100, choices=ChatModes.choices, default=ChatModes.FULL)         #chat mode
@@ -156,7 +154,6 @@ class ParameterSet(models.Model):
             self.attack_damage = new_ps.get("attack_damage", 7.0)
             self.allow_attacks = True if new_ps.get("allow_attacks") == "True" else False
 
-            self.sleep_benefit = new_ps.get("sleep_benefit", 3.0)
             self.allow_stealing = True if new_ps.get("allow_stealing") == "True" else False
             self.break_frequency = new_ps.get("break_frequency", 7)
             self.break_length = new_ps.get("break_length", 100)
@@ -427,7 +424,6 @@ class ParameterSet(models.Model):
         self.json_for_session["attack_damage"] = self.attack_damage
         self.json_for_session["allow_attacks"] = "True" if self.allow_attacks else "False"
 
-        self.json_for_session["sleep_benefit"] = self.sleep_benefit
         self.json_for_session["allow_stealing"] = "True" if self.allow_stealing else "False"
         self.json_for_session["break_frequency"] = self.break_frequency
         self.json_for_session["break_length"] = self.break_length

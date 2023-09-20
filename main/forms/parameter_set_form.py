@@ -169,14 +169,6 @@ class ParameterSetForm(forms.ModelForm):
                                        widget=forms.NumberInput(attrs={"v-model":"parameter_set.attack_damage",
                                                                        "step":"0.1",
                                                                        "min":"0.1"}))
-    
-    sleep_benefit = forms.DecimalField(label='Sleep Benefit (Health)',
-                                       max_digits=3,
-                                       decimal_places=1,
-                                       min_value=0.1,
-                                       widget=forms.NumberInput(attrs={"v-model":"parameter_set.sleep_benefit",
-                                                                       "step":"0.1",
-                                                                       "min":"0.1"}))
 
     allow_stealing = forms.ChoiceField(label='Allow Stealing',
                                        choices=((True, 'Yes'), (False,'No' )),
@@ -269,7 +261,7 @@ class ParameterSetForm(forms.ModelForm):
         fields =['period_count', 'period_length', 'night_length', 'break_frequency', 'break_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'starting_health', 'health_loss_per_second', 'heath_gain_per_sleep_second',
-                 'consumption_alpha', 'consumption_beta', 'consumption_multiplier', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'sleep_benefit', 'allow_stealing', 'world_width', 'world_height',
+                 'consumption_alpha', 'consumption_beta', 'consumption_multiplier', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'allow_stealing', 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort', 'max_patch_harvests',
                  'chat_mode', 'chat_rules_word_list', 'good_mode', 'test_mode']
                  
