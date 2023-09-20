@@ -74,7 +74,7 @@ class SessionPeriod(models.Model):
         #metabolism
         health_loss_count = 0
         health_loss_per_second = Decimal(parameter_set["health_loss_per_second"])
-        sleep_benefit = Decimal(parameter_set["sleep_benefit"])
+        heath_gain_per_sleep_second = Decimal(parameter_set["heath_gain_per_sleep_second"])
 
         for i in self.timer_actions:
             if int(i) >= time_remaining and \
@@ -104,7 +104,7 @@ class SessionPeriod(models.Model):
                 current_health = Decimal(avatar["health"])
                 
                 if avatar["sleeping"] and world_state["time_remaining"] <= parameter_set["night_length"]:    
-                    total_sleep_benefit = (sleep_benefit * health_loss_count)     
+                    total_sleep_benefit = (heath_gain_per_sleep_second * health_loss_count)     
 
                     avatar["health"] = str(current_health + total_sleep_benefit)
                     temp_s["health_from_sleep"] = str(Decimal(temp_s["health_from_sleep"]) + total_sleep_benefit)

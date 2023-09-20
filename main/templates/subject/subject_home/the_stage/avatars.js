@@ -972,7 +972,7 @@ do_avatar_sleep_emitters()
             let health_sprite = PIXI.Sprite.from(app.pixi_textures["health_tex"]);
             health_sprite.scale.set(0.4);
 
-            app.add_text_emitters("+" + app.session.parameter_set.sleep_benefit + " health from sleep.",
+            app.add_text_emitters("+" + parseFloat(app.session.parameter_set.heath_gain_per_sleep_second).toFixed(1) + " health from sleep.",
                                     session_player.current_location.x, 
                                     session_player.current_location.y,
                                     session_player.current_location.x,
