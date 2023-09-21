@@ -125,7 +125,14 @@ def take_add_parameterset_hat(data):
         logger.warning(f"take_add_parameterset_hat session, not found ID: {session_id}")
         return {"value" : "fail"}
 
+    parameter_set_hat_last = ParameterSetHat.objects.last()
     parameter_set_hat = ParameterSetHat.objects.create(parameter_set=session.parameter_set)
+
+    if parameter_set_hat_last:
+        parameter_set_hat.from_dict(parameter_set_hat_last.json())
+
+    parameter_set_hat.save()
+
     session.parameter_set.update_json_fk(update_hats=True)
 
     return {"value" : "success"}

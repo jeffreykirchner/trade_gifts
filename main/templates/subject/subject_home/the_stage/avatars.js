@@ -75,7 +75,7 @@ setup_pixi_subjects(){
         //hat
         
         let hat_sprite = null;
-        if(avatar.parameter_set_hat_id)
+        if(avatar.parameter_set_hat_id && app.session.parameter_set.enable_hats=="True")
         {
             let hat_texture = app.session.parameter_set.parameter_set_hats[avatar.parameter_set_hat_id].texture;
             hat_sprite = PIXI.Sprite.from(app.pixi_textures[hat_texture]);
@@ -175,21 +175,21 @@ setup_pixi_subjects(){
         face_sprite.position.set(0, -gear_sprite.height * 0.03);
         id_label.position.set(0, gear_sprite.height * 0.15);
         status_label.position.set(0, +gear_sprite.height/2-30);
-        if(hat_sprite) hat_sprite.position.set(0, -gear_sprite.height +20);
+        if(hat_sprite) hat_sprite.position.set(0, -gear_sprite.height *.27);
 
         if(app.session.parameter_set.good_mode == "Three")
         {
-            good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2 - 10);
-            good_two_container.position.set(0+25, -gear_sprite.height/2 - 10);
-            good_three_container.position.set(gear_sprite.width/2+5+25, -gear_sprite.height/2 - 10);
+            good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2 - 30);
+            good_two_container.position.set(0+25, -gear_sprite.height/2 - 15);
+            good_three_container.position.set(gear_sprite.width/2+5+25, -gear_sprite.height/2 - 30);
         }
         else
         {
-            good_one_container.position.set(-50, -gear_sprite.height/2 - 10);
-            good_two_container.position.set(+110, -gear_sprite.height/2 - 10);
+            good_one_container.position.set(-50, -gear_sprite.height/2 - 30);
+            good_two_container.position.set(+110, -gear_sprite.height/2 - 30);
         }
 
-        health_container.position.set(10, -gear_sprite.height/2 - 115);
+        health_container.position.set(10, -gear_sprite.height/2 - 125);
 
         pixi_avatars[i].status_label = status_label;
         pixi_avatars[i].gear_sprite = gear_sprite;

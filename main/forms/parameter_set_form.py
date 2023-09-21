@@ -173,6 +173,10 @@ class ParameterSetForm(forms.ModelForm):
     allow_stealing = forms.ChoiceField(label='Allow Stealing',
                                        choices=((True, 'Yes'), (False,'No' )),
                                        widget=forms.Select(attrs={"v-model":"parameter_set.allow_stealing",}))
+    
+    enable_hats = forms.ChoiceField(label='Enable Hats',
+                                        choices=((True, 'Yes'), (False,'No' )),
+                                        widget=forms.Select(attrs={"v-model":"parameter_set.enable_hats",}))
 
     world_width = forms.IntegerField(label='World Width (pixels)',
                                      min_value=1,
@@ -261,7 +265,7 @@ class ParameterSetForm(forms.ModelForm):
         fields =['period_count', 'period_length', 'night_length', 'break_frequency', 'break_length', 'show_instructions', 'instruction_set', 
                  'survey_required', 'survey_link', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'starting_health', 'health_loss_per_second', 'heath_gain_per_sleep_second',
-                 'consumption_alpha', 'consumption_beta', 'consumption_multiplier', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'allow_stealing', 'world_width', 'world_height',
+                 'consumption_alpha', 'consumption_beta', 'consumption_multiplier', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'allow_stealing', 'enable_hats', 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort', 'max_patch_harvests',
                  'chat_mode', 'chat_rules_word_list', 'good_mode', 'test_mode']
                  

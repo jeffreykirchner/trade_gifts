@@ -74,6 +74,7 @@ class ParameterSet(models.Model):
     allow_attacks = models.BooleanField(default=False, verbose_name="Allow Attacks")                                         #if true allow attacks
 
     allow_stealing = models.BooleanField(default=False, verbose_name="Allow Stealing")                      #if true all subjects to steal from other tribes
+    enable_hats = models.BooleanField(default=False, verbose_name="Enable Hats")                            #if true subjects can exchange hats
 
     chat_mode = models.CharField(verbose_name="Chat Mode", max_length=100, choices=ChatModes.choices, default=ChatModes.FULL)         #chat mode
     chat_rules_letters = models.JSONField(verbose_name="Chat Letter Mapping", encoder=DjangoJSONEncoder, null=True, blank=True)       #chat rules for limited mode
@@ -155,6 +156,8 @@ class ParameterSet(models.Model):
             self.allow_attacks = True if new_ps.get("allow_attacks") == "True" else False
 
             self.allow_stealing = True if new_ps.get("allow_stealing") == "True" else False
+            self.enable_hats = True if new_ps.get("enable_hats") == "True" else False
+
             self.break_frequency = new_ps.get("break_frequency", 7)
             self.break_length = new_ps.get("break_length", 100)
 
@@ -438,6 +441,8 @@ class ParameterSet(models.Model):
         self.json_for_session["allow_attacks"] = "True" if self.allow_attacks else "False"
 
         self.json_for_session["allow_stealing"] = "True" if self.allow_stealing else "False"
+        self.json_for_session["enable_hats"] = "True" if self.enable_hats else "False"
+        
         self.json_for_session["break_frequency"] = self.break_frequency
         self.json_for_session["break_length"] = self.break_length
 
