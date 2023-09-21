@@ -183,6 +183,16 @@ class ParameterSet(models.Model):
                 p.from_dict(new_parameter_set_groups[i])
                 new_parameter_set_groups_map[i] = p.id
 
+            #parameter set hats
+            self.parameter_set_hats.all().delete()
+            new_parameter_set_hats = new_ps.get("parameter_set_hats")
+            new_parameter_set_hats_map = {}
+
+            for i in new_parameter_set_hats:
+                p = main.models.ParameterSetHat.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_hats[i])
+                new_parameter_set_hats_map[i] = p.id
+
             #parameter set players
             self.parameter_set_players.all().delete()
 
@@ -198,6 +208,9 @@ class ParameterSet(models.Model):
 
                 if v.get("parameter_set_group", None) != None:
                     p.parameter_set_group_id=new_parameter_set_groups_map[str(v["parameter_set_group"])]
+                
+                if v.get("parameter_set_hat", None) != None:
+                    p.parameter_set_hat_id=new_parameter_set_hats_map[str(v["parameter_set_hat"])]
 
                 p.save()
 
@@ -253,14 +266,6 @@ class ParameterSet(models.Model):
             for i in new_parameter_set_grounds:
                 p = main.models.ParameterSetGround.objects.create(parameter_set=self)
                 p.from_dict(new_parameter_set_grounds[i])
-
-            #parameter set hats
-            self.parameter_set_hats.all().delete()
-            new_parameter_set_hats = new_ps.get("parameter_set_hats")
-
-            for i in new_parameter_set_hats:
-                p = main.models.ParameterSetHat.objects.create(parameter_set=self)
-                p.from_dict(new_parameter_set_hats[i])
 
             #parameter set field types
             self.parameter_set_field_types.all().delete()

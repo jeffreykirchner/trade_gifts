@@ -272,6 +272,7 @@ class Session(models.Model):
         for i in self.session_players.prefetch_related('parameter_set_player').all().values('id', 
                                                                                             'parameter_set_player__start_x',
                                                                                             'parameter_set_player__start_y',
+                                                                                            'parameter_set_player__parameter_set_hat__id',
                                                                                             'parameter_set_player__id'):
             v = {}
 
@@ -292,6 +293,7 @@ class Session(models.Model):
             v2['sleeping'] = False
             v2['period_patch_harvests'] = 0
             v2['parameter_set_player_id'] = i['parameter_set_player__id']
+            v2['parameter_set_hat_id'] = i['parameter_set_player__parameter_set_hat__id']
             for j in main.globals.Goods.choices:
                 v2[j[0]] = 0
 

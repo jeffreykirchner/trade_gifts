@@ -11,6 +11,7 @@ setup_pixi_subjects(){
     for(const i in app.session.world_state_avatars.session_players)
     {      
         let subject = app.session.world_state_avatars.session_players[i];
+        let avatar = app.session.world_state.avatars[i];
         let parameter_set_player = app.session.parameter_set.parameter_set_players[subject.parameter_set_player_id];
         pixi_avatars[i] = {};
 
@@ -70,6 +71,17 @@ setup_pixi_subjects(){
         status_label.eventMode = 'passive';
         status_label.anchor.set(0.5);
         status_label.visible = false;
+
+        //hat
+        
+        let hat_sprite = null;
+        if(avatar.parameter_set_hat_id)
+        {
+            let hat_texture = app.session.parameter_set.parameter_set_hats[avatar.parameter_set_hat_id].texture;
+            hat_sprite = PIXI.Sprite.from(app.pixi_textures[hat_texture]);
+            hat_sprite.anchor.set(0.5);
+            hat_sprite.eventMode = 'passive';
+        }
 
         //good one
         let good_one_container = new PIXI.Container();
@@ -150,6 +162,7 @@ setup_pixi_subjects(){
         avatar_container.addChild(face_sleep_sprite);
         avatar_container.addChild(id_label);
         avatar_container.addChild(status_label);
+        if(hat_sprite) avatar_container.addChild(hat_sprite);
 
         avatar_container.addChild(good_one_container);
         avatar_container.addChild(good_two_container);
@@ -162,6 +175,7 @@ setup_pixi_subjects(){
         face_sprite.position.set(0, -gear_sprite.height * 0.03);
         id_label.position.set(0, gear_sprite.height * 0.15);
         status_label.position.set(0, +gear_sprite.height/2-30);
+        if(hat_sprite) hat_sprite.position.set(0, -gear_sprite.height +20);
 
         if(app.session.parameter_set.good_mode == "Three")
         {
@@ -185,6 +199,7 @@ setup_pixi_subjects(){
         pixi_avatars[i].health_label = health_label;
         pixi_avatars[i].face_sprite = face_sprite;
         pixi_avatars[i].face_sleep_sprite = face_sleep_sprite;
+        if(hat_sprite) pixi_avatars[i].hat_sprite = hat_sprite;
 
 
         avatar_container.scale.set(app.session.parameter_set.avatar_scale);
@@ -533,6 +548,7 @@ update_avatar_inventory()
 {
     if(!app.session.world_state["started"]) return;
     
+    //update goods
     for(const i in app.session.world_state.avatars)
     {
         const avatar = app.session.world_state.avatars[i];
@@ -545,6 +561,8 @@ update_avatar_inventory()
 
         pixi_avatars[i].health_label.text = Number(avatar.health).toFixed(1);
     }
+
+    //update hats
 },
 
 /**

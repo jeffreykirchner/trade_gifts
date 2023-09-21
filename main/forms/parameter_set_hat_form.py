@@ -13,15 +13,15 @@ class ParameterSetHatForm(forms.ModelForm):
 
     info = forms.CharField(label='Info',
                            required=False,
-                           widget=forms.TextInput(attrs={"v-model":"current_parameter_set_ground.info",}))
+                           widget=forms.TextInput(attrs={"v-model":"current_parameter_set_hat.info",}))
     
     texture = forms.CharField(label='Texture Name',
-                              widget=forms.TextInput(attrs={"v-model":"current_parameter_set_ground.texture",}))
+                              widget=forms.TextInput(attrs={"v-model":"current_parameter_set_hat.texture",}))
     
     scale = forms.DecimalField(label='Scale',
                                min_value=0,
                                max_value=1,
-                               widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_ground.scale",
+                               widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_hat.scale",
                                                                "step":"0.01",
                                                                "min":"0",
                                                                "max":"1"}))

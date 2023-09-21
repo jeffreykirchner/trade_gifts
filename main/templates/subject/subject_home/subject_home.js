@@ -22,7 +22,7 @@ var pixi_barriers = {};                        //barriers
 var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
-var pixi_patches = {};                          //patches
+var pixi_patches = {};                         //patches
 var pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
                   text_night_coming : "Night is approching ... "};                                        //night
 var pixi_notices = {container:null, notices:{}};                         //notices
