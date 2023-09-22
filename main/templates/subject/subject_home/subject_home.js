@@ -105,6 +105,7 @@ var app = Vue.createApp({
                     field_modal_open : false,
                     house_modal_open : false,
                     patch_modal_open : false,
+                    avatar_hat_modal_open : false,
 
                     //pixi
                     canvas_width  : null,
@@ -239,6 +240,9 @@ var app = Vue.createApp({
                 case "update_patch_harvest":
                     app.take_patch_harvest(message_data);
                     break;
+                case "update_hat_avatar":
+                    app.take_update_hat_avatar(message_data);
+                    break;
                 
             }
 
@@ -267,7 +271,8 @@ var app = Vue.createApp({
         {           
             app.end_game_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('end_game_modal'), {keyboard: false})   
             app.avatar_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_modal'), {keyboard: false})  
-            app.avatar_attack_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_attack_modal'), {keyboard: false})        
+            app.avatar_attack_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_attack_modal'), {keyboard: false})  
+            app.avatar_hat_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_hat_modal'), {keyboard: false})       
             app.field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('field_modal'), {keyboard: false})
             app.house_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('house_modal'), {keyboard: false})
             app.patch_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('patch_modal'), {keyboard: false})

@@ -812,28 +812,28 @@ select_all_fruit_avatar()
 },
 
 /**
- * show the hat avatar modal
+ * show the attack avatar modal
 */
-show_hat_avatar()
+show_attack_avatar()
 {
     app.clear_main_form_errors();
     app.avatar_modal.hide();
-    app.avatar_hat_modal.show();
-    app.avatar_hat_modal_open = true;
+    app.avatar_attack_modal.show();
+    app.avatar_attack_modal_open = true;
 },
 
 /**
- * avatar hat modal is hidden
+ * avatar attack modal is hidden
  */
-hide_avatar_hat_modal()
+hide_avatar_attack_modal()
 {
-    app.avatar_hat_modal_open = false;
+    app.avatar_attack_modal_open = false;
 },
 
 /**
- * send hat avatar to server
+ * send attack avatar to server
  */
-send_hat_avatar()
+send_attack_avatar()
 {
     
     let target_avatar = app.session.world_state.avatars[app.selected_avatar.target_player_id];
@@ -841,37 +841,37 @@ send_hat_avatar()
 
     if(Number(target_avatar.health) == 0)
     {
-        app.display_errors({hat_avatar_button: ["Target player already has zero health."]});
+        app.display_errors({attack_avatar_button: ["Target player already has zero health."]});
         return;
     }
 
-    if(Number(source_player.health) < app.session.parameter_set.hat_cost)
+    if(Number(source_player.health) < app.session.parameter_set.attack_cost)
     {
-        app.display_errors({hat_avatar_button: ["You do not have enough health to hat."]});
+        app.display_errors({attack_avatar_button: ["You do not have enough health to attack."]});
         return;
     }
 
     if(app.session.world_state.current_experiment_phase == 'Instructions')
     {
-        app.send_hat_avatar_instructions();
+        app.send_attack_avatar_instructions();
     }
     else
     {
         app.working = true;
         
-        app.send_message("hat_avatar", 
+        app.send_message("attack_avatar", 
                         {"target_player_id" : app.selected_avatar.target_player_id},
                         "group"); 
     }
 },
 
 /**
- * send avatar hat instructions
+ * send avatar attack instructions
  */
-send_hat_avatar_instructions()
+send_attack_avatar_instructions()
 {
-    if(app.session_player.current_instruction != app.instructions.action_page_hats) return;
-    app.session_player.current_instruction_complete = app.instructions.action_page_hats;
+    if(app.session_player.current_instruction != app.instructions.action_page_attacks) return;
+    app.session_player.current_instruction_complete = app.instructions.action_page_attacks;
 
     // {
     //     "status": "success",
@@ -909,17 +909,17 @@ send_hat_avatar_instructions()
         "target_player": app.session.world_state.avatars[app.selected_avatar.target_player_id],
     }
 
-    message_data.source_player.health = parseFloat(message_data.source_player.health) - app.session.parameter_set.hat_cost;
-    message_data.target_player.health = parseFloat(message_data.target_player.health) - app.session.parameter_set.hat_damage;
+    message_data.source_player.health = parseFloat(message_data.source_player.health) - app.session.parameter_set.attack_cost;
+    message_data.target_player.health = parseFloat(message_data.target_player.health) - app.session.parameter_set.attack_damage;
 
-    app.take_update_hat_avatar(message_data);
+    app.take_update_attack_avatar(message_data);
 
 },
 
 /**
- * take update from server about hat avatar
+ * take update from server about attack avatar
 */
-take_update_hat_avatar(message_data)
+take_update_attack_avatar(message_data)
 {
     if(message_data.status == "success")
     {
@@ -939,7 +939,7 @@ take_update_hat_avatar(message_data)
             if( source_player_id == app.session_player.id)
             {
                 app.avatar_modal.hide();
-                app.avatar_hat_modal.hide();
+                app.avatar_attack_modal.hide();
                 app.selected_avatar.avatar = null;
             }
 
@@ -960,8 +960,8 @@ take_update_hat_avatar(message_data)
 
             elements.push(element);
 
-            element = {source_change:"-" + app.session.parameter_set.hat_cost,
-                           target_change:"-" + app.session.parameter_set.hat_damage, 
+            element = {source_change:"-" + app.session.parameter_set.attack_cost,
+                           target_change:"-" + app.session.parameter_set.attack_damage, 
                            texture:app.pixi_textures["health_tex"]  }
 
             elements.push(element);
@@ -1027,6 +1027,101 @@ send_hat_avatar()
                         {"target_player_id" : app.selected_avatar.target_player_id},
                         "group"); 
     }
+},
+
+send_hat_avatar_cancel()
+{
+    app.avatar_hat_modal.hide();
+},
+
+/**
+ * send avatar hat instructions
+ */
+send_hat_avatar_instructions()
+{
+    if(app.session_player.current_instruction != app.instructions.action_page_hats) return;
+    app.session_player.current_instruction_complete = app.instructions.action_page_hats;
+
+    app.take_update_hat_avatar(message_data);
+
+},
+
+/**
+ * take update from server about hat avatar
+*/
+take_update_hat_avatar(message_data)
+{
+    if(message_data.status == "success")
+    {
+        type = message_data.type;
+
+        source_player_id = message_data.source_player_id;
+        target_player_id = message_data.target_player_id;
+
+        if(type == "proposal")
+        {
+            if(app.is_subject)
+            {
+                if(target_player_id == app.session_player.id)
+                {
+                    app.avatar_hat_modal.show();
+                }
+            }
+        }
+        else if(type == "cancel")
+        {
+            if(app.is_subject)
+            {
+                if(target_player_id == app.session_player.id)
+                {
+                    app.avatar_hat_modal.hide();
+                }
+            }
+        }
+        else
+        {
+            app.session.world_state.avatars[source_player_id] = message_data.source_player;
+            app.session.world_state.avatars[target_player_id] = message_data.target_player;
+        }
+    }
+
+        // if(app.is_subject)
+        // {
+        //     if( source_player_id == app.session_player.id)
+        //     {
+        //         app.avatar_modal.hide();
+        //         app.avatar_hat_modal.hide();
+        //         app.selected_avatar.avatar = null;
+        //     }
+
+        //     //transfer beam
+        //     let elements = [];
+
+        //     let fist_texture = app.pixi_textures["fist_left_tex"];
+
+        //     if(app.session.world_state_avatars.session_players[source_player_id].current_location.x < 
+        //        app.session.world_state_avatars.session_players[target_player_id].current_location.x)
+        //     {
+        //         fist_texture = app.pixi_textures["fist_right_tex"];
+        //     }
+  
+        //     let element = {source_change:"",
+        //                    target_change:"", 
+        //                    texture: fist_texture}
+
+        //     elements.push(element);
+
+        //     element = {source_change:"-" + app.session.parameter_set.hat_cost,
+        //                    target_change:"-" + app.session.parameter_set.hat_damage, 
+        //                    texture:app.pixi_textures["health_tex"]  }
+
+        //     elements.push(element);
+            
+        //     app.add_transfer_beam(app.session.world_state_avatars.session_players[source_player_id].current_location, 
+        //                           app.session.world_state_avatars.session_players[target_player_id].current_location,
+        //     elements);
+        // }
+    
 },
 
 /**
