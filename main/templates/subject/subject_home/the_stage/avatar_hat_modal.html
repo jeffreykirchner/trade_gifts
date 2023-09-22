@@ -1,0 +1,55 @@
+{% load crispy_forms_tags %}
+<!--interaction Modal -->
+<div class="modal fade " 
+     id="avatar_hat_modal" 
+     data-bs-backdrop="static" 
+     data-bs-keyboard="false" 
+     tabindex="-1" 
+     aria-labelledby="avatar_hat_modal" 
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header fw-bold" v-if="selected_avatar.avatar">
+                Trade Hats with Player [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
+                
+                <span class="float-end">
+
+                    <button type="button" class="btn btn-link" title="Show Help" v-on:click="send_load_help_doc_subject('Avatar hat')">
+                        <i class="far fa-question-circle"></i> 
+                    </button>
+                    
+                </span>
+            </div>
+            <div class="modal-body" v-if="session">              
+                
+                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar">
+
+                    <div class="col">
+                        Your Hat
+                    </div>
+                    <div class="col">
+                        Their Hat
+                    </div>
+                </div>           
+                
+                 <div class="row mt-4 border-top pt-3">
+                    <div class="col text-end" v-if="selected_avatar.avatar">    
+                                        
+                        <button type="button"
+                                class="btn btn-outline-success"
+                                v-on:click = "send_hat_avatar()"
+                                title="Trade hats the selected avatar."                       
+                                v-bind:disabled="reconnecting || 
+                                                 working || 
+                                                 selected_avatar.avatar.sleeping">
+                            Propose Trade <i class="fas fa-fist-raised"></i>
+                        </button>
+                        
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

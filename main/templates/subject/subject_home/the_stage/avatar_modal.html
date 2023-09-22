@@ -101,13 +101,27 @@
                     </div>
                 </div>
 
-                <div class="row text-end mt-3" v-if="session.parameter_set.allow_attacks=='True'">
+                <div class="row text-end mt-3">
                     <div class="col text-end">
+
+                        <button type="button"
+                                class="btn btn-outline-danger me-2"
+                                v-on:click = "show_hat_avatar()"
+                                title="Attack the slected player?"          
+                                v-if="session.parameter_set.enable_hats=='True'"             
+                                v-bind:disabled="reconnecting || 
+                                                 working ||
+                                                 (session.world_state.current_experiment_phase == 'Instructions' && 
+                                                  session_player.current_instruction != instructions.action_page_attacks)">
+                               
+                            Trade Hats <i class="fab fa-redhat"></i>
+                        </button>
                         
                         <button type="button"
                                 class="btn btn-outline-danger"
                                 v-on:click = "show_attack_avatar()"
-                                title="Attack the slected player?"                       
+                                v-if="session.parameter_set.allow_attacks=='True'"
+                                title="Attack the slected player?"     
                                 v-bind:disabled="reconnecting || 
                                                  working ||
                                                  (session.world_state.current_experiment_phase == 'Instructions' && 

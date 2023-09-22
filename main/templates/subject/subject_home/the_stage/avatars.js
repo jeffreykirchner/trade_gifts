@@ -665,7 +665,7 @@ send_move_fruit_to_avatar()
  */
 send_move_fruit_to_avatar_instructions()
 {
-    if(app.session_player.current_instruction != app.instructions.action_page_attacks) return;
+    if(app.session_player.current_instruction != app.instructions.action_page_hats) return;
 
     // {
     //     "status": "success",
@@ -812,28 +812,28 @@ select_all_fruit_avatar()
 },
 
 /**
- * show the attack avatar modal
+ * show the hat avatar modal
 */
-show_attack_avatar()
+show_hat_avatar()
 {
     app.clear_main_form_errors();
     app.avatar_modal.hide();
-    app.avatar_attack_modal.show();
-    app.avatar_attack_modal_open = true;
+    app.avatar_hat_modal.show();
+    app.avatar_hat_modal_open = true;
 },
 
 /**
- * avatar attack modal is hidden
+ * avatar hat modal is hidden
  */
-hide_avatar_attack_modal()
+hide_avatar_hat_modal()
 {
-    app.avatar_attack_modal_open = false;
+    app.avatar_hat_modal_open = false;
 },
 
 /**
- * send attack avatar to server
+ * send hat avatar to server
  */
-send_attack_avatar()
+send_hat_avatar()
 {
     
     let target_avatar = app.session.world_state.avatars[app.selected_avatar.target_player_id];
@@ -841,37 +841,37 @@ send_attack_avatar()
 
     if(Number(target_avatar.health) == 0)
     {
-        app.display_errors({attack_avatar_button: ["Target player already has zero health."]});
+        app.display_errors({hat_avatar_button: ["Target player already has zero health."]});
         return;
     }
 
-    if(Number(source_player.health) < app.session.parameter_set.attack_cost)
+    if(Number(source_player.health) < app.session.parameter_set.hat_cost)
     {
-        app.display_errors({attack_avatar_button: ["You do not have enough health to attack."]});
+        app.display_errors({hat_avatar_button: ["You do not have enough health to hat."]});
         return;
     }
 
     if(app.session.world_state.current_experiment_phase == 'Instructions')
     {
-        app.send_attack_avatar_instructions();
+        app.send_hat_avatar_instructions();
     }
     else
     {
         app.working = true;
         
-        app.send_message("attack_avatar", 
+        app.send_message("hat_avatar", 
                         {"target_player_id" : app.selected_avatar.target_player_id},
                         "group"); 
     }
 },
 
 /**
- * send avatar attack instructions
+ * send avatar hat instructions
  */
-send_attack_avatar_instructions()
+send_hat_avatar_instructions()
 {
-    if(app.session_player.current_instruction != app.instructions.action_page_attacks) return;
-    app.session_player.current_instruction_complete = app.instructions.action_page_attacks;
+    if(app.session_player.current_instruction != app.instructions.action_page_hats) return;
+    app.session_player.current_instruction_complete = app.instructions.action_page_hats;
 
     // {
     //     "status": "success",
@@ -909,17 +909,17 @@ send_attack_avatar_instructions()
         "target_player": app.session.world_state.avatars[app.selected_avatar.target_player_id],
     }
 
-    message_data.source_player.health = parseFloat(message_data.source_player.health) - app.session.parameter_set.attack_cost;
-    message_data.target_player.health = parseFloat(message_data.target_player.health) - app.session.parameter_set.attack_damage;
+    message_data.source_player.health = parseFloat(message_data.source_player.health) - app.session.parameter_set.hat_cost;
+    message_data.target_player.health = parseFloat(message_data.target_player.health) - app.session.parameter_set.hat_damage;
 
-    app.take_update_attack_avatar(message_data);
+    app.take_update_hat_avatar(message_data);
 
 },
 
 /**
- * take update from server about attack avatar
+ * take update from server about hat avatar
 */
-take_update_attack_avatar(message_data)
+take_update_hat_avatar(message_data)
 {
     if(message_data.status == "success")
     {
@@ -939,7 +939,7 @@ take_update_attack_avatar(message_data)
             if( source_player_id == app.session_player.id)
             {
                 app.avatar_modal.hide();
-                app.avatar_attack_modal.hide();
+                app.avatar_hat_modal.hide();
                 app.selected_avatar.avatar = null;
             }
 
@@ -960,8 +960,8 @@ take_update_attack_avatar(message_data)
 
             elements.push(element);
 
-            element = {source_change:"-" + app.session.parameter_set.attack_cost,
-                           target_change:"-" + app.session.parameter_set.attack_damage, 
+            element = {source_change:"-" + app.session.parameter_set.hat_cost,
+                           target_change:"-" + app.session.parameter_set.hat_damage, 
                            texture:app.pixi_textures["health_tex"]  }
 
             elements.push(element);
@@ -973,6 +973,60 @@ take_update_attack_avatar(message_data)
 
     }
     
+},
+
+/**
+ * show the hat avatar modal
+*/
+show_hat_avatar()
+{
+    app.clear_main_form_errors();
+    app.avatar_modal.hide();
+    app.avatar_hat_modal.show();
+    app.avatar_hat_modal_open = true;
+},
+
+/**
+ * avatar hat modal is hidden
+ */
+hide_avatar_hat_modal()
+{
+    app.avatar_hat_modal_open = false;
+},
+
+/**
+ * send hat avatar to server
+ */
+send_hat_avatar()
+{
+    
+    let target_avatar = app.session.world_state.avatars[app.selected_avatar.target_player_id];
+    let source_player = app.session.world_state.avatars[app.session_player.id];
+
+    if(Number(target_avatar.health) == 0)
+    {
+        app.display_errors({hat_avatar_button: ["Target player already has zero health."]});
+        return;
+    }
+
+    if(Number(source_player.health) < app.session.parameter_set.hat_cost)
+    {
+        app.display_errors({hat_avatar_button: ["You do not have enough health to hat."]});
+        return;
+    }
+
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        app.send_hat_avatar_instructions();
+    }
+    else
+    {
+        app.working = true;
+        
+        app.send_message("hat_avatar", 
+                        {"target_player_id" : app.selected_avatar.target_player_id},
+                        "group"); 
+    }
 },
 
 /**
