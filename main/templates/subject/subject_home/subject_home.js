@@ -86,6 +86,8 @@ var app = Vue.createApp({
                     selected_patch : {patch:null,
                                     },
 
+                    hat_trade_status : "open",
+
                     end_game_modal_visible : false,
 
                     instructions : {{instructions|safe}},
@@ -242,6 +244,9 @@ var app = Vue.createApp({
                     break;
                 case "update_hat_avatar":
                     app.take_update_hat_avatar(message_data);
+                    break;
+                case "update_hat_avatar_cancel":
+                    app.take_update_hat_avatar_cancel(message_data);
                     break;
                 
             }

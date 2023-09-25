@@ -940,7 +940,41 @@ class SubjectUpdatesMixin():
         propose trading hats
         '''
 
-        result = {"status" : "success", "error_message" : ""}
+        if self.controlling_channel != self.channel_name:
+            return
+        
+        logger = logging.getLogger(__name__)
+
+        status = "success"
+        error_mesage = ""
+
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            target_player_id = event["message_text"]["target_player_id"]
+            type = event["message_text"]["type"]
+        except:
+            logger.info(f"hat_avatar: invalid data, {event['message_text']}")
+            status = "fail"
+            error_mesage = "Invalid trade."
+
+        result = {"status" : status, "error_message" : error_mesage}
+
+        if status == "success":
+            result["source_player_id"] = player_id
+            result["target_player_id"] = target_player_id
+            result["type"] = type
+            
+            if type == "proposal_received":
+                v = await sync_to_async(sync_hat_avatar)(self.session_id, player_id, target_player_id)
+
+                if v["world_state"] and v["status"]=="success":
+                    self.world_state_local = v["world_state"]
+                    self.world_state_avatars_local["session_players"][str(target_player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+                
+                result["source_player"] = self.world_state_local["avatars"][str(player_id)] 
+                result["target_player"] = self.world_state_local["avatars"][str(target_player_id)]
+            else:
+                pass
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -948,6 +982,52 @@ class SubjectUpdatesMixin():
     async def update_hat_avatar(self, event):
         '''
         subject update hat proposal
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+    
+    async def hat_avatar_cancel(self, event):
+        '''
+        propose trading hats cancel
+        '''
+
+        if self.controlling_channel != self.channel_name:
+            return
+        
+        logger = logging.getLogger(__name__)
+        logger.info(event)
+
+        status = "success"
+        error_mesage = ""
+
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            target_player_id = event["message_text"]["target_player_id"]
+            type = event["message_text"]["type"]
+        except:
+            logger.info(f"hat_avatar_cancel: invalid data, {event['message_text']}")
+            status = "fail"
+            error_mesage = "Invalid trade."
+
+        if type == "proposal":
+            self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+        else:
+            self.world_state_avatars_local["session_players"][str(target_player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+
+        result = {"status" : status, "error_message" : error_mesage}
+        result["source_player_id"] = player_id
+        result["target_player_id"] = target_player_id
+        result["type"] = type
+
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+
+    async def update_hat_avatar_cancel(self, event):
+        '''
+        subject update hat proposal cancel
         '''
 
         event_data = event["group_data"]
@@ -1387,6 +1467,37 @@ def sync_patch_harvest(session_id, player_id, patch_id):
             current_period.save()
         
         world_state = session.world_state
+        
+    return {"status" : status, 
+            "error_message" : error_message, 
+            "world_state" : world_state, 
+            "harvest_amount" : harvest_amount}
+
+def sync_hat_avatar(session_id, player_id, target_player_id):
+    '''
+    harvest from patch
+    '''
+
+    status = "success"
+    harvest_amount = 0
+    error_message = []
+    world_state = None
+
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
+
+        source_player_id_s = str(player_id)
+        target_player_id_s = str(target_player_id)
+
+        source_player = session.world_state['avatars'][source_player_id_s]
+        target_player = session.world_state['avatars'][target_player_id_s]
+
+        #swap values
+        source_player["parameter_set_hat_id"], target_player["parameter_set_hat_id"] = target_player["parameter_set_hat_id"], source_player["parameter_set_hat_id"]
+
+        session.save()
+
+    world_state = session.world_state
         
     return {"status" : status, 
             "error_message" : error_message, 

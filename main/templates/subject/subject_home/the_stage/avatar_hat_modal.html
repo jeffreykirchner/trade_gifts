@@ -49,23 +49,45 @@
                     <div class="col text-end" v-if="selected_avatar.avatar">    
                         <button type="button"
                                 class="btn btn-outline-danger me-2"
-                                v-on:click = "send_hat_avatar_cancel()"
-                                title="Cancel trade."                       
+                                v-on:click = "send_hat_avatar_cancel()"                    
                                 v-bind:disabled="reconnecting || 
                                                     working ">
-                            Cancel <i class="fas fa-ban"></i>
+                            <span v-if="hat_trade_status=='open' || hat_trade_status=='proposal'">
+                                Cancel <i class="fas fa-ban"></i>
+                            </span>
+                            <span v-if="hat_trade_status=='proposal_received'">
+                                Reject <i class="fas fa-ban"></i>
+                            </span>
                         </button>
                                         
                         <button type="button"
                                 class="btn btn-outline-success"
-                                v-on:click = "send_hat_avatar()"
-                                title="Propose to trade hats the selected avatar."                       
+                                v-on:click = "send_hat_avatar()"                   
                                 v-bind:disabled="reconnecting || 
                                                     working || 
+                                                    hat_trade_status == 'proposal' ||
                                                     selected_avatar.avatar.sleeping">
-                            Propose <i class="fab fa-redhat"></i> <i class="fas fa-exchange-alt"></i> <i class="fab fa-redhat"></i>
+                            <span v-if="hat_trade_status=='open' || hat_trade_status=='proposal'">
+                                Propose <i class="fab fa-redhat"></i> <i class="fas fa-exchange-alt"></i> <i class="fab fa-redhat"></i>
+                            </span>
+
+                            <span v-if="hat_trade_status=='proposal_received'">
+                                Accept <i class="fab fa-redhat"></i> <i class="fas fa-exchange-alt"></i> <i class="fab fa-redhat"></i>
+                            </span>
+                        
                         </button>
                         
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col text-center">
+                        <div v-if="hat_trade_status == 'proposal'">
+                            Waiting for a response from [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]].
+                        </div>
+                        <div v-if="hat_trade_status == 'proposal_received'">
+                           Accept trade proposal?
+                        </div>
                     </div>
                 </div>
 
