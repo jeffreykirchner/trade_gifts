@@ -491,6 +491,16 @@ var app = Vue.createApp({
             {
                 session_player = message_data.session_player_status[p];
                 app.session.world_state_avatars.session_players[p].interaction = session_player.interaction;
+
+                //hide interaction modal if interaction is over
+                if(p==app.session_player.id && session_player.interaction == 0)
+                {
+                    if(app.avatar_hat_modal_open && app.session.world_state_avatars.session_players[p].tractor_beam_target)
+                    {
+                        app.send_hat_avatar_cancel();
+                    }
+                }
+
                 app.session.world_state_avatars.session_players[p].frozen = session_player.frozen;
                 app.session.world_state_avatars.session_players[p].cool_down = session_player.cool_down;
                 app.session.world_state_avatars.session_players[p].tractor_beam_target = session_player.tractor_beam_target;
@@ -538,13 +548,6 @@ var app = Vue.createApp({
 
             //update barriers
             app.update_barriers();
-
-            //hide interaction modal if interaction is over
-            // if(app.session.world_state_avatars.session_players[app.session_player.id].interaction == 0)
-            // {
-            //     app.avatar_modal.hide();
-            //     app.field_modal.hide();
-            // }
         },
 
         /**

@@ -297,16 +297,11 @@ take_update_tractor_beam(message_data)
 
     app.session.world_state_avatars.session_players[player_id].interaction = app.session.parameter_set.interaction_length;
     app.session.world_state_avatars.session_players[target_player_id].interaction = app.session.parameter_set.interaction_length;
-
-    if(player_id == app.session_player.id)
-    {
-        app.clear_main_form_errors();
-        app.interaction_form.direction = null;
-        app.interaction_form.amount = null;
-        app.avatar_modal.toggle();
-    }
 },
 
+/**
+ * cancel tractor beam
+ */
 take_update_cancel_interaction(message_data)
 {
     let source_player_id = message_data.source_player_id;

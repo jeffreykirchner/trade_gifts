@@ -66,6 +66,9 @@
                                 v-bind:disabled="reconnecting || 
                                                     working || 
                                                     hat_trade_status == 'proposal' ||
+                                                    session.world_state_avatars.session_players[session_player.id].cool_down>0 ||
+                                                    (session.world_state_avatars.session_players[selected_avatar.target_player_id].interaction>0 &&
+                                                     !session.world_state_avatars.session_players[session_player.id].frozen) || 
                                                     selected_avatar.avatar.sleeping">
                             <span v-if="hat_trade_status=='open' || hat_trade_status=='proposal'">
                                 Propose <i class="fab fa-redhat"></i> <i class="fas fa-exchange-alt"></i> <i class="fab fa-redhat"></i>
@@ -80,13 +83,20 @@
                     </div>
                 </div>
 
-                <div class="row mt-4">
+                <div class="row mt-4" v-if="selected_avatar.avatar">
                     <div class="col text-center">
                         <div v-if="hat_trade_status == 'proposal'">
                             Waiting for a response from [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]].
                         </div>
                         <div v-if="hat_trade_status == 'proposal_received'">
                            Accept trade proposal?
+                        </div>
+                        <div v-if = "session.world_state_avatars.session_players[session_player.id].cool_down>0">
+                            Cooling down ... [[session.world_state_avatars.session_players[session_player.id].cool_down]]
+                        </div>
+                        <div v-if = "session.world_state_avatars.session_players[selected_avatar.target_player_id].interaction>0 &&
+                                    !session.world_state_avatars.session_players[session_player.id].frozen">
+                            Already interacting ... [[session.world_state_avatars.session_players[selected_avatar.target_player_id].interaction]]
                         </div>
                     </div>
                 </div>

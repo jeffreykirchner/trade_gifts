@@ -76,7 +76,7 @@ setup_pixi_subjects: function setup_pixi_subjects()
         //hat
         
         let hat_sprite = null;
-        if(avatar.parameter_set_hat_id && app.session.parameter_set.enable_hats=="True")
+        if(avatar.parameter_set_hat_id)
         {
             let hat_texture = app.session.parameter_set.parameter_set_hats[avatar.parameter_set_hat_id].texture;
             hat_sprite = PIXI.Sprite.from(app.pixi_textures[hat_texture]);
@@ -1099,8 +1099,19 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
             app.session.world_state.avatars[source_player_id.toString()] = message_data.source_player;
             app.session.world_state.avatars[target_player_id.toString()] = message_data.target_player;
 
-            app.session.world_state_avatars.session_players[target_player_id].cool_down = app.session.parameter_set.cool_down_length;
+            let target_player = app.session.world_state_avatars.session_players[target_player_id];
+            let source_player = app.session.world_state_avatars.session_players[source_player_id];
 
+            target_player.cool_down = app.session.parameter_set.cool_down_length;
+
+            source_player.interaction = 0
+            target_player.interaction = 0
+
+            source_player.frozen = false
+            target_player.frozen = false
+
+            target_player.tractor_beam_target = null;
+                
             app.update_avatar_inventory();
 
             let source_hat_texture = app.session.parameter_set.parameter_set_hats[message_data.source_player.parameter_set_hat_id].texture;
@@ -1114,8 +1125,8 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
 
             elements.push(element);
             
-            app.add_transfer_beam(app.session.world_state_avatars.session_players[target_player_id].current_location, 
-                                  app.session.world_state_avatars.session_players[source_player_id].current_location,
+            app.add_transfer_beam(target_player.current_location, 
+                                  source_player.current_location,
                                   elements,
                                   show_source_emitter=false,
                                   show_target_emitter=true);
@@ -1128,52 +1139,14 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
 
             elements.push(element);
             
-            app.add_transfer_beam(app.session.world_state_avatars.session_players[source_player_id].current_location, 
-                                app.session.world_state_avatars.session_players[target_player_id].current_location,
-                                elements,
-                                show_source_emitter=false,
-                                show_target_emitter=true);
+            app.add_transfer_beam(source_player.current_location, 
+                                  target_player.current_location,
+                                  elements,
+                                  show_source_emitter=false,
+                                  show_target_emitter=true);
         }
 
     }
-
-        // if(app.is_subject)
-        // {
-        //     if( source_player_id == app.session_player.id)
-        //     {
-        //         app.avatar_modal.hide();
-        //         app.avatar_hat_modal.hide();
-        //         app.selected_avatar.avatar = null;
-        //     }
-
-        //     //transfer beam
-        //     let elements = [];
-
-        //     let fist_texture = app.pixi_textures["fist_left_tex"];
-
-        //     if(app.session.world_state_avatars.session_players[source_player_id].current_location.x < 
-        //        app.session.world_state_avatars.session_players[target_player_id].current_location.x)
-        //     {
-        //         fist_texture = app.pixi_textures["fist_right_tex"];
-        //     }
-  
-        //     let element = {source_change:"",
-        //                    target_change:"", 
-        //                    texture: fist_texture}
-
-        //     elements.push(element);
-
-        //     element = {source_change:"-" + app.session.parameter_set.hat_cost,
-        //                    target_change:"-" + app.session.parameter_set.hat_damage, 
-        //                    texture:app.pixi_textures["health_tex"]  }
-
-        //     elements.push(element);
-            
-        //     app.add_transfer_beam(app.session.world_state_avatars.session_players[source_player_id].current_location, 
-        //                           app.session.world_state_avatars.session_players[target_player_id].current_location,
-        //     elements);
-        // }
-    
 },
 
 send_hat_avatar_cancel: function send_hat_avatar_cancel()
@@ -1239,43 +1212,6 @@ take_update_hat_avatar_cancel: function take_update_hat_avatar_cancel(message_da
         
     }
 
-        // if(app.is_subject)
-        // {
-        //     if( source_player_id == app.session_player.id)
-        //     {
-        //         app.avatar_modal.hide();
-        //         app.avatar_hat_modal.hide();
-        //         app.selected_avatar.avatar = null;
-        //     }
-
-        //     //transfer beam
-        //     let elements = [];
-
-        //     let fist_texture = app.pixi_textures["fist_left_tex"];
-
-        //     if(app.session.world_state_avatars.session_players[source_player_id].current_location.x < 
-        //        app.session.world_state_avatars.session_players[target_player_id].current_location.x)
-        //     {
-        //         fist_texture = app.pixi_textures["fist_right_tex"];
-        //     }
-  
-        //     let element = {source_change:"",
-        //                    target_change:"", 
-        //                    texture: fist_texture}
-
-        //     elements.push(element);
-
-        //     element = {source_change:"-" + app.session.parameter_set.hat_cost,
-        //                    target_change:"-" + app.session.parameter_set.hat_damage, 
-        //                    texture:app.pixi_textures["health_tex"]  }
-
-        //     elements.push(element);
-            
-        //     app.add_transfer_beam(app.session.world_state_avatars.session_players[source_player_id].current_location, 
-        //                           app.session.world_state_avatars.session_players[target_player_id].current_location,
-        //     elements);
-        // }
-    
 },
 
 /**

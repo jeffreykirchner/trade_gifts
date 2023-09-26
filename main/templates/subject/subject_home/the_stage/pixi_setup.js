@@ -238,7 +238,7 @@ setup_tractor_beam(source_id, target_id)
     let source_player = app.session.world_state_avatars.session_players[source_id];
     let target_player = app.session.world_state_avatars.session_players[target_id];
 
-    let parameter_set_player = app.session.parameter_set_player[source_player.parameter_set_player_id];
+    let parameter_set_player = app.session.parameter_set.parameter_set_players[source_player.parameter_set_player_id];
 
     let dY = source_player.current_location.y - target_player.current_location.y;
     let dX = source_player.current_location.x - target_player.current_location.x;
@@ -268,7 +268,7 @@ setup_tractor_beam(source_id, target_id)
 
         tb_sprite = pixi_avatars[source_id].tractor_beam[i];
         tb_sprite.position.set(temp_x, temp_y)
-        tb_sprite.scale.set(tempScale * i * 2);
+        tb_sprite.scale.set(tempScale * i );
         tb_sprite.visible = true;
         
         if (app.pixi_tick_tock.value == 'tick')
