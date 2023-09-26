@@ -29,7 +29,7 @@ class ParameterSetBarrier(models.Model):
     text = models.CharField(verbose_name='Text', default="Closed until period N", max_length=100)       #text shown on barrier
     rotation = models.IntegerField(verbose_name='Rotation', default=0)                  #rotation of text
 
-    period_on = models.IntegerField(verbose_name='Period On', default=1)               #period when barrier is on
+    period_on = models.IntegerField(verbose_name='Period On', default=1)                #period when barrier is on
     period_off = models.IntegerField(verbose_name='Period Off', default=14)             #period when barrier is off
 
     timestamp = models.DateTimeField(auto_now_add=True)

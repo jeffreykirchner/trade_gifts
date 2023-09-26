@@ -162,6 +162,26 @@ class InterfaceMixin():
 
         await self.send_message(message_to_self=event_data, message_to_subjects=None, message_to_staff=None, 
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
+    
+    async def update_hat_avatar(self, event):
+        '''
+        update hat avatar
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_subjects=None, message_to_staff=None, 
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+    
+    async def update_hat_avatar_cancel(self, event):
+        '''
+        update hat cancel 
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_subjects=None, message_to_staff=None, 
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
 
 
         

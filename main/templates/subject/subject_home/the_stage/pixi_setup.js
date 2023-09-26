@@ -27,10 +27,19 @@ setup_pixi(){
     PIXI.Assets.add('sad_emoji_tex', '{% static "sad_emoji.png"%}');
     PIXI.Assets.add('angry_emoji_tex', '{% static "angry_emoji.png"%}');
 
-    const textures_promise = PIXI.Assets.load(['sprite_sheet', 'sprite_sheet_hf', 'grass_tex', 'wall_tex', 'barrier_tex', 'water_tex',
-                                               'bridge_tex', 'sprite_sheet_2', 'Blueberry_tex', 'Pineapple_tex',
-                                               'Cherry_tex', 'field_tex', 'house_tex', 'health_tex', 'fist_left_tex', 'fist_right_tex',
-                                               'face_sleep_tex', 'happy_emoji_tex', 'sad_emoji_tex', 'angry_emoji_tex'])
+    let asset_names = ['sprite_sheet', 'sprite_sheet_hf', 'grass_tex', 'wall_tex', 'barrier_tex', 'water_tex',
+                       'bridge_tex', 'sprite_sheet_2', 'Blueberry_tex', 'Pineapple_tex',
+                       'Cherry_tex', 'field_tex', 'house_tex', 'health_tex', 'fist_left_tex', 'fist_right_tex',
+                       'face_sleep_tex', 'happy_emoji_tex', 'sad_emoji_tex', 'angry_emoji_tex'];
+
+    for(i in app.session.parameter_set.parameter_set_hats)
+    {
+        let texture_name = app.session.parameter_set.parameter_set_hats[i].texture;
+        PIXI.Assets.add(texture_name, '/static/' + texture_name + '.png');
+        asset_names.push(texture_name);
+    }
+
+    const textures_promise = PIXI.Assets.load(asset_names);
 
     textures_promise.then((textures) => {
         app.setup_pixi_sheets(textures);
@@ -229,7 +238,7 @@ setup_tractor_beam(source_id, target_id)
     let source_player = app.session.world_state_avatars.session_players[source_id];
     let target_player = app.session.world_state_avatars.session_players[target_id];
 
-    let parameter_set_player = app.session.parameter_set_player[source_player.parameter_set_player_id];
+    let parameter_set_player = app.session.parameter_set.parameter_set_players[source_player.parameter_set_player_id];
 
     let dY = source_player.current_location.y - target_player.current_location.y;
     let dX = source_player.current_location.x - target_player.current_location.x;
@@ -259,7 +268,7 @@ setup_tractor_beam(source_id, target_id)
 
         tb_sprite = pixi_avatars[source_id].tractor_beam[i];
         tb_sprite.position.set(temp_x, temp_y)
-        tb_sprite.scale.set(tempScale * i * 2);
+        tb_sprite.scale.set(tempScale * i );
         tb_sprite.visible = true;
         
         if (app.pixi_tick_tock.value == 'tick')

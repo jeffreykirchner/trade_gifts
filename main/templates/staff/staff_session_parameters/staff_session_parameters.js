@@ -53,6 +53,10 @@ var app = Vue.createApp({
                         levels_input: "",
                     },
 
+                    current_parameter_set_hat : {
+                        id:0,
+                    },
+
                     parameter_set_form_ids: {{parameter_set_form_ids|safe}},
                     parameter_set_player_form_ids: {{parameter_set_player_form_ids|safe}},
                     parameter_set_wall_form_ids: {{parameter_set_wall_form_ids|safe}},
@@ -62,6 +66,7 @@ var app = Vue.createApp({
                     parameter_set_notice_form_ids: {{parameter_set_notice_form_ids|safe}},
                     parameter_set_barrier_form_ids: {{parameter_set_barrier_form_ids|safe}},
                     parameter_set_patch_form_ids: {{parameter_set_patch_form_ids|safe}},
+                    parameter_set_hat_form_ids: {{parameter_set_hat_form_ids|safe}},
 
                     upload_file: null,
                     upload_file_name:'Choose File',
@@ -157,6 +162,7 @@ var app = Vue.createApp({
             app.edit_parameterset_notice_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_notice_modal'), {keyboard: false})
             app.edit_parameterset_barrier_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_barrier_modal'), {keyboard: false})
             app.edit_parameterset_patch_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_patch_modal'), {keyboard: false})
+            app.edit_parameterset_hat_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_hat_modal'), {keyboard: false})
 
             document.getElementById('import_parameters_modal').addEventListener('hidden.bs.modal', app.hide_import_parameters);
             document.getElementById('edit_parameterset_modal').addEventListener('hidden.bs.modal', app.hide_edit_parameter_set);
@@ -204,6 +210,7 @@ var app = Vue.createApp({
         {%include "staff/staff_session_parameters/notices/notices.js"%}
         {%include "staff/staff_session_parameters/barriers/barriers.js"%}
         {%include "staff/staff_session_parameters/patches/patches.js"%}
+        {%include "staff/staff_session_parameters/hats/hats.js"%}
         {%include "js/help_doc.js"%}
     
         /** clear form error messages
@@ -280,6 +287,13 @@ var app = Vue.createApp({
             }
 
             s = app.parameter_set_patch_form_ids;
+            for(let i in s)
+            {
+                let e = document.getElementById("id_errors_" + s[i]);
+                if(e) e.remove();
+            }
+
+            s = app.parameter_set_hat_form_ids;
             for(let i in s)
             {
                 let e = document.getElementById("id_errors_" + s[i]);

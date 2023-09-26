@@ -265,45 +265,55 @@ class SubjectUpdatesMixin():
         if self.controlling_channel != self.channel_name:
             return
 
+        status = "success"
+        error_message = ""
+
         player_id = self.session_players_local[event["player_key"]]["id"]
         target_player_id = event["message_text"]["target_player_id"]
 
-        source_player = self.world_state_local['session_players'][str(player_id)]
-        target_player = self.world_state_local['session_players'][str(target_player_id)]
+        source_player = self.world_state_avatars_local['session_players'][str(player_id)]
+        target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
 
         # check if players are frozen
         if source_player['frozen'] or target_player['frozen']:
-            return
+            status = "fail"
+            error_message = "Invalid target."
 
         #check if either player has tractor beam enabled
         if source_player['tractor_beam_target'] or target_player['tractor_beam_target']:
-            return
+            status = "fail"
+            error_message = "Invalid target."
         
         #check if player is already interacting or cooling down.
         if source_player['interaction'] > 0 or source_player['cool_down'] > 0:
-            return
+            status = "fail"
+            error_message = "You are cooling down."
+
+        result = {"status":status, "error_message":error_message, "player_id" : player_id, "target_player_id" : target_player_id}
         
-        source_player['frozen'] = True
-        target_player['frozen'] = True
+        if status == "success":
+            source_player['frozen'] = True
+            target_player['frozen'] = True
 
-        source_player['tractor_beam_target'] = target_player_id
-        source_player['interaction'] = self.parameter_set_local['interaction_length']
+            source_player['tractor_beam_target'] = target_player_id
+            source_player['interaction'] = self.parameter_set_local['interaction_length']
 
-        target_player['interaction'] = self.parameter_set_local['interaction_length']
+            target_player['interaction'] = self.parameter_set_local['interaction_length']
 
-        await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
+            await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
 
-        await SessionEvent.objects.acreate(session_id=self.session_id, 
-                                           session_player_id=player_id,
-                                           type="tractor_beam",
-                                           period_number=self.world_state_local["current_period"],
-                                           time_remaining=self.world_state_local["time_remaining"],
-                                           data={"player_id" : player_id, "target_player_id" : target_player_id,})
+            # await SessionEvent.objects.acreate(session_id=self.session_id, 
+            #                                 session_player_id=player_id,
+            #                                 type="tractor_beam",
+            #                                 period_number=self.world_state_local["current_period"],
+            #                                 time_remaining=self.world_state_local["time_remaining"],
+            #                                 data={"player_id" : player_id, "target_player_id" : target_player_id,})
 
-        result = {"player_id" : player_id, "target_player_id" : target_player_id}
+            await self.send_message(message_to_self=None, message_to_group=result,
+                                    message_type="tractor_beam", send_to_client=False, send_to_group=True)
         
-        await self.send_message(message_to_self=None, message_to_group=result,
-                                message_type=event['type'], send_to_client=False, send_to_group=True)
+        return result
+
 
     async def update_tractor_beam(self, event):
         '''
@@ -389,13 +399,13 @@ class SubjectUpdatesMixin():
         
         player_id = self.session_players_local[event["player_key"]]["id"]
 
-        source_player = self.world_state_local['session_players'][str(player_id)]
+        source_player = self.world_state_avatars_local['session_players'][str(player_id)]
 
         if source_player['interaction'] == 0:
             return
         
         target_player_id = source_player['tractor_beam_target']
-        target_player = self.world_state_local['session_players'][str(target_player_id)]
+        target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
 
         source_player['interaction'] = 0
         target_player['interaction'] = 0
@@ -405,19 +415,19 @@ class SubjectUpdatesMixin():
 
         source_player['tractor_beam_target'] = None
 
-        await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+        await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
 
-        await SessionEvent.objects.acreate(session_id=self.session_id, 
-                                           session_player_id=player_id,
-                                           type="cancel_interaction",
-                                           period_number=self.world_state_local["current_period"],
-                                           time_remaining=self.world_state_local["time_remaining"],
-                                           data={"player_id" : player_id, "target_player_id":target_player_id})
+        # await SessionEvent.objects.acreate(session_id=self.session_id, 
+        #                                    session_player_id=player_id,
+        #                                    type="cancel_interaction",
+        #                                    period_number=self.world_state_local["current_period"],
+        #                                    time_remaining=self.world_state_local["time_remaining"],
+        #                                    data={"player_id" : player_id, "target_player_id":target_player_id})
 
         result = {"source_player_id" : player_id, "target_player_id" : target_player_id, "value" : "success"}
         
         await self.send_message(message_to_self=None, message_to_group=result,
-                                message_type=event['type'], send_to_client=False, send_to_group=True)
+                                message_type="cancel_interaction", send_to_client=False, send_to_group=True)
 
     async def update_cancel_interaction(self, event):
         '''
@@ -934,7 +944,127 @@ class SubjectUpdatesMixin():
 
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
+
+    async def hat_avatar(self, event):
+        '''
+        propose trading hats
+        '''
+
+        if self.controlling_channel != self.channel_name:
+            return
         
+        logger = logging.getLogger(__name__)
+
+        status = "success"
+        error_mesage = ""
+
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            target_player_id = event["message_text"]["target_player_id"]
+            type = event["message_text"]["type"]
+        except:
+            logger.info(f"hat_avatar: invalid data, {event['message_text']}")
+            status = "fail"
+            error_mesage = "Invalid trade."
+
+        result = {"status" : status, "error_message" : error_mesage}
+
+        if status == "success":
+            result["source_player_id"] = player_id
+            result["target_player_id"] = target_player_id
+            result["type"] = type
+            
+            if type == "proposal_received":
+               
+                v = await sync_to_async(sync_hat_avatar)(self.session_id, player_id, target_player_id)
+
+                source_player = self.world_state_avatars_local['session_players'][str(player_id)]
+                target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
+
+                if v["world_state"] and v["status"]=="success":
+                    self.world_state_local = v["world_state"]
+                    target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+
+                source_player['interaction'] = 0
+                target_player['interaction'] = 0
+
+                source_player['frozen'] = False
+                target_player['frozen'] = False
+
+                target_player['tractor_beam_target'] = None
+
+                result["source_player"] = self.world_state_local["avatars"][str(player_id)] 
+                result["target_player"] = self.world_state_local["avatars"][str(target_player_id)]
+
+            else:
+                
+                v = await self.tractor_beam(event)
+
+                result["status"] = v["status"]
+                result["error_message"] = v["error_message"]
+                    
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+
+    async def update_hat_avatar(self, event):
+        '''
+        subject update hat proposal
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+    
+    async def hat_avatar_cancel(self, event):
+        '''
+        propose trading hats cancel
+        '''
+
+        if self.controlling_channel != self.channel_name:
+            return
+        
+        logger = logging.getLogger(__name__)
+        logger.info(event)
+
+        status = "success"
+        error_mesage = ""
+
+        try:
+            player_id = self.session_players_local[event["player_key"]]["id"]        
+            target_player_id = event["message_text"]["target_player_id"]
+            type = event["message_text"]["type"]
+        except:
+            logger.info(f"hat_avatar_cancel: invalid data, {event['message_text']}")
+            status = "fail"
+            error_mesage = "Invalid trade."
+
+        if type == "proposal":
+            self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+        else:
+            self.world_state_avatars_local["session_players"][str(target_player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+
+        result = {"status" : status, "error_message" : error_mesage}
+        result["source_player_id"] = player_id
+        result["target_player_id"] = target_player_id
+        result["type"] = type
+
+        await self.cancel_interaction(event)
+
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+
+    async def update_hat_avatar_cancel(self, event):
+        '''
+        subject update hat proposal cancel
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+
+
 def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_two_harvest):
     '''
     harvest from field
@@ -1366,6 +1496,37 @@ def sync_patch_harvest(session_id, player_id, patch_id):
             current_period.save()
         
         world_state = session.world_state
+        
+    return {"status" : status, 
+            "error_message" : error_message, 
+            "world_state" : world_state, 
+            "harvest_amount" : harvest_amount}
+
+def sync_hat_avatar(session_id, player_id, target_player_id):
+    '''
+    harvest from patch
+    '''
+
+    status = "success"
+    harvest_amount = 0
+    error_message = []
+    world_state = None
+
+    with transaction.atomic():
+        session = Session.objects.select_for_update().get(id=session_id)
+
+        source_player_id_s = str(player_id)
+        target_player_id_s = str(target_player_id)
+
+        source_player = session.world_state['avatars'][source_player_id_s]
+        target_player = session.world_state['avatars'][target_player_id_s]
+
+        #swap values
+        source_player["parameter_set_hat_id"], target_player["parameter_set_hat_id"] = target_player["parameter_set_hat_id"], source_player["parameter_set_hat_id"]
+
+        session.save()
+
+    world_state = session.world_state
         
     return {"status" : status, 
             "error_message" : error_message, 

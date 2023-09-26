@@ -1,7 +1,8 @@
 /**
  * setup the pixi components for each subject
  */
-setup_pixi_subjects(){
+setup_pixi_subjects: function setup_pixi_subjects()
+{
 
     if(!app.session) return;
     if(!app.session.started) return;
@@ -11,6 +12,7 @@ setup_pixi_subjects(){
     for(const i in app.session.world_state_avatars.session_players)
     {      
         let subject = app.session.world_state_avatars.session_players[i];
+        let avatar = app.session.world_state.avatars[i];
         let parameter_set_player = app.session.parameter_set.parameter_set_players[subject.parameter_set_player_id];
         pixi_avatars[i] = {};
 
@@ -70,6 +72,17 @@ setup_pixi_subjects(){
         status_label.eventMode = 'passive';
         status_label.anchor.set(0.5);
         status_label.visible = false;
+
+        //hat
+        
+        let hat_sprite = null;
+        if(avatar.parameter_set_hat_id)
+        {
+            let hat_texture = app.session.parameter_set.parameter_set_hats[avatar.parameter_set_hat_id].texture;
+            hat_sprite = PIXI.Sprite.from(app.pixi_textures[hat_texture]);
+            hat_sprite.anchor.set(0.5);
+            hat_sprite.eventMode = 'passive';
+        }
 
         //good one
         let good_one_container = new PIXI.Container();
@@ -150,6 +163,7 @@ setup_pixi_subjects(){
         avatar_container.addChild(face_sleep_sprite);
         avatar_container.addChild(id_label);
         avatar_container.addChild(status_label);
+        if(hat_sprite) avatar_container.addChild(hat_sprite);
 
         avatar_container.addChild(good_one_container);
         avatar_container.addChild(good_two_container);
@@ -162,20 +176,21 @@ setup_pixi_subjects(){
         face_sprite.position.set(0, -gear_sprite.height * 0.03);
         id_label.position.set(0, gear_sprite.height * 0.15);
         status_label.position.set(0, +gear_sprite.height/2-30);
+        if(hat_sprite) hat_sprite.position.set(0, -gear_sprite.height *.27);
 
         if(app.session.parameter_set.good_mode == "Three")
         {
-            good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2 - 10);
-            good_two_container.position.set(0+25, -gear_sprite.height/2 - 10);
-            good_three_container.position.set(gear_sprite.width/2+5+25, -gear_sprite.height/2 - 10);
+            good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2 - 30);
+            good_two_container.position.set(0+25, -gear_sprite.height/2 - 15);
+            good_three_container.position.set(gear_sprite.width/2+5+25, -gear_sprite.height/2 - 30);
         }
         else
         {
-            good_one_container.position.set(-50, -gear_sprite.height/2 - 10);
-            good_two_container.position.set(+110, -gear_sprite.height/2 - 10);
+            good_one_container.position.set(-50, -gear_sprite.height/2 - 30);
+            good_two_container.position.set(+110, -gear_sprite.height/2 - 30);
         }
 
-        health_container.position.set(10, -gear_sprite.height/2 - 115);
+        health_container.position.set(10, -gear_sprite.height/2 - 125);
 
         pixi_avatars[i].status_label = status_label;
         pixi_avatars[i].gear_sprite = gear_sprite;
@@ -185,6 +200,7 @@ setup_pixi_subjects(){
         pixi_avatars[i].health_label = health_label;
         pixi_avatars[i].face_sprite = face_sprite;
         pixi_avatars[i].face_sleep_sprite = face_sleep_sprite;
+        if(hat_sprite) pixi_avatars[i].hat_sprite = hat_sprite;
 
 
         avatar_container.scale.set(app.session.parameter_set.avatar_scale);
@@ -322,7 +338,7 @@ setup_pixi_subjects(){
 /**
  * move players if target does not equal current location
  */
-move_player(delta)
+move_player: function move_player(delta)
 {
     if(!app.session.world_state.started) return;
 
@@ -504,7 +520,7 @@ move_player(delta)
 /**
  * destory pixi subject objects in world state
  */
-destory_setup_pixi_subjects()
+destory_setup_pixi_subjects: function destory_setup_pixi_subjects()
 {
     if(!app.session) return;
 
@@ -529,10 +545,11 @@ destory_setup_pixi_subjects()
 /**
  * update avatar inventory
  */
-update_avatar_inventory()
+update_avatar_inventory : function update_avatar_inventory()
 {
     if(!app.session.world_state["started"]) return;
     
+    //update goods
     for(const i in app.session.world_state.avatars)
     {
         const avatar = app.session.world_state.avatars[i];
@@ -544,13 +561,23 @@ update_avatar_inventory()
         if(app.session.parameter_set.good_mode == "Three") pixi_avatars[i][parameter_set_player.good_three].text = avatar[parameter_set_player.good_three];
 
         pixi_avatars[i].health_label.text = Number(avatar.health).toFixed(1);
+
+        //update hats
+        
+        if(avatar.parameter_set_hat_id && app.session.parameter_set.enable_hats=="True")
+        {
+            let hat_texture = app.session.parameter_set.parameter_set_hats[avatar.parameter_set_hat_id].texture;
+            pixi_avatars[i].hat_sprite.texture = app.pixi_textures[hat_texture];
+        }
     }
+
+
 },
 
 /**
  * subject avatar click
  */
-subject_avatar_click(target_player_id)
+subject_avatar_click: function subject_avatar_click(target_player_id)
 {
     if(target_player_id == app.session_player.id) return;
 
@@ -580,7 +607,7 @@ subject_avatar_click(target_player_id)
 /**
  * avatar modal is hidden
  */
-hide_avatar_modal()
+hide_avatar_modal: function hide_avatar_modal()
 {
     app.avatar_modal_open = false;
 },
@@ -588,7 +615,7 @@ hide_avatar_modal()
 /**
  * send interaction to server
  */
-send_move_fruit_to_avatar()
+send_move_fruit_to_avatar: function send_move_fruit_to_avatar()
 {
     if(!app.session.world_state["started"]) return;
     if(!app.selected_avatar.avatar) return;
@@ -645,9 +672,9 @@ send_move_fruit_to_avatar()
 /**
  * send fruit to avatar instructions
  */
-send_move_fruit_to_avatar_instructions()
+send_move_fruit_to_avatar_instructions: function send_move_fruit_to_avatar_instructions()
 {
-    if(app.session_player.current_instruction != app.instructions.action_page_attacks) return;
+    if(app.session_player.current_instruction != app.instructions.action_page_hats) return;
 
     // {
     //     "status": "success",
@@ -719,7 +746,7 @@ send_move_fruit_to_avatar_instructions()
 /**
  * take update from server about moving fruit to avatar
  */
-take_update_move_fruit_to_avatar(message_data)
+take_update_move_fruit_to_avatar: function take_update_move_fruit_to_avatar(message_data)
 {
     if(message_data.status == "success")
     {
@@ -783,7 +810,7 @@ take_update_move_fruit_to_avatar(message_data)
 /**
  * select all fruit to move to avatar
  */
-select_all_fruit_avatar()
+select_all_fruit_avatar: function select_all_fruit_avatar()
 {
     let avatar = app.session.world_state.avatars[app.session_player.id];
 
@@ -796,7 +823,7 @@ select_all_fruit_avatar()
 /**
  * show the attack avatar modal
 */
-show_attack_avatar()
+show_attack_avatar: function show_attack_avatar()
 {
     app.clear_main_form_errors();
     app.avatar_modal.hide();
@@ -807,7 +834,7 @@ show_attack_avatar()
 /**
  * avatar attack modal is hidden
  */
-hide_avatar_attack_modal()
+hide_avatar_attack_modal: function hide_avatar_attack_modal()
 {
     app.avatar_attack_modal_open = false;
 },
@@ -815,7 +842,7 @@ hide_avatar_attack_modal()
 /**
  * send attack avatar to server
  */
-send_attack_avatar()
+send_attack_avatar: function send_attack_avatar()
 {
     
     let target_avatar = app.session.world_state.avatars[app.selected_avatar.target_player_id];
@@ -850,7 +877,7 @@ send_attack_avatar()
 /**
  * send avatar attack instructions
  */
-send_attack_avatar_instructions()
+send_attack_avatar_instructions : function send_attack_avatar_instructions()
 {
     if(app.session_player.current_instruction != app.instructions.action_page_attacks) return;
     app.session_player.current_instruction_complete = app.instructions.action_page_attacks;
@@ -901,7 +928,7 @@ send_attack_avatar_instructions()
 /**
  * take update from server about attack avatar
 */
-take_update_attack_avatar(message_data)
+take_update_attack_avatar: function take_update_attack_avatar(message_data)
 {
     if(message_data.status == "success")
     {
@@ -958,9 +985,239 @@ take_update_attack_avatar(message_data)
 },
 
 /**
+ * show the hat avatar modal
+*/
+show_hat_avatar: function show_hat_avatar()
+{
+    app.clear_main_form_errors();
+    app.avatar_modal.hide();
+    app.avatar_hat_modal.show();
+    app.avatar_hat_modal_open = true;
+},
+
+/**
+ * avatar hat modal is hidden
+ */
+hide_avatar_hat_modal: function hide_avatar_hat_modal()
+{
+    app.avatar_hat_modal_open = false;
+    app.selected_avatar.avatar = null;
+},
+
+/**
+ * send hat avatar to server
+ */
+send_hat_avatar: function send_hat_avatar()
+{
+    
+    let target_avatar = app.session.world_state.avatars[app.selected_avatar.target_player_id];
+    let source_player = app.session.world_state.avatars[app.session_player.id];
+
+
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        app.send_hat_avatar_instructions();
+    }
+    else
+    {
+        app.working = true;
+        // app.hat_trade_status = "proposal";
+        
+        app.send_message("hat_avatar", 
+                        {"target_player_id" : app.selected_avatar.target_player_id,
+                         "type":app.hat_trade_status,},
+                        "group"); 
+    }
+},
+
+/**
+ * send avatar hat instructions
+ */
+send_hat_avatar_instructions: function send_hat_avatar_instructions()
+{
+    if(app.session_player.current_instruction != app.instructions.action_page_hats) return;
+    app.session_player.current_instruction_complete = app.instructions.action_page_hats;
+
+    app.take_update_hat_avatar(message_data);
+},
+
+/**
+ * take update from server about hat avatar
+*/
+take_update_hat_avatar: function take_update_hat_avatar(message_data)
+{
+    if(message_data.status == "success")
+    {
+        type = message_data.type;
+
+        source_player_id = parseInt(message_data.source_player_id);
+        target_player_id = parseInt(message_data.target_player_id);
+
+        app.selected_avatar.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
+        app.selected_avatar.good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
+        app.selected_avatar.good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
+
+        if(type == "open")
+        {
+            if(app.is_subject)
+            {
+                if(target_player_id == app.session_player.id)
+                {
+                    app.selected_avatar.avatar = app.session.world_state.avatars[source_player_id];
+                    app.selected_avatar.target_player_id = source_player_id;
+                    app.selected_avatar.parameter_set_player = app.session.parameter_set.parameter_set_players[app.selected_avatar.avatar.parameter_set_player_id];
+
+                    app.hat_trade_status = "proposal_received";
+                    app.avatar_hat_modal.show();
+                    app.avatar_hat_modal_open = true;
+                }
+                else if(source_player_id == app.session_player.id)
+                {
+                    app.hat_trade_status = "proposal";
+                    app.avatar_hat_modal_open = true;
+                }
+            }
+        }
+        else if(type == "cancel")
+        {
+            if(app.is_subject)
+            {
+                if(target_player_id == app.session_player.id)
+                {
+                    app.avatar_hat_modal.hide();
+                }
+            }
+        }
+        else if(type == "proposal_received")
+        {
+            if(target_player_id == app.session_player.id || source_player_id == app.session_player.id)
+            {
+                app.avatar_hat_modal.hide();
+                app.hat_trade_status = "open";
+            }
+
+            app.session.world_state.avatars[source_player_id.toString()] = message_data.source_player;
+            app.session.world_state.avatars[target_player_id.toString()] = message_data.target_player;
+
+            let target_player = app.session.world_state_avatars.session_players[target_player_id];
+            let source_player = app.session.world_state_avatars.session_players[source_player_id];
+
+            target_player.cool_down = app.session.parameter_set.cool_down_length;
+
+            source_player.interaction = 0
+            target_player.interaction = 0
+
+            source_player.frozen = false
+            target_player.frozen = false
+
+            target_player.tractor_beam_target = null;
+                
+            app.update_avatar_inventory();
+
+            let source_hat_texture = app.session.parameter_set.parameter_set_hats[message_data.source_player.parameter_set_hat_id].texture;
+            let target_hat_texture = app.session.parameter_set.parameter_set_hats[message_data.target_player.parameter_set_hat_id].texture;
+
+            //target -> source
+            let elements = [];
+            element = {source_change:"",
+                       target_change:"", 
+                       texture:app.pixi_textures[source_hat_texture]}
+
+            elements.push(element);
+            
+            app.add_transfer_beam(target_player.current_location, 
+                                  source_player.current_location,
+                                  elements,
+                                  show_source_emitter=false,
+                                  show_target_emitter=true);
+            
+            //source -> target
+            elements = [];
+            element = {source_change:"",
+                       target_change:"", 
+                       texture:app.pixi_textures[target_hat_texture]}
+
+            elements.push(element);
+            
+            app.add_transfer_beam(source_player.current_location, 
+                                  target_player.current_location,
+                                  elements,
+                                  show_source_emitter=false,
+                                  show_target_emitter=true);
+        }
+
+    }
+},
+
+send_hat_avatar_cancel: function send_hat_avatar_cancel()
+{
+    if(app.hat_trade_status=='open')
+    {
+        app.avatar_hat_modal.hide();
+        return;
+    }
+
+    app.working = true;    
+    app.send_message("hat_avatar_cancel", 
+                        {"target_player_id" : app.selected_avatar.target_player_id,
+                         "type":app.hat_trade_status,},
+                        "group"); 
+},
+
+/**
+ * take update from server about hat avatar
+*/
+take_update_hat_avatar_cancel: function take_update_hat_avatar_cancel(message_data)
+{
+    if(message_data.status == "success")
+    {
+        type = message_data.type;
+
+        let source_player_id = parseInt(message_data.source_player_id);
+        let target_player_id = parseInt(message_data.target_player_id);
+
+        if(app.is_subject)
+        {
+            if(target_player_id == app.session_player.id || source_player_id == app.session_player.id)
+            {
+                if(app.avatar_hat_modal_open)
+                {
+                    let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
+
+                    app.avatar_hat_modal.hide();
+                    app.hat_trade_status = "open";
+
+                    app.add_text_emitters("Trade Rejected.", 
+                        local_player.current_location.x, 
+                        local_player.current_location.y,
+                        local_player.current_location.x,
+                        local_player.current_location.y-100,
+                        0xFFFFFF,
+                        28,
+                        null);
+                }
+            }
+        }
+
+        if(message_data.type == "proposal")
+        {
+            app.session.world_state_avatars.session_players[source_player_id].cool_down = app.session.parameter_set.cool_down_length;
+        }   
+        else
+        {
+            app.session.world_state_avatars.session_players[target_player_id].cool_down = app.session.parameter_set.cool_down_length;
+        }
+
+        app.update_avatar_inventory();
+        
+    }
+
+},
+
+/**
  * avatar sleep emitters
  */
-do_avatar_sleep_emitters()
+do_avatar_sleep_emitters: function do_avatar_sleep_emitters()
 {
     for(let i in app.session.world_state.avatars)
     {

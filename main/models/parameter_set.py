@@ -74,6 +74,7 @@ class ParameterSet(models.Model):
     allow_attacks = models.BooleanField(default=False, verbose_name="Allow Attacks")                                         #if true allow attacks
 
     allow_stealing = models.BooleanField(default=False, verbose_name="Allow Stealing")                      #if true all subjects to steal from other tribes
+    enable_hats = models.BooleanField(default=False, verbose_name="Enable Hats")                            #if true subjects can exchange hats
 
     chat_mode = models.CharField(verbose_name="Chat Mode", max_length=100, choices=ChatModes.choices, default=ChatModes.FULL)         #chat mode
     chat_rules_letters = models.JSONField(verbose_name="Chat Letter Mapping", encoder=DjangoJSONEncoder, null=True, blank=True)       #chat rules for limited mode
@@ -155,6 +156,8 @@ class ParameterSet(models.Model):
             self.allow_attacks = True if new_ps.get("allow_attacks") == "True" else False
 
             self.allow_stealing = True if new_ps.get("allow_stealing") == "True" else False
+            self.enable_hats = True if new_ps.get("enable_hats") == "True" else False
+
             self.break_frequency = new_ps.get("break_frequency", 7)
             self.break_length = new_ps.get("break_length", 100)
 
@@ -183,6 +186,16 @@ class ParameterSet(models.Model):
                 p.from_dict(new_parameter_set_groups[i])
                 new_parameter_set_groups_map[i] = p.id
 
+            #parameter set hats
+            self.parameter_set_hats.all().delete()
+            new_parameter_set_hats = new_ps.get("parameter_set_hats")
+            new_parameter_set_hats_map = {}
+
+            for i in new_parameter_set_hats:
+                p = main.models.ParameterSetHat.objects.create(parameter_set=self)
+                p.from_dict(new_parameter_set_hats[i])
+                new_parameter_set_hats_map[i] = p.id
+
             #parameter set players
             self.parameter_set_players.all().delete()
 
@@ -198,6 +211,9 @@ class ParameterSet(models.Model):
 
                 if v.get("parameter_set_group", None) != None:
                     p.parameter_set_group_id=new_parameter_set_groups_map[str(v["parameter_set_group"])]
+                
+                if v.get("parameter_set_hat", None) != None:
+                    p.parameter_set_hat_id=new_parameter_set_hats_map[str(v["parameter_set_hat"])]
 
                 p.save()
 
@@ -425,6 +441,8 @@ class ParameterSet(models.Model):
         self.json_for_session["allow_attacks"] = "True" if self.allow_attacks else "False"
 
         self.json_for_session["allow_stealing"] = "True" if self.allow_stealing else "False"
+        self.json_for_session["enable_hats"] = "True" if self.enable_hats else "False"
+        
         self.json_for_session["break_frequency"] = self.break_frequency
         self.json_for_session["break_length"] = self.break_length
 
@@ -448,7 +466,8 @@ class ParameterSet(models.Model):
                              update_groups=False,
                              update_notices=False,
                              update_barriers=False,
-                             update_patches=False):
+                             update_patches=False,
+                             update_hats=False):
         '''
         update json model
         '''
@@ -488,6 +507,10 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_patches_order"] = list(self.parameter_set_patches_a.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_patches"] = {str(p.id) : p.json() for p in self.parameter_set_patches_a.all()}
 
+        if update_hats:
+            self.json_for_session["parameter_set_hats_order"] = list(self.parameter_set_hats.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_hats"] = {str(p.id) : p.json() for p in self.parameter_set_hats.all()}
+
         self.save()
 
     def json(self, update_required=False):
@@ -506,7 +529,8 @@ class ParameterSet(models.Model):
                                 update_groups=True,
                                 update_notices=True,
                                 update_barriers=True,
-                                update_patches=True)
+                                update_patches=True,
+                                update_hats=True)
 
         return self.json_for_session
     

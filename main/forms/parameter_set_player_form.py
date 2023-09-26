@@ -7,6 +7,7 @@ from django.db.models.query import RawQuerySet
 
 from main.models import ParameterSetPlayer
 from main.models import ParameterSetGroup
+from main.models import ParameterSetHat
 
 from main.globals import Goods
 
@@ -22,6 +23,11 @@ class ParameterSetPlayerForm(forms.ModelForm):
                                                  queryset=ParameterSetGroup.objects.none(),
                                                  widget=forms.Select(attrs={"v-model":"current_parameter_set_player.parameter_set_group",}))
     
+    parameter_set_hat = forms.ModelChoiceField(label='Hat',
+                                               required=False,
+                                               queryset=ParameterSetHat.objects.none(),
+                                               widget=forms.Select(attrs={"v-model":"current_parameter_set_player.parameter_set_hat",}))
+
     start_x = forms.IntegerField(label='Starting Location X',
                                  min_value=0,
                                  widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_player.start_x",
@@ -64,5 +70,5 @@ class ParameterSetPlayerForm(forms.ModelForm):
 
     class Meta:
         model=ParameterSetPlayer
-        fields =['id_label', 'parameter_set_group', 'start_x', 'start_y', 'house_x', 'house_y', 'good_one', 'good_two', 'good_three', 'hex_color']
+        fields =['id_label', 'parameter_set_group', 'start_x', 'start_y', 'house_x', 'house_y', 'good_one', 'good_two', 'good_three', 'hex_color', 'parameter_set_hat']
     

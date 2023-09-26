@@ -22,7 +22,7 @@ var pixi_barriers = {};                        //barriers
 var pixi_grounds = {};                         //grounds
 var pixi_fields = {};                          //fields
 var pixi_houses = {};                          //houses
-var pixi_patches = {};                          //patches
+var pixi_patches = {};                         //patches
 var pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
                   text_night_coming : "Night is approching ... "};                                        //night
 var pixi_notices = {container:null, notices:{}};                         //notices
@@ -86,6 +86,8 @@ var app = Vue.createApp({
                     selected_patch : {patch:null,
                                     },
 
+                    hat_trade_status : "open",
+
                     end_game_modal_visible : false,
 
                     instructions : {{instructions|safe}},
@@ -105,6 +107,7 @@ var app = Vue.createApp({
                     field_modal_open : false,
                     house_modal_open : false,
                     patch_modal_open : false,
+                    avatar_hat_modal_open : false,
 
                     //pixi
                     canvas_width  : null,
@@ -239,6 +242,12 @@ var app = Vue.createApp({
                 case "update_patch_harvest":
                     app.take_patch_harvest(message_data);
                     break;
+                case "update_hat_avatar":
+                    app.take_update_hat_avatar(message_data);
+                    break;
+                case "update_hat_avatar_cancel":
+                    app.take_update_hat_avatar_cancel(message_data);
+                    break;
                 
             }
 
@@ -267,7 +276,8 @@ var app = Vue.createApp({
         {           
             app.end_game_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('end_game_modal'), {keyboard: false})   
             app.avatar_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_modal'), {keyboard: false})  
-            app.avatar_attack_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_attack_modal'), {keyboard: false})        
+            app.avatar_attack_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_attack_modal'), {keyboard: false})  
+            app.avatar_hat_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_hat_modal'), {keyboard: false})       
             app.field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('field_modal'), {keyboard: false})
             app.house_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('house_modal'), {keyboard: false})
             app.patch_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('patch_modal'), {keyboard: false})
@@ -481,6 +491,16 @@ var app = Vue.createApp({
             {
                 session_player = message_data.session_player_status[p];
                 app.session.world_state_avatars.session_players[p].interaction = session_player.interaction;
+
+                //hide interaction modal if interaction is over
+                if(p==app.session_player.id && session_player.interaction == 0)
+                {
+                    if(app.avatar_hat_modal_open && app.session.world_state_avatars.session_players[p].tractor_beam_target)
+                    {
+                        app.send_hat_avatar_cancel();
+                    }
+                }
+
                 app.session.world_state_avatars.session_players[p].frozen = session_player.frozen;
                 app.session.world_state_avatars.session_players[p].cool_down = session_player.cool_down;
                 app.session.world_state_avatars.session_players[p].tractor_beam_target = session_player.tractor_beam_target;
@@ -528,13 +548,6 @@ var app = Vue.createApp({
 
             //update barriers
             app.update_barriers();
-
-            //hide interaction modal if interaction is over
-            // if(app.session.world_state_avatars.session_players[app.session_player.id].interaction == 0)
-            // {
-            //     app.avatar_modal.hide();
-            //     app.field_modal.hide();
-            // }
         },
 
         /**

@@ -59,6 +59,7 @@ take_update_parameter_set(message_data){
         app.edit_parameterset_notice_modal.hide();
         app.edit_parameterset_barrier_modal.hide();
         app.edit_parameterset_patch_modal.hide();
+        app.edit_parameterset_hat_modal.hide();
     } 
     else
     {
