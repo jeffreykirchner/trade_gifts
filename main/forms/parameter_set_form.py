@@ -174,7 +174,7 @@ class ParameterSetForm(forms.ModelForm):
                                        choices=((True, 'Yes'), (False,'No' )),
                                        widget=forms.Select(attrs={"v-model":"parameter_set.allow_stealing",}))
     
-    enable_hats = forms.ChoiceField(label='Enable Hats',
+    enable_hats = forms.ChoiceField(label='Enable Hat Exchange',
                                         choices=((True, 'Yes'), (False,'No' )),
                                         widget=forms.Select(attrs={"v-model":"parameter_set.enable_hats",}))
 
