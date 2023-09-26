@@ -67,6 +67,7 @@
                                                     working || 
                                                     hat_trade_status == 'proposal' ||
                                                     session.world_state_avatars.session_players[session_player.id].cool_down>0 ||
+                                                    session.world_state_avatars.session_players[selected_avatar.target_player_id].cool_down>0 ||
                                                     (session.world_state_avatars.session_players[selected_avatar.target_player_id].interaction>0 &&
                                                      !session.world_state_avatars.session_players[session_player.id].frozen) || 
                                                     selected_avatar.avatar.sleeping">
@@ -93,6 +94,9 @@
                         </div>
                         <div v-if = "session.world_state_avatars.session_players[session_player.id].cool_down>0">
                             Cooling down ... [[session.world_state_avatars.session_players[session_player.id].cool_down]]
+                        </div>
+                        <div v-if = "session.world_state_avatars.session_players[selected_avatar.target_player_id].cool_down>0">
+                            They are cooling down ... [[session.world_state_avatars.session_players[selected_avatar.target_player_id].cool_down]]
                         </div>
                         <div v-if = "session.world_state_avatars.session_players[selected_avatar.target_player_id].interaction>0 &&
                                     !session.world_state_avatars.session_players[session_player.id].frozen">

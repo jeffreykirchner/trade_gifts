@@ -1096,8 +1096,8 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                 app.hat_trade_status = "open";
             }
 
-            app.session.world_state.avatars[source_player_id.toString()] = message_data.source_player;
-            app.session.world_state.avatars[target_player_id.toString()] = message_data.target_player;
+            app.session.world_state.avatars[source_player_id.toString()].parameter_set_hat_id = message_data.source_player.parameter_set_hat_id;
+            app.session.world_state.avatars[target_player_id.toString()].parameter_set_hat_id = message_data.target_player.parameter_set_hat_id;
 
             let target_player = app.session.world_state_avatars.session_players[target_player_id];
             let source_player = app.session.world_state_avatars.session_players[source_player_id];
