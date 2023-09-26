@@ -1,14 +1,16 @@
 /**
  * create transfer beam between two points
  */
-add_transfer_beam(source_location, target_location, elements) //beam_texture, source_amount, target_amount
+add_transfer_beam(source_location, target_location, elements, show_source_emitter=true, show_target_emitter=true) //beam_texture, source_amount, target_amount
 {
     if(elements.length == 0) return;
 
     let transfer_beam = {source_location:source_location, 
                          target_location:target_location, 
                          elements,
-                         beam_images:[]}    
+                         beam_images:[],
+                         show_source_emitter:show_source_emitter,
+                         show_target_emitter:show_target_emitter,}    
 
     let dY = target_location.y - source_location.y;
     let dX = target_location.x - source_location.x;
@@ -130,52 +132,56 @@ animate_transfer_beams(delta)
 
         for(let j in pixi_transfer_beams[completed[i]].elements)
         {
-            element = pixi_transfer_beams[completed[i]].elements[j];
+            let transfer_beam = pixi_transfer_beams[completed[i]];
+            element = transfer_beam.elements[j];
 
             let beam_texture = element.texture;
-            let source_location = pixi_transfer_beams[completed[i]].source_location;
-            let target_location = pixi_transfer_beams[completed[i]].target_location;
+            let source_location = transfer_beam.source_location;
+            let target_location = transfer_beam.target_location;
             let source_change = element.source_change;
             let target_change = element.target_change;
 
             //add text emitters
-            let token_graphic_1 = PIXI.Sprite.from(beam_texture);
-            token_graphic_1.animationSpeed = app.animation_speed;
-            token_graphic_1.anchor.set(1, 0.5)
-            token_graphic_1.eventMode = 'none';
-            token_graphic_1.scale.set(0.4);
-            token_graphic_1.alpha = 0.7;
+            if(transfer_beam.show_source_emitter)
+            {
+                let token_graphic_1 = PIXI.Sprite.from(beam_texture);
+                token_graphic_1.animationSpeed = app.animation_speed;
+                token_graphic_1.anchor.set(1, 0.5)
+                token_graphic_1.eventMode = 'none';
+                token_graphic_1.scale.set(0.4);
+                token_graphic_1.alpha = 0.7;
 
-            app.add_text_emitters(source_change, 
-                                source_location.x, 
-                                source_location.y + y_offset,
-                                source_location.x,
-                                source_location.y - 100 + y_offset,
-                                0xFFFFFF,
-                                28,
-                                token_graphic_1)
+                app.add_text_emitters(source_change, 
+                                    source_location.x, 
+                                    source_location.y + y_offset,
+                                    source_location.x,
+                                    source_location.y - 100 + y_offset,
+                                    0xFFFFFF,
+                                    28,
+                                    token_graphic_1)
+            }
             
-                                        //add text emitters
-            let token_graphic_2 = PIXI.Sprite.from(beam_texture);
-            token_graphic_2.animationSpeed = app.animation_speed;
-            token_graphic_2.anchor.set(1, 0.5)
-            token_graphic_2.eventMode = 'none';
-            token_graphic_2.scale.set(0.4);
-            token_graphic_2.alpha = 0.7;
+            if(transfer_beam.show_target_emitter)
+            {
+                let token_graphic_2 = PIXI.Sprite.from(beam_texture);
+                token_graphic_2.animationSpeed = app.animation_speed;
+                token_graphic_2.anchor.set(1, 0.5)
+                token_graphic_2.eventMode = 'none';
+                token_graphic_2.scale.set(0.4);
+                token_graphic_2.alpha = 0.7;
 
-            app.add_text_emitters(target_change, 
-                                target_location.x, 
-                                target_location.y + y_offset,
-                                target_location.x,
-                                target_location.y - 100 + y_offset,
-                                0xFFFFFF,
-                                28,
-                                token_graphic_2)
+                app.add_text_emitters(target_change, 
+                                    target_location.x, 
+                                    target_location.y + y_offset,
+                                    target_location.x,
+                                    target_location.y - 100 + y_offset,
+                                    0xFFFFFF,
+                                    28,
+                                    token_graphic_2)
+            }
 
             y_offset += 50;
         }
-        
-
         
         //remove beams
         delete pixi_transfer_beams[completed[i]]; 

@@ -1102,6 +1102,37 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
             app.session.world_state_avatars.session_players[target_player_id].cool_down = app.session.parameter_set.cool_down_length;
 
             app.update_avatar_inventory();
+
+            let source_hat_texture = app.session.parameter_set.parameter_set_hats[message_data.source_player.parameter_set_hat_id].texture;
+            let target_hat_texture = app.session.parameter_set.parameter_set_hats[message_data.target_player.parameter_set_hat_id].texture;
+
+            //target -> source
+            let elements = [];
+            element = {source_change:"",
+                       target_change:"", 
+                       texture:app.pixi_textures[source_hat_texture]}
+
+            elements.push(element);
+            
+            app.add_transfer_beam(app.session.world_state_avatars.session_players[target_player_id].current_location, 
+                                  app.session.world_state_avatars.session_players[source_player_id].current_location,
+                                  elements,
+                                  show_source_emitter=false,
+                                  show_target_emitter=true);
+            
+            //source -> target
+            elements = [];
+            element = {source_change:"",
+                       target_change:"", 
+                       texture:app.pixi_textures[target_hat_texture]}
+
+            elements.push(element);
+            
+            app.add_transfer_beam(app.session.world_state_avatars.session_players[source_player_id].current_location, 
+                                app.session.world_state_avatars.session_players[target_player_id].current_location,
+                                elements,
+                                show_source_emitter=false,
+                                show_target_emitter=true);
         }
 
     }
