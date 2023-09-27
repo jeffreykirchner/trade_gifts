@@ -288,6 +288,9 @@ def sync_continue_timer(event, session_id):
                     sd_player["end_health"] = world_state["avatars"][i]["health"]
                     sd_player["start_health"] = world_state["avatars"][i]["health"]
                     
+                    #hat
+                    sd_player["hat_at_start"] = world_state["avatars"][i]["parameter_set_hat_id"]
+                    
                     #inventory
                     avatar = world_state["avatars"][i]
                     for k in main.globals.Goods.choices:                       
