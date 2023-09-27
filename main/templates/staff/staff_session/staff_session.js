@@ -242,6 +242,12 @@ var app = Vue.createApp({
                 case "update_patch_harvest":
                     app.take_patch_harvest(message_data);
                     break;
+                case "update_hat_avatar":
+                    app.take_update_hat_avatar(message_data);
+                    break;
+                case "update_hat_avatar_cancel":
+                    app.take_update_hat_avatar_cancel(message_data);
+                    break;
             }
 
             app.first_load_done = true;
