@@ -1040,16 +1040,32 @@ class SubjectUpdatesMixin():
             error_mesage = "Invalid trade."
 
         if type == "proposal":
-            self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+            source_player = self.world_state_avatars_local['session_players'][str(player_id)]
+            target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
+
+            # self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
         else:
-            self.world_state_avatars_local["session_players"][str(target_player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+            source_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
+            target_player = self.world_state_avatars_local['session_players'][str(player_id)]
+
+            # self.world_state_avatars_local["session_players"][str(target_player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+
+        source_player['cool_down'] = self.parameter_set_local["cool_down_length"]
+
+        source_player['interaction'] = 0
+        target_player['interaction'] = 0
+
+        source_player['frozen'] = False
+        target_player['frozen'] = False
+
+        source_player['tractor_beam_target'] = None
 
         result = {"status" : status, "error_message" : error_mesage}
         result["source_player_id"] = player_id
         result["target_player_id"] = target_player_id
         result["type"] = type
 
-        await self.cancel_interaction(event)
+        # await self.cancel_interaction(event)
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)

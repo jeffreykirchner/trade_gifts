@@ -1052,10 +1052,7 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
 
         source_player_id = parseInt(message_data.source_player_id);
         target_player_id = parseInt(message_data.target_player_id);
-
-        app.selected_avatar.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
-        app.selected_avatar.good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
-        app.selected_avatar.good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
+       
 
         if(type == "open")
         {
@@ -1066,6 +1063,10 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                     app.selected_avatar.avatar = app.session.world_state.avatars[source_player_id];
                     app.selected_avatar.target_player_id = source_player_id;
                     app.selected_avatar.parameter_set_player = app.session.parameter_set.parameter_set_players[app.selected_avatar.avatar.parameter_set_player_id];
+                    
+                    app.selected_avatar.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
+                    app.selected_avatar.good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
+                    app.selected_avatar.good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
 
                     app.hat_trade_status = "proposal_received";
                     app.avatar_hat_modal.show();
@@ -1090,10 +1091,13 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
         }
         else if(type == "proposal_received")
         {
-            if(target_player_id == app.session_player.id || source_player_id == app.session_player.id)
+            if(app.is_subject)
             {
-                app.avatar_hat_modal.hide();
-                app.hat_trade_status = "open";
+                if(target_player_id == app.session_player.id || source_player_id == app.session_player.id)
+                {
+                    app.avatar_hat_modal.hide();
+                    app.hat_trade_status = "open";
+                }
             }
 
             app.session.world_state.avatars[source_player_id.toString()].parameter_set_hat_id = message_data.source_player.parameter_set_hat_id;
@@ -1199,14 +1203,28 @@ take_update_hat_avatar_cancel: function take_update_hat_avatar_cancel(message_da
             }
         }
 
-        if(message_data.type == "proposal")
-        {
-            app.session.world_state_avatars.session_players[source_player_id].cool_down = app.session.parameter_set.cool_down_length;
-        }   
-        else
-        {
-            app.session.world_state_avatars.session_players[target_player_id].cool_down = app.session.parameter_set.cool_down_length;
-        }
+        let target_player = app.session.world_state_avatars.session_players[target_player_id];
+        let source_player = app.session.world_state_avatars.session_players[source_player_id];
+
+        
+        source_player.cool_down = app.session.parameter_set.cool_down_length
+
+        source_player.interaction = 0
+        target_player.interaction = 0
+
+        source_player.frozen = false
+        target_player.frozen = false
+
+        source_player.tractor_beam_target = null;
+
+        // if(message_data.type == "proposal")
+        // {
+        //     app.session.world_state_avatars.session_players[source_player_id].cool_down = app.session.parameter_set.cool_down_length;
+        // }   
+        // else
+        // {
+            
+        // }
 
         app.update_avatar_inventory();
         

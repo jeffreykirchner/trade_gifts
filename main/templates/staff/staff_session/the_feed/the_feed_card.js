@@ -118,6 +118,52 @@ process_the_feed(message_type, message_data)
             group_label = app.get_parameter_set_group_from_player_id(message_data.player_id).name;
             html_text = "<b>" + sender_label + "</b> (" + group_label + ") harvested " + message_data.harvest_amount + " <img src='/static/"+  message_data.patch.good.toLowerCase() +".png' width='20'>" + " from patch " + message_data.patch.info;
             break;
+        case "update_hat_avatar":
+            source_player_label = app.get_parameter_set_player_from_player_id(message_data.source_player_id).id_label;
+            source_player_group_label = app.get_parameter_set_group_from_player_id(message_data.source_player_id).name;
+
+            target_player_label = app.get_parameter_set_player_from_player_id(message_data.target_player_id).id_label;
+            target_player_group_label = app.get_parameter_set_group_from_player_id(message_data.target_player_id).name;
+
+            source_avatar_hat_id = app.session.world_state.avatars[message_data.source_player_id].parameter_set_hat_id;
+            target_avatar_hat_id =  app.session.world_state.avatars[message_data.target_player_id].parameter_set_hat_id;
+
+            if(!source_avatar_hat_id || !target_avatar_hat_id) return;
+
+            source_avatar_texture = app.session.parameter_set.parameter_set_hats[source_avatar_hat_id].texture;
+            target_avatar_texture = app.session.parameter_set.parameter_set_hats[target_avatar_hat_id].texture;
+
+            if(message_data.type=="open")
+            {
+            
+                html_text = "<b>" + source_player_label + "</b> (" + source_player_group_label + ") proposal to <b>" + target_player_label + "</b> (" + target_player_group_label + "): " +
+                            "<img src='/static/"+  source_avatar_texture +".png' width='20'> for <img src='/static/"+  target_avatar_texture +".png' width='20'>";
+                
+            }
+            else if(message_data.type=="proposal_received")
+            {
+                html_text = "<b>" + source_player_label + "</b> (" + source_player_group_label + ") accepts proposal from <b>" + target_player_label + "</b> (" + target_player_group_label + "): " +
+                            "<img src='/static/"+  source_avatar_texture +".png' width='20'> for <img src='/static/"+  target_avatar_texture +".png' width='20'>";
+            }
+            break;
+        case "update_hat_avatar_cancel":
+            source_player_label = app.get_parameter_set_player_from_player_id(message_data.source_player_id).id_label;
+            source_player_group_label = app.get_parameter_set_group_from_player_id(message_data.source_player_id).name;
+
+            target_player_label = app.get_parameter_set_player_from_player_id(message_data.target_player_id).id_label;
+            target_player_group_label = app.get_parameter_set_group_from_player_id(message_data.target_player_id).name;
+
+            source_avatar_hat_id = app.session.world_state.avatars[message_data.source_player_id].parameter_set_hat_id;
+            target_avatar_hat_id =  app.session.world_state.avatars[message_data.target_player_id].parameter_set_hat_id;
+
+            if(!source_avatar_hat_id || !target_avatar_hat_id) return;
+
+            source_avatar_texture = app.session.parameter_set.parameter_set_hats[source_avatar_hat_id].texture;
+            target_avatar_texture = app.session.parameter_set.parameter_set_hats[target_avatar_hat_id].texture;
+
+            html_text = "<b>" + source_player_label + "</b> (" + source_player_group_label + ") rejects proposal with <b>" + target_player_label + "</b> (" + target_player_group_label + "): " +
+                        "<img src='/static/"+  source_avatar_texture +".png' width='20'> for <img src='/static/"+  target_avatar_texture +".png' width='20'>";
+
     }
 
     if(html_text != "") {
