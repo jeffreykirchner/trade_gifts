@@ -1,7 +1,7 @@
 /**
  * send movement update to server
  */
-target_location_update()
+target_location_update: function target_location_update()
 {
     if(app.session.world_state.current_experiment_phase == 'Instructions')
     {
@@ -24,7 +24,7 @@ target_location_update()
 /**
  * take update from server about new location target for a player
  */
-take_target_location_update(message_data)
+take_target_location_update: function take_target_location_update(message_data)
 {
     if(message_data.value == "success")
     {
@@ -40,7 +40,7 @@ take_target_location_update(message_data)
 /**
  *pointer up on subject screen
  */
- subject_pointer_up(event)
+ subject_pointer_up: function subject_pointer_up(event)
  {
     if(!app.session.world_state.hasOwnProperty('started')) return;
     let local_pos = event.data.getLocalPosition(event.currentTarget);
@@ -51,7 +51,7 @@ take_target_location_update(message_data)
  /**
   * stage pointer up actions
   */
- subject_pointer_up_action(button, local_pos)
+ subject_pointer_up_action: function subject_pointer_up_action(button, local_pos)
  {
     let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
     let avatar = app.session.world_state.avatars[app.session_player.id];
@@ -285,7 +285,7 @@ take_target_location_update(message_data)
 /**
  * result of subject activating tractor beam
  */
-take_update_tractor_beam(message_data)
+take_update_tractor_beam: function take_update_tractor_beam(message_data)
 {
     let player_id = message_data.player_id;
     let target_player_id = message_data.target_player_id;
@@ -302,7 +302,7 @@ take_update_tractor_beam(message_data)
 /**
  * cancel tractor beam
  */
-take_update_cancel_interaction(message_data)
+take_update_cancel_interaction: function take_update_cancel_interaction(message_data)
 {
     let source_player_id = message_data.source_player_id;
     let target_player_id = message_data.target_player_id;

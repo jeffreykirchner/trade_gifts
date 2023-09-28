@@ -1,16 +1,19 @@
 {%if session.parameter_set.test_mode%}
 
 /**
- * do random self test actions
+ * return random number between min and max inclusive
  */
-random_number(min, max){
+random_number: function random_number(min, max){
     //return a random number between min and max
     min = Math.ceil(min);
     max = Math.floor(max+1);
     return Math.floor(Math.random() * (max - min) + min);
 },
 
-random_string(min_length, max_length){
+/**
+ * return a random string of length between min_length and max_length
+ */
+random_string: function random_string(min_length, max_length){
 
     let s = "";
     let r = app.random_number(min_length, max_length);
@@ -24,7 +27,10 @@ random_string(min_length, max_length){
     return s;
 },
 
-do_test_mode(){
+/**
+ * do test mode
+ */
+do_test_mode: function do_test_mode(){
     {%if DEBUG%}
     console.log("Do Test Mode");
     {%endif%}
@@ -68,7 +74,7 @@ do_test_mode(){
 /**
  * test during instruction phase
  */
- do_test_mode_instructions()
+do_test_mode_instructions: function do_test_mode_instructions()
  {
     if(app.session_player.instructions_finished) return;
     if(app.working) return;
@@ -166,7 +172,7 @@ do_test_mode(){
 /**
  * test during run phase
  */
-do_test_mode_run()
+do_test_mode_run: function do_test_mode_run()
 {
     if(app.session.world_state.finished) return;
     if(app.session.world_state.avatars[app.session_player.id].sleeping) return;
@@ -210,11 +216,16 @@ do_test_mode_run()
             app.do_test_mode_avatar_attack();
             go=false;
         }
+        else if(app.avatar_hat_modal_open)
+        {
+            app.do_test_mode_avatar_hat();
+            go=false;
+        }
     }
         
     if(go)
     {
-        switch (app.random_number(1, 5)){
+        switch (app.random_number(1, 6)){
             case 1:
                 app.do_test_mode_chat();
                 break;            
@@ -230,6 +241,9 @@ do_test_mode_run()
             case 5:
                 app.test_mode_check_near_avatar();
                 break;
+            case 6:
+                app.do_test_mode_emoji();
+                break;
         }
     }
 },
@@ -237,41 +251,60 @@ do_test_mode_run()
 /**
  * avatar modal is open 
  * */
-do_test_mode_avatar()
+do_test_mode_avatar: function do_test_mode_avatar()
 {
     if(!app.selected_avatar.avatar) app.avatar_modal.hide();
 
-    if(app.random_number(1, 2) == 1 && 
-       app.session.parameter_set.allow_attacks=='True' &&
-       app.selected_avatar.good_one_move == 0 && 
-       app.selected_avatar.good_two_move == 0 && 
-       app.selected_avatar.good_three_move == 0)
+    //move selected fruit
+    if(app.selected_avatar.good_one_move > 0 || 
+       app.selected_avatar.good_two_move > 0 || 
+       app.selected_avatar.good_three_move > 0)
     {
-        app.show_attack_avatar();
-    }
-    else if (app.selected_avatar.good_one_available>0 || app.selected_avatar.good_two_available>0 || app.selected_avatar.good_three_available>0)
-    {
-        if(app.selected_avatar.good_one_move == 0 && app.selected_avatar.good_two_move == 0 && app.selected_avatar.good_three_move == 0)
-        {
-            app.selected_avatar.good_one_move = app.random_number(0, app.selected_avatar.good_one_available);
-            app.selected_avatar.good_two_move = app.random_number(0, app.selected_avatar.good_two_available);
-            app.selected_avatar.good_three_move = app.random_number(0, app.selected_avatar.good_three_available);
-        }
-        else
+        if(app.selected_avatar.good_one_move <= app.selected_avatar.good_one_available &&
+            app.selected_avatar.good_two_move <= app.selected_avatar.good_two_available &&
+            app.session.parameter_set.good_mode=="Two")
         {
             app.send_move_fruit_to_avatar();
         }
+        else if(app.selected_avatar.good_one_move <= app.selected_avatar.good_one_available &&
+                app.selected_avatar.good_two_move <= app.selected_avatar.good_two_available &&
+                app.selected_avatar.good_three_move <= app.selected_avatar.good_three_available)
+        {
+            app.send_move_fruit_to_avatar();
+        }
+        else
+        {
+            app.avatar_modal.hide();
+        }
+
+        return;
     }
-    else
+
+    
+    //randomly pick action
+    let v = app.random_number(1, 3);
+
+    if(v==1 && app.session.parameter_set.allow_attacks=='True')
     {
-        app.avatar_modal.hide();
+        app.show_attack_avatar();
     }
+    else if(v==2 && app.session.parameter_set.enable_hats=='True')
+    {
+        app.show_hat_avatar();
+    }
+    else 
+    {
+        app.selected_avatar.good_one_move = app.random_number(0, app.selected_avatar.good_one_available);
+        app.selected_avatar.good_two_move = app.random_number(0, app.selected_avatar.good_two_available);
+        app.selected_avatar.good_three_move = app.random_number(0, app.selected_avatar.good_three_available);
+    }
+
 },
 
 /**
  * house modal is open
  */
-do_test_mode_house()
+do_test_mode_house: function do_test_mode_house()
 {
     if(!app.selected_house.house) app.house_modal.hide();
     
@@ -333,7 +366,7 @@ do_test_mode_house()
 /**
  * patch modal is open
  */
-do_test_mode_patch()
+do_test_mode_patch: function do_test_mode_patch()
 {
     if(!app.selected_patch.patch) app.patch_modal.hide();
 
@@ -352,14 +385,14 @@ do_test_mode_patch()
 /**
  * field modal is open
  */
-do_test_mode_field()
+do_test_mode_field: function do_test_mode_field()
 {
 },
 
 /**
  * avatar attack modal is open
  */
-do_test_mode_avatar_attack()
+do_test_mode_avatar_attack: function do_test_mode_avatar_attack()
 {
     if(app.random_number(1, 2) == 1 && 
        app.session.parameter_set.allow_attacks=='True' &&
@@ -375,18 +408,54 @@ do_test_mode_avatar_attack()
 },
 
 /**
+ * avatar hat modal is open
+ */
+
+do_test_mode_avatar_hat: function do_test_mode_avatar_hat()
+{
+    if(app.random_number(1,2) == 1)
+    {
+        app.send_hat_avatar();
+    }
+    else
+    {
+        app.send_hat_avatar_cancel();
+    }
+},
+
+/**
  * test mode chat
  */
-do_test_mode_chat()
+do_test_mode_chat: function do_test_mode_chat()
 {
-
     app.chat_text = app.random_string(5, 20);
+},
+
+/**
+ * test mode emoji
+ */
+do_test_mode_emoji: function do_test_mode_emoji()
+{
+    let emote_number = app.random_number(1, 3);
+
+    if(emote_number == 1)
+    {
+        app.send_emoji("happy");
+    }
+    else if(emote_number == 2)
+    {
+        app.send_emoji("sad");
+    }
+    else
+    {
+        app.send_emoji("angry");
+    }
 },
 
 /**
  * test mode move to a location
  */
-test_mode_move()
+test_mode_move: function test_mode_move()
 {
 
     if(app.session.world_state.finished) return;
@@ -432,7 +501,7 @@ test_mode_move()
 /**
  * move to random house test mode
  */
-test_mode_move_to_house()
+test_mode_move_to_house: function test_mode_move_to_house()
 {
     let temp_local_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
     let go = true;
@@ -453,7 +522,7 @@ test_mode_move_to_house()
 /**
  * move to random player test mode
  */
-test_mode_move_to_avatar()
+test_mode_move_to_avatar: function test_mode_move_to_avatar()
 {
     let temp_local_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
     let go = true;
@@ -474,7 +543,7 @@ test_mode_move_to_avatar()
 /**
  * move to random patch test mode
  */
-test_mode_move_to_patch()
+test_mode_move_to_patch: function test_mode_move_to_patch()
 {
     let temp_local_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
     let go = true;
@@ -495,7 +564,7 @@ test_mode_move_to_patch()
 /**
  * if near patch open harvest modal
  */
-test_mode_check_near_patch()
+test_mode_check_near_patch: function test_mode_check_near_patch()
 {
     let avatar = app.session.world_state.avatars[app.session_player.id];
 
@@ -524,7 +593,7 @@ test_mode_check_near_patch()
 /**
  * if near house open house modal
  */
-test_mode_check_near_house()
+test_mode_check_near_house: function test_mode_check_near_house()
 {
     for(let i=0;i<app.session.parameter_set.parameter_set_players_order.length;i++)
     {
@@ -543,7 +612,7 @@ test_mode_check_near_house()
 /**
  * if near avatar open avatar modal
  */
-test_mode_check_near_avatar()
+test_mode_check_near_avatar: function test_mode_check_near_avatar()
 {
 
     for(i in app.session.world_state_avatars.session_players) 

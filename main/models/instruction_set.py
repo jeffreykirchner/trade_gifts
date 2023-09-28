@@ -15,11 +15,11 @@ class InstructionSet(models.Model):
 
     label = models.CharField(max_length = 100, default="Name Here", verbose_name="Label")                 #label text
 
-    action_page_move = models.IntegerField(verbose_name='Required Action: Production', default=1)
-    action_page_harvest = models.IntegerField(verbose_name='Required Action: Production', default=3)
-    action_page_house = models.IntegerField(verbose_name='Required Action: Production', default=4)
-    action_page_sleep = models.IntegerField(verbose_name='Required Action: Production', default=5)
-    action_page_attacks = models.IntegerField(verbose_name='Required Action: Production', default=6)
+    action_page_move = models.IntegerField(verbose_name='Required Action: Move', default=1)
+    action_page_harvest = models.IntegerField(verbose_name='Required Action: Harvest', default=3)
+    action_page_house = models.IntegerField(verbose_name='Required Action: House', default=4)
+    action_page_sleep = models.IntegerField(verbose_name='Required Action: Sleep', default=5)
+    action_page_attacks = models.IntegerField(verbose_name='Required Action: Attack', default=6)
         
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

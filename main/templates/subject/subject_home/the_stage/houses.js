@@ -1,7 +1,7 @@
 /**
  * setup house objects
  */
-setup_pixi_houses()
+setup_pixi_houses: function setup_pixi_houses()
 {
     for(const i in app.session.parameter_set.parameter_set_players)
     {
@@ -147,7 +147,7 @@ setup_pixi_houses()
 /**
  * update house inventory
  */
-update_house_inventory()
+update_house_inventory: function update_house_inventory()
 {
     if(!app.session.world_state["started"]) return;
     
@@ -167,7 +167,7 @@ update_house_inventory()
 /**
  * subject house click
  */
-subject_house_click(target_house_id)
+subject_house_click: function subject_house_click(target_house_id)
 {
     //if(target_house_id == app.session_player.id) return;
 
@@ -181,6 +181,23 @@ subject_house_click(target_house_id)
 
     let session_player_house = app.session.world_state.avatars[app.session.world_state.houses[target_house_id].session_player];
     let parameter_set_player_house = app.session.parameter_set.parameter_set_players[session_player_house.parameter_set_player_id];
+
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        if(app.selected_house.house.session_player != app.session_player.id)
+        {
+            app.add_text_emitters("During the instructions, please interact with your house.", 
+                                    parameter_set_player_house.house_x, 
+                                    parameter_set_player_house.house_y,
+                                    parameter_set_player_house.house_x,
+                                    parameter_set_player_house.house_y-100,
+                                    0xFFFFFF,
+                                    28,
+                                    null);
+
+            return;
+        }
+    }
 
     app.selected_house.parameter_set_player = parameter_set_player_house;
 
@@ -209,7 +226,7 @@ subject_house_click(target_house_id)
 /**
  * hide house modal
  */
-hide_house_modal()
+hide_house_modal: function hide_house_modal()
 {
     app.selected_house.house = null;
     app.house_modal_open = false;
@@ -218,7 +235,7 @@ hide_house_modal()
 /**
  * send move fruit house
  */
-send_move_fruit_house()
+send_move_fruit_house: function send_move_fruit_house()
 {
     if(!app.session.world_state["started"]) return;
     if(!app.selected_house.house) return;
@@ -301,7 +318,7 @@ send_move_fruit_house()
 /**
  * send fruit to/from house instructions
  */
-send_move_fruit_house_instructions()
+send_move_fruit_house_instructions: function send_move_fruit_house_instructions()
 {
 
     if(app.session_player.current_instruction != app.instructions.action_page_house) return;
@@ -385,7 +402,7 @@ send_move_fruit_house_instructions()
 /**
  * take update from server about moving fruit to or from house
  */
-take_update_move_fruit_to_house(message_data)
+take_update_move_fruit_to_house: function take_update_move_fruit_to_house(message_data)
 {
     if(message_data.status == "success")
     {
@@ -489,7 +506,7 @@ take_update_move_fruit_to_house(message_data)
 /**
 * select all fruit for house movement   
 */
-select_all_fruit_house()
+select_all_fruit_house: function select_all_fruit_house()
 {
     let session_player = app.session.world_state.avatars[app.session_player.id];
     let house = app.session.world_state.houses[app.selected_house.target_house_id];
@@ -511,7 +528,7 @@ select_all_fruit_house()
 /**
  * send sleep to server
  */
-send_sleep()
+send_sleep: function send_sleep()
 {
     if(app.session.world_state.current_experiment_phase == 'Instructions')
     {
@@ -528,7 +545,7 @@ send_sleep()
 /**
  * send sleep instructions
  */
-send_sleep_instructions()
+send_sleep_instructions: function send_sleep_instructions()
 {
     if(app.session_player.current_instruction != app.instructions.action_page_sleep) return;
 
@@ -562,7 +579,7 @@ send_sleep_instructions()
 /**
  * take update from server about sleeping
  */
-take_update_sleep(message_data)
+take_update_sleep: function take_update_sleep(message_data)
 {
     let source_player_id = message_data.source_player_id;
 
@@ -577,7 +594,7 @@ take_update_sleep(message_data)
 /**
  * show health emitters
  */
-do_house_health_emitters()
+do_house_health_emitters: function do_house_health_emitters()
 {
     for(let i in app.session.world_state.houses)
     {

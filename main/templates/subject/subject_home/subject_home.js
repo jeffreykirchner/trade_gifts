@@ -100,6 +100,7 @@ var app = Vue.createApp({
                     avatar_attack_modal : null,
                     field_modal : null,
                     house_modal : null,
+                    avatar_hat_modal : null,
                     test_mode : {%if session.parameter_set.test_mode%}true{%else%}false{%endif%},
 
                     avatar_modal_open : false,
@@ -286,10 +287,11 @@ var app = Vue.createApp({
             document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
             document.getElementById('avatar_modal').addEventListener('hidden.bs.modal', app.hide_avatar_modal);
             document.getElementById('avatar_attack_modal').addEventListener('hidden.bs.modal', app.hide_avatar_attack_modal);
+            document.getElementById('avatar_hat_modal').addEventListener('hidden.bs.modal', app.hide_avatar_hat_modal);
             document.getElementById('field_modal').addEventListener('hidden.bs.modal', app.hide_field_modal);
             document.getElementById('house_modal').addEventListener('hidden.bs.modal', app.hide_house_modal);
             document.getElementById('patch_modal').addEventListener('hidden.bs.modal', app.hide_patch_modal);
-
+           
             {%if session.parameter_set.test_mode%} setTimeout(app.do_test_mode, app.random_number(1000 , 1500)); {%endif%}
 
             // if game is finished show modal
