@@ -1,7 +1,7 @@
 /**
  * subject screen offset from the origin
  */
-get_offset()
+get_offset: function get_offset()
 {
     let obj = app.session.world_state_avatars.session_players[app.session_player.id];
 
@@ -12,7 +12,7 @@ get_offset()
 /**
  * update the amount of shift needed to center the player
  */
-update_offsets_player(delta)
+update_offsets_player: function update_offsets_player(delta)
 {
     offset = app.get_offset();
 
@@ -28,7 +28,7 @@ update_offsets_player(delta)
 /**
  * setup subject screen status overlay
  */
-setup_subject_status_overlay()
+setup_subject_status_overlay: function setup_subject_status_overlay()
 {
     if(!app.session) return;
     if(app.pixi_mode!="subject") return;
@@ -112,10 +112,11 @@ setup_subject_status_overlay()
 /**
  * update subject overlay
  */
-update_subject_status_overlay()
+update_subject_status_overlay: function update_subject_status_overlay()
 {
     if(!app.session) return;
     if(!app.session.world_state.hasOwnProperty('started')) return;
+    if(!app.session.started) return;
 
     if(!subject_status_overlay_container) return;
     // subject_status_overlay_container.position.set(pixi_app.screen.width - subject_status_overlay_container.width-20, 20);
@@ -128,7 +129,7 @@ update_subject_status_overlay()
 /**
  * take rescue subject
  */
-take_rescue_subject(message_data)
+take_rescue_subject: function take_rescue_subject(message_data)
 {
     let session_player = app.session.world_state_avatars.session_players[message_data.player_id];
 

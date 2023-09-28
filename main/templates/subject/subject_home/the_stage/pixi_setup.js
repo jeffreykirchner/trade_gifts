@@ -3,7 +3,7 @@
 /**
  * update the pixi players with new info
  */
-setup_pixi(){    
+setup_pixi: function setup_pixi(){    
     app.reset_pixi_app();
 
     PIXI.Assets.add('sprite_sheet', '{% static "gear_3_animated.json" %}');
@@ -74,7 +74,7 @@ setup_pixi(){
     pixi_transfer_beams_key = 0;
 },
 
-reset_pixi_app(){    
+reset_pixi_app: function reset_pixi_app(){    
 
     app.stage_width = app.session.parameter_set.world_width;
     app.stage_height = app.session.parameter_set.world_height;
@@ -100,7 +100,7 @@ reset_pixi_app(){
 
 /** load pixi sprite sheets
 */
-setup_pixi_sheets(textures){
+setup_pixi_sheets: function setup_pixi_sheets(textures){
 
     app.pixi_textures = textures;
     app.background_tile_tex = textures.bg_tex;
@@ -183,7 +183,7 @@ setup_pixi_sheets(textures){
 /**
  * game loop for pixi
  */
-game_loop(delta)
+game_loop: function game_loop(delta)
 {
     app.move_player(delta);
     app.move_text_emitters(delta);
@@ -220,7 +220,7 @@ game_loop(delta)
 /**
  * check for collisions between local player and other objects
  */
-check_for_collisions(delta)
+check_for_collisions: function check_for_collisions(delta)
 {
     // if(Date.now() - app.last_collision_check < 100) return;
     // app.last_collision_check = Date.now();
@@ -233,7 +233,7 @@ check_for_collisions(delta)
 /**
  * update tractor beam between two players
  */
-setup_tractor_beam(source_id, target_id)
+setup_tractor_beam: function setup_tractor_beam(source_id, target_id)
 {
     let source_player = app.session.world_state_avatars.session_players[source_id];
     let target_player = app.session.world_state_avatars.session_players[target_id];

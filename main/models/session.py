@@ -137,6 +137,7 @@ class Session(models.Model):
         parameter_set_patches = self.parameter_set.parameter_set_patches_a.values('id').all()
         session_players = self.session_players.values('id','parameter_set_player__id').all()
         parameter_set = self.parameter_set.json()
+        world_state = self.world_state
         
         self.summary_data = {}
 
@@ -159,6 +160,7 @@ class Session(models.Model):
             v["end_health"] = None
             v["health_from_sleep"] = 0
             v["health_from_house"] = 0
+            v["hat_at_start"] = None
 
             #total harvested / consumption
             for k in main.globals.Goods.choices:
@@ -189,9 +191,10 @@ class Session(models.Model):
 
         session_period_1 = self.session_periods.get(period_number=1)
 
-        #set starting health
+        #set startinging values
         for i in session_period_1.summary_data:
             session_period_1.summary_data[i]["start_health"] = parameter_set["starting_health"]
+            session_period_1.summary_data[i]["hat_at_start"] = world_state["avatars"][i]["parameter_set_hat_id"]
 
         session_period_1.save()
         
@@ -385,6 +388,7 @@ class Session(models.Model):
         with io.StringIO() as output:
 
             world_state = self.world_state
+            parameter_set = self.parameter_set.json()
            
             parameter_set_players = {}
             for i in self.session_players.all().values('id','parameter_set_player__id_label'):
@@ -392,7 +396,7 @@ class Session(models.Model):
 
             writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
             
-            temp_header = ["Session ID", "Period", "Client #", "Label", "Earnings ¢", "Start Health", "End Health", "Health From Sleep", "Health From House"]
+            temp_header = ["Session ID", "Period", "Client #", "Label", "Period Earnings ¢", "Hat at Start", "Start Health", "End Health", "Health From Sleep", "Health From House"]
 
             #good totals
             for k in main.globals.Goods.choices:
@@ -438,6 +442,7 @@ class Session(models.Model):
                                     player_number+1,
                                     parameter_set_players[str(player)]["parameter_set_player__id_label"], 
                                     temp_p["period_earnings"],
+                                    parameter_set["parameter_set_hats"][str(temp_p["hat_at_start"])]["info"] if temp_p["hat_at_start"] else "",
                                     temp_p["start_health"],
                                     temp_p["end_health"],
                                     temp_p["health_from_sleep"],
@@ -550,6 +555,26 @@ class Session(models.Model):
             return f'{data["direction"]}: {data["good_one_move"]} {data["goods"]["good_one"]}, {data["good_two_move"]} {data["goods"]["good_two"]}, {data["good_three_move"]} {data["goods"].get("good_three","None")}'
         elif type == "help_doc":
             return data
+        elif type == "hat_avatar":
+
+            source_label = session_players[str(data["source_player_id"])]["parameter_set_player__id_label"]
+            target_label = session_players[str(data["target_player_id"])]["parameter_set_player__id_label"]
+
+            source_hat = self.parameter_set.parameter_set_hats.get(id=data["source_player_hat_id"]).info
+            target_hat = self.parameter_set.parameter_set_hats.get(id=data["target_player_hat_id"]).info
+
+            if data["type"] == "open":               
+                return f'{source_label} proposes hat trade to {target_label} : {source_hat} for {target_hat}'
+            else:
+                return f'{target_label} accepts hat trade with {source_label}: {target_hat} for {source_hat}'
+        elif type =="hat_avatar_cancel":
+            source_label = session_players[str(data["source_player_id"])]["parameter_set_player__id_label"]
+            target_label = session_players[str(data["target_player_id"])]["parameter_set_player__id_label"]
+
+            source_hat = self.parameter_set.parameter_set_hats.get(id=data["source_player_hat_id"]).info
+            target_hat = self.parameter_set.parameter_set_hats.get(id=data["target_player_hat_id"]).info
+            
+            return f'{source_label} rejects hat trade with {target_label}: {source_hat} for {target_hat}'
 
         return ""
     
