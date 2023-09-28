@@ -300,7 +300,7 @@ class SubjectUpdatesMixin():
 
             target_player['interaction'] = self.parameter_set_local['interaction_length']
 
-            await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
+            # await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
 
             # await SessionEvent.objects.acreate(session_id=self.session_id, 
             #                                 session_player_id=player_id,
@@ -970,16 +970,23 @@ class SubjectUpdatesMixin():
         result = {"status" : status, "error_message" : error_mesage}
 
         if status == "success":
-            result["source_player_id"] = player_id
-            result["target_player_id"] = target_player_id
-            result["type"] = type
             
+            result["type"] = type
+  
             if type == "proposal_received":
-               
-                v = await sync_to_async(sync_hat_avatar)(self.session_id, player_id, target_player_id)
+                result["source_player_id"] = target_player_id
+                result["target_player_id"] = player_id
 
-                source_player = self.world_state_avatars_local['session_players'][str(player_id)]
-                target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
+                source_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
+                target_player = self.world_state_avatars_local['session_players'][str(player_id)]
+
+                source_avatar = self.world_state_local['avatars'][str(target_player_id)]
+                target_avatar = self.world_state_local['avatars'][str(player_id)]
+
+                result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
+                result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
+
+                v = await sync_to_async(sync_hat_avatar)(self.session_id, player_id, target_player_id)
 
                 if v["world_state"] and v["status"]=="success":
                     self.world_state_local = v["world_state"]
@@ -993,15 +1000,33 @@ class SubjectUpdatesMixin():
 
                 target_player['tractor_beam_target'] = None
 
-                result["source_player"] = self.world_state_local["avatars"][str(player_id)] 
-                result["target_player"] = self.world_state_local["avatars"][str(target_player_id)]
+                result["source_player"] = self.world_state_local["avatars"][str(target_player_id)] 
+                result["target_player"] = self.world_state_local["avatars"][str(player_id)]
 
             else:
+                result["source_player_id"] = player_id
+                result["target_player_id"] = target_player_id
+            
+                source_player = self.world_state_avatars_local['session_players'][str(player_id)]
+                target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
+
+                source_avatar = self.world_state_local['avatars'][str(player_id)]
+                target_avatar = self.world_state_local['avatars'][str(target_player_id)]
+
+                result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
+                result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
                 
                 v = await self.tractor_beam(event)
 
                 result["status"] = v["status"]
                 result["error_message"] = v["error_message"]
+
+            await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                               session_player_id=player_id,
+                                               type="hat_avatar",
+                                               period_number=self.world_state_local["current_period"],
+                                               time_remaining=self.world_state_local["time_remaining"],
+                                               data=result)
                     
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -1043,10 +1068,16 @@ class SubjectUpdatesMixin():
             source_player = self.world_state_avatars_local['session_players'][str(player_id)]
             target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
 
+            source_avatar = self.world_state_local['avatars'][str(player_id)]
+            target_avatar = self.world_state_local['avatars'][str(target_player_id)]
+
             # self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
         else:
             source_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
             target_player = self.world_state_avatars_local['session_players'][str(player_id)]
+
+            source_avatar = self.world_state_local['avatars'][str(target_player_id)]
+            target_avatar = self.world_state_local['avatars'][str(player_id)]
 
             # self.world_state_avatars_local["session_players"][str(target_player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
 
@@ -1063,9 +1094,18 @@ class SubjectUpdatesMixin():
         result = {"status" : status, "error_message" : error_mesage}
         result["source_player_id"] = player_id
         result["target_player_id"] = target_player_id
-        result["type"] = type
 
-        # await self.cancel_interaction(event)
+        result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
+        result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
+
+        result["type"] = type
+       
+        await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                           session_player_id=player_id,
+                                           type="hat_avatar_cancel",
+                                           period_number=self.world_state_local["current_period"],
+                                           time_remaining=self.world_state_local["time_remaining"],
+                                           data=result)
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
