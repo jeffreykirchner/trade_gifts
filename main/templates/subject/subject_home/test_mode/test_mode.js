@@ -1,7 +1,7 @@
 {%if session.parameter_set.test_mode%}
 
 /**
- * do random self test actions
+ * return random number between min and max inclusive
  */
 random_number: function random_number(min, max){
     //return a random number between min and max
@@ -10,6 +10,9 @@ random_number: function random_number(min, max){
     return Math.floor(Math.random() * (max - min) + min);
 },
 
+/**
+ * return a random string of length between min_length and max_length
+ */
 random_string: function random_string(min_length, max_length){
 
     let s = "";
@@ -24,6 +27,9 @@ random_string: function random_string(min_length, max_length){
     return s;
 },
 
+/**
+ * do test mode
+ */
 do_test_mode: function do_test_mode(){
     {%if DEBUG%}
     console.log("Do Test Mode");
@@ -210,6 +216,11 @@ do_test_mode_run: function do_test_mode_run()
             app.do_test_mode_avatar_attack();
             go=false;
         }
+        else if(app.avatar_hat_modal_open)
+        {
+            app.do_test_mode_avatar_hat();
+            go=false;
+        }
     }
         
     if(go)
@@ -244,31 +255,50 @@ do_test_mode_avatar: function do_test_mode_avatar()
 {
     if(!app.selected_avatar.avatar) app.avatar_modal.hide();
 
-    if(app.random_number(1, 2) == 1 && 
-       app.session.parameter_set.allow_attacks=='True' &&
-       app.selected_avatar.good_one_move == 0 && 
-       app.selected_avatar.good_two_move == 0 && 
-       app.selected_avatar.good_three_move == 0)
+    //move selected fruit
+    if(app.selected_avatar.good_one_move > 0 || 
+       app.selected_avatar.good_two_move > 0 || 
+       app.selected_avatar.good_three_move > 0)
     {
-        app.show_attack_avatar();
-    }
-    else if (app.selected_avatar.good_one_available>0 || app.selected_avatar.good_two_available>0 || app.selected_avatar.good_three_available>0)
-    {
-        if(app.selected_avatar.good_one_move == 0 && app.selected_avatar.good_two_move == 0 && app.selected_avatar.good_three_move == 0)
-        {
-            app.selected_avatar.good_one_move = app.random_number(0, app.selected_avatar.good_one_available);
-            app.selected_avatar.good_two_move = app.random_number(0, app.selected_avatar.good_two_available);
-            app.selected_avatar.good_three_move = app.random_number(0, app.selected_avatar.good_three_available);
-        }
-        else
+        if(app.selected_avatar.good_one_move <= app.selected_avatar.good_one_available &&
+            app.selected_avatar.good_two_move <= app.selected_avatar.good_two_available &&
+            app.session.parameter_set.good_mode=="Two")
         {
             app.send_move_fruit_to_avatar();
         }
+        else if(app.selected_avatar.good_one_move <= app.selected_avatar.good_one_available &&
+                app.selected_avatar.good_two_move <= app.selected_avatar.good_two_available &&
+                app.selected_avatar.good_three_move <= app.selected_avatar.good_three_available)
+        {
+            app.send_move_fruit_to_avatar();
+        }
+        else
+        {
+            app.avatar_modal.hide();
+        }
+
+        return;
     }
-    else
+
+    
+    //randomly pick action
+    let v = app.random_number(1, 3);
+
+    if(v==1 && app.session.parameter_set.allow_attacks=='True')
     {
-        app.avatar_modal.hide();
+        app.show_attack_avatar();
     }
+    else if(v==2 && app.session.parameter_set.enable_hats=='True')
+    {
+        app.show_hat_avatar();
+    }
+    else 
+    {
+        app.selected_avatar.good_one_move = app.random_number(0, app.selected_avatar.good_one_available);
+        app.selected_avatar.good_two_move = app.random_number(0, app.selected_avatar.good_two_available);
+        app.selected_avatar.good_three_move = app.random_number(0, app.selected_avatar.good_three_available);
+    }
+
 },
 
 /**
@@ -374,6 +404,22 @@ do_test_mode_avatar_attack: function do_test_mode_avatar_attack()
     else
     {
         app.avatar_attack_modal.hide();
+    }
+},
+
+/**
+ * avatar hat modal is open
+ */
+
+do_test_mode_avatar_hat: function do_test_mode_avatar_hat()
+{
+    if(app.random_number(1,2) == 1)
+    {
+        app.send_hat_avatar();
+    }
+    else
+    {
+        app.send_hat_avatar_cancel();
     }
 },
 
