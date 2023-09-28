@@ -1,7 +1,7 @@
 /**
  * setup mini map on subject screen 
  * */
-setup_pixi_minimap()
+setup_pixi_minimap: function setup_pixi_minimap()
 {
     if(!app.session) return;
     if(!app.session.started) return;
@@ -153,7 +153,7 @@ setup_pixi_minimap()
 /**
  * update the mini map
  */
-update_mini_map(delta)
+update_mini_map: function update_mini_map(delta)
 {
     if(!app.mini_map_scale) return;
     

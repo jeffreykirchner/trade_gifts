@@ -132,14 +132,14 @@ var app = Vue.createApp({
 
         /** fire when websocket connects to server
         */
-        handle_socket_connected(){            
+        handle_socket_connected: function handle_socket_connected(){            
             app.send_get_session();
         },
 
         /** fire trys to connect to server
          * return true if re-connect should be allowed else false
         */
-        handle_socket_connection_try(){            
+        handle_socket_connection_try: function handle_socket_connection_try(){            
             if(!app.session) return true;
 
             app.reconnection_count+=1;
@@ -157,7 +157,7 @@ var app = Vue.createApp({
         /** take websocket message from server
         *    @param data {json} incoming data from server, contains message and message type
         */
-        take_message(data) {
+        take_message: function take_message(data) {
 
             {%if DEBUG%}
             console.log(data);
@@ -260,7 +260,7 @@ var app = Vue.createApp({
         *    @param message_type {string} type of message sent to server
         *    @param message_text {json} body of message being sent to server
         */
-        send_message(message_type, message_text, message_target="self")
+        send_message: function send_message(message_type, message_text, message_target="self")
         {          
             app.chat_socket.send(JSON.stringify({
                     'message_type': message_type,
@@ -272,7 +272,7 @@ var app = Vue.createApp({
         /**
          * do after session has loaded
         */
-        do_first_load()
+        do_first_load: function do_first_load()
         {           
             app.end_game_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('end_game_modal'), {keyboard: false})   
             app.avatar_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_modal'), {keyboard: false})  
@@ -324,7 +324,7 @@ var app = Vue.createApp({
         /**
          * after reconnection, load again
          */
-        do_reload()
+        do_reload: function do_reload()
         {
             app.setup_pixi_subjects();
             app.setup_pixi_minimap();
@@ -337,14 +337,14 @@ var app = Vue.createApp({
 
         /** send winsock request to get session info
         */
-        send_get_session(){
+        send_get_session: function send_get_session(){
             app.send_message("get_session", {"player_key" : app.player_key});
         },
         
         /** take create new session
         *    @param message_data {json} session day in json format
         */
-        take_get_session(message_data){
+        take_get_session: function take_get_session(message_data){
             app.destory_setup_pixi_subjects();
             
             app.session = message_data.session;
@@ -389,14 +389,14 @@ var app = Vue.createApp({
         /** update start status
         *    @param message_data {json} session day in json format
         */
-        take_update_start_experiment(message_data){
+        take_update_start_experiment: function take_update_start_experiment(message_data){
             app.take_get_session(message_data);
         },
 
         /** update reset status
         *    @param message_data {json} session day in json format
         */
-        take_update_reset_experiment(message_data){
+        take_update_reset_experiment: function take_update_reset_experiment(message_data){
             app.take_get_session(message_data);
 
             app.end_game_modal.hide();            
@@ -405,7 +405,7 @@ var app = Vue.createApp({
         /**
         * update time and start status
         */
-        take_update_time(message_data){
+        take_update_time: function take_update_time(message_data){
           
             let status = message_data.value;
 
@@ -553,7 +553,7 @@ var app = Vue.createApp({
         /**
          * show the end game modal
          */
-        show_end_game_modal(){
+        show_end_game_modal: function show_end_game_modal(){
             if(app.end_game_modal_visible) return;
    
             app.end_game_modal.toggle();
@@ -564,7 +564,7 @@ var app = Vue.createApp({
         /** take refresh screen
          * @param messageData {json} result of update, either sucess or fail with errors
         */
-        take_refresh_screens(message_data){
+        take_refresh_screens: function take_refresh_screens(message_data){
             if(message_data.value == "success")
             {           
                 app.session = message_data.session;
@@ -580,7 +580,7 @@ var app = Vue.createApp({
         /** take next period response
          * @param message_data {json}
         */
-        take_update_next_phase(message_data){
+        take_update_next_phase: function take_update_next_phase(message_data){
             app.end_game_modal.hide();
 
             app.session.world_state.current_experiment_phase = message_data.current_experiment_phase;
@@ -595,7 +595,8 @@ var app = Vue.createApp({
                 app.hide_end_game_modal();
             }
 
-            if(app.session.world_state.current_experiment_phase == 'Run')
+            if(app.session.world_state.current_experiment_phase == 'Run' || 
+               app.session.world_state.current_experiment_phase == 'Instructions')
             {
                 app.session.world_state = message_data.world_state;
                 app.session.world_state_avatars = message_data.world_state_avatars;
@@ -616,12 +617,12 @@ var app = Vue.createApp({
 
         /** hide choice grid modal modal
         */
-        hide_end_game_modal(){
+        hide_end_game_modal:function hide_end_game_modal(){
             app.end_game_modal_visible=false;
         },
 
         //do nothing on when enter pressed for post
-        onSubmit(){
+        onSubmit: function onSubmit(){
             //do nothing
         },
         
@@ -652,7 +653,7 @@ var app = Vue.createApp({
 
         /** clear form error messages
         */
-        clear_main_form_errors(){
+        clear_main_form_errors: function clear_main_form_errors(){
             
             let s = app.form_ids;
             for(let i in s)
@@ -689,7 +690,7 @@ var app = Vue.createApp({
 
         /** display form error messages
         */
-        display_errors(errors){
+        display_errors: function display_errors(errors){
             for(let e in errors)
                 {
                     //e = document.getElementById("id_" + e).getAttribute("class", "form-control is-invalid")
@@ -710,7 +711,7 @@ var app = Vue.createApp({
         /**
          * return session player index that has specified id
          */
-        find_session_player_index(id){
+        find_session_player_index: function find_session_player_index(id){
 
             let session_players = app.session.session_players;
             for(let i=0; i<session_players.length; i++)
@@ -727,7 +728,7 @@ var app = Vue.createApp({
         /**
          * handle window resize event
          */
-        handleResize(){
+        handleResize: function handleResize(){
             app.update_subject_status_overlay();
         },
 
