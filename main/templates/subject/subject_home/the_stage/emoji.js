@@ -1,7 +1,7 @@
 /**
  * send emote to server
  */
-send_emoji(emoji_type)
+send_emoji: function send_emoji(emoji_type)
 {
     if(!app.session.world_state["started"]) return;
     if(app.session.world_state.avatars[app.session_player.id].sleeping) return;
@@ -24,7 +24,7 @@ send_emoji(emoji_type)
 /**
 send emoji instructions
 */
-send_emoji_instructions(emoji_type)
+send_emoji_instructions: function send_emoji_instructions(emoji_type)
 {
     // {
     //     "status": "success",
@@ -46,7 +46,7 @@ send_emoji_instructions(emoji_type)
 /**
  * take emote from server
  */
-take_emoji(message_data)
+take_emoji: function take_emoji(message_data)
 {
 
     source_player_id = message_data.source_player_id;

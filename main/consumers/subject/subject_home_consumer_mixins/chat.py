@@ -29,7 +29,7 @@ class ChatMixin():
         event_data = event["group_data"]
         
         #format text for chat bubbles
-        wrapper = TextWrapper(width=15, max_lines=6)
+        wrapper = TextWrapper(width=13, max_lines=6)
         event_data['text'] = wrapper.fill(text=event_data['text'])
         event_data['text_limited'] = wrapper.fill(text=event_data['text_limited'])
 
