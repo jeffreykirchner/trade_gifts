@@ -327,12 +327,12 @@ var app = Vue.createApp({
         do_reload: function do_reload()
         {
             app.setup_pixi_subjects();
-            app.setup_pixi_minimap();
             app.update_subject_status_overlay();
             app.update_field_inventory();
             app.update_avatar_inventory();
             app.update_house_inventory();
             app.setup_pixi_patches();
+            app.setup_pixi_minimap();
         },
 
         /** send winsock request to get session info
