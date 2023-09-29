@@ -81,7 +81,6 @@ class TimerMixin():
             result["started"] = self.world_state_local["started"]
             result["finished"] = self.world_state_local["finished"]
             result["current_experiment_phase"] = self.world_state_local["current_experiment_phase"]
-            result["earnings"] = v["earnings"]
             result["period_is_over"] = v["period_is_over"]
             result["avatars"] = self.world_state_local["avatars"]
 
@@ -213,7 +212,9 @@ def sync_continue_timer(event, session_id):
             #store data
             for i in world_state["avatars"]:
                 sd_player = current_period.summary_data[i]
+                
                 sd_player["end_health"] = world_state["avatars"][i]["health"]
+                sd_player["hat_at_end"] = world_state["avatars"][i]["parameter_set_hat_id"]    
 
                 avatar = world_state["avatars"][i]
                 #inventory
@@ -278,18 +279,17 @@ def sync_continue_timer(event, session_id):
                
                 world_state = session.world_state
                 last_period = session.session_periods.get(id=last_period_id)
-                summary_data = last_period.summary_data
+                summary_data_last = last_period.summary_data
 
-                #store data
+                #store data for last period
                 for i in world_state["avatars"]:
-                    sd_player = summary_data[i]
+                    sd_player = summary_data_last[i]
 
-                    #health
-                    sd_player["end_health"] = world_state["avatars"][i]["health"]
-                    sd_player["start_health"] = world_state["avatars"][i]["health"]
-                    
+                    #health at end
+                    sd_player["end_health"] = world_state["avatars"][i]["health"]        
+
                     #hat
-                    sd_player["hat_at_start"] = world_state["avatars"][i]["parameter_set_hat_id"]
+                    sd_player["hat_at_end"] = world_state["avatars"][i]["parameter_set_hat_id"]          
                     
                     #inventory
                     avatar = world_state["avatars"][i]
@@ -304,16 +304,21 @@ def sync_continue_timer(event, session_id):
                 session = session.get_current_session_period().do_production()
                 session = session.get_current_session_period().do_patch_growth()
 
+                current_session_period = session.get_current_session_period()
+                summary_data_current = current_session_period.summary_data
+               
                 for i in world_state["avatars"]:
+                    sd_player = summary_data_current[i]
                     # session.world_state["session_players"][i]["earnings"] += session.world_state["session_players"][i]["inventory"][current_period_id]
 
-                    earnings[i] = {}
-                    earnings[i]["total_earnings"] = 0
-                    earnings[i]["period_earnings"] = 0
+                    # earnings[i] = {}
+                    # earnings[i]["total_earnings"] = 0
+                    # earnings[i]["period_earnings"] = 0
                     
                     #store starting health
+                    sd_player["start_health"] = world_state["avatars"][i]["health"]
                    
-
+                current_session_period.save()
                 session.save()
 
             else:
@@ -321,4 +326,4 @@ def sync_continue_timer(event, session_id):
           
         world_state = session.world_state
 
-    return {"status" : status, "error_message" : error_message, "world_state" : world_state, "earnings" : earnings, "period_is_over" : period_is_over}
+    return {"status" : status, "error_message" : error_message, "world_state" : world_state, "period_is_over" : period_is_over}
