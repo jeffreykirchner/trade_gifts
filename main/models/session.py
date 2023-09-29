@@ -160,7 +160,7 @@ class Session(models.Model):
             v["end_health"] = None
             v["health_from_sleep"] = 0
             v["health_from_house"] = 0
-            v["hat_at_start"] = None
+            v["hat_at_end"] = None
 
             #total harvested / consumption
             for k in main.globals.Goods.choices:
@@ -194,7 +194,7 @@ class Session(models.Model):
         #set startinging values
         for i in session_period_1.summary_data:
             session_period_1.summary_data[i]["start_health"] = parameter_set["starting_health"]
-            session_period_1.summary_data[i]["hat_at_start"] = world_state["avatars"][i]["parameter_set_hat_id"]
+            session_period_1.summary_data[i]["hat_at_end"] = world_state["avatars"][i]["parameter_set_hat_id"]
 
         session_period_1.save()
         
@@ -396,7 +396,7 @@ class Session(models.Model):
 
             writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
             
-            temp_header = ["Session ID", "Period", "Client #", "Label", "Period Earnings ¢", "Hat at Start", "Start Health", "End Health", "Health From Sleep", "Health From House"]
+            temp_header = ["Session ID", "Period", "Client #", "Label", "Period Earnings ¢", "Hat at End", "Start Health", "End Health", "Health From Sleep", "Health From House"]
 
             #good totals
             for k in main.globals.Goods.choices:
@@ -442,7 +442,7 @@ class Session(models.Model):
                                     player_number+1,
                                     parameter_set_players[str(player)]["parameter_set_player__id_label"], 
                                     temp_p["period_earnings"],
-                                    parameter_set["parameter_set_hats"][str(temp_p["hat_at_start"])]["info"] if temp_p["hat_at_start"] else "",
+                                    parameter_set["parameter_set_hats"][str(temp_p["hat_at_end"])]["info"] if temp_p["hat_at_end"] else "",
                                     temp_p["start_health"],
                                     temp_p["end_health"],
                                     temp_p["health_from_sleep"],
