@@ -1050,7 +1050,7 @@ class SubjectUpdatesMixin():
             return
         
         logger = logging.getLogger(__name__)
-        logger.info(event)
+        # logger.info(event)
 
         status = "success"
         error_mesage = ""
