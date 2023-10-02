@@ -38,6 +38,7 @@ var app = Vue.createApp({
                     field_color : 'BlanchedAlmond',
                     session : null,
                     session_events : null,
+                    session_ticks : null,
                     timer_pulse : null,
 
                     the_feed : [],
@@ -218,6 +219,9 @@ var app = Vue.createApp({
                 case "load_session_events":
                     app.take_load_session_events(message_data);
                     break; 
+                case "load_world_state":
+                    app.take_load_world_state(message_data);
+                    break;
                 case "update_field_harvest":
                     app.take_field_harvest(message_data);
                     break;

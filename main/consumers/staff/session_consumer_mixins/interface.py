@@ -25,15 +25,22 @@ class InterfaceMixin():
     
     async def load_session_events(self, event):
         '''
-        load session events
+        load session for replay
         '''
         session_events = {}
 
         session = await Session.objects.aget(id=self.session_id)
 
         async for i in session.session_periods.all():
+
             session_events[i.id] = {}
-            for j in range(self.parameter_set_local["period_length"]+1):
+
+            total_period_length = self.parameter_set_local["period_length"]
+
+            if i.period_number % self.parameter_set_local["break_frequency"] == 0:
+                total_period_length += self.parameter_set_local["break_length"]
+
+            for j in range(total_period_length+1):
                 session_events[i.id][str(j)] = []
 
         async for i in session.session_events.all().exclude(type="timer_tick"):
@@ -41,12 +48,57 @@ class InterfaceMixin():
             period_id = self.world_state_local["session_periods_order"][i.period_number-1]
             session_events[period_id][str(i.time_remaining)].append(v)
 
-        session_event = await session.session_events.filter(type="timer_tick").afirst()
-
-        result = {"session_events": session_events, "world_state_initial" : session_event.data}
+        result = {"session_events": session_events}
 
         await self.send_message(message_to_self=result, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
     
+    async def load_world_state(self, event):
+        '''
+        load world state for replay
+        '''
+
+        event_data = event["message_text"]
+
+        period_number = event_data["period_number"]
+        time_remaining = event_data["time_remaining"]
+
+        session = await Session.objects.aget(id=self.session_id)
+
+        temp_period_number = period_number
+        temp_time_remaining = time_remaining
+        go = True
+        status = "success"
+
+        while go:
+            v = session.session_events.filter(type="timer_tick", 
+                                              period_number=temp_period_number, 
+                                              time_remaining=temp_time_remaining)
+            session_event = await v.afirst()
+
+            if temp_period_number >= self.parameter_set_local["period_count"] and temp_time_remaining <= 0:
+                go = False
+                status = "fail"
+
+            if go and not session_event:
+                temp_time_remaining -= 1
+                
+                if temp_time_remaining < 0:
+                    temp_period_number -= 1
+                    temp_time_remaining = self.parameter_set_local["period_length"]
+
+                    if temp_period_number % self.parameter_set_local["break_frequency"] == 0:
+                        temp_time_remaining = self.parameter_set_local["break_length"]
+            else:
+                go = False
+
+        result = {"world_state": session_event.data["world_state_local"], 
+                  "world_state_avatars": session_event.data["world_state_avatars_local"],
+                  "status" : status
+                  }
+
+        await self.send_message(message_to_self=result, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+
 
 
