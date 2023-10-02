@@ -5,7 +5,7 @@ send_load_session_events: function send_load_session_events()
 {
     app.working = true;
     app.send_message("load_session_events", {});       
-    app.send_load_world_state(1, app.session.parameter_set.period_length-1);
+    app.send_load_world_state(1, app.session.parameter_set.period_length);
 },
 
 /**
@@ -44,6 +44,7 @@ take_load_world_state: function take_loadd_current_world_state(message_data)
         app.session.world_state_avatars = message_data.world_state_avatars;
         
         Vue.nextTick(() => {
+            app.destory_setup_pixi_subjects();
             app.do_reload();                    
         });
     }
