@@ -33,7 +33,7 @@ class InterfaceMixin():
 
         async for i in session.session_periods.all():
 
-            session_events[i.id] = {}
+            session_events[str(i.period_number)] = {}
 
             total_period_length = self.parameter_set_local["period_length"]
 
@@ -41,12 +41,12 @@ class InterfaceMixin():
                 total_period_length += self.parameter_set_local["break_length"]
 
             for j in range(total_period_length+1):
-                session_events[i.id][str(j)] = []
+                session_events[str(i.period_number)][str(j)] = []
 
         async for i in session.session_events.all().exclude(type="timer_tick"):
             v = {"type" : i.type, "data" : i.data}
-            period_id = self.world_state_local["session_periods_order"][i.period_number-1]
-            session_events[period_id][str(i.time_remaining)].append(v)
+            # period_id = self.world_state_local["session_periods_order"][i.period_number-1]
+            session_events[str(i.period_number)][str(i.time_remaining)].append(v)
 
         result = {"session_events": session_events}
 

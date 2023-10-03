@@ -13,14 +13,15 @@
                     v-on:click="send_load_session_events()">
                     Load <i class="fas fa-cloud-download-alt"></i>
                 </button>
-
+            </div>
+            <div class="col" v-if="session_events">
                 <span class="ms-2"
                       v-if="working">
                     <i class="fas fa-spinner fa-spin"></i>
                 </span>
             
                 <button type="button" 
-                    v-if="session_events && replay_mode=='paused'"
+                    v-if="replay_mode=='paused'"
                     class="btn btn-outline-primary" 
                     title="Load Session Events" 
                     v-bind:disabled="working"
@@ -29,7 +30,7 @@
                 </button>
 
                 <button type="button" 
-                    v-if="session_events && replay_mode=='playing'"
+                    v-if="replay_mode=='playing'"
                     class="btn btn-outline-primary" 
                     title="Load Session Events" 
                     v-bind:disabled="working"
@@ -38,11 +39,10 @@
                 </button>
 
                 <button type="button" 
-                    v-if="session_events"
                     class="btn btn-outline-primary ms-2" 
                     title="Load Session Events" 
                     v-bind:disabled="working"
-                    v-on:click="update_replay_mode('stopped')">
+                    v-on:click="reset_replay()">
                     Reset <i class="fas fa-sync"></i>
                 </button>
             </div>
