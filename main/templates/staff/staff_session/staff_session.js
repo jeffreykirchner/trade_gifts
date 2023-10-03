@@ -86,7 +86,8 @@ var app = Vue.createApp({
                     //replay
                     session_events : null,
                     session_ticks : null,
-                    replay_mode : "paused"
+                    replay_mode : "paused",
+                    replay_timeout : null,
                 }},
     methods: {
 

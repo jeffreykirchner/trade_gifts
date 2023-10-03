@@ -68,6 +68,8 @@ update_replay_mode: function update_replay_mode(new_replay_mode)
  */
 replay_mode_play: function replay_mode_play()
 {
+    if(app.replay_mode == "paused") return;
+
     if(app.session.world_state.time_remaining > 0)
     {
         app.session.world_state.time_remaining--;
@@ -89,8 +91,15 @@ replay_mode_play: function replay_mode_play()
         }
     }
 
-    if(app.replay_mode == "playing")
-    {
-        setTimeout(app.replay_mode_play,1000);
-    }
+    app.replay_timeout = setTimeout(app.replay_mode_play,1000);
+},
+
+/**
+ * reset replay mode
+ */
+reset_replay: function reset_replay()
+{
+    app.replay_mode = "paused";
+    if (app.replay_timeout) clearTimeout(app.replay_timeout);
+    app.send_load_world_state(1, app.session.parameter_set.period_length);
 },
