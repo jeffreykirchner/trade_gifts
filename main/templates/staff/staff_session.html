@@ -115,7 +115,7 @@
                 {%include "staff/staff_session/summary/summary_card.html"%}
             </div>
         </div>
-        <div class = "row mt-2">
+        <div class = "row mt-2" v-if="session.world_state.current_experiment_phase=='Done'">
             <div class="col">
                 {%include "staff/staff_session/replay/replay_card.html"%}
             </div>
