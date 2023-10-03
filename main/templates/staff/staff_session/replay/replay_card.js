@@ -70,6 +70,8 @@ replay_mode_play: function replay_mode_play()
 {
     if(app.replay_mode == "paused") return;
 
+    app.process_replay_events();
+
     if(app.session.world_state.time_remaining > 0)
     {
         app.session.world_state.time_remaining--;
@@ -102,4 +104,32 @@ reset_replay: function reset_replay()
     app.replay_mode = "paused";
     if (app.replay_timeout) clearTimeout(app.replay_timeout);
     app.send_load_world_state(1, app.session.parameter_set.period_length);
+},
+
+/**
+ * process replay events
+ */
+process_replay_events: function process_replay_events()
+{
+    let current_period = app.session.world_state.current_period;
+    let time_remaining = app.session.world_state.time_remaining;
+
+    for(i in app.session_events[current_period][time_remaining])
+    {
+        switch(i.type)
+        {
+            case "attack_avatar":
+                break;
+            case "emote":
+                break;            
+            case "move_fruit_house":
+                break;
+            case "move_fruit_to_avatar":
+                break;
+            case "patch_harvest":
+                break;
+            case "sleep":
+                break;           
+        }
+    }
 },

@@ -239,6 +239,17 @@ class SubjectUpdatesMixin():
             # logger.info("updating world state")
             self.world_state_avatars_local["last_update"] = str(dt_now)
             await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
+
+            target_locations = {}
+            for i in self.world_state_avatars_local["session_players"]:
+                target_locations[i] = self.world_state_avatars_local["session_players"][i]["target_location"]
+            
+            await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                               session_player_id=player_id,
+                                               type="target_locations",
+                                               period_number=self.world_state_local["current_period"],
+                                               time_remaining=self.world_state_local["time_remaining"],
+                                               data=target_locations)
         
         result = {"value" : "success", 
                   "target_location" : target_location, 
@@ -313,7 +324,6 @@ class SubjectUpdatesMixin():
                                     message_type="tractor_beam", send_to_client=False, send_to_group=True)
         
         return result
-
 
     async def update_tractor_beam(self, event):
         '''
