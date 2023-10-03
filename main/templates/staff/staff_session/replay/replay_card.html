@@ -18,6 +18,33 @@
                       v-if="working">
                     <i class="fas fa-spinner fa-spin"></i>
                 </span>
+            
+                <button type="button" 
+                    v-if="session_events && replay_mode=='paused'"
+                    class="btn btn-outline-primary" 
+                    title="Load Session Events" 
+                    v-bind:disabled="working"
+                    v-on:click="update_replay_mode('playing')">
+                    Play <i class="fas fa-play"></i>
+                </button>
+
+                <button type="button" 
+                    v-if="session_events && replay_mode=='playing'"
+                    class="btn btn-outline-primary" 
+                    title="Load Session Events" 
+                    v-bind:disabled="working"
+                    v-on:click="update_replay_mode('paused')">
+                    Pause <i class="fas fa-pause"></i>
+                </button>
+
+                <button type="button" 
+                    v-if="session_events"
+                    class="btn btn-outline-primary ms-2" 
+                    title="Load Session Events" 
+                    v-bind:disabled="working"
+                    v-on:click="update_replay_mode('stopped')">
+                    Reset <i class="fas fa-sync"></i>
+                </button>
             </div>
         </div>
     </div>                    

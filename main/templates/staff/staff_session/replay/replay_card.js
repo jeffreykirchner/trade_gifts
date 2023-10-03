@@ -22,7 +22,6 @@ take_load_session_events: function take_load_session_events(message_data)
         app.session_events = message_data.session_events;
         
         // app.session.world_state = message_data.world_state_initial;
-        // app.session.world_state["current_experiment_phase"] = "Done";
     }
 },
 
@@ -45,7 +44,53 @@ take_load_world_state: function take_loadd_current_world_state(message_data)
         
         Vue.nextTick(() => {
             app.destory_setup_pixi_subjects();
-            app.do_reload();                    
+            app.do_reload();             
+            app.session.world_state["current_experiment_phase"] = "Done";       
         });
+    }
+},
+
+/**
+ * update the replay mode
+ */
+update_replay_mode: function update_replay_mode(new_replay_mode)
+{
+    app.replay_mode = new_replay_mode;
+
+    if(app.replay_mode == "playing")
+    {
+        app.replay_mode_play();
+    }
+},
+
+/**
+ * replay mode play
+ */
+replay_mode_play: function replay_mode_play()
+{
+    if(app.session.world_state.time_remaining > 0)
+    {
+        app.session.world_state.time_remaining--;
+    }
+    else if(app.session.world_state.current_period == app.session.parameter_set.period_count)
+    {
+        //end of the session
+        return;
+    }
+    else
+    {
+        app.session.world_state.current_period++;
+
+        app.session.world_state.time_remaining = app.session.parameter_set.period_length;
+
+        if(app.session.current_period % app.session.parameter_set.break_frequency == 0)
+        {
+            app.session.world_state.time_remaining += app.session.parameter_set.break_length;
+        }
+    }
+
+    if(app.replay_mode == "playing")
+    {
+        setTimeout(app.replay_mode_play,1000);
     }
 },
