@@ -105,7 +105,29 @@ process_instruction_page(){
         case app.instructions.action_page_harvest: 
             return;      
             break;  
-        case app.instructions.action_page_house:           
+        case app.instructions.action_page_house: 
+            let parameter_set_player = app.get_parameter_set_player_from_player_id(app.session_player.id);
+
+            if(parameter_set_player.good_one)
+            {
+                if(app.session.world_state.houses[parameter_set_player.id][parameter_set_player.good_one] == 0)
+                {
+                    app.session.world_state.houses[parameter_set_player.id][parameter_set_player.good_one] = 1;
+                }         
+            }
+
+            if(parameter_set_player.good_two)
+            {
+                if(app.session.world_state.houses[parameter_set_player.id][parameter_set_player.good_two] == 0)
+                {
+                    app.session.world_state.houses[parameter_set_player.id][parameter_set_player.good_two] = 1;
+                }         
+            }
+
+            app.session.world_state.houses[parameter_set_player.id].health_value = app.calc_health_value(app.session.world_state.houses[parameter_set_player.id][parameter_set_player.good_one],
+                                                                                                         app.session.world_state.houses[parameter_set_player.id][parameter_set_player.good_two],
+                                                                                                         0);
+            app.update_house_inventory();
             return;
             break;
         case app.instructions.action_page_sleep:

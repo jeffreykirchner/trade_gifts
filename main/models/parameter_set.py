@@ -169,7 +169,7 @@ class ParameterSet(models.Model):
             
             self.reconnection_limit = new_ps.get("reconnection_limit", None)
 
-            self.instruction_set = InstructionSet.objects.get(label=new_ps.get("instruction_set")["label"])
+            self.instruction_set = InstructionSet.objects.filter(label=new_ps.get("instruction_set")["label"]).first()
 
             self.save()
 
@@ -399,7 +399,7 @@ class ParameterSet(models.Model):
 
         self.json_for_session["private_chat"] = "False"
         self.json_for_session["show_instructions"] = "True" if self.show_instructions else "False"
-        self.json_for_session["instruction_set"] = self.instruction_set.json_min()
+        self.json_for_session["instruction_set"] = self.instruction_set.json_min() if self.instruction_set else None
 
         self.json_for_session["survey_required"] = "True" if self.survey_required else "False"
         self.json_for_session["survey_link"] = self.survey_link
