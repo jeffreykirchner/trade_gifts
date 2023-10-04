@@ -120,8 +120,14 @@ process_replay_events: function process_replay_events()
         {
             case "attack_avatar":
                 break;
+            case "chat":
+                break;
             case "emote":
-                break;            
+                break;        
+            case "hat_avatar":
+                break;
+            case "hat_avatar_cancel":
+                break;    
             case "move_fruit_house":
                 break;
             case "move_fruit_to_avatar":
@@ -129,6 +135,8 @@ process_replay_events: function process_replay_events()
             case "patch_harvest":
                 break;
             case "sleep":
+                break;
+            case "target_locations":
                 break;           
         }
     }
