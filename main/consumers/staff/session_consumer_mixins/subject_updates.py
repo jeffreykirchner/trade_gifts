@@ -241,15 +241,19 @@ class SubjectUpdatesMixin():
             await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
 
             target_locations = {}
+            current_locations = {}
             for i in self.world_state_avatars_local["session_players"]:
                 target_locations[i] = self.world_state_avatars_local["session_players"][i]["target_location"]
+                current_locations[i] = self.world_state_avatars_local["session_players"][i]["current_location"]
             
+            data = {"target_locations" : target_locations, "current_locations" : current_locations}
+
             await SessionEvent.objects.acreate(session_id=self.session_id, 
                                                session_player_id=player_id,
                                                type="target_locations",
                                                period_number=self.world_state_local["current_period"],
                                                time_remaining=self.world_state_local["time_remaining"],
-                                               data=target_locations)
+                                               data=data)
         
         result = {"value" : "success", 
                   "target_location" : target_location, 
