@@ -394,10 +394,36 @@ send_move_fruit_house_instructions: function send_move_fruit_house_instructions(
         message_data.target_house[good_three] -= app.selected_house.good_three_move;
     }   
 
+    message_data.target_house.health_value = app.calc_health_value(message_data.target_house[good_one],
+                                                                   message_data.target_house[good_two],
+                                                                   0);
 
     app.take_update_move_fruit_to_house(message_data);
 },
 
+calc_health_value: function calc_health_value(good_one, good_two, good_three)
+{
+    alpha = parseFloat(app.session.parameter_set["consumption_alpha"])
+    beta = parseFloat(app.session.parameter_set["consumption_beta"])
+    // good_one_amount = Decimal(good_one_amount)
+    // good_two_amount = Decimal(good_two_amount)
+    // # good_three_amount = good_three_amount
+
+    // multipliers = parameter_set["consumption_multiplier"].split("\n")
+
+    // if good_three_amount >= len(multipliers):
+    //     multiplier = Decimal(multipliers[-1])
+    // elif good_three_amount == 0:
+    //     multiplier = 1
+    // else:
+    //     multiplier = Decimal(multipliers[good_three_amount-1])
+    
+
+    let health = (beta * parseFloat(good_one) ** (1/alpha) + beta * parseFloat(good_two) ** (1/alpha))**alpha
+    // health *= Decimal(multiplier)
+
+    return health.toFixed(1);
+},
 
 /**
  * take update from server about moving fruit to or from house
