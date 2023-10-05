@@ -172,10 +172,6 @@ subject_house_click: function subject_house_click(target_house_id)
     //if(target_house_id == app.session_player.id) return;
 
     // console.log("subject avatar click", target_house_id);
-
-    app.selected_house.house = app.session.world_state.houses[target_house_id];
-    app.selected_house.target_house_id = target_house_id;
-
     let session_player = app.session.world_state_avatars.session_players[app.session_player.id];
     let parameter_set_player_id = session_player.parameter_set_player_id;
 
@@ -184,7 +180,7 @@ subject_house_click: function subject_house_click(target_house_id)
 
     if(app.session.world_state.current_experiment_phase == 'Instructions')
     {
-        if(app.selected_house.house.session_player != app.session_player.id)
+        if( app.session.world_state.houses[target_house_id].session_player != app.session_player.id)
         {
             app.add_text_emitters("During the instructions, please interact with your house.", 
                                     parameter_set_player_house.house_x, 
@@ -198,6 +194,9 @@ subject_house_click: function subject_house_click(target_house_id)
             return;
         }
     }
+
+    app.selected_house.house = app.session.world_state.houses[target_house_id];
+    app.selected_house.target_house_id = target_house_id;
 
     app.selected_house.parameter_set_player = parameter_set_player_house;
 
