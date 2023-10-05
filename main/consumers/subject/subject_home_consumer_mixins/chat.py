@@ -28,10 +28,10 @@ class ChatMixin():
         '''
         event_data = event["group_data"]
         
-        #format text for chat bubbles
-        wrapper = TextWrapper(width=13, max_lines=6)
-        event_data['text'] = wrapper.fill(text=event_data['text'])
-        event_data['text_limited'] = wrapper.fill(text=event_data['text_limited'])
+        # #format text for chat bubbles
+        # wrapper = TextWrapper(width=13, max_lines=6)
+        # event_data['text'] = wrapper.fill(text=event_data['text'])
+        # event_data['text_limited'] = wrapper.fill(text=event_data['text_limited'])
 
         await self.send_message(message_to_self=event_data, message_to_subjects=None, message_to_staff=None, 
                                 message_type=event['type'], send_to_client=True, send_to_group=False)

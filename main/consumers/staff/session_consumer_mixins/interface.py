@@ -43,7 +43,7 @@ class InterfaceMixin():
             for j in range(total_period_length+1):
                 session_events[str(i.period_number)][str(j)] = []
 
-        async for i in session.session_events.all().exclude(type="timer_tick"):
+        async for i in session.session_events.all():
             v = {"type" : i.type, "data" : i.data}
             # period_id = self.world_state_local["session_periods_order"][i.period_number-1]
             session_events[str(i.period_number)][str(i.time_remaining)].append(v)

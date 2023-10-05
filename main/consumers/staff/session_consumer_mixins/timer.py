@@ -104,12 +104,12 @@ class TimerMixin():
                     patch = self.world_state_local["patches"][i]
                     result["patches"][i] = {"levels":patch["levels"], "max_levels":patch["max_levels"]}
 
-                await SessionEvent.objects.acreate(session_id=self.session_id, 
-                                               type="timer_tick",
-                                               period_number=self.world_state_local["current_period"],
-                                               time_remaining=self.world_state_local["time_remaining"],
-                                               data={"world_state_local" : self.world_state_local,
-                                                     "world_state_avatars_local" : self.world_state_avatars_local,})
+                # await SessionEvent.objects.acreate(session_id=self.session_id, 
+                #                                type="timer_tick",
+                #                                period_number=self.world_state_local["current_period"],
+                #                                time_remaining=self.world_state_local["time_remaining"],
+                #                                data={"world_state_local" : self.world_state_local,
+                #                                      "world_state_avatars_local" : self.world_state_avatars_local,})
                    
             #current locations
             result["current_locations"] = {}
@@ -141,6 +141,12 @@ class TimerMixin():
                                             "tractor_beam_target" : session_player["tractor_beam_target"]}                
             
             result["session_player_status"] = session_player_status
+
+            await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                                type="timer_tick",
+                                                period_number=self.world_state_local["current_period"],
+                                                time_remaining=self.world_state_local["time_remaining"],
+                                                data=result)
             
             await self.send_message(message_to_self=False, message_to_group=result,
                                     message_type="time", send_to_client=False, send_to_group=True)
