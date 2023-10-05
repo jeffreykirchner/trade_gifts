@@ -115,12 +115,18 @@ process_replay_events: function process_replay_events()
     let time_remaining = app.session.world_state.time_remaining;
 
     for(i in app.session_events[current_period][time_remaining])
-    {
-        switch(i.type)
+    { 
+        let event = app.session_events[current_period][time_remaining][i];
+        switch(event.type)
         {
             case "attack_avatar":
                 break;
             case "chat":
+                const textWrapper = new TextWrapper();
+                textWrapper.text = event.data.text;
+
+                message_data = {text: textWrapper, text}
+                app.take_update_chat(event.data)
                 break;
             case "emote":
                 break;        

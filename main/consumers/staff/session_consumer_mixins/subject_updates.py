@@ -5,6 +5,7 @@ import math
 
 from asgiref.sync import sync_to_async
 from decimal import Decimal
+from textwrap import TextWrapper
 
 from django.db import transaction
 from django.db.models.fields.json import KT
@@ -60,6 +61,11 @@ class SubjectUpdatesMixin():
         result["text_limited"] = await self.do_limited_chat(event_data["text"])
         result["sender_id"] = player_id
         result["nearby_players"] = []
+
+        #format text for chat bubbles
+        wrapper = TextWrapper(width=13, max_lines=6)
+        result['text'] = wrapper.fill(text=result['text'])
+        result['text_limited'] = wrapper.fill(text=result['text_limited'])
 
         #find nearby players
         session_players = self.world_state_avatars_local["session_players"]
