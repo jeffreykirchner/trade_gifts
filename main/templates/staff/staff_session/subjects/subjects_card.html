@@ -88,6 +88,12 @@
                                     Study<br>Subject ID
                                 </span>
                             </th>
+                            <th scope="col" class = "">
+                                Health
+                            </th>
+                            <th scope="col" class = "">
+                                Group
+                            </th>
                             <th scope="col" class = "text-center">
                                 <span v-if="session.parameter_set.prolific_mode=='False'">
                                     Earnings
@@ -132,6 +138,22 @@
                                 </span>
                                 <span v-else>
                                     [[temp_p.player_key]]
+                                </span>
+                            </td>
+                            <td class="player_table_cell text-nowrap">
+                                <span v-if="Object.keys(session.world_state).length>0 && session.started">
+                                    [[session.world_state.avatars[p].health]]
+                                </span>
+                                <span v-else>
+                                    ---
+                                </span>
+                            </td>
+                            <td class="player_table_cell text-nowrap">
+                                <span v-if="Object.keys(session.world_state).length>0 && session.started">
+                                    [[session.parameter_set.parameter_set_groups[session.parameter_set.parameter_set_players[session.world_state.avatars[p].parameter_set_player_id].parameter_set_group].name]]
+                                </span>
+                                <span v-else>
+                                    ---
                                 </span>
                             </td>
                             <td class="player_table_cell text-nowrap">
