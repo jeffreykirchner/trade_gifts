@@ -29,10 +29,10 @@ move_object(delta, obj, move_speed)
     
 },
 
-move_avatar(delta, player_id, move_speed)
+move_avatar(delta, player_id)
 {
     
-    let temp_move_speed = (app.move_speed * delta);
+    let temp_move_speed = (parseFloat(app.session.parameter_set.avatar_move_speed) * delta);
     let obj = app.session.world_state_avatars.session_players[player_id];
     let parameter_set_group = app.session.parameter_set.parameter_set_players[obj.parameter_set_player_id].parameter_set_group;
     let container=pixi_avatars[player_id].bounding_box

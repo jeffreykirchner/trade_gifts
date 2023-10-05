@@ -28,7 +28,7 @@ setup_pixi_subjects: function setup_pixi_subjects()
 
         //gear
         let gear_sprite = new PIXI.AnimatedSprite(app.pixi_textures.sprite_sheet.animations['walk']);
-        gear_sprite.animationSpeed = app.animation_speed;
+        gear_sprite.animationSpeed = app.session.parameter_set.avatar_animation_speed;
         gear_sprite.anchor.set(0.5)
         gear_sprite.tint = parameter_set_player.hex_color;
         gear_sprite.eventMode = 'passive';    
@@ -365,11 +365,11 @@ move_player: function move_player(delta)
             avatar_container.position.set(obj.current_location.x, obj.current_location.y);
             if (obj.current_location.x < obj.target_location.x )
             {
-                gear_sprite.animationSpeed = app.animation_speed;
+                gear_sprite.animationSpeed =  app.session.parameter_set.avatar_animation_speed;
             }
             else
             {
-                gear_sprite.animationSpeed = -app.animation_speed;
+                gear_sprite.animationSpeed = -app.session.parameter_set.avatar_animation_speed;
             }
 
             //hide chat if longer than 10 seconds and moving

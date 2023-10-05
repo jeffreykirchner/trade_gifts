@@ -230,6 +230,22 @@ class ParameterSetForm(forms.ModelForm):
                                                                                     "step":"0.01",
                                                                                     "min":"0.01"}))
     
+    avatar_move_speed = forms.DecimalField(label='Avatar Move Speed (pixels per second)',
+                                             max_digits=3,
+                                             decimal_places=2,
+                                             min_value=0.01,
+                                             widget=forms.NumberInput(attrs={"v-model":"parameter_set.avatar_move_speed",
+                                                                            "step":"0.01",
+                                                                            "min":"0.01"}))
+    
+    avatar_animation_speed = forms.DecimalField(label='Avatar Animation Speed',
+                                                max_digits=3,
+                                                decimal_places=2,
+                                                min_value=0.01,
+                                                widget=forms.NumberInput(attrs={"v-model":"parameter_set.avatar_animation_speed",
+                                                                                "step":"0.01",
+                                                                                "min":"0.01"}))
+
     production_effort = forms.IntegerField(label='Production Effort',
                                          min_value=1,
                                          widget=forms.NumberInput(attrs={"v-model":"parameter_set.production_effort",
@@ -266,7 +282,8 @@ class ParameterSetForm(forms.ModelForm):
                  'survey_required', 'survey_link', 'prolific_mode', 'prolific_completion_link', 'reconnection_limit',
                  'interaction_length', 'interaction_range', 'cool_down_length', 'starting_health', 'health_loss_per_second', 'heath_gain_per_sleep_second',
                  'consumption_alpha', 'consumption_beta', 'consumption_multiplier', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'allow_stealing', 'enable_hats', 'world_width', 'world_height',
-                 'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent','production_effort', 'max_patch_harvests',
+                 'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent', 'avatar_move_speed', 'avatar_animation_speed',
+                 'production_effort', 'max_patch_harvests',
                  'chat_mode', 'chat_rules_word_list', 'good_mode', 'test_mode']
                  
     def clean_survey_link(self):

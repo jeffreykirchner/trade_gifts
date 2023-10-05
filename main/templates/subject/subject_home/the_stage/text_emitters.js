@@ -54,7 +54,7 @@ move_text_emitters(delta)
         }
         else
         {
-            app.move_object(delta=delta, obj=emitter, move_speed=app.move_speed / 4);
+            app.move_object(delta=delta, obj=emitter, move_speed=parseFloat(app.session.parameter_set.avatar_move_speed) / 4);
             emitter.emitter_container.position.set(emitter.current_location.x, emitter.current_location.y);
         }       
     }
