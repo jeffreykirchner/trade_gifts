@@ -120,29 +120,37 @@ process_replay_events: function process_replay_events()
         switch(event.type)
         {
             case "attack_avatar":
+                app.take_update_attack_avatar(event.data);
                 break;
             case "chat":
-                const textWrapper = new TextWrapper();
-                textWrapper.text = event.data.text;
-
-                message_data = {text: textWrapper, text}
                 app.take_update_chat(event.data)
                 break;
             case "emote":
+                app.take_emoji(event.data)
                 break;        
             case "hat_avatar":
+                app.take_update_hat_avatar(event.data);
                 break;
             case "hat_avatar_cancel":
+                app.take_update_hat_avatar_cancel(event.data);
                 break;    
             case "move_fruit_house":
+                app.take_update_move_fruit_to_house(event.data);
                 break;
             case "move_fruit_to_avatar":
+                app.take_update_attack_avatar(event.data);
                 break;
             case "patch_harvest":
+                app.take_patch_harvest(event.data);
                 break;
             case "sleep":
+                app.take_update_sleep(event.data);
                 break;
             case "target_locations":
+                for(i in event.data.target_locations)
+                {
+                    app.session.world_state_avatars.session_players[i].target_location = event.data.target_locations[i];
+                }
                 break;           
         }
     }
