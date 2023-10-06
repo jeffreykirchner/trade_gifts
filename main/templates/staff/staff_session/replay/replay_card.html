@@ -40,7 +40,7 @@
                 <button type="button"                   
                     class="btn btn-outline-primary ms-2" 
                     title="Previous Period" 
-                    v-bind:disabled="working"
+                    v-bind:disabled="working || replay_current_period==1"
                     v-on:click="advance_period('-1')">
                     Back <i class="fas fa-step-backward"></i>
                 </button>
@@ -48,7 +48,7 @@
                 <button type="button" 
                     class="btn btn-outline-primary ms-2" 
                     title="Next Period" 
-                    v-bind:disabled="working"
+                    v-bind:disabled="working || replay_current_period==session.parameter_set.period_count"
                     v-on:click="advance_period('1')">
                     Next <i class="fas fa-step-forward"></i>
                 </button>
