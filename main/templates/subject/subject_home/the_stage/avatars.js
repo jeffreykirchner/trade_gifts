@@ -674,7 +674,7 @@ send_move_fruit_to_avatar: function send_move_fruit_to_avatar()
  */
 send_move_fruit_to_avatar_instructions: function send_move_fruit_to_avatar_instructions()
 {
-    if(app.session_player.current_instruction != app.instructions.action_page_hats) return;
+    if(app.session_player.current_instruction != app.instructions.action_page_attacks) return;
 
     // {
     //     "status": "success",
@@ -733,11 +733,13 @@ send_move_fruit_to_avatar_instructions: function send_move_fruit_to_avatar_instr
 
     message_data.source_player[good_one] -= app.selected_avatar.good_one_move;
     message_data.source_player[good_two] -= app.selected_avatar.good_two_move;
-    message_data.source_player[good_three] -= app.selected_avatar.good_three_move;
+
+    if(good_three) message_data.source_player[good_three] -= app.selected_avatar.good_three_move;
 
     message_data.target_player[good_one] += app.selected_avatar.good_one_move;
     message_data.target_player[good_two] += app.selected_avatar.good_two_move;
-    message_data.target_player[good_three] += app.selected_avatar.good_three_move;
+
+    if(good_three) message_data.target_player[good_three] += app.selected_avatar.good_three_move;
 
     app.take_update_move_fruit_to_avatar(message_data);
 },
@@ -1035,10 +1037,10 @@ send_hat_avatar: function send_hat_avatar()
  */
 send_hat_avatar_instructions: function send_hat_avatar_instructions()
 {
-    if(app.session_player.current_instruction != app.instructions.action_page_hats) return;
-    app.session_player.current_instruction_complete = app.instructions.action_page_hats;
+    // if(app.session_player.current_instruction != app.instructions.action_page_hats) return;
+    // app.session_player.current_instruction_complete = app.instructions.action_page_hats;
 
-    app.take_update_hat_avatar(message_data);
+    // app.take_update_hat_avatar(message_data);
 },
 
 /**
