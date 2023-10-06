@@ -136,9 +136,11 @@ process_replay_events: function process_replay_events()
             let data = {message:{message_data:JSON.parse(JSON.stringify(event.data)),
                                  message_type:"update_" + event.type},}
             app.take_message(data);
-            app.session.world_state["current_experiment_phase"] = "Done";
         }
     }
+    app.session.world_state["current_experiment_phase"] = "Done";
+    app.session.world_state["time_remaining"] = app.replay_time_remaining;
+    app.session.world_state["current_period"] = app.replay_current_period;
 },
 
 /**
