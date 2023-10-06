@@ -143,7 +143,7 @@ class TimerMixin():
             result["session_player_status"] = session_player_status
 
             await SessionEvent.objects.acreate(session_id=self.session_id, 
-                                                type="timer_tick",
+                                                type="time",
                                                 period_number=self.world_state_local["current_period"],
                                                 time_remaining=self.world_state_local["time_remaining"],
                                                 data=result)

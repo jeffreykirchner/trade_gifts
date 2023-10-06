@@ -51,11 +51,11 @@ class ExperimentControlsMixin(OperationsMixin):
          #store first tick
         if self.controlling_channel == self.channel_name:
             await SessionEvent.objects.acreate(session_id=self.session_id, 
-                                                type="timer_tick",
+                                                type="world_state",
                                                 period_number=self.world_state_local["current_period"],
                                                 time_remaining=self.world_state_local["time_remaining"],
                                                 data={"world_state_local" : self.world_state_local,
-                                                    "world_state_avatars_local" : self.world_state_avatars_local,})
+                                                      "world_state_avatars_local" : self.world_state_avatars_local,})
 
         result = await sync_to_async(take_get_session, thread_sensitive=self.thread_sensitive)(self.connection_uuid)
 

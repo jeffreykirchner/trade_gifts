@@ -537,7 +537,7 @@ class Session(models.Model):
                 nearby_text += f'{session_players[str(i)]["parameter_set_player__id_label"]}'
 
             return f'{data["text"]} @  {nearby_text}'
-        elif type == "emote":
+        elif type == "emoji":
             nearby_text = ""
             for i in data.get("nearby_players",[]):
                 if nearby_text != "":
