@@ -5,7 +5,7 @@ send_load_session_events: function send_load_session_events()
 {
     app.working = true;
     app.send_message("load_session_events", {});       
-    app.send_load_world_state(1, app.session.parameter_set.period_length);
+    // app.send_load_world_state(1, app.session.parameter_set.period_length);
 },
 
 /**
@@ -20,35 +20,35 @@ take_load_session_events: function take_load_session_events(message_data)
     else
     {
         app.session_events = message_data.session_events;
-        
-        // app.session.world_state = message_data.world_state_initial;
+
+        app.replay_current_period = 1;
+        app.replay_time_remaining = app.session.parameter_set.period_length;
+
+        app.replay_load_world_state();
     }
 },
 
-send_load_world_state: function send_load_world_state(period_number, time_remaining)
+replay_load_world_state: function replay_load_world_state()
 {
-    app.working = true;
-    app.send_message("load_world_state", {period_number : period_number, time_remaining:time_remaining}); 
-},
+    let events = app.session_events[app.replay_current_period][app.replay_time_remaining];
 
-take_load_world_state: function take_loadd_current_world_state(message_data)
-{
-    if(message_data.value == "fail")
+    for(i in events)
     {
-          
-    }
-    else
-    {
-        app.session.world_state = message_data.world_state;
-        app.session.world_state_avatars = message_data.world_state_avatars;
-        
-        Vue.nextTick(() => {
+        if(events[i].type == "world_state")
+        { 
+            app.session.world_state = JSON.parse(JSON.stringify(events[i].data.world_state_local));
+            app.session.world_state_avatars =  JSON.parse(JSON.stringify(events[i].data.world_state_avatars_local));
+
+            app.session.world_state["current_experiment_phase"] = "Done";
+
             app.destory_setup_pixi_subjects();
-            app.do_reload();             
-            app.session.world_state["current_experiment_phase"] = "Done";       
-        });
+            app.do_reload();  
+
+            break;
+        }
     }
 },
+
 
 /**
  * update the replay mode
@@ -72,28 +72,28 @@ replay_mode_play: function replay_mode_play()
 
     app.process_replay_events();
 
-    if(app.session.world_state.time_remaining > 0)
+    if(app.replay_time_remaining > 0)
     {
-        app.session.world_state.time_remaining--;
+        app.replay_time_remaining--;
     }
-    else if(app.session.world_state.current_period == app.session.parameter_set.period_count)
+    else if(app.replay_current_period == app.session.parameter_set.period_count)
     {
         //end of the session
         return;
     }
     else
     {
-        app.session.world_state.current_period++;
+        app.replay_current_period++;
 
-        app.session.world_state.time_remaining = app.session.parameter_set.period_length;
+        app.replay_time_remaining = app.session.parameter_set.period_length;
 
-        if(app.session.current_period % app.session.parameter_set.break_frequency == 0)
+        if(app.replay_current_period % app.session.parameter_set.break_frequency == 0)
         {
-            app.session.world_state.time_remaining += app.session.parameter_set.break_length;
+            app.replay_time_remaining += app.session.parameter_set.break_length;
         }
     }
 
-    app.replay_timeout = setTimeout(app.replay_mode_play,1000);
+    app.replay_timeout = setTimeout(app.replay_mode_play, 1000);
 },
 
 /**
@@ -103,7 +103,13 @@ reset_replay: function reset_replay()
 {
     app.replay_mode = "paused";
     if (app.replay_timeout) clearTimeout(app.replay_timeout);
-    app.send_load_world_state(1, app.session.parameter_set.period_length);
+
+    app.replay_current_period = 1;
+    app.replay_time_remaining = app.session.parameter_set.period_length;
+
+    app.replay_load_world_state();
+    app.the_feed = [];
+    
 },
 
 /**
@@ -111,47 +117,26 @@ reset_replay: function reset_replay()
  */
 process_replay_events: function process_replay_events()
 {
-    let current_period = app.session.world_state.current_period;
-    let time_remaining = app.session.world_state.time_remaining;
+    let current_period = app.replay_current_period;
+    let time_remaining = app.replay_time_remaining;
 
     for(i in app.session_events[current_period][time_remaining])
-    { 
-        let event = app.session_events[current_period][time_remaining][i];
-        switch(event.type)
+    {   
+        let event =  app.session_events[current_period][time_remaining][i];
+
+        if(event.type == "target_locations")
         {
-            case "attack_avatar":
-                app.take_update_attack_avatar(event.data);
-                break;
-            case "chat":
-                app.take_update_chat(event.data)
-                break;
-            case "emote":
-                app.take_emoji(event.data)
-                break;        
-            case "hat_avatar":
-                app.take_update_hat_avatar(event.data);
-                break;
-            case "hat_avatar_cancel":
-                app.take_update_hat_avatar_cancel(event.data);
-                break;    
-            case "move_fruit_house":
-                app.take_update_move_fruit_to_house(event.data);
-                break;
-            case "move_fruit_to_avatar":
-                app.take_update_attack_avatar(event.data);
-                break;
-            case "patch_harvest":
-                app.take_patch_harvest(event.data);
-                break;
-            case "sleep":
-                app.take_update_sleep(event.data);
-                break;
-            case "target_locations":
-                for(i in event.data.target_locations)
-                {
-                    app.session.world_state_avatars.session_players[i].target_location = event.data.target_locations[i];
-                }
-                break;           
+            for(i in event.data.target_locations)
+            {
+                app.session.world_state_avatars.session_players[i].target_location = JSON.parse(JSON.stringify(event.data.target_locations[i]));
+            }
+        }
+        else
+        {
+            let data = {message:{message_data:JSON.parse(JSON.stringify(event.data)),
+                                 message_type:"update_" + event.type},}
+            app.take_message(data);
+            app.session.world_state["current_experiment_phase"] = "Done";
         }
     }
 },

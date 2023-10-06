@@ -894,7 +894,7 @@ class SubjectUpdatesMixin():
         
         await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
-                                           type="emote",
+                                           type="emoji",
                                            period_number=self.world_state_local["current_period"],
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
