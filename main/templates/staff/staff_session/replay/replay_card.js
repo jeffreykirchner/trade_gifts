@@ -140,3 +140,33 @@ process_replay_events: function process_replay_events()
         }
     }
 },
+
+/**
+ * advance period
+ */
+advance_period: function advance_period(direction)
+{
+    if(direction == 1)
+    {
+        if(app.replay_current_period < app.session.parameter_set.period_count)
+        {
+            app.replay_current_period++;
+        }
+    }
+    else
+    {
+        if(app.replay_current_period > 1)
+        {
+            app.replay_current_period--;
+        }
+    }
+
+    app.replay_time_remaining = app.session.parameter_set.period_length;
+
+    if(app.replay_current_period % app.session.parameter_set.break_frequency == 0)
+    {
+        app.replay_time_remaining += app.session.parameter_set.break_length;
+    }
+
+    app.process_replay_events();
+},
