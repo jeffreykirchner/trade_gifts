@@ -574,7 +574,7 @@ class SubjectUpdatesMixin():
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
         else:
-            logger.info(f"field_effort: invalid amounts from sync, {event['message_text']}")
+            logger.warning(f"field_effort: invalid amounts from sync, {event['message_text']}")
             return
         
         await self.send_message(message_to_self=None, message_to_group=result,
@@ -645,7 +645,7 @@ class SubjectUpdatesMixin():
                                            data=result)
             
         else:
-            logger.info(f"move_fruit_to_avatar: invalid amounts from sync, {event['message_text']}")
+            logger.warning(f"move_fruit_to_avatar: invalid amounts from sync, {event['message_text']}")
             return
 
         await self.send_message(message_to_self=None, message_to_group=result,
@@ -724,7 +724,7 @@ class SubjectUpdatesMixin():
                                            data=result)
             
         else:
-            logger.info(f"move_fruit_to_house: invalid amounts from sync, {event['message_text']}")
+            logger.warning(f"move_fruit_to_house: invalid amounts from sync, {event['message_text']}")
             return
 
         await self.send_message(message_to_self=None, message_to_group=result,
@@ -797,7 +797,7 @@ class SubjectUpdatesMixin():
                                            data=result)
                        
         else:
-            logger.info(f"attack_avatar: invalid amounts from sync, {event['message_text']}")
+            logger.warning(f"attack_avatar: invalid amounts from sync, {event['message_text']}")
             return
         
         await self.send_message(message_to_self=None, message_to_group=result,
@@ -848,7 +848,7 @@ class SubjectUpdatesMixin():
                                            data=result)
                        
         else:
-            logger.info(f"sleep: invalid amounts from sync, {event['message_text']}")
+            logger.warning(f"sleep: invalid amounts from sync, {event['message_text']}")
             return
         
         await self.send_message(message_to_self=None, message_to_group=result,
@@ -958,7 +958,7 @@ class SubjectUpdatesMixin():
                                             data=result)         
 
         else:
-            logger.info(f"patch_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
+            logger.warning(f"patch_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
             return
         
         await self.send_message(message_to_self=None, message_to_group=result,

@@ -136,4 +136,9 @@ take_rescue_subject: function take_rescue_subject(message_data)
     session_player.current_location = message_data.new_location; 
     session_player.target_location.x = message_data.new_location.x+1;
     session_player.target_location.y = message_data.new_location.y+1;
+
+    if(message_data.player_id==app.session_player.id)
+    {
+       app.working = false;
+    }
 },

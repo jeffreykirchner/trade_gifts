@@ -569,6 +569,7 @@ var app = Vue.createApp({
             {           
                 app.session = message_data.session;
                 app.session_player = message_data.session_player;
+                app.working = false;
             } 
             else
             {

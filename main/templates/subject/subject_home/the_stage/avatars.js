@@ -800,7 +800,7 @@ take_update_move_fruit_to_avatar: function take_update_move_fruit_to_avatar(mess
         if(app.is_subject && source_player_id == app.session_player.id)
         {
             app.avatar_modal.hide();      
-            app.selected_avatar.avatar = null;     
+            app.working = false;     
         }
     }
     else
@@ -951,7 +951,7 @@ take_update_attack_avatar: function take_update_attack_avatar(message_data)
             {
                 app.avatar_modal.hide();
                 app.avatar_attack_modal.hide();
-                app.selected_avatar.avatar = null;
+                app.working = false;
             }
 
             //transfer beam
@@ -1073,11 +1073,14 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                     app.hat_trade_status = "proposal_received";
                     app.avatar_hat_modal.show();
                     app.avatar_hat_modal_open = true;
+
+                    app.working = false;
                 }
                 else if(source_player_id == app.session_player.id)
                 {
                     app.hat_trade_status = "proposal";
                     app.avatar_hat_modal_open = true;
+                    app.working = false;
                 }
             }
         }
@@ -1088,6 +1091,7 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                 if(target_player_id == app.session_player.id)
                 {
                     app.avatar_hat_modal.hide();
+                    app.working = false;
                 }
             }
         }
@@ -1099,6 +1103,7 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                 {
                     app.avatar_hat_modal.hide();
                     app.hat_trade_status = "open";
+                    app.working = false;
                 }
             }
 
@@ -1202,6 +1207,8 @@ take_update_hat_avatar_cancel: function take_update_hat_avatar_cancel(message_da
                         28,
                         null);
                 }
+
+                app.working = false;
             }
         }
 

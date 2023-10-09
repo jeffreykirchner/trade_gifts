@@ -520,6 +520,7 @@ take_update_move_fruit_to_house: function take_update_move_fruit_to_house(messag
         if(app.is_subject && source_player_id == app.session_player.id)
         {
             app.house_modal.toggle();
+            app.working = false;
         }
     }
     else
@@ -613,6 +614,7 @@ take_update_sleep: function take_update_sleep(message_data)
     if(app.is_subject && source_player_id == app.session_player.id)
     {
         app.house_modal.hide();
+        app.working = false;
     }
 },
 

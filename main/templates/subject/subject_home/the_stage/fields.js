@@ -339,6 +339,7 @@ take_field_harvest(message_data)
         if(app.is_subject && message_data.avatar.id == app.session_player.id)
         {
             app.field_modal.hide();
+            app.working = false;
         }
     }
     else
@@ -387,6 +388,7 @@ take_field_effort(message_data)
     if(message_data.avatar.id == app.session_player.id)
     {
         app.field_modal.hide();
+        app.working = false;
     }
 
 },
