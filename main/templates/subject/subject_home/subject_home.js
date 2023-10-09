@@ -253,8 +253,6 @@ var app = Vue.createApp({
             }
 
             app.first_load_done = true;
-
-            app.working = false;
         },
 
         /** send websocket message to server
@@ -615,6 +613,8 @@ var app = Vue.createApp({
             {
                 window.location.replace(app.session_player.survey_link);
             }
+
+            app.working = false;
         },
 
         /** hide choice grid modal modal

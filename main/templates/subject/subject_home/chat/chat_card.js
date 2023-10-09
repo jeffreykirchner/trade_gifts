@@ -86,5 +86,9 @@ take_update_chat(message_data){
     app.session.world_state_avatars.session_players[message_data.sender_id].chat_time = Date.now();
     pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text = text;
 
+    if(message_data.sender_id == app.session_player.id)
+    {
+       app.working = false;
+    }
 },
 

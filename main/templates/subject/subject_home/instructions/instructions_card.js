@@ -40,6 +40,8 @@ take_next_instruction: function take_next_instruction(message_data){
 
         app.process_instruction_page();
         app.instruction_display_scroll();
+
+        app.working = false;
     } 
     else
     {
@@ -69,6 +71,8 @@ take_finish_instructions: function take_finish_instructions(message_data){
         
         app.session_player.instructions_finished = result.instructions_finished;
         app.session_player.current_instruction_complete = result.current_instruction_complete;
+
+        app.working = false;
     } 
     else
     {
