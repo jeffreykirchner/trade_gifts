@@ -134,6 +134,7 @@ var app = Vue.createApp({
 
                     //errors
                     patch_harvest_error : null,
+                    house_error : null,
                 }},
     methods: {
 

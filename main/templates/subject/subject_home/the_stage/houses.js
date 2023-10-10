@@ -221,6 +221,7 @@ subject_house_click: function subject_house_click(target_house_id)
     app.house_modal.show();
     app.house_modal_open = true;
     app.working = false;
+    app.house_error = null;
 },
 
 /**
@@ -231,6 +232,7 @@ hide_house_modal: function hide_house_modal()
     app.selected_house.house = null;
     app.house_modal_open = false;
     app.working = false;
+    app.house_error = null;
 },
 
 /**
@@ -431,10 +433,12 @@ calc_health_value: function calc_health_value(good_one, good_two, good_three)
  */
 take_update_move_fruit_to_house: function take_update_move_fruit_to_house(message_data)
 {
+    let source_player_id = message_data.source_player_id;
+
     if(message_data.status == "success")
     {
-        source_player_id = message_data.source_player_id;
-        target_house_id = message_data.target_house_id;
+        let source_player_id = message_data.source_player_id;
+        let target_house_id = message_data.target_house_id;
 
         app.session.world_state.avatars[source_player_id] = message_data.source_player;
         app.session.world_state.houses[target_house_id] = message_data.target_house;
@@ -527,7 +531,11 @@ take_update_move_fruit_to_house: function take_update_move_fruit_to_house(messag
     }
     else
     {
-
+        if(app.is_subject && source_player_id == app.session_player.id)
+        {
+            app.house_error = message_data.error_message[0].message;
+            // app.working = false;
+        }
     }
 },
 

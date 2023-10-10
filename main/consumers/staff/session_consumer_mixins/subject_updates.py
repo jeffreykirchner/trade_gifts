@@ -686,27 +686,129 @@ class SubjectUpdatesMixin():
             logger.info(f"move_fruit_to_house: invalid data, {event['message_text']}")
             return
         
+        error_message = []
+        status = "success"
+
+        player_id_s = str(player_id)
+
+        session = await Session.objects.aget(id=self.session_id)
+        current_period = await session.aget_current_session_period()
+        summary_data = current_period.summary_data[player_id_s]
+        
+        # parameter_set = session.parameter_set.json()
+        parameter_set_player_id = str(self.world_state_local['avatars'][str(player_id)]['parameter_set_player_id'])
+
+        avatar =  self.world_state_local['avatars'][str(player_id)]
+
+        house = self.world_state_local['houses'][str(target_house_id)]
+        parameter_set_player_id_house = str(self.world_state_local['avatars'][str(house['session_player'])]['parameter_set_player_id'])
+        
+        source_group = self.parameter_set_local["parameter_set_players"][parameter_set_player_id]["parameter_set_group"]
+        target_group = self.parameter_set_local["parameter_set_players"][parameter_set_player_id_house]["parameter_set_group"]
+        
+        good_one = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_one']
+        good_two = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_two']
+
+        if self.parameter_set_local["good_mode"] == "Three":
+            good_three = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_three']
+        else:
+            good_three = 0
+
+        #check if on break
         if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
            self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
 
             logger.info(f"move_fruit_to_house: on break, {event['message_text']}")
-            return
+            status = "fail"
+            error_message.append({"id":"good_one_move", "message": "You cannot interact with other group's houses."})
+
+        #house must be in same group as avatar
+        if source_group != target_group:
+            status = "fail"
+            error_message.append({"id":"good_one_move", "message": "You cannot interact with other group's houses."})
+
+        if status == "success":
+            if direction == "avatar_to_house":
+                if avatar[good_one] < good_one_move:
+                    status = "fail"
+                    error_message.append({"id":"good_one_move", "message": "Invalid amount."})
+
+                if avatar[good_two] < good_two_move:
+                    status = "fail"
+                    error_message.append({"id":"good_two_move", "message": "Invalid amount."})
+
+                if self.parameter_set_local["good_mode"] == "Three":
+                    if avatar[good_three] < good_three_move:
+                        status = "fail"
+                        error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+            elif player_id == house['session_player']:
+                #player owns house
+                if house[good_one] < good_one_move:
+                    status = "fail"
+                    error_message.append({"id":"good_one_move", "message": "Invalid amount."})
+
+                if house[good_two] < good_two_move:
+                    status = "fail"
+                    error_message.append({"id":"good_two_move", "message": "Invalid amount."})
+
+                if self.parameter_set_local["good_mode"] == "Three":
+                    if house[good_three] < good_three_move:
+                        status = "fail"
+                        error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+            else:
+                status = "fail"
+                error_message.append({"id":"good_one_move", "message": "You cannot move goods out of other player's houses."})
+
+        if status == "success":
+            if direction == "avatar_to_house":
+                avatar[good_one] -= good_one_move
+                avatar[good_two] -= good_two_move
+
+                if self.parameter_set_local["good_mode"] == "Three":
+                    avatar[good_three] -= good_three_move
+
+                house[good_one] += good_one_move
+                house[good_two] += good_two_move
+
+                if self.parameter_set_local["good_mode"] == "Three":
+                    house[good_three] += good_three_move
+
+                 #data
+                summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_one] += good_one_move
+                summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_two] += good_two_move
+
+                if self.parameter_set_local["good_mode"] == "Three":
+                    summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_three] += good_three_move
+            else:
+                avatar[good_one] += good_one_move
+                avatar[good_two] += good_two_move
+
+                if self.parameter_set_local["good_mode"] == "Three":
+                    avatar[good_three] += good_three_move
+
+                house[good_one] -= good_one_move
+                house[good_two] -= good_two_move
+
+                if self.parameter_set_local["good_mode"] == "Three":
+                    house[good_three] -= good_three_move
+
+            house["health_value"] = convert_goods_to_health(house[good_one],
+                                                            house[good_two],
+                                                            house[good_three] if self.parameter_set_local["good_mode"] == "Three" else 0,
+                                                            self.parameter_set_local)
+
+            await current_period.asave()
+            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+
+        if self.parameter_set_local["good_mode"] == "Three":
+            goods = {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}
+        else:
+            goods = {"good_one" : good_one, "good_two" : good_two}
+
+        result = {"status" : status, "error_message" : error_message}
+        result["source_player_id"] = player_id
         
-        v = await sync_to_async(sync_move_fruit_to_house)(self.session_id, 
-                                                          player_id, 
-                                                          target_house_id, 
-                                                          good_one_move, 
-                                                          good_two_move, 
-                                                          good_three_move, 
-                                                          direction,
-                                                          self.parameter_set_local)
-
-        result = {"status" : v["status"], "error_message" : v["error_message"]}
-
-        if v["world_state"]:
-            self.world_state_local = v["world_state"]
-
-            result["source_player_id"] = player_id
+        if status == "success":
             result["target_house_id"] = target_house_id
             result["source_player"] = self.world_state_local["avatars"][str(player_id)]
             result["target_house"] = self.world_state_local["houses"][str(target_house_id)]
@@ -714,7 +816,7 @@ class SubjectUpdatesMixin():
             result["good_two_move"] = good_two_move
             result["good_three_move"] = good_three_move
             result["direction"] = direction
-            result["goods"] = v["goods"]
+            result["goods"] = goods
 
             await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
@@ -725,8 +827,7 @@ class SubjectUpdatesMixin():
             
         else:
             logger.warning(f"move_fruit_to_house: invalid amounts from sync, {event['message_text']}")
-            return
-
+            
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
 
@@ -1573,66 +1674,66 @@ def sync_sleep(session_id, player_id, parameter_set):
 
     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 
-def sync_patch_harvest(session_id, player_id, patch_id, parameter_set):
-    '''
-    harvest from patch
-    '''
+# def sync_patch_harvest(session_id, player_id, patch_id, parameter_set):
+#     '''
+#     harvest from patch
+#     '''
 
-    status = "success"
-    harvest_amount = 0
-    error_message = []
-    world_state = None
+#     status = "success"
+#     harvest_amount = 0
+#     error_message = []
+#     world_state = None
 
-    with transaction.atomic():
-        session = Session.objects.select_for_update().get(id=session_id)
-        current_period = session.get_current_session_period()
-        # parameter_set = session.parameter_set.json()
+#     with transaction.atomic():
+#         session = Session.objects.select_for_update().get(id=session_id)
+#         current_period = session.get_current_session_period()
+#         # parameter_set = session.parameter_set.json()
 
-        player_id_s = str(player_id)
-        patch_id_s = str(patch_id)
+#         player_id_s = str(player_id)
+#         patch_id_s = str(patch_id)
 
-        player = session.world_state['avatars'][player_id_s]
-        patch = session.world_state['patches'][patch_id_s]
+#         player = session.world_state['avatars'][player_id_s]
+#         patch = session.world_state['patches'][patch_id_s]
        
-        status = "fail"     
+#         status = "fail"     
 
-        #loop backwards through levels
-        for i in range(patch["max_levels"], 0, -1):
-            level = patch["levels"][str(i)]
+#         #loop backwards through levels
+#         for i in range(patch["max_levels"], 0, -1):
+#             level = patch["levels"][str(i)]
 
-            if not level["harvested"]:
-                status = "success"               
-                level["harvested"] = True
-                harvest_amount = level["value"]
-                break
+#             if not level["harvested"]:
+#                 status = "success"               
+#                 level["harvested"] = True
+#                 harvest_amount = level["value"]
+#                 break
         
-        if status == "fail":
-            error_message.append({"id":"patch_harvest", "message": "The patch is empty."})
+#         if status == "fail":
+#             error_message.append({"id":"patch_harvest", "message": "The patch is empty."})
 
-        #check player has enough harvests remaining
-        if status == "success" and player["period_patch_harvests"] >= parameter_set["max_patch_harvests"]:
-            status = "fail"
-            error_message.append({"id":"patch_harvest", "message": "No harvests remaining this period."})
+#         #check player has enough harvests remaining
+#         if status == "success" and player["period_patch_harvests"] >= parameter_set["max_patch_harvests"]:
+#             status = "fail"
+#             error_message.append({"id":"patch_harvest", "message": "No harvests remaining this period."})
 
-        if status == "success":
-            summary_data = current_period.summary_data[player_id_s]
+#         if status == "success":
+#             summary_data = current_period.summary_data[player_id_s]
 
-            player[patch["good"]] += harvest_amount
-            player["period_patch_harvests"] += 1
+#             player[patch["good"]] += harvest_amount
+#             player["period_patch_harvests"] += 1
 
-            summary_data["patch_harvests_count_" + patch_id_s] += 1
-            summary_data["patch_harvests_total_" + patch_id_s] += harvest_amount
-            summary_data["harvest_total_" + patch["good"]] += harvest_amount
+#             summary_data["patch_harvests_count_" + patch_id_s] += 1
+#             summary_data["patch_harvests_total_" + patch_id_s] += harvest_amount
+#             summary_data["harvest_total_" + patch["good"]] += harvest_amount
 
-            session.save()
-            current_period.save()
+#             session.save()
+#             current_period.save()
         
-        world_state = session.world_state
+#         world_state = session.world_state
         
-    return {"status" : status, 
-            "error_message" : error_message, 
-            "world_state" : world_state, 
-            "harvest_amount" : harvest_amount}
+#     return {"status" : status, 
+#             "error_message" : error_message, 
+#             "world_state" : world_state, 
+#             "harvest_amount" : harvest_amount}
 
 def sync_hat_avatar(session_id, player_id, target_player_id):
     '''
