@@ -220,6 +220,7 @@ subject_house_click: function subject_house_click(target_house_id)
     app.clear_main_form_errors();
     app.house_modal.show();
     app.house_modal_open = true;
+    app.working = false;
 },
 
 /**
@@ -229,6 +230,7 @@ hide_house_modal: function hide_house_modal()
 {
     app.selected_house.house = null;
     app.house_modal_open = false;
+    app.working = false;
 },
 
 /**
@@ -520,6 +522,7 @@ take_update_move_fruit_to_house: function take_update_move_fruit_to_house(messag
         if(app.is_subject && source_player_id == app.session_player.id)
         {
             app.house_modal.toggle();
+            app.working = false;
         }
     }
     else
@@ -613,6 +616,7 @@ take_update_sleep: function take_update_sleep(message_data)
     if(app.is_subject && source_player_id == app.session_player.id)
     {
         app.house_modal.hide();
+        app.working = false;
     }
 },
 

@@ -44,7 +44,11 @@
                     <div class="col text-end" v-if="selected_avatar.avatar">    
                         <span class="me-4 " v-if="session.world_state_avatars.session_players[session_player.id].cool_down>0">
                             <strong>Cooling ... [[session.world_state_avatars.session_players[session_player.id].cool_down]]</strong>
-                        </span>                   
+                        </span>     
+                        
+                        <span v-if="working" class="me-2">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
 
                         <button type="button"
                                 class="btn btn-outline-danger"

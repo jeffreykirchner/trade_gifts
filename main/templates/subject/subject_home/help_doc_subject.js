@@ -3,7 +3,7 @@
  * @param title : string
  */
 send_load_help_doc_subject(title){
-    app.working = true;
+   
     app.help_text = "Loading ...";
 
     app.help_modal.show();
@@ -25,5 +25,7 @@ take_load_help_doc_subject(message_data){
     {
         app.help_text = message_data.message;
     }
+
+    app.working = false;
 },
 

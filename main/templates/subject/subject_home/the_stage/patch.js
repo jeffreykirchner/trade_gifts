@@ -1,7 +1,7 @@
 /**
  * setup patch objects
  */
-setup_pixi_patches()
+setup_pixi_patches: function setup_pixi_patches()
 {
     let patch_size = 150;
     let ring_size = 50;
@@ -145,7 +145,7 @@ setup_pixi_patches()
 /**
  * update patch inventory
  */
-update_patch_inventory()
+update_patch_inventory: function update_patch_inventory()
 {
     if(!app.session.world_state["started"]) return;
     
@@ -184,7 +184,7 @@ update_patch_inventory()
 /**
  * handle patch click
  */
-subject_patch_click(patch_id)
+subject_patch_click: function subject_patch_click(patch_id)
 {
     let patch = app.session.world_state.patches[patch_id];
 
@@ -200,22 +200,24 @@ subject_patch_click(patch_id)
     
     app.patch_modal.show();
     app.patch_modal_open = true;
+    app.working = false;
 },
 
 /**
  * handle patch modal hide
  */
-hide_patch_modal()
+hide_patch_modal: function hide_patch_modal()
 {
     app.selected_patch.patch = null;
     app.selected_patch.patch_type = null;
     app.patch_modal_open = false;
+    app.working = false;
 },
 
 /**
  * send harvest patch requst
  */
-send_patch_harvest()
+send_patch_harvest: function send_patch_harvest()
 {
     if(!app.session.world_state["started"]) return;
     if(!app.selected_patch.patch) return;
@@ -253,7 +255,7 @@ send_patch_harvest()
 /**
  * send harvest patch during instructions
  */
-send_patch_harvest_instructions()
+send_patch_harvest_instructions: function send_patch_harvest_instructions()
 {
     if(app.session_player.current_instruction != app.instructions.action_page_harvest) return;
 
@@ -330,7 +332,7 @@ send_patch_harvest_instructions()
 /**
  * take patch harvest response
 */
-take_patch_harvest(message_data)
+take_patch_harvest: function take_patch_harvest(message_data)
 {
 
     if(message_data.status == "success")
@@ -364,11 +366,15 @@ take_patch_harvest(message_data)
         if(app.is_subject && player_id == app.session_player.id)
         {
             app.patch_modal.hide();
+            app.working = false;
         }
     }
     else
     {
-
+        if(app.is_subject && player_id == app.session_player.id)
+        {
+            app.working = false;
+        }
     }
 },
 

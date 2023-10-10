@@ -191,6 +191,7 @@ subject_field_click(field_id)
     app.clear_main_form_errors();
     app.field_modal.show();
     app.field_modal_open = true;
+    app.working = false;
 
     let total_effort = app.session.parameter_set.production_effort;
 
@@ -218,6 +219,7 @@ hide_field_modal()
     app.selected_field.field = null;
     app.selected_field.field_type = null;
     app.field_modal_open = false
+    app.working = false;
 },
 
 /**
@@ -339,6 +341,7 @@ take_field_harvest(message_data)
         if(app.is_subject && message_data.avatar.id == app.session_player.id)
         {
             app.field_modal.hide();
+            app.working = false;
         }
     }
     else
@@ -387,6 +390,7 @@ take_field_effort(message_data)
     if(message_data.avatar.id == app.session_player.id)
     {
         app.field_modal.hide();
+        app.working = false;
     }
 
 },

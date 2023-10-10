@@ -487,7 +487,7 @@ class SubjectUpdatesMixin():
             logger.info(f"field_harvest: on break, {event['message_text']}")
             return
 
-        v = await sync_to_async(sync_field_harvest)(self.session_id, player_id, field_id, good_one_harvest, good_two_harvest)
+        v = await sync_to_async(sync_field_harvest)(self.session_id, player_id, field_id, good_one_harvest, good_two_harvest, self.parameter_set_local)
         
         result = {"status" : v["status"], "error_message" : v["error_message"]}
 
@@ -502,16 +502,18 @@ class SubjectUpdatesMixin():
                 good = i[0]
                 result["field"][good] = self.world_state_local["fields"][str(field_id)][good]
                 result["avatar"][good] = self.world_state_local["avatars"][str(player_id)][good]
-        else:
-            logger.info(f"field_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
-            return
-        
-        await SessionEvent.objects.acreate(session_id=self.session_id, 
+
+            await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
                                            type="field_harvest",
                                            period_number=self.world_state_local["current_period"],
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
+        else:
+            logger.warning(f"field_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
+            return
+        
+        
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -564,16 +566,16 @@ class SubjectUpdatesMixin():
             result["avatar"] = {"id" : player_id}
             result["good_one_effort"] = good_one_effort
             result["good_two_effort"] = good_two_effort
-        else:
-            logger.info(f"field_effort: invalid amounts from sync, {event['message_text']}")
-            return
-        
-        await SessionEvent.objects.acreate(session_id=self.session_id, 
+
+            await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
                                            type="field_effort",
                                            period_number=self.world_state_local["current_period"],
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
+        else:
+            logger.warning(f"field_effort: invalid amounts from sync, {event['message_text']}")
+            return
         
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -634,17 +636,17 @@ class SubjectUpdatesMixin():
             result["good_two_move"] = good_two_move
             result["good_three_move"] = good_three_move
             result["goods"] = v["goods"]
-            
-        else:
-            logger.info(f"move_fruit_to_avatar: invalid amounts from sync, {event['message_text']}")
-            return
 
-        await SessionEvent.objects.acreate(session_id=self.session_id, 
+            await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
                                            type="move_fruit_to_avatar",
                                            period_number=self.world_state_local["current_period"],
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
+            
+        else:
+            logger.warning(f"move_fruit_to_avatar: invalid amounts from sync, {event['message_text']}")
+            return
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -690,7 +692,14 @@ class SubjectUpdatesMixin():
             logger.info(f"move_fruit_to_house: on break, {event['message_text']}")
             return
         
-        v = await sync_to_async(sync_move_fruit_to_house)(self.session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction)
+        v = await sync_to_async(sync_move_fruit_to_house)(self.session_id, 
+                                                          player_id, 
+                                                          target_house_id, 
+                                                          good_one_move, 
+                                                          good_two_move, 
+                                                          good_three_move, 
+                                                          direction,
+                                                          self.parameter_set_local)
 
         result = {"status" : v["status"], "error_message" : v["error_message"]}
 
@@ -706,17 +715,17 @@ class SubjectUpdatesMixin():
             result["good_three_move"] = good_three_move
             result["direction"] = direction
             result["goods"] = v["goods"]
-            
-        else:
-            logger.info(f"move_fruit_to_house: invalid amounts from sync, {event['message_text']}")
-            return
 
-        await SessionEvent.objects.acreate(session_id=self.session_id, 
+            await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
                                            type="move_fruit_house",
                                            period_number=self.world_state_local["current_period"],
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
+            
+        else:
+            logger.warning(f"move_fruit_to_house: invalid amounts from sync, {event['message_text']}")
+            return
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -764,7 +773,7 @@ class SubjectUpdatesMixin():
             logger.info(f"attack_avatar: cooling, {event['message_text']}")
             return
         
-        v = await sync_to_async(sync_attack_avatar)(self.session_id, player_id, target_player_id)
+        v = await sync_to_async(sync_attack_avatar)(self.session_id, player_id, target_player_id, self.parameter_set_local)
 
         result = {"status" : v["status"], "error_message" : v["error_message"]}
 
@@ -779,18 +788,18 @@ class SubjectUpdatesMixin():
 
             result["source_player"] = self.world_state_local["avatars"][str(player_id)]
             result["target_player"] = self.world_state_local["avatars"][str(target_player_id)]
-                       
-        else:
-            logger.info(f"attack_avatar: invalid amounts from sync, {event['message_text']}")
-            return
-        
-        await SessionEvent.objects.acreate(session_id=self.session_id, 
+
+            await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
                                            type="attack_avatar",
                                            period_number=self.world_state_local["current_period"],
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
-
+                       
+        else:
+            logger.warning(f"attack_avatar: invalid amounts from sync, {event['message_text']}")
+            return
+        
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
     
@@ -821,7 +830,7 @@ class SubjectUpdatesMixin():
             logger.info(f"sleep: invalid data, {event['message_text']}")
             return
         
-        v = await sync_to_async(sync_sleep)(self.session_id, player_id)
+        v = await sync_to_async(sync_sleep)(self.session_id, player_id, self.parameter_set_local)
 
         result = {"status" : v["status"], "error_message" : v["error_message"]}
 
@@ -830,18 +839,18 @@ class SubjectUpdatesMixin():
 
             result["source_player_id"] = player_id
             result["source_player"] = self.world_state_local["avatars"][str(player_id)]
-                       
-        else:
-            logger.info(f"sleep: invalid amounts from sync, {event['message_text']}")
-            return
-        
-        await SessionEvent.objects.acreate(session_id=self.session_id, 
+
+            await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
                                            type="sleep",
                                            period_number=self.world_state_local["current_period"],
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
-
+                       
+        else:
+            logger.warning(f"sleep: invalid amounts from sync, {event['message_text']}")
+            return
+        
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
     
@@ -929,7 +938,7 @@ class SubjectUpdatesMixin():
             logger.info(f"patch_harvest: invalid data, {event['message_text']}")
             return
 
-        v = await sync_to_async(sync_patch_harvest)(self.session_id, player_id, patch_id)
+        v = await sync_to_async(sync_patch_harvest)(self.session_id, player_id, patch_id, self.parameter_set_local)
         
         result = {"status" : v["status"], "error_message" : v["error_message"]}
 
@@ -939,19 +948,19 @@ class SubjectUpdatesMixin():
             result["player_id"] = player_id
             result["patch_id"] = patch_id
             result["harvest_amount"] = v["harvest_amount"]
-            result["avatar"] = self.world_state_local["avatars"][str(player_id)]                
+            result["avatar"] = self.world_state_local["avatars"][str(player_id)]       
+
+            await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                            session_player_id=player_id,
+                                            type="patch_harvest",
+                                            period_number=self.world_state_local["current_period"],
+                                            time_remaining=self.world_state_local["time_remaining"],
+                                            data=result)         
 
         else:
-            logger.info(f"patch_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
+            logger.warning(f"patch_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
             return
         
-        await SessionEvent.objects.acreate(session_id=self.session_id, 
-                                           session_player_id=player_id,
-                                           type="patch_harvest",
-                                           period_number=self.world_state_local["current_period"],
-                                           time_remaining=self.world_state_local["time_remaining"],
-                                           data=result)
-
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
         
@@ -1010,8 +1019,10 @@ class SubjectUpdatesMixin():
 
                 if v["world_state"] and v["status"]=="success":
                     self.world_state_local = v["world_state"]
-                    target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
 
+                    source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+                    target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+                    
                 source_player['interaction'] = 0
                 target_player['interaction'] = 0
 
@@ -1140,7 +1151,7 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
 
-def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_two_harvest):
+def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_two_harvest, parameter_set):
     '''
     harvest from field
     '''
@@ -1152,7 +1163,7 @@ def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_t
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
         session_period = session.get_current_session_period()
-        parameter_set = session.parameter_set.json()
+        # parameter_set = session.parameter_set.json()
 
         field = session.world_state['fields'][str(field_id)]
         field_type = parameter_set['parameter_set_field_types'][str(field['parameter_set_field_type'])]
@@ -1292,7 +1303,7 @@ def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_
             "world_state" : world_state, 
             "goods" : goods}
 
-def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction):
+def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction, parameter_set):
     '''
     move fruit from between avatar and house
     '''
@@ -1306,7 +1317,7 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
         world_state = session.world_state
         summary_data = current_period.summary_data[str(player_id)]
 
-        parameter_set = session.parameter_set.json()
+        # parameter_set = session.parameter_set.json()
         parameter_set_player_id = str(world_state['avatars'][str(player_id)]['parameter_set_player_id'])
 
         avatar =  world_state['avatars'][str(player_id)]
@@ -1416,7 +1427,7 @@ def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_mo
             "world_state" : world_state,
             "goods" : goods}
 
-def sync_attack_avatar(session_id, player_id, target_house_id):
+def sync_attack_avatar(session_id, player_id, target_house_id, parameter_set):
     '''
     sync attack avatar
     '''
@@ -1428,7 +1439,7 @@ def sync_attack_avatar(session_id, player_id, target_house_id):
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
         current_period = session.get_current_session_period()
-        parameter_set = session.parameter_set.json()
+        # parameter_set = session.parameter_set.json()
 
         player_id_s = str(player_id)
         target_house_id_s = str(target_house_id)
@@ -1486,7 +1497,7 @@ def sync_attack_avatar(session_id, player_id, target_house_id):
 
     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 
-def sync_sleep(session_id, player_id):
+def sync_sleep(session_id, player_id, parameter_set):
     '''
     sync sleep
     '''
@@ -1497,7 +1508,7 @@ def sync_sleep(session_id, player_id):
 
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
-        parameter_set = session.parameter_set.json()
+        # parameter_set = session.parameter_set.json()
 
         source_player = session.world_state['avatars'][str(player_id)]
 
@@ -1516,7 +1527,7 @@ def sync_sleep(session_id, player_id):
 
     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 
-def sync_patch_harvest(session_id, player_id, patch_id):
+def sync_patch_harvest(session_id, player_id, patch_id, parameter_set):
     '''
     harvest from patch
     '''
@@ -1529,7 +1540,7 @@ def sync_patch_harvest(session_id, player_id, patch_id):
     with transaction.atomic():
         session = Session.objects.select_for_update().get(id=session_id)
         current_period = session.get_current_session_period()
-        parameter_set = session.parameter_set.json()
+        # parameter_set = session.parameter_set.json()
 
         player_id_s = str(player_id)
         patch_id_s = str(patch_id)

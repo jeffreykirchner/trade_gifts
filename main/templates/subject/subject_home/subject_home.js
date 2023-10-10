@@ -101,6 +101,8 @@ var app = Vue.createApp({
                     field_modal : null,
                     house_modal : null,
                     avatar_hat_modal : null,
+                    patch_modal : null,
+
                     test_mode : {%if session.parameter_set.test_mode%}true{%else%}false{%endif%},
 
                     avatar_modal_open : false,
@@ -253,8 +255,6 @@ var app = Vue.createApp({
             }
 
             app.first_load_done = true;
-
-            app.working = false;
         },
 
         /** send websocket message to server
@@ -470,6 +470,8 @@ var app = Vue.createApp({
                 app.avatar_attack_modal.hide();
                 app.field_modal.hide();
                 app.house_modal.hide();
+                // app.avatar_hat_modal.hide();
+                app.patch_modal.hide();
             }
 
             //sleep 
@@ -571,6 +573,7 @@ var app = Vue.createApp({
             {           
                 app.session = message_data.session;
                 app.session_player = message_data.session_player;
+                app.working = false;
             } 
             else
             {
@@ -615,6 +618,8 @@ var app = Vue.createApp({
             {
                 window.location.replace(app.session_player.survey_link);
             }
+
+            app.working = false;
         },
 
         /** hide choice grid modal modal

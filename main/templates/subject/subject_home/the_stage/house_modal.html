@@ -98,6 +98,10 @@
             
                 <div class="row text-end mt-4 border-top pt-2">
                     <div class="col text-end">
+                        <span v-if="working" class="me-2">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                        
                         <button type="button"
                                 class="btn btn-outline-primary me-2"
                                 v-on:click = "select_all_fruit_house()"
