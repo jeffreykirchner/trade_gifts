@@ -230,6 +230,7 @@ hide_house_modal: function hide_house_modal()
 {
     app.selected_house.house = null;
     app.house_modal_open = false;
+    app.working = false;
 },
 
 /**

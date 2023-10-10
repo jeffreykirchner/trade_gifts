@@ -1019,8 +1019,10 @@ class SubjectUpdatesMixin():
 
                 if v["world_state"] and v["status"]=="success":
                     self.world_state_local = v["world_state"]
-                    target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
 
+                    source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+                    target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+                    
                 source_player['interaction'] = 0
                 target_player['interaction'] = 0
 

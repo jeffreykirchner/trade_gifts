@@ -470,7 +470,7 @@ var app = Vue.createApp({
                 app.avatar_attack_modal.hide();
                 app.field_modal.hide();
                 app.house_modal.hide();
-                app.avatar_hat_modal.hide();
+                // app.avatar_hat_modal.hide();
                 app.patch_modal.hide();
             }
 

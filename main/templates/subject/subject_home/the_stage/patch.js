@@ -211,6 +211,7 @@ hide_patch_modal: function hide_patch_modal()
     app.selected_patch.patch = null;
     app.selected_patch.patch_type = null;
     app.patch_modal_open = false;
+    app.working = false;
 },
 
 /**

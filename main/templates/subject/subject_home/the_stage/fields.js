@@ -219,6 +219,7 @@ hide_field_modal()
     app.selected_field.field = null;
     app.selected_field.field_type = null;
     app.field_modal_open = false
+    app.working = false;
 },
 
 /**
