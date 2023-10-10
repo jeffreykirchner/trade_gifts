@@ -607,7 +607,7 @@ class Session(models.Model):
 
             writer = csv.writer(output)
 
-            writer.writerow(['Session', 'Date', 'Player #', 'Label'])
+            writer.writerow(['Session', 'Date', 'Client #', 'Label'])
 
             # session_players = self.session_players.all()
 
