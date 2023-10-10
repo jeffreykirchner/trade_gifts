@@ -607,7 +607,7 @@ class Session(models.Model):
 
             writer = csv.writer(output)
 
-            writer.writerow(['Session', 'Date', 'Player', 'Name', 'Student ID', 'Earnings'])
+            writer.writerow(['Session', 'Date', 'Player #', 'Label'])
 
             # session_players = self.session_players.all()
 
@@ -615,16 +615,15 @@ class Session(models.Model):
             #     writer.writerow([self.id, self.get_start_date_string(), p.player_number,p.name, p.student_id, p.earnings/100])
 
             session_players = {}
-            for i in self.session_players.all().values('id', 'player_number', 'name', 'student_id'):
+            for i in self.session_players.all().values('id', 'player_number', 'parameter_set_player__id_label'):
                 session_players[str(i['id'])] = i
 
             for p in self.world_state["avatars"]:
                 writer.writerow([self.id,
                                  self.get_start_date_string(),
                                  session_players[p]["player_number"],
-                                 session_players[p]["name"],
-                                 session_players[p]["student_id"],
-                                 self.world_state["avatars"][p]["earnings"]])
+                                 session_players[p]["parameter_set_player__id_label"],
+                                 ])
 
             v = output.getvalue()
             output.close()
