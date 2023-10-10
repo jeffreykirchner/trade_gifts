@@ -72,6 +72,29 @@ do_test_mode: function do_test_mode(){
 },
 
 /**
+ * test for race conditions
+ */
+do_test_mode_race: function do_test_mode_race()
+{
+    if(!app.session.started) return;
+    if(!app.test_mode) return;
+
+    {%if DEBUG%}
+    console.log("Do Test Mode");
+    {%endif%}
+
+    //patch test
+    let patch_id = app.session.parameter_set.parameter_set_patches_order[app.session.world_state.current_period-1];
+
+    app.subject_patch_click(patch_id);
+    app.working = true;
+    app.send_message("patch_harvest", 
+                     {"patch_id" : app.selected_patch.patch.id},
+                      "group");
+
+},
+
+/**
  * test during instruction phase
  */
 do_test_mode_instructions: function do_test_mode_instructions()
@@ -161,6 +184,10 @@ do_test_mode_instructions: function do_test_mode_instructions()
             {
                 session_player.target_location = app.test_mode_move_to_avatar();
             }   
+            return;      
+            break;
+        case app.instructions.action_page_chat:
+            app.do_test_mode_chat();
             return;      
             break;
     }   
@@ -429,6 +456,7 @@ do_test_mode_avatar_hat: function do_test_mode_avatar_hat()
 do_test_mode_chat: function do_test_mode_chat()
 {
     app.chat_text = app.random_string(5, 20);
+    document.getElementById("send_chat_id").click();
 },
 
 /**

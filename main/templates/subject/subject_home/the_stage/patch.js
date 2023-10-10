@@ -334,11 +334,12 @@ send_patch_harvest_instructions: function send_patch_harvest_instructions()
 */
 take_patch_harvest: function take_patch_harvest(message_data)
 {
+    let player_id = message_data.player_id;
 
     if(message_data.status == "success")
     {
         let patch_id = message_data.patch_id;
-        let player_id = message_data.player_id;
+        
         let harvest_amount = message_data.harvest_amount;
         app.session.world_state.patches[patch_id].levels = message_data.patch.levels;
         let patch = app.session.world_state.patches[patch_id];
