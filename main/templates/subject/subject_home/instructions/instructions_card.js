@@ -144,6 +144,9 @@ process_instruction_page: function process_instruction_page(){
         case app.instructions.action_page_attacks:           
             return;      
             break;
+        case app.instructions.action_page_chat:           
+            return;      
+            break;
     }
 
     if(app.session_player.current_instruction_complete < app.session_player.current_instruction)
