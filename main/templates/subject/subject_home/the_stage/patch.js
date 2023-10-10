@@ -198,6 +198,7 @@ subject_patch_click: function subject_patch_click(patch_id)
 
     app.selected_patch.patch = patch;
     
+    app.patch_harvest_error = null;
     app.patch_modal.show();
     app.patch_modal_open = true;
     app.working = false;
@@ -212,6 +213,7 @@ hide_patch_modal: function hide_patch_modal()
     app.selected_patch.patch_type = null;
     app.patch_modal_open = false;
     app.working = false;
+    app.patch_harvest_error = null;
 },
 
 /**
@@ -334,7 +336,7 @@ send_patch_harvest_instructions: function send_patch_harvest_instructions()
 */
 take_patch_harvest: function take_patch_harvest(message_data)
 {
-    let player_id = message_data.player_id;
+    var player_id = message_data.player_id;
 
     if(message_data.status == "success")
     {
@@ -374,7 +376,8 @@ take_patch_harvest: function take_patch_harvest(message_data)
     {
         if(app.is_subject && player_id == app.session_player.id)
         {
-            app.working = false;
+            app.patch_harvest_error = message_data.error_message[0].message;
+            // app.working = false;
         }
     }
 },
