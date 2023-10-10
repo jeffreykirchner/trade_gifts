@@ -67,7 +67,7 @@ take_download_recruiter_data(message_data){
     let blob = new Blob(["\ufeff", message_data.result]);
     let url = URL.createObjectURL(blob);
     download_link.href = url;
-    download_link.download = "Template_Recruiter_Data_Session_" + app.session.id +".csv";
+    download_link.download = "Trade_Gifts_Recruiter_Data_Session_" + app.session.id +".csv";
 
     document.body.appendChild(download_link);
     download_link.click();
@@ -93,7 +93,7 @@ take_download_payment_data(message_data){
     let blob = new Blob(["\ufeff", message_data.result]);
     let url = URL.createObjectURL(blob);
     download_link.href = url;
-    download_link.download = "Template_Payment_Data_Session_" + app.session.id +".csv";
+    download_link.download = "Trade_Gifts_Payment_Data_Session_" + app.session.id +".csv";
 
     document.body.appendChild(download_link);
     download_link.click();
