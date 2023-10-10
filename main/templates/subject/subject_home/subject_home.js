@@ -104,6 +104,7 @@ var app = Vue.createApp({
                     patch_modal : null,
 
                     test_mode : {%if session.parameter_set.test_mode%}true{%else%}false{%endif%},
+                    test_mode_type : "race",
 
                     avatar_modal_open : false,
                     avatar_attack_modal_open : false,
@@ -292,7 +293,13 @@ var app = Vue.createApp({
             document.getElementById('house_modal').addEventListener('hidden.bs.modal', app.hide_house_modal);
             document.getElementById('patch_modal').addEventListener('hidden.bs.modal', app.hide_patch_modal);
            
-            {%if session.parameter_set.test_mode%} setTimeout(app.do_test_mode, app.random_number(1000 , 1500)); {%endif%}
+           
+            {%if session.parameter_set.test_mode%} 
+            if(app.test_mode_type=="full")
+            {
+                setTimeout(app.do_test_mode, app.random_number(1000 , 1500)); 
+            }
+            {%endif%}
 
             // if game is finished show modal
             if( app.session.world_state.current_experiment_phase == 'Names')
@@ -552,6 +559,14 @@ var app = Vue.createApp({
 
             //update barriers
             app.update_barriers();
+
+            {%if session.parameter_set.test_mode%} 
+            //test mode race condition test
+            if(app.test_mode_type=="race")
+            {
+                app.do_test_mode_race();
+            }
+            {%endif%}
         },
 
         /**
