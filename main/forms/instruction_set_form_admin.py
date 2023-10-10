@@ -18,8 +18,8 @@ class InstructionSetFormAdmin(forms.ModelForm):
     action_page_house = forms.IntegerField(label='Required Action: House', initial=4)
     action_page_sleep = forms.IntegerField(label='Required Action: Sleep', initial=5)
     action_page_attacks = forms.IntegerField(label='Required Action: Attack', initial=6)
+    action_page_chat = forms.IntegerField(label='Required Action: Chat', initial=7)
     
-
     class Meta:
         model=InstructionSet
         fields = ('label',)

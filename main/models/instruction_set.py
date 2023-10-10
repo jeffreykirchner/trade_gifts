@@ -20,6 +20,7 @@ class InstructionSet(models.Model):
     action_page_house = models.IntegerField(verbose_name='Required Action: House', default=4)
     action_page_sleep = models.IntegerField(verbose_name='Required Action: Sleep', default=5)
     action_page_attacks = models.IntegerField(verbose_name='Required Action: Attack', default=6)
+    action_page_chat = models.IntegerField(verbose_name='Required Action: Chat', default=7)
         
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -73,7 +74,8 @@ class InstructionSet(models.Model):
             "action_page_house" : self.action_page_house,
             "action_page_sleep" : self.action_page_sleep,
             "action_page_attacks" : self.action_page_attacks,
-            
+            "action_page_chat" : self.action_page_chat,
+
             "instruction_pages" : [i.json() for i in self.instructions.all()],
         }
     

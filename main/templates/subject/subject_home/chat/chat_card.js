@@ -1,4 +1,4 @@
-send_chat(){
+send_chat: function send_chat(){
 
     if(app.working) return;
     if(app.chat_text.trim() == "") return;
@@ -24,8 +24,11 @@ send_chat(){
 /**
  * send chat instructions
  */
-send_chat_instructions()
+send_chat_instructions: function send_chat_instructions()
 {
+
+    if(app.session_player.current_instruction != app.instructions.action_page_chat) return;
+    app.session_player.current_instruction_complete = app.instructions.action_page_chat;
 
     // {
     //     "value": "success",
@@ -50,7 +53,7 @@ send_chat_instructions()
 
 /** take result of moving goods
 */
-take_chat(message_data){
+take_chat: function take_chat(message_data){
     //app.cancel_modal=false;
     //app.clear_main_form_errors();
 
@@ -67,7 +70,7 @@ take_chat(message_data){
 /** take updated data from goods being moved by another player
 *    @param message_data {json} session day in json format
 */
-take_update_chat(message_data){
+take_update_chat: function take_update_chat(message_data){
     
     let text = message_data.text;
 
