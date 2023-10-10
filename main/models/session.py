@@ -607,7 +607,7 @@ class Session(models.Model):
 
             writer = csv.writer(output)
 
-            writer.writerow(['Session', 'Date', 'Client #', 'Label'])
+            writer.writerow(['Session', 'Date', 'Player #', 'Label', 'Earnings'])
 
             # session_players = self.session_players.all()
 
@@ -623,7 +623,7 @@ class Session(models.Model):
                                  self.get_start_date_string(),
                                  session_players[p]["player_number"],
                                  session_players[p]["parameter_set_player__id_label"],
-                                 ])
+                                 self.world_state["avatars"][p]["earnings"]])
 
             v = output.getvalue()
             output.close()
