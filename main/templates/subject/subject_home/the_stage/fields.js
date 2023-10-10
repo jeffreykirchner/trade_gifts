@@ -191,6 +191,7 @@ subject_field_click(field_id)
     app.clear_main_form_errors();
     app.field_modal.show();
     app.field_modal_open = true;
+    app.working = false;
 
     let total_effort = app.session.parameter_set.production_effort;
 

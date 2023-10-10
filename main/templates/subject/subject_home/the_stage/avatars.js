@@ -602,6 +602,7 @@ subject_avatar_click: function subject_avatar_click(target_player_id)
     app.clear_main_form_errors();
     app.avatar_modal.show();
     app.avatar_modal_open = true;
+    app.working = false;
 },
 
 /**
@@ -831,6 +832,7 @@ show_attack_avatar: function show_attack_avatar()
     app.avatar_modal.hide();
     app.avatar_attack_modal.show();
     app.avatar_attack_modal_open = true;
+    app.working = false;
 },
 
 /**
@@ -995,6 +997,7 @@ show_hat_avatar: function show_hat_avatar()
     app.avatar_modal.hide();
     app.avatar_hat_modal.show();
     app.avatar_hat_modal_open = true;
+    app.working = false;
 },
 
 /**
@@ -1003,7 +1006,7 @@ show_hat_avatar: function show_hat_avatar()
 hide_avatar_hat_modal: function hide_avatar_hat_modal()
 {
     app.avatar_hat_modal_open = false;
-    app.selected_avatar.avatar = null;
+    // app.selected_avatar.avatar = null;
 },
 
 /**
@@ -1069,6 +1072,13 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                     app.selected_avatar.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
                     app.selected_avatar.good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
                     app.selected_avatar.good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
+
+                    app.avatar_modal.hide();
+                    app.avatar_attack_modal.hide();
+                    app.field_modal.hide();
+                    app.house_modal.hide();
+                    app.avatar_hat_modal.hide();
+                    app.patch_modal.hide();
 
                     app.hat_trade_status = "proposal_received";
                     app.avatar_hat_modal.show();

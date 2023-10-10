@@ -220,6 +220,7 @@ subject_house_click: function subject_house_click(target_house_id)
     app.clear_main_form_errors();
     app.house_modal.show();
     app.house_modal_open = true;
+    app.working = false;
 },
 
 /**

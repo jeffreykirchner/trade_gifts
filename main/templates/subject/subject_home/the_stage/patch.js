@@ -200,6 +200,7 @@ subject_patch_click: function subject_patch_click(patch_id)
     
     app.patch_modal.show();
     app.patch_modal_open = true;
+    app.working = false;
 },
 
 /**
