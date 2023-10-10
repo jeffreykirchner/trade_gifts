@@ -163,6 +163,10 @@ do_test_mode_instructions: function do_test_mode_instructions()
             }   
             return;      
             break;
+        case app.instructions.action_page_chat:
+            app.do_test_mode_chat();
+            return;      
+            break;
     }   
     }
 
@@ -429,6 +433,7 @@ do_test_mode_avatar_hat: function do_test_mode_avatar_hat()
 do_test_mode_chat: function do_test_mode_chat()
 {
     app.chat_text = app.random_string(5, 20);
+    document.getElementById("send_chat_id").click();
 },
 
 /**
