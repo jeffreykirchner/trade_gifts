@@ -967,30 +967,32 @@ class SubjectUpdatesMixin():
         #check player has enough harvests remaining
         if status == "success" and avatar["period_patch_harvests"] >= self.parameter_set_local["max_patch_harvests"]:
             status = "fail"
-            error_message.append({"id":"patch_harvest", "message": "No harvests remaining this period."})
+            error_message.append({"id":"patch_harvest", "message": "Wait until next period to harvest again."})
 
         if status == "success":
-            # summary_data = current_period.summary_data[player_id_s]
+            
+            session = await Session.objects.aget(id=self.session_id)
+            current_period = await session.aget_current_session_period()
+            
+            summary_data = current_period.summary_data[player_id_s]
 
             avatar[patch["good"]] += harvest_amount
             avatar["period_patch_harvests"] += 1
 
-            # summary_data["patch_harvests_count_" + patch_id_s] += 1
-            # summary_data["patch_harvests_total_" + patch_id_s] += harvest_amount
-            # summary_data["harvest_total_" + patch["good"]] += harvest_amount
+            summary_data["patch_harvests_count_" + patch_id_s] += 1
+            summary_data["patch_harvests_total_" + patch_id_s] += harvest_amount
+            summary_data["harvest_total_" + patch["good"]] += harvest_amount
 
-            # session.save()
-            # current_period.save()
-
+            await current_period.asave()
             await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
 
 
         result = {"status" :status, "error_message" : error_message}
-
+        result["player_id"] = player_id
+        
         if status=="success":
             # self.world_state_local = v["world_state"]
-            result["patch"] = self.world_state_local["patches"][str(patch_id)]
-            result["player_id"] = player_id
+            result["patch"] = self.world_state_local["patches"][str(patch_id)]           
             result["patch_id"] = patch_id
             result["harvest_amount"] = harvest_amount
             result["avatar"] = self.world_state_local["avatars"][str(player_id)]       

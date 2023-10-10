@@ -37,7 +37,6 @@
                 <div class="row mt-4" v-if="selected_patch.patch">
 
                     <div class="col text-end">
-
                         <span v-if="working" class="me-2">
                             <i class="fas fa-spinner fa-spin"></i>
                         </span>
@@ -54,6 +53,13 @@
                         </button>
                     </div>
                 </div>
+
+                <div class="row mt-4 fw-bold" v-if="patch_harvest_error">
+                    <div class="col text-center">                  
+                        Error: [[patch_harvest_error]]  
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

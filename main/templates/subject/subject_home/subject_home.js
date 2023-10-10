@@ -131,6 +131,9 @@ var app = Vue.createApp({
 
                     //test mode
                     test_mode_location_target : null,
+
+                    //errors
+                    patch_harvest_error : null,
                 }},
     methods: {
 
