@@ -938,16 +938,61 @@ class SubjectUpdatesMixin():
             logger.info(f"patch_harvest: invalid data, {event['message_text']}")
             return
 
-        v = await sync_to_async(sync_patch_harvest)(self.session_id, player_id, patch_id, self.parameter_set_local)
-        
-        result = {"status" : v["status"], "error_message" : v["error_message"]}
+        # v = await sync_to_async(sync_patch_harvest)(self.session_id, player_id, patch_id, self.parameter_set_local)
+        #race condition test
+        error_message = []
+        status = "success"
 
-        if v["world_state"] and v["status"]=="success":
-            self.world_state_local = v["world_state"]
+        player_id_s = str(player_id)
+        patch_id_s = str(patch_id)
+
+        avatar = self.world_state_local['avatars'][player_id_s]
+        patch = self.world_state_local['patches'][patch_id_s]
+       
+        status = "fail"     
+
+        #loop backwards through levels
+        for i in range(patch["max_levels"], 0, -1):
+            level = patch["levels"][str(i)]
+
+            if not level["harvested"]:
+                status = "success"               
+                level["harvested"] = True
+                harvest_amount = level["value"]
+                break
+        
+        if status == "fail":
+            error_message.append({"id":"patch_harvest", "message": "The patch is empty."})
+
+        #check player has enough harvests remaining
+        if status == "success" and avatar["period_patch_harvests"] >= self.parameter_set_local["max_patch_harvests"]:
+            status = "fail"
+            error_message.append({"id":"patch_harvest", "message": "No harvests remaining this period."})
+
+        if status == "success":
+            # summary_data = current_period.summary_data[player_id_s]
+
+            avatar[patch["good"]] += harvest_amount
+            avatar["period_patch_harvests"] += 1
+
+            # summary_data["patch_harvests_count_" + patch_id_s] += 1
+            # summary_data["patch_harvests_total_" + patch_id_s] += harvest_amount
+            # summary_data["harvest_total_" + patch["good"]] += harvest_amount
+
+            # session.save()
+            # current_period.save()
+
+            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+
+
+        result = {"status" :status, "error_message" : error_message}
+
+        if status=="success":
+            # self.world_state_local = v["world_state"]
             result["patch"] = self.world_state_local["patches"][str(patch_id)]
             result["player_id"] = player_id
             result["patch_id"] = patch_id
-            result["harvest_amount"] = v["harvest_amount"]
+            result["harvest_amount"] = harvest_amount
             result["avatar"] = self.world_state_local["avatars"][str(player_id)]       
 
             await SessionEvent.objects.acreate(session_id=self.session_id, 
@@ -959,7 +1004,6 @@ class SubjectUpdatesMixin():
 
         else:
             logger.warning(f"patch_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
-            return
         
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
