@@ -1304,13 +1304,13 @@ class SubjectUpdatesMixin():
                 result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
                 result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
 
-                v = await sync_to_async(sync_hat_avatar)(self.session_id, player_id, target_player_id)
+                # v = await sync_to_async(sync_hat_avatar)(self.session_id, player_id, target_player_id)
 
-                if v["world_state"] and v["status"]=="success":
-                    self.world_state_local = v["world_state"]
+                #swap values
+                source_avatar["parameter_set_hat_id"], target_avatar["parameter_set_hat_id"] = target_avatar["parameter_set_hat_id"], source_avatar["parameter_set_hat_id"]
 
-                    source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
-                    target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+                source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+                target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
                     
                 source_player['interaction'] = 0
                 target_player['interaction'] = 0
@@ -1322,6 +1322,11 @@ class SubjectUpdatesMixin():
 
                 result["source_player"] = self.world_state_local["avatars"][str(target_player_id)] 
                 result["target_player"] = self.world_state_local["avatars"][str(player_id)]
+
+                await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+
+                result["status"] ="success"
+                result["error_message"] = []
 
             else:
                 result["source_player_id"] = player_id
@@ -1786,35 +1791,35 @@ def sync_field_effort(session_id, player_id, field_id, good_one_effort, good_two
 
 #     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 
-def sync_sleep(session_id, player_id, parameter_set):
-    '''
-    sync sleep
-    '''
+# def sync_sleep(session_id, player_id, parameter_set):
+#     '''
+#     sync sleep
+#     '''
 
-    status = "success"
-    error_message = []
-    world_state = None
+#     status = "success"
+#     error_message = []
+#     world_state = None
 
-    with transaction.atomic():
-        session = Session.objects.select_for_update().get(id=session_id)
-        # parameter_set = session.parameter_set.json()
+#     with transaction.atomic():
+#         session = Session.objects.select_for_update().get(id=session_id)
+#         # parameter_set = session.parameter_set.json()
 
-        source_player = session.world_state['avatars'][str(player_id)]
+#         source_player = session.world_state['avatars'][str(player_id)]
 
-        if session.world_state['time_remaining'] > parameter_set["night_length"]+5:
-            status = "fail"
+#         if session.world_state['time_remaining'] > parameter_set["night_length"]+5:
+#             status = "fail"
         
-        if status == "success":
-            source_player["sleeping"] = True
+#         if status == "success":
+#             source_player["sleeping"] = True
   
-            session.save()
+#             session.save()
 
-            world_state = session.world_state
-        session.save()
+#             world_state = session.world_state
+#         session.save()
 
-        world_state = session.world_state
+#         world_state = session.world_state
 
-    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+#     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 
 # def sync_patch_harvest(session_id, player_id, patch_id, parameter_set):
 #     '''
