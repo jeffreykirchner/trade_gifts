@@ -68,6 +68,12 @@
                         <span id="div_id_attack_avatar_button"></span>
                     </div>
                 </div>
+
+                <div class="row mt-4 fw-bold" v-if="attack_error">
+                    <div class="col text-center">                  
+                        Error: [[attack_error]]  
+                    </div>
+                </div>
             </div>
         </div>
     </div>

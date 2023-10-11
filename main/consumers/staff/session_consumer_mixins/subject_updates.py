@@ -922,35 +922,100 @@ class SubjectUpdatesMixin():
         except:
             logger.info(f"attack_avatar: invalid data, {event['message_text']}")
             return
+
+        # check cooling status
+      
         
-        #check not on break
+        # v = await sync_to_async(sync_attack_avatar)(self.session_id, player_id, target_player_id, self.parameter_set_local)
+
+        # session = Session.objects.select_for_update().get(id=session_id)
+        # current_period = session.get_current_session_period()
+        # parameter_set = session.parameter_set.json()
+        error_message = []
+        status = "success"
+        
+        player_id_s = str(player_id)
+        target_player_s = str(target_player_id)
+
+        session = await Session.objects.aget(id=self.session_id)
+        current_period = await session.aget_current_session_period()
+
+        source_player = self.world_state_local['avatars'][player_id_s]
+        target_player =  self.world_state_local['avatars'][target_player_s]
+
+        #source player does not have enough health
+        if Decimal(source_player["health"]) < Decimal(self.parameter_set_local["attack_cost"]):
+            status = "fail"
+            error_message.append({"id":"attack_avatar_button", "message": "You do not have enough health."})
+
+        #target player has no health
+        if Decimal(target_player["health"]) == 0:
+            status = "fail"
+            error_message.append({"id":"attack_avatar_button", "message": "Target player already has zero health."})
+
+        # on break
         if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
            self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
 
-            logger.info(f"attack_avatar: on break, {event['message_text']}")
-            return
-
-        # check cooling status
+            logger.info(f"move_fruit_to_house: on break, {event['message_text']}")
+            status = "fail"
+            error_message.append({"id":"attack_avatar_button", "message": "Break time, no interactions."})
+        
+        # cooling down
         if self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] != 0:
 
             logger.info(f"attack_avatar: cooling, {event['message_text']}")
-            return
-        
-        v = await sync_to_async(sync_attack_avatar)(self.session_id, player_id, target_player_id, self.parameter_set_local)
+            status = "fail"
+            error_message.append({"id":"attack_avatar_button", "message": "You are cooling down."})
 
-        result = {"status" : v["status"], "error_message" : v["error_message"]}
+        if status == "success":
+            #data for summary
 
-        if v["world_state"]:
-            self.world_state_local = v["world_state"]
+            summary_data_source = current_period.summary_data[player_id_s]
+            summary_data_target = current_period.summary_data[target_player_s]
 
-            self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
-            self.world_state_avatars_local["session_players"][str(target_player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+            attack_cost = Decimal(self.parameter_set_local["attack_cost"])
+            attack_damage = Decimal(self.parameter_set_local["attack_damage"])
+            
+            source_player["health"] = Decimal(source_player["health"]) - attack_cost
+            target_player["health"] = Decimal(target_player["health"]) - attack_damage
 
-            result["source_player_id"] = player_id
+            #data for summary
+            summary_data_source["attacks_cost_at_" + target_player_s] = str(Decimal(summary_data_source["attacks_cost_at_" + target_player_s]) + attack_cost)
+            summary_data_target["attacks_damage_from_" + player_id_s] = str(Decimal(summary_data_target["attacks_damage_from_" + player_id_s]) + attack_damage)
+
+            summary_data_source["attacks_at_" + target_player_s] += 1
+            summary_data_target["attacks_from_" + player_id_s] += 1
+
+            if Decimal(source_player["health"]) < 0:
+                #handle underage
+                summary_data_source["attacks_cost_at_" + target_player_s] = str(Decimal(summary_data_source["attacks_cost_at_" + target_player_s]) + Decimal(source_player["health"]))
+                source_player["health"] = 0
+
+            if Decimal(target_player["health"]) < 0:
+                #handle underage
+                summary_data_target["attacks_damage_from_" + player_id_s] = str(Decimal(summary_data_target["attacks_damage_from_" + player_id_s]) + Decimal(target_player["health"]))
+                target_player["health"] = 0
+
+            source_player["health"] = str(source_player["health"])
+            target_player["health"] = str(target_player["health"])
+
+            await current_period.asave()
+            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+            
+
+        result = {"status" : status, "error_message" : error_message}
+        result["source_player_id"] = player_id
+
+        if status=="success":
+
+            self.world_state_avatars_local["session_players"][player_id_s]["cool_down"] = self.parameter_set_local["cool_down_length"]
+            self.world_state_avatars_local["session_players"][target_player_s]["cool_down"] = self.parameter_set_local["cool_down_length"]
+
             result["target_player_id"] = target_player_id
 
-            result["source_player"] = self.world_state_local["avatars"][str(player_id)]
-            result["target_player"] = self.world_state_local["avatars"][str(target_player_id)]
+            result["source_player"] = self.world_state_local["avatars"][player_id_s]
+            result["target_player"] = self.world_state_local["avatars"][target_player_s]
 
             await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
@@ -961,8 +1026,7 @@ class SubjectUpdatesMixin():
                        
         else:
             logger.warning(f"attack_avatar: invalid amounts from sync, {event['message_text']}")
-            return
-        
+                    
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
     
@@ -1441,76 +1505,76 @@ def sync_field_effort(session_id, player_id, field_id, good_one_effort, good_two
     
     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 
-def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_move, good_two_move, good_three_move):
-    '''
-    move fruit from one avatar to another
-    '''
-    status = "success"
-    error_message = []
-    world_state = None
+# def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_move, good_two_move, good_three_move):
+#     '''
+#     move fruit from one avatar to another
+#     '''
+#     status = "success"
+#     error_message = []
+#     world_state = None
 
-    with transaction.atomic():
-        session = Session.objects.select_for_update().get(id=session_id)
-        current_period = session.get_current_session_period()
+#     with transaction.atomic():
+#         session = Session.objects.select_for_update().get(id=session_id)
+#         current_period = session.get_current_session_period()
         
-        parameter_set = session.parameter_set.json()
-        parameter_set_player_id = str(session.world_state['avatars'][str(player_id)]['parameter_set_player_id'])
+#         parameter_set = session.parameter_set.json()
+#         parameter_set_player_id = str(session.world_state['avatars'][str(player_id)]['parameter_set_player_id'])
 
-        summary_data = current_period.summary_data[str(player_id)]
+#         summary_data = current_period.summary_data[str(player_id)]
 
-        good_one = parameter_set['parameter_set_players'][parameter_set_player_id]['good_one']
-        good_two = parameter_set['parameter_set_players'][parameter_set_player_id]['good_two']
+#         good_one = parameter_set['parameter_set_players'][parameter_set_player_id]['good_one']
+#         good_two = parameter_set['parameter_set_players'][parameter_set_player_id]['good_two']
 
-        if parameter_set["good_mode"] == "Three":
-            good_three = parameter_set['parameter_set_players'][parameter_set_player_id]['good_three']
+#         if parameter_set["good_mode"] == "Three":
+#             good_three = parameter_set['parameter_set_players'][parameter_set_player_id]['good_three']
 
-        if session.world_state['avatars'][str(player_id)][good_one] < good_one_move:
-            status = "fail"
-            error_message.append({"id":"good_one_move", "message": "Invalid amount."})
+#         if session.world_state['avatars'][str(player_id)][good_one] < good_one_move:
+#             status = "fail"
+#             error_message.append({"id":"good_one_move", "message": "Invalid amount."})
 
-        if session.world_state['avatars'][str(player_id)][good_two] < good_two_move:
-            status = "fail"
-            error_message.append({"id":"good_two_move", "message": "Invalid amount."})
+#         if session.world_state['avatars'][str(player_id)][good_two] < good_two_move:
+#             status = "fail"
+#             error_message.append({"id":"good_two_move", "message": "Invalid amount."})
 
-        if parameter_set["good_mode"] == "Three":
-            if session.world_state['avatars'][str(player_id)][good_three] < good_three_move:
-                status = "fail"
-                error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+#         if parameter_set["good_mode"] == "Three":
+#             if session.world_state['avatars'][str(player_id)][good_three] < good_three_move:
+#                 status = "fail"
+#                 error_message.append({"id":"good_three_move", "message": "Invalid amount."})
 
-        if status == "success":
-            session.world_state['avatars'][str(player_id)][good_one] -= good_one_move
-            session.world_state['avatars'][str(player_id)][good_two] -= good_two_move
+#         if status == "success":
+#             session.world_state['avatars'][str(player_id)][good_one] -= good_one_move
+#             session.world_state['avatars'][str(player_id)][good_two] -= good_two_move
 
-            if parameter_set["good_mode"] == "Three":
-                session.world_state['avatars'][str(player_id)][good_three] -= good_three_move
+#             if parameter_set["good_mode"] == "Three":
+#                 session.world_state['avatars'][str(player_id)][good_three] -= good_three_move
 
-            session.world_state['avatars'][str(target_player_id)][good_one] += good_one_move
-            session.world_state['avatars'][str(target_player_id)][good_two] += good_two_move
+#             session.world_state['avatars'][str(target_player_id)][good_one] += good_one_move
+#             session.world_state['avatars'][str(target_player_id)][good_two] += good_two_move
 
-            if parameter_set["good_mode"] == "Three":
-                session.world_state['avatars'][str(target_player_id)][good_three] += good_three_move
+#             if parameter_set["good_mode"] == "Three":
+#                 session.world_state['avatars'][str(target_player_id)][good_three] += good_three_move
 
-            #data
-            summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_one] += good_one_move
-            summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_two] += good_two_move
+#             #data
+#             summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_one] += good_one_move
+#             summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_two] += good_two_move
 
-            if parameter_set["good_mode"] == "Three":
-                summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_three] += good_three_move
+#             if parameter_set["good_mode"] == "Three":
+#                 summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_three] += good_three_move
 
-            session.save()
-            current_period.save()
+#             session.save()
+#             current_period.save()
 
-            world_state = session.world_state
+#             world_state = session.world_state
 
-        if parameter_set["good_mode"] == "Three":
-            goods = {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}
-        else:
-            goods = {"good_one" : good_one, "good_two" : good_two}
+#         if parameter_set["good_mode"] == "Three":
+#             goods = {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}
+#         else:
+#             goods = {"good_one" : good_one, "good_two" : good_two}
 
-    return {"status" : status, 
-            "error_message" : error_message, 
-            "world_state" : world_state, 
-            "goods" : goods}
+#     return {"status" : status, 
+#             "error_message" : error_message, 
+#             "world_state" : world_state, 
+#             "goods" : goods}
 
 # def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction, parameter_set):
 #     '''
@@ -1636,75 +1700,75 @@ def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_
 #             "world_state" : world_state,
 #             "goods" : goods}
 
-def sync_attack_avatar(session_id, player_id, target_house_id, parameter_set):
-    '''
-    sync attack avatar
-    '''
+# def sync_attack_avatar(session_id, player_id, target_house_id, parameter_set):
+#     '''
+#     sync attack avatar
+#     '''
 
-    status = "success"
-    error_message = []
-    world_state = None
+#     status = "success"
+#     error_message = []
+#     world_state = None
 
-    with transaction.atomic():
-        session = Session.objects.select_for_update().get(id=session_id)
-        current_period = session.get_current_session_period()
-        # parameter_set = session.parameter_set.json()
+#     with transaction.atomic():
+#         session = Session.objects.select_for_update().get(id=session_id)
+#         current_period = session.get_current_session_period()
+#         # parameter_set = session.parameter_set.json()
 
-        player_id_s = str(player_id)
-        target_house_id_s = str(target_house_id)
+#         player_id_s = str(player_id)
+#         target_house_id_s = str(target_house_id)
 
-        source_player = session.world_state['avatars'][player_id_s]
-        target_player = session.world_state['avatars'][target_house_id_s]
+#         source_player = session.world_state['avatars'][player_id_s]
+#         target_player = session.world_state['avatars'][target_house_id_s]
 
-        if Decimal(source_player["health"]) < Decimal(parameter_set["attack_cost"]):
-            status = "fail"
-            error_message.append({"id":"attack_avatar_button", "message": "You do not have enough health."})
+#         if Decimal(source_player["health"]) < Decimal(parameter_set["attack_cost"]):
+#             status = "fail"
+#             error_message.append({"id":"attack_avatar_button", "message": "You do not have enough health."})
 
-        if Decimal(target_player["health"]) == 0:
-            status = "fail"
-            error_message.append({"id":"attack_avatar_button", "message": "Target player already has zero health."})
+#         if Decimal(target_player["health"]) == 0:
+#             status = "fail"
+#             error_message.append({"id":"attack_avatar_button", "message": "Target player already has zero health."})
 
-        if status == "success":
-            #data for summary
+#         if status == "success":
+#             #data for summary
 
-            summary_data_source = current_period.summary_data[player_id_s]
-            summary_data_target = current_period.summary_data[target_house_id_s]
+#             summary_data_source = current_period.summary_data[player_id_s]
+#             summary_data_target = current_period.summary_data[target_house_id_s]
 
-            attack_cost = Decimal(parameter_set["attack_cost"])
-            attack_damage = Decimal(parameter_set["attack_damage"])
+#             attack_cost = Decimal(parameter_set["attack_cost"])
+#             attack_damage = Decimal(parameter_set["attack_damage"])
             
-            source_player["health"] = Decimal(source_player["health"]) - attack_cost
-            target_player["health"] = Decimal(target_player["health"]) - attack_damage
+#             source_player["health"] = Decimal(source_player["health"]) - attack_cost
+#             target_player["health"] = Decimal(target_player["health"]) - attack_damage
 
-            #data for summary
-            summary_data_source["attacks_cost_at_" + target_house_id_s] = str(Decimal(summary_data_source["attacks_cost_at_" + target_house_id_s]) + attack_cost)
-            summary_data_target["attacks_damage_from_" + player_id_s] = str(Decimal(summary_data_target["attacks_damage_from_" + player_id_s]) + attack_damage)
+#             #data for summary
+#             summary_data_source["attacks_cost_at_" + target_house_id_s] = str(Decimal(summary_data_source["attacks_cost_at_" + target_house_id_s]) + attack_cost)
+#             summary_data_target["attacks_damage_from_" + player_id_s] = str(Decimal(summary_data_target["attacks_damage_from_" + player_id_s]) + attack_damage)
 
-            summary_data_source["attacks_at_" + target_house_id_s] += 1
-            summary_data_target["attacks_from_" + player_id_s] += 1
+#             summary_data_source["attacks_at_" + target_house_id_s] += 1
+#             summary_data_target["attacks_from_" + player_id_s] += 1
 
-            if Decimal(source_player["health"]) < 0:
-                #handle underage
-                summary_data_source["attacks_cost_at_" + target_house_id_s] = str(Decimal(summary_data_source["attacks_cost_at_" + target_house_id_s]) + Decimal(source_player["health"]))
-                source_player["health"] = 0
+#             if Decimal(source_player["health"]) < 0:
+#                 #handle underage
+#                 summary_data_source["attacks_cost_at_" + target_house_id_s] = str(Decimal(summary_data_source["attacks_cost_at_" + target_house_id_s]) + Decimal(source_player["health"]))
+#                 source_player["health"] = 0
 
-            if Decimal(target_player["health"]) < 0:
-                #handle underage
-                summary_data_target["attacks_damage_from_" + player_id_s] = str(Decimal(summary_data_target["attacks_damage_from_" + player_id_s]) + Decimal(target_player["health"]))
-                target_player["health"] = 0
+#             if Decimal(target_player["health"]) < 0:
+#                 #handle underage
+#                 summary_data_target["attacks_damage_from_" + player_id_s] = str(Decimal(summary_data_target["attacks_damage_from_" + player_id_s]) + Decimal(target_player["health"]))
+#                 target_player["health"] = 0
 
-            source_player["health"] = str(source_player["health"])
-            target_player["health"] = str(target_player["health"])
+#             source_player["health"] = str(source_player["health"])
+#             target_player["health"] = str(target_player["health"])
             
-            session.save()
-            current_period.save()
+#             session.save()
+#             current_period.save()
 
-            world_state = session.world_state
-        session.save()
+#             world_state = session.world_state
+#         session.save()
 
-        world_state = session.world_state
+#         world_state = session.world_state
 
-    return {"status" : status, "error_message" : error_message, "world_state" : world_state}
+#     return {"status" : status, "error_message" : error_message, "world_state" : world_state}
 
 def sync_sleep(session_id, player_id, parameter_set):
     '''
