@@ -345,70 +345,70 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
         
-    async def interaction(self, event):
-        '''
-        subject sends an interaction
-        '''
-        if self.controlling_channel != self.channel_name:
-            return
+    # async def interaction(self, event):
+    #     '''
+    #     subject sends an interaction
+    #     '''
+    #     if self.controlling_channel != self.channel_name:
+    #         return
         
-        player_id = self.session_players_local[event["player_key"]]["id"]
+    #     player_id = self.session_players_local[event["player_key"]]["id"]
 
-        source_player = self.world_state_local['session_players'][str(player_id)]
+    #     source_player = self.world_state_local['session_players'][str(player_id)]
 
-        result = {"source_player_id": player_id, "value" : "success"}
+    #     result = {"source_player_id": player_id, "value" : "success"}
 
-        if source_player['interaction'] == 0:
-            result["value"] = "fail"
-            result["error_message"] = "No interaction in progress."
+    #     if source_player['interaction'] == 0:
+    #         result["value"] = "fail"
+    #         result["error_message"] = "No interaction in progress."
         
-        if result["value"] != "fail":
+    #     if result["value"] != "fail":
 
-            target_player_id = source_player['tractor_beam_target']
-            target_player = self.world_state_local['session_players'][str(target_player_id)]
+    #         target_player_id = source_player['tractor_beam_target']
+    #         target_player = self.world_state_local['session_players'][str(target_player_id)]
 
-            interaction = event["message_text"]["interaction"]
+    #         interaction = event["message_text"]["interaction"]
 
-            result = await sync_to_async(sync_interaction)(self.session_id, player_id, target_player_id, interaction["direction"], interaction["amount"])
+    #         result = await sync_to_async(sync_interaction)(self.session_id, player_id, target_player_id, interaction["direction"], interaction["amount"])
 
-            if result["value"] != "fail":
+    #         if result["value"] != "fail":
 
-                #clear status
-                source_player['interaction'] = 0
-                target_player['interaction'] = 0
+    #             #clear status
+    #             source_player['interaction'] = 0
+    #             target_player['interaction'] = 0
 
-                source_player['frozen'] = False
-                target_player['frozen'] = False
+    #             source_player['frozen'] = False
+    #             target_player['frozen'] = False
 
-                source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
-                target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+    #             source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+    #             target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
 
-                source_player['tractor_beam_target'] = None
+    #             source_player['tractor_beam_target'] = None
 
-                source_player["inventory"][result["period"]] = result["source_player_inventory"]
-                target_player["inventory"][result["period"]] = result["target_player_inventory"]
+    #             source_player["inventory"][result["period"]] = result["source_player_inventory"]
+    #             target_player["inventory"][result["period"]] = result["target_player_inventory"]
 
-                await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
+    #             await Session.objects.filter(id=self.session_id).aupdate(world_state_avatars=self.world_state_avatars_local)
 
-            await SessionEvent.objects.acreate(session_id=self.session_id, 
-                                               session_player_id=player_id,
-                                               type="interaction",
-                                               period_number=self.world_state_local["current_period"],
-                                               time_remaining=self.world_state_local["time_remaining"],
-                                               data={"interaction" : interaction, "result":result})
+    #         await SessionEvent.objects.acreate(session_id=self.session_id, 
+    #                                            session_player_id=player_id,
+    #                                            type="interaction",
+    #                                            period_number=self.world_state_local["current_period"],
+    #                                            time_remaining=self.world_state_local["time_remaining"],
+    #                                            data={"interaction" : interaction, "result":result})
         
-        await self.send_message(message_to_self=None, message_to_group=result,
-                                message_type=event['type'], send_to_client=False, send_to_group=True)
+    #     await self.send_message(message_to_self=None, message_to_group=result,
+    #                             message_type=event['type'], send_to_client=False, send_to_group=True)
 
-    async def update_interaction(self, event):
-        '''
-        subject send an interaction update
-        '''
+    # async def update_interaction(self, event):
+    #     '''
+    #     subject send an interaction update
+    #     '''
 
-        event_data = event["group_data"]
+    #     event_data = event["group_data"]
 
-        await self.send_message(message_to_self=event_data, message_to_group=None,
-                                message_type=event['type'], send_to_client=True, send_to_group=False)
+    #     await self.send_message(message_to_self=event_data, message_to_group=None,
+    #                             message_type=event['type'], send_to_client=True, send_to_group=False)
     
     async def cancel_interaction(self, event):
         '''
@@ -1882,36 +1882,36 @@ def sync_field_effort(session_id, player_id, field_id, good_one_effort, good_two
 #             "world_state" : world_state, 
 #             "harvest_amount" : harvest_amount}
 
-def sync_hat_avatar(session_id, player_id, target_player_id):
-    '''
-    harvest from patch
-    '''
+# def sync_hat_avatar(session_id, player_id, target_player_id):
+#     '''
+#     harvest from patch
+#     '''
 
-    status = "success"
-    harvest_amount = 0
-    error_message = []
-    world_state = None
+#     status = "success"
+#     harvest_amount = 0
+#     error_message = []
+#     world_state = None
 
-    with transaction.atomic():
-        session = Session.objects.select_for_update().get(id=session_id)
+#     with transaction.atomic():
+#         session = Session.objects.select_for_update().get(id=session_id)
 
-        source_player_id_s = str(player_id)
-        target_player_id_s = str(target_player_id)
+#         source_player_id_s = str(player_id)
+#         target_player_id_s = str(target_player_id)
 
-        source_player = session.world_state['avatars'][source_player_id_s]
-        target_player = session.world_state['avatars'][target_player_id_s]
+#         source_player = session.world_state['avatars'][source_player_id_s]
+#         target_player = session.world_state['avatars'][target_player_id_s]
 
-        #swap values
-        source_player["parameter_set_hat_id"], target_player["parameter_set_hat_id"] = target_player["parameter_set_hat_id"], source_player["parameter_set_hat_id"]
+#         #swap values
+#         source_player["parameter_set_hat_id"], target_player["parameter_set_hat_id"] = target_player["parameter_set_hat_id"], source_player["parameter_set_hat_id"]
 
-        session.save()
+#         session.save()
 
-    world_state = session.world_state
+#     world_state = session.world_state
         
-    return {"status" : status, 
-            "error_message" : error_message, 
-            "world_state" : world_state, 
-            "harvest_amount" : harvest_amount}
+#     return {"status" : status, 
+#             "error_message" : error_message, 
+#             "world_state" : world_state, 
+#             "harvest_amount" : harvest_amount}
 
 
 
