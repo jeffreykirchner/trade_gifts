@@ -104,7 +104,7 @@ var app = Vue.createApp({
                     patch_modal : null,
 
                     test_mode : {%if session.parameter_set.test_mode%}true{%else%}false{%endif%},
-                    test_mode_type : "race",
+                    test_mode_type : "full", //"race"
 
                     avatar_modal_open : false,
                     avatar_attack_modal_open : false,
