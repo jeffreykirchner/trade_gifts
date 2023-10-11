@@ -1057,26 +1057,42 @@ class SubjectUpdatesMixin():
             logger.info(f"sleep: invalid data, {event['message_text']}")
             return
         
-        v = await sync_to_async(sync_sleep)(self.session_id, player_id, self.parameter_set_local)
+        # v = await sync_to_async(sync_sleep)(self.session_id, player_id, self.parameter_set_local)
 
-        result = {"status" : v["status"], "error_message" : v["error_message"]}
+        # session = Session.objects.select_for_update().get(id=session_id)
+        # parameter_set = session.parameter_set.json()
 
-        if v["world_state"]:
-            self.world_state_local = v["world_state"]
+        error_message = []
+        status = "success"
+        
+        player_id_s = str(player_id)
+        source_player = self.world_state_local['avatars'][player_id_s]
 
+        if self.world_state_local['time_remaining'] > self.parameter_set_local["night_length"]+5:
+            status = "fail"
+            error_message.append({"id":"send_sleep_button", "message": "No sleeping during the day."})
+        
+        if status == "success":
+            source_player["sleeping"] = True
+  
+            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+       
+        result = {"status" : status, "error_message" : error_message}
+
+        if status=="success":
+            
             result["source_player_id"] = player_id
             result["source_player"] = self.world_state_local["avatars"][str(player_id)]
 
             await SessionEvent.objects.acreate(session_id=self.session_id, 
-                                           session_player_id=player_id,
-                                           type="sleep",
-                                           period_number=self.world_state_local["current_period"],
-                                           time_remaining=self.world_state_local["time_remaining"],
-                                           data=result)
+                                                session_player_id=player_id,
+                                                type="sleep",
+                                                period_number=self.world_state_local["current_period"],
+                                                time_remaining=self.world_state_local["time_remaining"],
+                                                data=result)
                        
         else:
             logger.warning(f"sleep: invalid amounts from sync, {event['message_text']}")
-            return
         
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
