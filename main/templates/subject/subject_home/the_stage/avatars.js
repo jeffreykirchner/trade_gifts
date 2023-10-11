@@ -841,6 +841,7 @@ show_attack_avatar: function show_attack_avatar()
     app.avatar_attack_modal.show();
     app.avatar_attack_modal_open = true;
     app.working = false;
+    app.attack_error = null;
 },
 
 /**
@@ -850,6 +851,7 @@ hide_avatar_attack_modal: function hide_avatar_attack_modal()
 {
     app.avatar_attack_modal_open = false;
     app.working = false;
+    app.attack_error = null;
 },
 
 /**
@@ -943,10 +945,12 @@ send_attack_avatar_instructions : function send_attack_avatar_instructions()
 */
 take_update_attack_avatar: function take_update_attack_avatar(message_data)
 {
+    var source_player_id = message_data.source_player_id;
+
     if(message_data.status == "success")
     {
-        source_player_id = message_data.source_player_id;
-        target_player_id = message_data.target_player_id;
+        
+        let target_player_id = message_data.target_player_id;
 
         app.session.world_state.avatars[source_player_id] = message_data.source_player;
         app.session.world_state.avatars[target_player_id] = message_data.target_player;
@@ -993,6 +997,14 @@ take_update_attack_avatar: function take_update_attack_avatar(message_data)
             elements);
         }
 
+    }
+    else
+    {
+        if(app.is_subject && source_player_id == app.session_player.id)
+        {
+            app.attack_error = message_data.error_message[0].message;
+            // app.working = false;
+        }
     }
     
 },

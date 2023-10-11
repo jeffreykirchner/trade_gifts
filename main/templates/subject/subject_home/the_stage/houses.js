@@ -618,12 +618,23 @@ take_update_sleep: function take_update_sleep(message_data)
 {
     let source_player_id = message_data.source_player_id;
 
-    app.session.world_state.avatars[source_player_id].sleeping = true;
-
-    if(app.is_subject && source_player_id == app.session_player.id)
+    if(message_data.status == "success")
     {
-        app.house_modal.hide();
-        app.working = false;
+        app.session.world_state.avatars[source_player_id].sleeping = true;
+
+        if(app.is_subject && source_player_id == app.session_player.id)
+        {
+            app.house_modal.hide();
+            app.working = false;
+        }
+    }
+    else
+    {
+        if(app.is_subject && source_player_id == app.session_player.id)
+        {
+            app.house_error = message_data.error_message[0].message;
+            // app.working = false;
+        }
     }
 },
 
