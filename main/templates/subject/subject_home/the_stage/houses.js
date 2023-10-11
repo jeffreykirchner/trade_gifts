@@ -433,11 +433,10 @@ calc_health_value: function calc_health_value(good_one, good_two, good_three)
  */
 take_update_move_fruit_to_house: function take_update_move_fruit_to_house(message_data)
 {
-    let source_player_id = message_data.source_player_id;
+    var source_player_id = message_data.source_player_id;
 
     if(message_data.status == "success")
     {
-        let source_player_id = message_data.source_player_id;
         let target_house_id = message_data.target_house_id;
 
         app.session.world_state.avatars[source_player_id] = message_data.source_player;

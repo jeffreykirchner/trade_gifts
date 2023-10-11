@@ -615,27 +615,90 @@ class SubjectUpdatesMixin():
             logger.info(f"move_fruit_to_avatar: invalid data, {event['message_text']}")
             return
         
+        error_message = []
+        status = "success"
+
+        player_id_s = str(player_id)
+
+        session = await Session.objects.aget(id=self.session_id)
+        current_period = await session.aget_current_session_period()
+        summary_data = current_period.summary_data[player_id_s]
+        
+        # v = await sync_to_async(sync_move_fruit_to_avatar)(self.session_id, player_id, target_player_id, good_one_move, good_two_move, good_three_move)
+
+        #  session = Session.objects.select_for_update().get(id=session_id)
+        
+        parameter_set_player_id = str(self.world_state_local['avatars'][str(player_id)]['parameter_set_player_id'])
+
+        summary_data = current_period.summary_data[str(player_id)]
+
+        good_one = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_one']
+        good_two =  self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_two']
+
+        if  self.parameter_set_local["good_mode"] == "Three":
+            good_three =  self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_three']
+
+        if self.world_state_local['avatars'][str(player_id)][good_one] < good_one_move:
+            status = "fail"
+            error_message.append({"id":"good_one_move", "message": "Invalid amount."})
+
+        if self.world_state_local['avatars'][str(player_id)][good_two] < good_two_move:
+            status = "fail"
+            error_message.append({"id":"good_two_move", "message": "Invalid amount."})
+
+        if  self.parameter_set_local["good_mode"] == "Three":
+            if self.world_state_local['avatars'][str(player_id)][good_three] < good_three_move:
+                status = "fail"
+                error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+
         if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
            self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
 
-            logger.info(f"move_fruit_to_avatar: on break, {event['message_text']}")
-            return
-        
-        v = await sync_to_async(sync_move_fruit_to_avatar)(self.session_id, player_id, target_player_id, good_one_move, good_two_move, good_three_move)
+            logger.info(f"move_fruit_to_house: on break, {event['message_text']}")
+            status = "fail"
+            error_message.append({"id":"good_one_move", "message": "Break time, no interactions."})
 
-        result = {"status" : v["status"], "error_message" : v["error_message"]}
+        if status == "success":
+            self.world_state_local['avatars'][str(player_id)][good_one] -= good_one_move
+            self.world_state_local['avatars'][str(player_id)][good_two] -= good_two_move
 
-        if v["world_state"]:
-            self.world_state_local = v["world_state"]
+            if  self.parameter_set_local["good_mode"] == "Three":
+                self.world_state_local['avatars'][str(player_id)][good_three] -= good_three_move
 
-            result["source_player_id"] = player_id
+            self.world_state_local['avatars'][str(target_player_id)][good_one] += good_one_move
+            self.world_state_local['avatars'][str(target_player_id)][good_two] += good_two_move
+
+            if  self.parameter_set_local["good_mode"] == "Three":
+                self.world_state_local['avatars'][str(target_player_id)][good_three] += good_three_move
+
+            #data
+            summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_one] += good_one_move
+            summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_two] += good_two_move
+
+            if  self.parameter_set_local["good_mode"] == "Three":
+                summary_data["send_avatar_to_avatar_" + target_player_id + "_good_" + good_three] += good_three_move
+
+            await current_period.asave()
+            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+
+        if self.parameter_set_local["good_mode"] == "Three":
+            goods = {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}
+        else:
+            goods = {"good_one" : good_one, "good_two" : good_two}
+
+        result = {"status" : status, "error_message" : error_message}
+
+        result["source_player_id"] = player_id
+
+        if status=="success":
+
             result["target_player_id"] = target_player_id
             result["source_player"] = self.world_state_local["avatars"][str(player_id)]
             result["target_player"] = self.world_state_local["avatars"][str(target_player_id)]
             result["good_one_move"] = good_one_move
             result["good_two_move"] = good_two_move
             result["good_three_move"] = good_three_move
-            result["goods"] = v["goods"]
+            result["goods"] = goods
 
             await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
@@ -646,7 +709,6 @@ class SubjectUpdatesMixin():
             
         else:
             logger.warning(f"move_fruit_to_avatar: invalid amounts from sync, {event['message_text']}")
-            return
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -720,7 +782,7 @@ class SubjectUpdatesMixin():
 
             logger.info(f"move_fruit_to_house: on break, {event['message_text']}")
             status = "fail"
-            error_message.append({"id":"good_one_move", "message": "You cannot interact with other group's houses."})
+            error_message.append({"id":"good_one_move", "message": "Break time, no interactions."})
 
         #house must be in same group as avatar
         if source_group != target_group:
@@ -1450,129 +1512,129 @@ def sync_move_fruit_to_avatar(session_id, player_id, target_player_id, good_one_
             "world_state" : world_state, 
             "goods" : goods}
 
-def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction, parameter_set):
-    '''
-    move fruit from between avatar and house
-    '''
-    status = "success"
-    error_message = []
-    world_state = None
+# def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction, parameter_set):
+#     '''
+#     move fruit from between avatar and house
+#     '''
+#     status = "success"
+#     error_message = []
+#     world_state = None
 
-    with transaction.atomic():
-        session = Session.objects.select_for_update().get(id=session_id)
-        current_period = session.get_current_session_period()
-        world_state = session.world_state
-        summary_data = current_period.summary_data[str(player_id)]
+#     with transaction.atomic():
+#         session = Session.objects.select_for_update().get(id=session_id)
+#         current_period = session.get_current_session_period()
+#         world_state = session.world_state
+#         summary_data = current_period.summary_data[str(player_id)]
 
-        # parameter_set = session.parameter_set.json()
-        parameter_set_player_id = str(world_state['avatars'][str(player_id)]['parameter_set_player_id'])
+#         # parameter_set = session.parameter_set.json()
+#         parameter_set_player_id = str(world_state['avatars'][str(player_id)]['parameter_set_player_id'])
 
-        avatar =  world_state['avatars'][str(player_id)]
+#         avatar =  world_state['avatars'][str(player_id)]
 
-        house = world_state['houses'][str(target_house_id)]
-        parameter_set_player_id_house = str(world_state['avatars'][str(house['session_player'])]['parameter_set_player_id'])
+#         house = world_state['houses'][str(target_house_id)]
+#         parameter_set_player_id_house = str(world_state['avatars'][str(house['session_player'])]['parameter_set_player_id'])
         
-        source_group = parameter_set["parameter_set_players"][parameter_set_player_id]["parameter_set_group"]
-        target_group = parameter_set["parameter_set_players"][parameter_set_player_id_house]["parameter_set_group"]
+#         source_group = parameter_set["parameter_set_players"][parameter_set_player_id]["parameter_set_group"]
+#         target_group = parameter_set["parameter_set_players"][parameter_set_player_id_house]["parameter_set_group"]
         
-        good_one = parameter_set['parameter_set_players'][parameter_set_player_id]['good_one']
-        good_two = parameter_set['parameter_set_players'][parameter_set_player_id]['good_two']
+#         good_one = parameter_set['parameter_set_players'][parameter_set_player_id]['good_one']
+#         good_two = parameter_set['parameter_set_players'][parameter_set_player_id]['good_two']
 
-        if parameter_set["good_mode"] == "Three":
-            good_three = parameter_set['parameter_set_players'][parameter_set_player_id]['good_three']
-        else:
-            good_three = 0
+#         if parameter_set["good_mode"] == "Three":
+#             good_three = parameter_set['parameter_set_players'][parameter_set_player_id]['good_three']
+#         else:
+#             good_three = 0
 
-        # house must be in same group as avatar
-        if source_group != target_group:
-            status = "fail"
-            error_message.append({"id":"good_one_move", "message": "You cannot interact with other group's houses."})
+#         # house must be in same group as avatar
+#         if source_group != target_group:
+#             status = "fail"
+#             error_message.append({"id":"good_one_move", "message": "You cannot interact with other group's houses."})
 
-        if status == "success":
-            if direction == "avatar_to_house":
-                if avatar[good_one] < good_one_move:
-                    status = "fail"
-                    error_message.append({"id":"good_one_move", "message": "Invalid amount."})
+#         if status == "success":
+#             if direction == "avatar_to_house":
+#                 if avatar[good_one] < good_one_move:
+#                     status = "fail"
+#                     error_message.append({"id":"good_one_move", "message": "Invalid amount."})
 
-                if avatar[good_two] < good_two_move:
-                    status = "fail"
-                    error_message.append({"id":"good_two_move", "message": "Invalid amount."})
+#                 if avatar[good_two] < good_two_move:
+#                     status = "fail"
+#                     error_message.append({"id":"good_two_move", "message": "Invalid amount."})
 
-                if parameter_set["good_mode"] == "Three":
-                    if avatar[good_three] < good_three_move:
-                        status = "fail"
-                        error_message.append({"id":"good_three_move", "message": "Invalid amount."})
-            elif player_id == house['session_player']:
-                #player owns house
-                if house[good_one] < good_one_move:
-                    status = "fail"
-                    error_message.append({"id":"good_one_move", "message": "Invalid amount."})
+#                 if parameter_set["good_mode"] == "Three":
+#                     if avatar[good_three] < good_three_move:
+#                         status = "fail"
+#                         error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+#             elif player_id == house['session_player']:
+#                 #player owns house
+#                 if house[good_one] < good_one_move:
+#                     status = "fail"
+#                     error_message.append({"id":"good_one_move", "message": "Invalid amount."})
 
-                if house[good_two] < good_two_move:
-                    status = "fail"
-                    error_message.append({"id":"good_two_move", "message": "Invalid amount."})
+#                 if house[good_two] < good_two_move:
+#                     status = "fail"
+#                     error_message.append({"id":"good_two_move", "message": "Invalid amount."})
 
-                if parameter_set["good_mode"] == "Three":
-                    if house[good_three] < good_three_move:
-                        status = "fail"
-                        error_message.append({"id":"good_three_move", "message": "Invalid amount."})
-            else:
-                status = "fail"
-                error_message.append({"id":"good_one_move", "message": "You cannot move goods out of other player's houses."})
+#                 if parameter_set["good_mode"] == "Three":
+#                     if house[good_three] < good_three_move:
+#                         status = "fail"
+#                         error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+#             else:
+#                 status = "fail"
+#                 error_message.append({"id":"good_one_move", "message": "You cannot move goods out of other player's houses."})
 
-        if status == "success":
-            if direction == "avatar_to_house":
-                avatar[good_one] -= good_one_move
-                avatar[good_two] -= good_two_move
+#         if status == "success":
+#             if direction == "avatar_to_house":
+#                 avatar[good_one] -= good_one_move
+#                 avatar[good_two] -= good_two_move
 
-                if parameter_set["good_mode"] == "Three":
-                    avatar[good_three] -= good_three_move
+#                 if parameter_set["good_mode"] == "Three":
+#                     avatar[good_three] -= good_three_move
 
-                house[good_one] += good_one_move
-                house[good_two] += good_two_move
+#                 house[good_one] += good_one_move
+#                 house[good_two] += good_two_move
 
-                if parameter_set["good_mode"] == "Three":
-                    house[good_three] += good_three_move
+#                 if parameter_set["good_mode"] == "Three":
+#                     house[good_three] += good_three_move
 
-                 #data
-                summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_one] += good_one_move
-                summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_two] += good_two_move
+#                  #data
+#                 summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_one] += good_one_move
+#                 summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_two] += good_two_move
 
-                if parameter_set["good_mode"] == "Three":
-                    summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_three] += good_three_move
-            else:
-                avatar[good_one] += good_one_move
-                avatar[good_two] += good_two_move
+#                 if parameter_set["good_mode"] == "Three":
+#                     summary_data["send_avatar_to_house_" + target_house_id + "_good_" + good_three] += good_three_move
+#             else:
+#                 avatar[good_one] += good_one_move
+#                 avatar[good_two] += good_two_move
 
-                if parameter_set["good_mode"] == "Three":
-                    avatar[good_three] += good_three_move
+#                 if parameter_set["good_mode"] == "Three":
+#                     avatar[good_three] += good_three_move
 
-                house[good_one] -= good_one_move
-                house[good_two] -= good_two_move
+#                 house[good_one] -= good_one_move
+#                 house[good_two] -= good_two_move
 
-                if parameter_set["good_mode"] == "Three":
-                    house[good_three] -= good_three_move
+#                 if parameter_set["good_mode"] == "Three":
+#                     house[good_three] -= good_three_move
 
-            house["health_value"] = convert_goods_to_health(house[good_one],
-                                                            house[good_two],
-                                                            house[good_three] if parameter_set["good_mode"] == "Three" else 0,
-                                                            parameter_set)
+#             house["health_value"] = convert_goods_to_health(house[good_one],
+#                                                             house[good_two],
+#                                                             house[good_three] if parameter_set["good_mode"] == "Three" else 0,
+#                                                             parameter_set)
 
-            session.save()
-            current_period.save()
+#             session.save()
+#             current_period.save()
 
-            world_state = session.world_state
+#             world_state = session.world_state
 
-        if parameter_set["good_mode"] == "Three":
-            goods = {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}
-        else:
-            goods = {"good_one" : good_one, "good_two" : good_two}
+#         if parameter_set["good_mode"] == "Three":
+#             goods = {"good_one" : good_one, "good_two" : good_two, "good_three" : good_three}
+#         else:
+#             goods = {"good_one" : good_one, "good_two" : good_two}
 
 
-    return {"status" : status, 
-            "error_message" : error_message, 
-            "world_state" : world_state,
-            "goods" : goods}
+#     return {"status" : status, 
+#             "error_message" : error_message, 
+#             "world_state" : world_state,
+#             "goods" : goods}
 
 def sync_attack_avatar(session_id, player_id, target_house_id, parameter_set):
     '''
