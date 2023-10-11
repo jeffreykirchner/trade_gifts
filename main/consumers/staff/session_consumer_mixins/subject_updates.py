@@ -43,7 +43,7 @@ class SubjectUpdatesMixin():
             logger.info(f"take chat: failed, session not started, finished, or not in run phase {self.world_state_local}")
             return
         
-        result = {"value" : "success"}
+        result = {"status" : "success"}
 
         try:
             player_id = self.session_players_local[event["player_key"]]["id"]

@@ -84,9 +84,11 @@ take_emoji: function take_emoji(message_data)
         28,
         sprite);
 
-    if(source_player_id == app.session_player.id)
+    if(app.is_subject)
     {
-        app.working = false;
+        if(source_player_id == app.session_player.id)
+        {
+            app.working = false;
+        }
     }
-
 },
