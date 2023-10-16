@@ -636,25 +636,31 @@ send_move_fruit_to_avatar: function send_move_fruit_to_avatar()
         return;
     }
 
-    if(app.selected_avatar.good_one_move > avatar[app.selected_avatar.good_one])
+    if(!app.is_positive_integer(app.selected_avatar.good_one_move) || 
+       app.selected_avatar.good_one_move > avatar[app.selected_avatar.good_one])
     {
         app.display_errors({good_one_move: ["Invalid Amount"]});
         app.selected_avatar.good_one_available = avatar[app.selected_avatar.good_one];
         return;
     }
 
-    if(app.selected_avatar.good_two_move > avatar[app.selected_avatar.good_two])
+    if(!app.is_positive_integer(app.selected_avatar.good_two_move) ||
+       app.selected_avatar.good_two_move > avatar[app.selected_avatar.good_two])
     {
         app.display_errors({good_two_move: ["Invalid Amount"]});
         app.selected_avatar.good_two_available = avatar[app.selected_avatar.good_two];
         return;
     }
 
-    if(app.selected_avatar.good_three_move > avatar[app.selected_avatar.good_three])
-    {
-        app.display_errors({good_three_move: ["Invalid Amount"]});
-        app.selected_avatar.good_three_available = avatar[app.selected_avatar.good_three];
-        return;
+    if(app.session.parameter_set.good_mode == "Three")   
+    { 
+        if(!app.is_positive_integer(app.selected_avatar.good_three_move) ||
+            app.selected_avatar.good_three_move > avatar[app.selected_avatar.good_three])
+        {
+            app.display_errors({good_three_move: ["Invalid Amount"]});
+            app.selected_avatar.good_three_available = avatar[app.selected_avatar.good_three];
+            return;
+        }
     }
 
     if(app.session.world_state.current_experiment_phase == 'Instructions')

@@ -297,22 +297,25 @@ send_move_fruit_house: function send_move_fruit_house()
         app.selected_house.good_three_house_available = g3_max
     }
 
-    if(app.selected_house.good_one_move > g1_max)
+    if(!app.is_positive_integer(app.selected_house.good_one_move) || app.selected_house.good_one_move > g1_max)
     {
         app.display_errors({good_one_move_house: ["Invalid Amount"]});
         return;
     }
 
-    if(app.selected_house.good_two_move > g2_max)
+    if(!app.is_positive_integer(app.selected_house.good_two_move) || app.selected_house.good_two_move > g2_max)
     {
         app.display_errors({good_two_move_house: ["Invalid Amount"]});
         return;
     }
 
-    if(app.selected_house.good_three_move > g3_max)
+    if(app.session.parameter_set.good_mode == "Three")
     {
-        app.display_errors({good_three_move_house: ["Invalid Amount"]});
-        return;
+        if(!app.is_positive_integer(app.selected_house.good_three_move) || app.selected_house.good_three_move > g3_max)
+        {
+            app.display_errors({good_three_move_house: ["Invalid Amount"]});
+            return;
+        }
     }
 
     if(app.session.world_state.current_experiment_phase == 'Instructions')
