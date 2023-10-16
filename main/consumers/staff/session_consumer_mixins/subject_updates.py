@@ -654,7 +654,7 @@ class SubjectUpdatesMixin():
         if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
            self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
 
-            logger.info(f"move_fruit_to_house: on break, {event['message_text']}")
+            logger.info(f"move_fruit_house: on break, {event['message_text']}")
             status = "fail"
             error_message.append({"id":"good_one_move", "message": "Break time, no interactions."})
 
@@ -723,7 +723,7 @@ class SubjectUpdatesMixin():
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
         
-    async def move_fruit_to_house(self, event):
+    async def move_fruit_house(self, event):
         '''
         move fruit from one avatar to or from a house
         '''
@@ -745,7 +745,7 @@ class SubjectUpdatesMixin():
                 good_three_move = 0
             direction = event["message_text"]["direction"]
         except:
-            logger.info(f"move_fruit_to_house: invalid data, {event['message_text']}")
+            logger.info(f"move_fruit_house: invalid data, {event['message_text']}")
             return
         
         error_message = []
@@ -780,7 +780,7 @@ class SubjectUpdatesMixin():
         if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
            self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
 
-            logger.info(f"move_fruit_to_house: on break, {event['message_text']}")
+            logger.info(f"move_fruit_house: on break, {event['message_text']}")
             status = "fail"
             error_message.append({"id":"good_one_move", "message": "Break time, no interactions."})
 
@@ -888,12 +888,12 @@ class SubjectUpdatesMixin():
                                            data=result)
             
         else:
-            logger.warning(f"move_fruit_to_house: invalid amounts from sync, {event['message_text']}")
+            logger.warning(f"move_fruit_house: invalid amounts from sync, {event['message_text']}")
             
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
 
-    async def update_move_fruit_to_house(self, event):
+    async def update_move_fruit_house(self, event):
         '''
         update field's effort settings
         '''
@@ -957,7 +957,7 @@ class SubjectUpdatesMixin():
         if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
            self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
 
-            logger.info(f"move_fruit_to_house: on break, {event['message_text']}")
+            logger.info(f"move_fruit_house: on break, {event['message_text']}")
             status = "fail"
             error_message.append({"id":"attack_avatar_button", "message": "Break time, no interactions."})
         
@@ -1597,7 +1597,7 @@ def sync_field_effort(session_id, player_id, field_id, good_one_effort, good_two
 #             "world_state" : world_state, 
 #             "goods" : goods}
 
-# def sync_move_fruit_to_house(session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction, parameter_set):
+# def sync_move_fruit_house(session_id, player_id, target_house_id, good_one_move, good_two_move, good_three_move, direction, parameter_set):
 #     '''
 #     move fruit from between avatar and house
 #     '''

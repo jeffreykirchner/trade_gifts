@@ -56,7 +56,7 @@ process_the_feed(message_type, message_data)
             html_text += " to <b>" + target_player_label + "</b>";
 
             break;
-        case "update_move_fruit_to_house":
+        case "update_move_fruit_house":
             source_player_label = app.get_parameter_set_player_from_player_id(message_data.source_player_id).id_label;
             target_player = app.get_session_player_from_world_state_house(message_data.target_house_id);
             target_player_label = app.get_parameter_set_player_from_player_id(target_player.id).id_label;

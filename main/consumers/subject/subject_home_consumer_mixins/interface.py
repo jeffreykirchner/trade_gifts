@@ -103,7 +103,7 @@ class InterfaceMixin():
         await self.send_message(message_to_self=event_data, message_to_subjects=None, message_to_staff=None, 
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
         
-    async def update_move_fruit_to_house(self, event):
+    async def update_move_fruit_house(self, event):
         '''
         update move fruit between house and avatar
         '''
