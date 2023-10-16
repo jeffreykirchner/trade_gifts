@@ -57,6 +57,7 @@ def take_import_parameters(data):
 
     status = target_session.parameter_set.from_dict(source_session.parameter_set.json()) 
     target_session.update_player_count()
+    target_session.setup_world_state()
 
     return status      
 
