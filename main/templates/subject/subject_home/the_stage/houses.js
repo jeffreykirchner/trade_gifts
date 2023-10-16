@@ -308,7 +308,7 @@ send_move_fruit_house: function send_move_fruit_house()
     {
         app.working = true;
         
-        app.send_message("move_fruit_to_house", 
+        app.send_message("move_fruit_house", 
                         {"good_one_move" : app.selected_house.good_one_move,
                         "good_two_move" : app.selected_house.good_two_move,
                         "good_three_move" : app.selected_house.good_three_move,
@@ -401,7 +401,7 @@ send_move_fruit_house_instructions: function send_move_fruit_house_instructions(
                                                                    message_data.target_house[good_two],
                                                                    0);
 
-    app.take_update_move_fruit_to_house(message_data);
+    app.take_update_move_fruit_house(message_data);
 },
 
 calc_health_value: function calc_health_value(good_one, good_two, good_three)
@@ -431,7 +431,7 @@ calc_health_value: function calc_health_value(good_one, good_two, good_three)
 /**
  * take update from server about moving fruit to or from house
  */
-take_update_move_fruit_to_house: function take_update_move_fruit_to_house(message_data)
+take_update_move_fruit_house: function take_update_move_fruit_house(message_data)
 {
     var source_player_id = message_data.source_player_id;
 
