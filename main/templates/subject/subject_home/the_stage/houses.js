@@ -248,14 +248,29 @@ send_move_fruit_house: function send_move_fruit_house()
     let avatar = app.session.world_state.avatars[app.session_player.id];
     let house = app.session.world_state.houses[app.selected_house.target_house_id];
 
-    if(app.selected_house.good_one_move <= 0 && 
-       app.selected_house.good_two_move <= 0 && 
-       app.selected_house.good_three_move <= 0)
+    if(app.session.parameter_set.good_mode == "Three")
     {
-        app.display_errors({good_one_move_house: ["Invalid Amount"], 
-                            good_two_move_house: ["Invalid Amount"], 
-                            good_three_move_house: ["Invalid Amount"]});
-        return;
+        if(app.selected_house.good_one_move <= 0 && 
+           app.selected_house.good_two_move <= 0 && 
+           app.selected_house.good_three_move <= 0)
+        {
+            
+                app.display_errors({good_one_move_house: ["Invalid Amount"], 
+                                    good_two_move_house: ["Invalid Amount"], 
+                                    good_three_move_house: ["Invalid Amount"]});
+                return;
+        }
+    }
+    else
+    {
+        if(app.selected_house.good_one_move <= 0 && 
+           app.selected_house.good_two_move <= 0)
+        {
+            app.display_errors({good_one_move_house: ["Invalid Amount"], 
+                                good_two_move_house: ["Invalid Amount"]});
+
+            return;
+        }
     }
 
     let g1_max = 0;
