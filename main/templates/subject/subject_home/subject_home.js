@@ -93,6 +93,8 @@ var app = Vue.createApp({
                     instructions : {{instructions|safe}},
                     instruction_pages_show_scroll : false,
 
+                    notices_seen: [],
+
                     // modals
                     help_modal : null,
                     end_game_modal : null,
@@ -414,7 +416,16 @@ var app = Vue.createApp({
         take_update_reset_experiment: function take_update_reset_experiment(message_data){
             app.take_get_session(message_data);
 
-            app.end_game_modal.hide();            
+            app.end_game_modal.hide();      
+            app.avatar_modal.hide();
+            app.avatar_attack_modal.hide();
+            app.field_modal.hide();
+            app.house_modal.hide();
+            app.avatar_hat_modal.hide();
+            app.patch_modal.hide();
+
+            app.app.notices_seen = [];
+
         },
 
         /**
@@ -554,9 +565,12 @@ var app = Vue.createApp({
             {
                 let notice = app.session.parameter_set.parameter_set_notices[i];
 
-                if(notice.start_period == app.session.world_state.current_period && notice.start_time == app.session.world_state.time_remaining)
+                if(notice.start_period == app.session.world_state.current_period && 
+                   notice.start_time >= app.session.world_state.time_remaining &&
+                   app.notices_seen.indexOf(notice.id) === -1)
                 {
                     app.add_notice(notice.text, notice.end_period, notice.end_time);
+                    app.notices_seen.push(notice.id);
                 }
             }
 
