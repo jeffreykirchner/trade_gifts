@@ -81,6 +81,7 @@ class ParameterSet(models.Model):
     chat_mode = models.CharField(verbose_name="Chat Mode", max_length=100, choices=ChatModes.choices, default=ChatModes.FULL)         #chat mode
     chat_rules_letters = models.JSONField(verbose_name="Chat Letter Mapping", encoder=DjangoJSONEncoder, null=True, blank=True)       #chat rules for limited mode
     chat_rules_word_list = models.TextField(verbose_name='Chat Words Allowed List', default="", blank=True)             #chat rules for limited mode
+    enable_emoji = models.BooleanField(default=True, verbose_name="Enable Emoji")                            #if true enable emoji
 
     good_mode = models.CharField(verbose_name="Good Mode", max_length=100, choices=GoodModes.choices, default=GoodModes.THREE)         #two or three good mode
 
@@ -168,6 +169,7 @@ class ParameterSet(models.Model):
             self.chat_mode = new_ps.get("chat_mode", ChatModes.FULL)
             self.chat_rules_letters = new_ps.get("chat_rules", {"letters": None})
             self.chat_rules_word_list = new_ps.get("chat_rules_word_list", "")
+            self.enable_emoji = new_ps.get("enable_emoji", True)
 
             self.good_mode = new_ps.get("good_mode", GoodModes.THREE)
             
@@ -455,6 +457,7 @@ class ParameterSet(models.Model):
         self.json_for_session["chat_mode"] = self.chat_mode
         self.json_for_session["chat_rules_letters"] = self.chat_rules_letters
         self.json_for_session["chat_rules_word_list"] = self.chat_rules_word_list
+        self.json_for_session["enable_emoji"] = "True" if self.enable_emoji else "False"
 
         self.json_for_session["good_mode"] = self.good_mode
 

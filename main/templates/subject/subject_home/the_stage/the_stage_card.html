@@ -116,6 +116,7 @@
                         type="button" 
                         id="send_chat_happy"
                         title="Send Happy Emoji"
+                        v-if="session.parameter_set.enable_emoji=='True'"
                         v-bind:disabled="reconnecting || 
                                          working || 
                                          session.started===false || 
@@ -128,6 +129,7 @@
                         type="button" 
                         id="send_chat_sad"
                         title="Send Sad Emoji"
+                        v-if="session.parameter_set.enable_emoji=='True'"
                         v-bind:disabled="reconnecting || 
                                          working || 
                                          session.started===false || 
@@ -140,6 +142,7 @@
                         type="button" 
                         id="send_chat_angry"
                         title="Send Angry Emoji"
+                        v-if="session.parameter_set.enable_emoji=='True'"
                         v-bind:disabled="reconnecting || 
                                          working || 
                                          session.started===false || 

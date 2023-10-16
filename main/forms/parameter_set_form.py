@@ -262,6 +262,10 @@ class ParameterSetForm(forms.ModelForm):
                                   choices=ChatModes.choices,
                                   widget=forms.Select(attrs={"v-model":"parameter_set.chat_mode",}))
     
+    enable_emoji = forms.ChoiceField(label='Enable Emojis',
+                                     choices=((True, 'Yes'), (False,'No' )),
+                                     widget=forms.Select(attrs={"v-model":"parameter_set.enable_emoji",}))
+     
     chat_rules_word_list = forms.CharField(label='Limited Chat Word List (comma, space, tab and/or line separated)',
                                           required=False,
                                           widget=forms.Textarea(attrs={"v-model":"parameter_set.chat_rules_word_list",
@@ -284,7 +288,7 @@ class ParameterSetForm(forms.ModelForm):
                  'consumption_alpha', 'consumption_beta', 'consumption_multiplier', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'allow_stealing', 'enable_hats', 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent', 'avatar_move_speed', 'avatar_animation_speed',
                  'production_effort', 'max_patch_harvests',
-                 'chat_mode', 'chat_rules_word_list', 'good_mode', 'test_mode']
+                 'chat_mode', 'enable_emoji', 'chat_rules_word_list', 'good_mode', 'test_mode']
                  
     def clean_survey_link(self):
         
