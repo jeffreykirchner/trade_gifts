@@ -19,6 +19,7 @@ from datetime import datetime, timedelta
 
 from main.globals import ExperimentPhase
 from main.globals import convert_goods_to_health
+from main.globals import is_positive_integer
 
 import main
 
@@ -599,24 +600,39 @@ class SubjectUpdatesMixin():
             return
         
         logger = logging.getLogger(__name__)
+        error_message = []
+        status = "success"
 
         try:
             player_id = self.session_players_local[event["player_key"]]["id"]        
             target_player_id = event["message_text"]["target_player_id"]
-            good_one_move = int(event["message_text"]["good_one_move"])
-            good_two_move = int(event["message_text"]["good_two_move"])
+            good_one_move = event["message_text"]["good_one_move"]
+            good_two_move = event["message_text"]["good_two_move"]
 
             if self.parameter_set_local["good_mode"] == "Three":
-                good_three_move = int(event["message_text"]["good_three_move"])
+                good_three_move = event["message_text"]["good_three_move"]
             else:
                 good_three_move = 0
            
         except:
             logger.info(f"move_fruit_to_avatar: invalid data, {event['message_text']}")
-            return
+            status = "fail"
+            error_message.append({"id":"good_one_move", "message": "Invalid amount."})
         
-        error_message = []
-        status = "success"
+        #check that goods are positive integers
+        if not is_positive_integer(good_one_move) or not is_positive_integer(good_two_move):
+            status = "fail"
+            error_message.append({"id":"good_one_move", "message": "Invalid amount."})
+        else:
+            good_one_move = int(good_one_move)
+            good_two_move = int(good_two_move)
+        
+        if self.parameter_set_local["good_mode"] == "Three":
+            if not is_positive_integer(good_three_move):
+                status = "fail"
+                error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+            else:
+                good_three_move = int(good_three_move)
 
         player_id_s = str(player_id)
 
@@ -635,18 +651,18 @@ class SubjectUpdatesMixin():
         good_one = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_one']
         good_two =  self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_two']
 
-        if  self.parameter_set_local["good_mode"] == "Three":
+        if self.parameter_set_local["good_mode"] == "Three":
             good_three =  self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_three']
 
-        if self.world_state_local['avatars'][str(player_id)][good_one] < good_one_move:
+        if status=="success" and self.world_state_local['avatars'][str(player_id)][good_one] < good_one_move:
             status = "fail"
             error_message.append({"id":"good_one_move", "message": "Invalid amount."})
 
-        if self.world_state_local['avatars'][str(player_id)][good_two] < good_two_move:
+        if status == "success" and self.world_state_local['avatars'][str(player_id)][good_two] < good_two_move:
             status = "fail"
             error_message.append({"id":"good_two_move", "message": "Invalid amount."})
 
-        if  self.parameter_set_local["good_mode"] == "Three":
+        if status == "success" and self.parameter_set_local["good_mode"] == "Three":
             if self.world_state_local['avatars'][str(player_id)][good_three] < good_three_move:
                 status = "fail"
                 error_message.append({"id":"good_three_move", "message": "Invalid amount."})
@@ -733,23 +749,24 @@ class SubjectUpdatesMixin():
         
         logger = logging.getLogger(__name__)
 
+        error_message = []
+        status = "success"
+
         try:
             player_id = self.session_players_local[event["player_key"]]["id"]        
             target_house_id = event["message_text"]["target_house_id"]
-            good_one_move = int(event["message_text"]["good_one_move"])
-            good_two_move = int(event["message_text"]["good_two_move"])
+            good_one_move = event["message_text"]["good_one_move"]
+            good_two_move = event["message_text"]["good_two_move"]
 
             if self.parameter_set_local["good_mode"] == "Three":
-                good_three_move = int(event["message_text"]["good_three_move"])
+                good_three_move = event["message_text"]["good_three_move"]
             else:
                 good_three_move = 0
             direction = event["message_text"]["direction"]
         except:
             logger.info(f"move_fruit_house: invalid data, {event['message_text']}")
-            return
-        
-        error_message = []
-        status = "success"
+            status = "fail"
+            error_message.append({"id":"good_one_move", "message": "Invalid amounts."})
 
         player_id_s = str(player_id)
 
@@ -788,6 +805,21 @@ class SubjectUpdatesMixin():
         if source_group != target_group:
             status = "fail"
             error_message.append({"id":"good_one_move", "message": "You cannot interact with other group's houses."})
+
+        #check that goods are positive integers
+        if not is_positive_integer(good_one_move) or not is_positive_integer(good_two_move):
+            status = "fail"
+            error_message.append({"id":"good_one_move", "message": "Invalid amount."})
+        else:
+            good_one_move = int(good_one_move)
+            good_two_move = int(good_two_move)
+
+        if self.parameter_set_local["good_mode"] == "Three":
+            if not is_positive_integer(good_three_move):
+                status = "fail"
+                error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+            else:
+                good_three_move = int(good_three_move)
 
         if status == "success":
             if direction == "avatar_to_house":
