@@ -6,6 +6,7 @@ from .send_email import send_mass_email_service
 from .goods_to_health import convert_goods_to_health
 
 from .validate_input import is_positive_integer
+from .make_plural import make_plural
 
 from .sessions import ExperimentPhase
 from .sessions import Goods

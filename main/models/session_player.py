@@ -20,6 +20,7 @@ from main.models import ParameterSetPlayer
 from main.models import Parameters
 
 from main.globals import round_half_away_from_zero
+from main.globals import make_plural
 
 import main
 
@@ -120,6 +121,12 @@ class SessionPlayer(models.Model):
         parameter_set = self.parameter_set_player.parameter_set.json()
         parameter_set_player = parameter_set["parameter_set_players"][str(self.parameter_set_player.id)]
         group_name = parameter_set["parameter_set_groups"][str(parameter_set_player["parameter_set_group"])]["name"]
+
+        good_one_s = parameter_set_player["good_one"].lower()
+        good_two_s = parameter_set_player["good_two"].lower()
+
+        if parameter_set["good_mode"] == 'Three':
+            good_three_s = parameter_set_player["good_three"].lower()
         
         text = text.replace("#player_count-1#", str(len(parameter_set["parameter_set_players"])-1))
         text = text.replace("#id_label#", parameter_set_player["id_label"])
@@ -137,6 +144,22 @@ class SessionPlayer(models.Model):
         text = text.replace("#break_frequency#", str(parameter_set["break_frequency"]))
         text = text.replace("#break_length#", str(parameter_set["break_length"]))
 
+        text = text.replace("#good_one#", f'{good_one_s} <img src="/static/{good_one_s}.png" width="25"/>')
+        text = text.replace("#good_two#", f'{good_two_s} <img src="/static/{good_two_s}.png" width="25"/>')
+
+        text = text.replace("#good_one_plural#", f'{make_plural(good_one_s)} <img src="/static/{good_one_s}.png" width="25"/>')
+        text = text.replace("#good_two_plural#", f'{make_plural(good_two_s)} <img src="/static/{good_two_s}.png" width="25"/>')
+
+        if parameter_set["good_mode"] == 'Three':
+            text = text.replace("#good_three#", f'{good_three_s} <img src="/static/{good_three_s}.png" width="25"/>')
+            text = text.replace("#good_three_plural#", f'{make_plural(good_three_s)} <img src="/static/{good_three_s}.png" width="25"/>')
+
+            third_good_table=f'<div class="row justify-content-center"><div class="col-3 text-center"><table class="table table-sm"><tr><th>{make_plural(good_three_s).capitalize()}</th><th>Health Multiplier</th></tr>'
+            for i, multiplier in enumerate(parameter_set["consumption_multiplier"].split("\n")):
+                third_good_table+=f'<tr><td>{i}</td><td>{multiplier}</td></tr>'
+            third_good_table+="</table></div></div>"
+
+            text = text.replace("#third_good_table#", third_good_table)
         return text
         
     def get_survey_link(self):
