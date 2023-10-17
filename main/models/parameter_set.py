@@ -176,6 +176,9 @@ class ParameterSet(models.Model):
             self.reconnection_limit = new_ps.get("reconnection_limit", None)
 
             self.instruction_set = InstructionSet.objects.filter(label=new_ps.get("instruction_set")["label"]).first()
+            
+            if not self.instruction_set:
+                self.instruction_set = InstructionSet.objects.first()
 
             self.save()
 
