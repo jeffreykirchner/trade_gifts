@@ -252,7 +252,18 @@ do_test_mode_run: function do_test_mode_run()
         
     if(go)
     {
-        switch (app.random_number(1, 6)){
+        let v;
+
+        if(app.session.parameter_set.enable_emoji=='True')
+        {
+            v = app.random_number(1, 6);
+        }
+        else
+        {
+            v = app.random_number(1, 5);
+        }
+
+        switch (v){
             case 1:
                 app.do_test_mode_chat();
                 break;            
