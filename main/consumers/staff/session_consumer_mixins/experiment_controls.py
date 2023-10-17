@@ -31,8 +31,11 @@ class ExperimentControlsMixin(OperationsMixin):
             await self.send_message(message_to_self=result, message_to_group=None,
                                     message_type=event['type'], send_to_client=True, send_to_group=False)
         else:
+            self.world_state_local = result["world_state"]
 
             await self.do_field_production()
+
+            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
 
             result["world_state"] = self.world_state_local
 
