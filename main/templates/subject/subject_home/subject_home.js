@@ -424,7 +424,7 @@ var app = Vue.createApp({
             app.avatar_hat_modal.hide();
             app.patch_modal.hide();
 
-            app.app.notices_seen = [];
+            app.notices_seen = [];
 
         },
 
@@ -496,6 +496,7 @@ var app = Vue.createApp({
                 app.house_modal.hide();
                 // app.avatar_hat_modal.hide();
                 app.patch_modal.hide();
+                app.working = false;
             }
 
             //sleep 
