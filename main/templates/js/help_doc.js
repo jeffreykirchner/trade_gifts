@@ -2,7 +2,7 @@
  * send request for help doc
  * @param title : string
  */
-send_load_help_doc(title){
+send_load_help_doc: function send_load_help_doc(title){
     app.working = true;
     app.help_text = "Loading ...";
 
@@ -19,7 +19,7 @@ send_load_help_doc(title){
  * take help text load request
  * @param message_data : json
  */
-take_load_help_doc(message_data){
+take_load_help_doc: function take_load_help_doc(message_data){
 
     if(message_data.status.value == "success")
     {

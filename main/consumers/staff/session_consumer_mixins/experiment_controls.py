@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from main.models import Session
 from main.models import SessionEvent
+from main.models import ParameterSet
 
 from main.globals import ExperimentPhase
 
@@ -31,9 +32,9 @@ class ExperimentControlsMixin(OperationsMixin):
                                     message_type=event['type'], send_to_client=True, send_to_group=False)
         else:
 
-            session = await self.do_field_production()
+            await self.do_field_production()
 
-            result["world_state"] = session.world_state
+            result["world_state"] = self.world_state_local
 
             await self.send_message(message_to_self=None, message_to_group=result,
                                     message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -143,7 +144,12 @@ class ExperimentControlsMixin(OperationsMixin):
         end experiment early
         '''
 
-        result = await sync_to_async(take_end_early, thread_sensitive=self.thread_sensitive)(self.session_id)
+        self.parameter_set_local["period_count"] = self.world_state_local["current_period"]
+        
+        await ParameterSet.objects.filter(id=self.parameter_set_local["id"]).aupdate(period_count=self.parameter_set_local["period_count"], 
+                                                                                     json_for_session=self.parameter_set_local)
+        
+        result = {"value" : "success", "result" : self.parameter_set_local["period_count"]}
 
         await self.send_message(message_to_self=result, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
@@ -261,18 +267,18 @@ def take_next_phase(session_id, data):
             "finished" : session.world_state["finished"],
             }
 
-def take_end_early(session_id):
-    '''
-    make the current period the last period
-    '''
+# def take_end_early(session_id):
+#     '''
+#     make the current period the last period
+#     '''
 
-    session = Session.objects.get(id=session_id)
+#     session = Session.objects.get(id=session_id)
 
-    session.parameter_set.period_count = session.world_state["current_period"]
-    session.parameter_set.update_json_local()
-    session.parameter_set.save()
+#     session.parameter_set.period_count = session.world_state["current_period"]
+#     session.parameter_set.update_json_local()
+#     session.parameter_set.save()
 
-    return {"value" : "success", "result" : session.parameter_set.period_count}
+#     return {"value" : "success", "result" : session.parameter_set.period_count}
 
 def take_refresh_screens(session_id, data):
     '''

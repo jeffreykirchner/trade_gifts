@@ -22,4 +22,4 @@ class OperationsMixin():
         '''
         session = await Session.objects.aget(id=self.session_id)
         current_session_period = await session.aget_current_session_period()
-        return await sync_to_async(current_session_period.do_production)()
+        self.world_state_local = await sync_to_async(current_session_period.do_production)(self.world_state_local, self.parameter_set_local)

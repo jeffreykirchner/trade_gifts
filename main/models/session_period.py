@@ -59,12 +59,12 @@ class SessionPeriod(models.Model):
 
         self.save()
 
-    def do_timer_actions(self, time_remaining):
+    def do_timer_actions(self, time_remaining, world_state, parameter_set):
         '''
         do timer actions
         '''
-        parameter_set = self.session.parameter_set.json()
-        world_state = self.session.world_state
+        # parameter_set = self.session.parameter_set.json()
+        # world_state = self.session.world_state
         summary_data = self.summary_data
 
         cents_per_second = parameter_set["cents_per_second"]
@@ -122,34 +122,34 @@ class SessionPeriod(models.Model):
                         avatar["health"] = "0"
 
             self.save()
-            self.session.save()
+            # self.session.save()
         
-        return self.session
+        return world_state
 
-    def do_consumption(self):
+    def do_consumption(self, world_state, parameter_set):
         '''
         convert health into cash earnings
         '''
 
-        session = self.do_timer_actions(0)
+        world_state = self.do_timer_actions(0, world_state, parameter_set)
 
         current_period_id = self.id
         summary_data = self.summary_data
 
         #clear avatar inventory
-        for i in self.session.world_state["avatars"]:
-            avatar = self.session.world_state["avatars"][i]
+        for i in world_state["avatars"]:
+            avatar = world_state["avatars"][i]
 
             for i in main.globals.Goods.choices:
                 good = i[0]
                 avatar[good] = 0
 
         #convert goods in homes to cash
-        for i in self.session.world_state["houses"]:
+        for i in world_state["houses"]:
             
-            house = self.session.world_state["houses"][i]
+            house = world_state["houses"][i]
             session_player_id = str(house["session_player"])
-            avatar = self.session.world_state["avatars"][session_player_id]
+            avatar = world_state["avatars"][session_player_id]
 
             avatar["health"] = str(Decimal(avatar["health"]) + Decimal(house["health_value"]))
 
@@ -173,12 +173,11 @@ class SessionPeriod(models.Model):
         self.consumption_completed = True
         self.save()
 
-        session.world_state["session_periods"][str(self.id)]["consumption_completed"]=True
-        session.save()
+        world_state["session_periods"][str(self.id)]["consumption_completed"]=True
 
-        return session
+        return world_state
     
-    def do_production(self):
+    def do_production(self, world_state, parameter_set):
         '''
         do production for this period
         '''
@@ -187,25 +186,25 @@ class SessionPeriod(models.Model):
         # logger.info(f"do_production {self.id}")
 
         if self.production_completed:
-            return self.session
+            return world_state
         
         #if no fields, return
-        if len(self.session.world_state["fields"]) == 0:
+        if len(world_state["fields"]) == 0:
             self.production_completed = True
             self.save()
-            return self.session
+            return world_state
 
-        parameter_set = self.session.parameter_set.json()
-        world_state = self.session.world_state
+        # parameter_set = self.session.parameter_set.json()
+        # world_state = self.session.world_state
         current_period = world_state["current_period"]
         last_period_id = None
 
         if self.period_number > 1:
             last_period_id = self.session.session_periods.get(period_number=self.period_number-1).id
 
-        for i in self.session.world_state["fields"]:
+        for i in world_state["fields"]:
             
-            obj = self.session.world_state["fields"][str(i)]
+            obj = world_state["fields"][str(i)]
             field_type = parameter_set["parameter_set_field_types"][str(obj["parameter_set_field_type"])]
 
             if current_period >= field_type["start_on_period"]:
@@ -252,34 +251,34 @@ class SessionPeriod(models.Model):
         self.production_completed = True
         self.save()
 
-        self.session.save()
+        # self.session.save()
 
         # logger.info(f"do_production {self.id}")
         
-        return self.session
+        return world_state
     
-    def do_patch_growth(self):
+    def do_patch_growth(self, world_state, parameter_set):
         '''
         do patch growth for this period
         '''
         logger = logging.getLogger(__name__)
         
-        world_state = self.session.world_state
+        # world_state = self.session.world_state
 
         #check if growth completed
         if self.growth_completed:
-            return self.session
+            return world_state
         
         #if no patches, return
-        if len(self.session.world_state["patches"]) == 0:
+        if len(world_state["patches"]) == 0:
             self.growth_completed = True
             self.save()
-            return self.session
+            return world_state
         
 
         #update patches
-        for i in self.session.world_state["patches"]:
-            patch = self.session.world_state["patches"][str(i)]
+        for i in world_state["patches"]:
+            patch = world_state["patches"][str(i)]
 
             #check if shock
             if world_state["current_period"] == patch["shock_on_period"]:
@@ -296,12 +295,11 @@ class SessionPeriod(models.Model):
                     break
         
         #reset avatar patch harvests
-        for i in self.session.world_state["avatars"]:
-            avatar = self.session.world_state["avatars"][str(i)]
+        for i in world_state["avatars"]:
+            avatar = world_state["avatars"][str(i)]
             avatar["period_patch_harvests"] = 0
 
-        self.session.save()
-        return self.session
+        return world_state
 
     def json(self):
         '''
