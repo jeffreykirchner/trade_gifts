@@ -270,7 +270,7 @@ class Session(models.Model):
             for j in main.globals.Goods.choices:
                 v[j[0]] = 0
             
-            self.world_state["houses"][v["id"]] = v
+            self.world_state["houses"][str(v["id"])] = v
         
         #session players
         for i in self.session_players.prefetch_related('parameter_set_player').all().values('id', 
@@ -289,7 +289,7 @@ class Session(models.Model):
             v['interaction'] = 0     
             v['parameter_set_player_id'] = i['parameter_set_player__id']       
 
-            self.world_state_avatars["session_players"][str(i['id'])] = v
+            self.world_state_avatars["session_players"][str(i["id"])] = v
 
             v2 = {}
             v2['earnings'] = "0"
@@ -301,7 +301,7 @@ class Session(models.Model):
             for j in main.globals.Goods.choices:
                 v2[j[0]] = 0
 
-            self.world_state["avatars"][str(i['id'])] = v2
+            self.world_state["avatars"][str(i["id"])] = v2
             
         self.save()
 

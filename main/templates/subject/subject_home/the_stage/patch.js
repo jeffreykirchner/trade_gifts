@@ -261,6 +261,8 @@ send_patch_harvest_instructions: function send_patch_harvest_instructions()
 {
     if(app.session_player.current_instruction != app.instructions.action_page_harvest) return;
 
+    app.working = true;
+
     app.session_player.current_instruction_complete = app.instructions.action_page_harvest;
 
     // {

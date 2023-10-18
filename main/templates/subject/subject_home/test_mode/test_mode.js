@@ -52,6 +52,7 @@ do_test_mode: function do_test_mode(){
 
     if(app.session.started &&
        app.test_mode
+       && app.working == false
        )
     {
         
@@ -68,7 +69,7 @@ do_test_mode: function do_test_mode(){
        
     }
 
-    setTimeout(app.do_test_mode, app.random_number(1000 , 1500));
+    setTimeout(app.do_test_mode, app.random_number(500 , 600));
 },
 
 /**
@@ -123,19 +124,22 @@ do_test_mode_instructions: function do_test_mode_instructions()
             return;      
             break; 
         case app.instructions.action_page_harvest:
-            if(app.patch_modal_open)
+            if(app.session_player.current_instruction_complete < app.instructions.action_page_harvest)
             {
-                app.do_test_mode_patch();
+                if(app.patch_modal_open)
+                {
+                    app.do_test_mode_patch();
+                }
+                else if( app.test_mode_check_near_patch())
+                {
+                    //do nothing
+                }
+                else if(session_player.current_location.x == session_player.target_location.x && 
+                        session_player.current_location.y == session_player.target_location.y)
+                {
+                    session_player.target_location = app.test_mode_move_to_patch();
+                } 
             }
-            else if( app.test_mode_check_near_patch())
-            {
-                //do nothing
-            }
-            else if(session_player.current_location.x == session_player.target_location.x && 
-                    session_player.current_location.y == session_player.target_location.y)
-            {
-                session_player.target_location = app.test_mode_move_to_patch();
-            } 
             return;      
             break;  
         case app.instructions.action_page_house:      

@@ -595,6 +595,13 @@ var app = Vue.createApp({
          */
         show_end_game_modal: function show_end_game_modal(){
             if(app.end_game_modal_visible) return;
+  
+            app.avatar_modal.hide();
+            app.avatar_attack_modal.hide();
+            app.field_modal.hide();
+            app.house_modal.hide();
+            app.avatar_hat_modal.hide();
+            app.patch_modal.hide();
    
             app.end_game_modal.toggle();
 
