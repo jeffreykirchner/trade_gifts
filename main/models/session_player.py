@@ -155,8 +155,13 @@ class SessionPlayer(models.Model):
             text = text.replace("#good_three_plural#", f'{make_plural(good_three_s)} <img src="/static/{good_three_s}.png" width="25"/>')
 
             third_good_table=f'<div class="row justify-content-center"><div class="col-3 text-center"><table class="table table-sm"><tr><th>{make_plural(good_three_s).capitalize()}</th><th>Health Multiplier</th></tr>'
-            for i, multiplier in enumerate(parameter_set["consumption_multiplier"].split("\n")):
-                third_good_table+=f'<tr><td>{i}</td><td>{multiplier}</td></tr>'
+            multipliers = parameter_set["consumption_multiplier"].split("\n")
+            for i, multiplier in enumerate(multipliers):
+                if i == len(multipliers)-1:
+                    third_good_table+=f'<tr><td>{i+1}+</td><td>{multiplier}</td></tr>'
+                else:
+                    third_good_table+=f'<tr><td>{i+1}</td><td>{multiplier}</td></tr>'
+
             third_good_table+="</table></div></div>"
 
             text = text.replace("#third_good_table#", third_good_table)
