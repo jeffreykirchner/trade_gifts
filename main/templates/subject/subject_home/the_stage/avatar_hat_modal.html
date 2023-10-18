@@ -10,9 +10,10 @@
 
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
-            <div class="modal-header fw-bold" v-if="selected_avatar.avatar">
-                Trade Hats with [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
-                
+            <div class="modal-header fw-bold">
+                <span v-if="selected_avatar.avatar">
+                    Trade Hats with [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
+                </span>
                 <span class="float-end">
 
                     <button type="button" class="btn btn-link" title="Show Help" v-on:click="send_load_help_doc_subject('Avatar hat')">

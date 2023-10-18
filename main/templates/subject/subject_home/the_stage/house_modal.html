@@ -10,9 +10,11 @@
 
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
-            <div class="modal-header fw-bold" v-if="selected_house.house">
-               <span v-if="selected_house.house.session_player==session_player.id"> House: [[selected_house.parameter_set_player.id_label]] (You)</span>
-               <span v-else> House: [[selected_house.parameter_set_player.id_label]]</span>
+            <div class="modal-header fw-bold">
+                <span v-if="selected_house.house">
+                    <span v-if="selected_house.house.session_player==session_player.id"> House: [[selected_house.parameter_set_player.id_label]] (You)</span>
+                    <span v-else> House: [[selected_house.parameter_set_player.id_label]]</span>
+                </span>
 
                 <span class="float-end">
                     <button type="button" class="btn btn-link" title="Show Help" v-on:click="send_load_help_doc_subject('House')">
