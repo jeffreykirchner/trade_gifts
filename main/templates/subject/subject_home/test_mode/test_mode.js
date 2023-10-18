@@ -68,7 +68,7 @@ do_test_mode: function do_test_mode(){
        
     }
 
-    setTimeout(app.do_test_mode, app.random_number(1000 , 1500));
+    setTimeout(app.do_test_mode, app.random_number(500 , 600));
 },
 
 /**
