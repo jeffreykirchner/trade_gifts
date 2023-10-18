@@ -356,7 +356,7 @@ do_test_mode_house: function do_test_mode_house()
         return;
     }
 
-    if(app.selected_house.house.session_player = app.session_player.id)
+    if(app.selected_house.house.session_player == app.session_player.id)
     {
         //local player's house
         if(app.random_number(1, 2) == 1)
