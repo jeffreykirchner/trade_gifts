@@ -1205,18 +1205,16 @@ class SubjectUpdatesMixin():
         
         logger = logging.getLogger(__name__)
         # logger.info(f"patch_harvest: {event}")
-        
+        error_message = []
+        status = "success"
+
         try:
             player_id = self.session_players_local[event["player_key"]]["id"]        
             patch_id = event["message_text"]["patch_id"]
         except:
             logger.info(f"patch_harvest: invalid data, {event['message_text']}")
-            return
-
-        # v = await sync_to_async(sync_patch_harvest)(self.session_id, player_id, patch_id, self.parameter_set_local)
-        #race condition test
-        error_message = []
-        status = "success"
+            status = "fail"
+            error_message.append({"id":"patch_harvest", "message": "Invalid data, try again."})
 
         player_id_s = str(player_id)
         patch_id_s = str(patch_id)
@@ -1224,25 +1222,26 @@ class SubjectUpdatesMixin():
         avatar = self.world_state_local['avatars'][player_id_s]
         patch = self.world_state_local['patches'][patch_id_s]
        
-        status = "fail"     
-
-        #loop backwards through levels
-        for i in range(patch["max_levels"], 0, -1):
-            level = patch["levels"][str(i)]
-
-            if not level["harvested"]:
-                status = "success"               
-                level["harvested"] = True
-                harvest_amount = level["value"]
-                break
-        
-        if status == "fail":
-            error_message.append({"id":"patch_harvest", "message": "The patch is empty."})
-
         #check player has enough harvests remaining
         if status == "success" and avatar["period_patch_harvests"] >= self.parameter_set_local["max_patch_harvests"]:
             status = "fail"
             error_message.append({"id":"patch_harvest", "message": "Wait until next period to harvest again."})
+
+        if status == "success":
+            status = "fail"     
+
+            #loop backwards through levels
+            for i in range(patch["max_levels"], 0, -1):
+                level = patch["levels"][str(i)]
+
+                if not level["harvested"]:
+                    status = "success"               
+                    level["harvested"] = True
+                    harvest_amount = level["value"]
+                    break
+            
+            if status == "fail":
+                error_message.append({"id":"patch_harvest", "message": "The patch is empty."})
 
         if status == "success":
             
