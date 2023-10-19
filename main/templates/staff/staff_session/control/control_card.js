@@ -142,14 +142,14 @@ take_start_timer(message_data){
  */
 do_timer_pulse(){
     // console.log("timer pulse");
-    if(app.session.world_state.timer_running)
-    {
+    // if(app.session.world_state.timer_running)
+    // {
         if(app.chat_socket.readyState === WebSocket.OPEN)
         {
             app.send_message("continue_timer", {});
         }
-        app.timer_pulse = setTimeout(app.do_timer_pulse, 500);
-    }
+        app.timer_pulse = setTimeout(app.do_timer_pulse, 333);
+    // }
 },
 
 /**
