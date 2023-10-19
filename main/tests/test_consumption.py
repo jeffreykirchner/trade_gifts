@@ -29,7 +29,7 @@ class TestConsumption(TestCase):
 
         logger.info('setup tests')
 
-        self.session = Session.objects.get(title="test 2")    
+        self.session = Session.objects.get(title="Test 1")    
 
         self.parameter_set = self.session.parameter_set.json()
 
@@ -39,16 +39,16 @@ class TestConsumption(TestCase):
         '''
 
         v = convert_goods_to_health(1, 0, 0, self.parameter_set)
-        self.assertEqual(v, '1.1')
+        self.assertEqual(v, '0.0')
 
         v = convert_goods_to_health(0, 1, 0, self.parameter_set)
-        self.assertEqual(v, '1.1')
+        self.assertEqual(v, '0.0')
 
-        v = convert_goods_to_health(8, 0, 0, self.parameter_set)
-        self.assertEqual(v, '9.0')
+        v = convert_goods_to_health(24, 0, 0, self.parameter_set)
+        self.assertEqual(v, '0.1')
 
-        v = convert_goods_to_health(0, 8, 0, self.parameter_set)
-        self.assertEqual(v, '9.0')
+        v = convert_goods_to_health(0, 24, 0, self.parameter_set)
+        self.assertEqual(v, '0.1')
     
     def test_house_two_good(self):
         '''
@@ -56,10 +56,10 @@ class TestConsumption(TestCase):
         '''
 
         v = convert_goods_to_health(1, 1, 0, self.parameter_set)
-        self.assertEqual(v, '2.6')
+        self.assertEqual(v, '3.3')
 
         v = convert_goods_to_health(8, 8, 0, self.parameter_set)
-        self.assertEqual(v, '20.6')
+        self.assertEqual(v, '26.7')
     
     def test_house_three_good(self):
         '''
@@ -70,7 +70,7 @@ class TestConsumption(TestCase):
         self.assertEqual(v, '0.0')
 
         v = convert_goods_to_health(8, 8, 8, self.parameter_set)
-        self.assertEqual(v, '39.6')
+        self.assertEqual(v, '51.2')
 
 
 

@@ -38,7 +38,7 @@ class TestProduction(TestCase):
 
         logger.info('setup tests')
 
-        self.session = Session.objects.get(title="test 2")    
+        self.session = Session.objects.get(title="Test 1")    
 
         self.parameter_set = self.session.parameter_set.json()
 
