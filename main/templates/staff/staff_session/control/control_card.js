@@ -148,7 +148,7 @@ do_timer_pulse(){
         {
             app.send_message("continue_timer", {});
         }
-        app.timer_pulse = setTimeout(app.do_timer_pulse, 1000);
+        app.timer_pulse = setTimeout(app.do_timer_pulse, 500);
     }
 },
 

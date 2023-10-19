@@ -131,6 +131,9 @@ class SessionPeriod(models.Model):
         convert health into cash earnings
         '''
 
+        if self.consumption_completed:
+            return world_state
+
         world_state = self.do_timer_actions(0, world_state, parameter_set)
 
         current_period_id = self.id

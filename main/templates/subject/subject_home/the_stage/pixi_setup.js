@@ -7,8 +7,8 @@ setup_pixi: function setup_pixi(){
     app.reset_pixi_app();
 
     PIXI.Assets.add('sprite_sheet', '{% static "gear_3_animated.json" %}');
-    PIXI.Assets.add('sprite_sheet_2', '{% static "sprite_sheet.json" %}');
-    PIXI.Assets.add('sprite_sheet_hf', '{% static "sprite_sheet_hf.json" %}');
+    PIXI.Assets.add('sprite_sheet_2', '{% static "sprite_sheet_trade_gifts.json" %}');
+    PIXI.Assets.add('sprite_sheet_hf', '{% static "sprite_sheet_hf_trade_gifts.json" %}');
     PIXI.Assets.add('grass_tex', '{% static "background_tile_low.jpg"%}');
     PIXI.Assets.add('wall_tex', '{% static "wall.png"%}');
     PIXI.Assets.add('barrier_tex', '{% static "barrier.png"%}');
