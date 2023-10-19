@@ -203,9 +203,9 @@ def sync_continue_timer(event, session_id, world_state, parameter_set):
     # parameter_set = session.parameter_set.json()
 
     #check session over
-    if world_state["current_period"] >= parameter_set["period_count"] and \
-        world_state["time_remaining"] <= 1:
-        
+    if world_state["current_period"] > parameter_set["period_count"] or \
+      (world_state["current_period"] == parameter_set["period_count"] and world_state["time_remaining"] <= 1):
+       
         # world_state = session.world_state
 
         world_state["current_period"] = parameter_set["period_count"]
