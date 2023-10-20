@@ -9,4 +9,4 @@ echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://pack
 apt-get update
 apt-get -y install redis
 echo "Start Daphne:"
-daphne -b 0.0.0.0 _trade_gifts.asgi:application
+redis-server & daphne -b 0.0.0.0 _trade_gifts.asgi:application
