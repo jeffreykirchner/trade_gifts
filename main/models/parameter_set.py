@@ -7,6 +7,8 @@ import json
 from random import randint
 from decimal import Decimal
 
+from asgiref.sync import sync_to_async
+
 from django.db import models
 from django.db.utils import IntegrityError
 from django.core.serializers.json import DjangoJSONEncoder
@@ -545,6 +547,13 @@ class ParameterSet(models.Model):
                                 update_hats=True)
 
         return self.json_for_session
+    
+    async def ajson(self, update_required=False):
+        '''
+        return json object of model, return cached version if unchanged
+        '''
+
+        return await sync_to_async(self.json, thread_sensitive=True)(update_required=update_required)
     
     def get_json_for_subject(self):
         '''

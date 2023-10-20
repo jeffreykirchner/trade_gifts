@@ -36,7 +36,7 @@ class SubjectUpdatesMixin():
             return    
        
         logger = logging.getLogger(__name__) 
-        # logger.info(f"take chat: Session {self.session_id}, Player {self.session_player_id}, Data {data}")
+        # logger.info(f"take chat: Session ")
         
         status = "success"
         error_message = ""
