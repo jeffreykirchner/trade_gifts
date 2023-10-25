@@ -32,8 +32,8 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [(os.environ['REDIS'])],
-            #'hosts' :  [("localhost", 6379)],
+            # 'hosts': [(os.environ['REDIS'])],
+            'hosts' :  [("localhost", 6379)],
             'prefix' : 'trade_gifts',
             'capacity': 1500,
         },
