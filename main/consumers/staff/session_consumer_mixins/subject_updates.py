@@ -1211,7 +1211,7 @@ class SubjectUpdatesMixin():
             return
         
         logger = logging.getLogger(__name__)
-        # logger.info(f"patch_harvest: {event}")
+        logger.info(f"patch_harvest: {event}")
         error_message = []
         status = "success"
 

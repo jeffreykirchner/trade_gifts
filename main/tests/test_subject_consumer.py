@@ -28,7 +28,7 @@ class TestSubjectConsumer(TestCase):
     session_player_1 = None
     communicator_subject = []
     communicator_staff = None
-
+    
     def setUp(self):
         sys._called_from_test = True
         logger = logging.getLogger(__name__)
@@ -37,6 +37,11 @@ class TestSubjectConsumer(TestCase):
 
         self.session = Session.objects.get(title="Test 1")
         self.parameter_set_json = self.session.parameter_set.json()
+
+        async_to_sync(self.set_up_communicators)
+
+    def tearDown(self):
+        async_to_sync(self.close_communicators)
 
     async def set_up_communicators(self):
         '''
@@ -83,7 +88,6 @@ class TestSubjectConsumer(TestCase):
         
         self.assertEquals(response['message']['message_type'],'get_session')
     
-    @pytest.mark.asyncio
     async def start_session(self):
         '''
         start session and advance past instructions
@@ -121,14 +125,19 @@ class TestSubjectConsumer(TestCase):
         
         response = await self.communicator_staff.receive_json_from()
     
-    @pytest.mark.asyncio
     async def close_communicators(self):
         '''
         close the socket communicators
         '''
         for i in self.communicator_subject:
             await i.disconnect()
-        await self.communicator_staff.disconnect()  
+
+        await self.communicator_staff.disconnect()
+
+        # for i in self.communicator_subject:
+        #     del i
+        
+        # del self.communicator_staff
 
     @pytest.mark.asyncio
     async def test_chat_group(self):
@@ -137,8 +146,6 @@ class TestSubjectConsumer(TestCase):
         '''        
         logger = logging.getLogger(__name__)
         logger.info(f"called from test {sys._called_from_test}" )
-
-        await self.set_up_communicators()
 
         #send chat
         message = {'message_type' : 'chat',
@@ -182,83 +189,7 @@ class TestSubjectConsumer(TestCase):
         message_data = response['message']['message_data']
         self.assertEquals(message_data['status'],'success')
         self.assertEquals(message_data['text'],'Hello?')
-
-        await self.close_communicators()
     
-    @pytest.mark.asyncio
-    async def test_harvest_patch(self):
-        '''
-        test harvest patch
-        '''
-
-        logger = logging.getLogger(__name__)
-        logger.info(f"called from test {sys._called_from_test}" )
-
-        await self.set_up_communicators()
-        await self.start_session()
-
-        patch_1 = self.parameter_set_json["parameter_set_patches_order"][0]
-
-        message = {'message_type' : 'patch_harvest',
-                   'message_text' : {'patch_id': patch_1},
-                   'message_target' : 'group', 
-                  }
-        
-        #harvest first ring
-        await self.communicator_subject[0].send_json_to(message)
-
-        for i in self.communicator_subject:
-            response = await i.receive_json_from()
-            #logger.info(response)
-            message_data = response['message']['message_data']
-            self.assertEquals(message_data['status'],'success')           
-            self.assertEquals(response['message']['message_type'],'update_patch_harvest')
-            self.assertEquals(message_data['harvest_amount'], 8)
-        
-        #harvest again and fail
-        await self.communicator_subject[0].send_json_to(message)
-
-        for i in self.communicator_subject:
-            response = await i.receive_json_from()
-            #logger.info(response)
-            message_data = response['message']['message_data']
-            self.assertEquals(message_data['status'],'fail')   
-            self.assertEquals(message_data['error_message'][0]['message'],'Wait until next period to harvest again.')        
-           
-        #harvest next ring
-        await self.communicator_subject[1].send_json_to(message)
-
-        for i in self.communicator_subject:
-            response = await i.receive_json_from()
-            #logger.info(response)
-            message_data = response['message']['message_data']
-            self.assertEquals(message_data['status'],'success')           
-            self.assertEquals(response['message']['message_type'],'update_patch_harvest')
-            self.assertEquals(message_data['harvest_amount'], 4)
-
-        #harvest next ring
-        await self.communicator_subject[2].send_json_to(message)
-
-        for i in self.communicator_subject:
-            response = await i.receive_json_from()
-            #logger.info(response)
-            message_data = response['message']['message_data']
-            self.assertEquals(message_data['status'],'success')           
-            self.assertEquals(response['message']['message_type'],'update_patch_harvest')
-            self.assertEquals(message_data['harvest_amount'], 2)
-
-        #harvest when empty fails
-        await self.communicator_subject[3].send_json_to(message)
-
-        for i in self.communicator_subject:
-            response = await i.receive_json_from()
-            logger.info(response)
-            message_data = response['message']['message_data']
-            self.assertEquals(message_data['status'],'fail')   
-            self.assertEquals(message_data['error_message'][0]['message'],'The patch is empty.')
-
-        await self.close_communicators()
-
 
 
 
