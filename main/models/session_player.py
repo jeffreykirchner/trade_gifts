@@ -100,9 +100,7 @@ class SessionPlayer(models.Model):
         '''
         return a proccessed list of instructions to the subject
         '''
-
-       
-
+        
         instruction_pages = [i.json() for i in self.parameter_set_player.parameter_set.instruction_set.instructions.all()]
  
         for i in instruction_pages:
