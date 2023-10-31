@@ -1,7 +1,7 @@
 /**
  * add on screen notice to subject screen
  */
-add_notice(text, end_period, end_time)
+add_notice: function add_notice(text, end_period, end_time)
 {
     pixi_notices.notices[pixi_notices_key++] = {text: text, end_period: end_period, end_time: end_time};
     app.update_notices();
@@ -10,7 +10,7 @@ add_notice(text, end_period, end_time)
 /**
  * update notices on screen
  */
-update_notices()
+update_notices: function update_notices()
 {
     if(pixi_notices.container)
     {
@@ -66,7 +66,7 @@ update_notices()
 /**
  * remove all notices
  */
-remove_all_notices()
+remove_all_notices: function remove_all_notices()
 {
     pixi_notices.notices = [];
     app.update_notices();
