@@ -497,6 +497,14 @@ var app = Vue.createApp({
                 // app.avatar_hat_modal.hide();
                 app.patch_modal.hide();
                 app.working = false;
+
+                //add break notice
+                if(app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
+                {
+                    app.add_notice("Break Time: Interactions are disabled. Chat is enabled.", 
+                                    app.session.world_state.current_period,
+                                    app.session.parameter_set.period_length);
+                }
             }
 
             //sleep 
@@ -551,15 +559,6 @@ var app = Vue.createApp({
 
             //update night overlay
             app.update_pixi_night();
-
-            //add break notice
-            if(app.session.world_state.time_remaining == app.session.parameter_set.period_length + app.session.parameter_set.break_length &&
-               app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
-            {
-                app.add_notice("Break Time: Interactions are disabled. Chat is enabled.", 
-                               app.session.world_state.current_period,
-                               app.session.parameter_set.period_length);
-            }
 
             //add notices
             for(let i in app.session.parameter_set.parameter_set_notices)
