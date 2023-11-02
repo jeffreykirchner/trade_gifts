@@ -128,8 +128,9 @@ def take_update_parameter_set_patch(data):
                 parameter_set_patch.shock_levels[str(i+1)] = {"value" : int(v), "harvested" : False}
 
         parameter_set_patch.save()
-
         parameter_set_patch.parameter_set.update_json_fk(update_patches=True)
+
+        session.setup_world_state()
 
         return {"value" : "success"}                      
                                 
@@ -157,6 +158,8 @@ def take_remove_parameterset_patch(data):
     
     parameter_set_patch.delete()
     session.parameter_set.update_json_fk(update_patches=True)
+
+    session.setup_world_state()
     
     return {"value" : "success"}
 
@@ -185,6 +188,8 @@ def take_add_parameterset_patch(data):
         parameter_set_patch.parameter_set_group = parameter_set_patch_last.parameter_set_group
     parameter_set_patch.save()
     session.parameter_set.update_json_fk(update_patches=True)
+
+    session.setup_world_state()
 
     return {"value" : "success"}
     
