@@ -171,7 +171,7 @@ class ParameterSet(models.Model):
             self.chat_mode = new_ps.get("chat_mode", ChatModes.FULL)
             self.chat_rules_letters = new_ps.get("chat_rules", {"letters": None})
             self.chat_rules_word_list = new_ps.get("chat_rules_word_list", "")
-            self.enable_emoji = new_ps.get("enable_emoji", True)
+            self.enable_emoji = True if new_ps.get("enable_emoji") == "True" else False
 
             self.good_mode = new_ps.get("good_mode", GoodModes.THREE)
             

@@ -24,7 +24,7 @@ class ParameterSetGround(models.Model):
     width = models.IntegerField(verbose_name='Width', default=50)                #ending location x and y
     height = models.IntegerField(verbose_name='Height', default=50)
 
-    tint = models.CharField(verbose_name='Tint (Hex Color)', max_length = 8, default="0x000000")  #tinting of ground
+    tint = models.CharField(verbose_name='Tint (Hex Color)', max_length = 8, default="0xFFFFFF")  #tinting of ground
     texture = models.CharField(verbose_name='Texture Name', default="Name Here")                  #name of texture
     rotation = models.DecimalField(decimal_places=2, max_digits=3, default=0)                     #rotation of texture
     scale = models.DecimalField(decimal_places=2, max_digits=3, default=1)                        #scale of texture
