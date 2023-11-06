@@ -858,6 +858,7 @@ hide_avatar_attack_modal: function hide_avatar_attack_modal()
     app.avatar_attack_modal_open = false;
     app.working = false;
     app.attack_error = null;
+    app.clear_main_form_errors();
 },
 
 /**
@@ -868,6 +869,9 @@ send_attack_avatar: function send_attack_avatar()
     
     let target_avatar = app.session.world_state.avatars[app.selected_avatar.target_player_id];
     let source_player = app.session.world_state.avatars[app.session_player.id];
+
+    app.attack_error = null;
+    app.clear_main_form_errors();
 
     if(Number(target_avatar.health) == 0)
     {
