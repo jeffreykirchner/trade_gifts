@@ -41,7 +41,7 @@ class ParameterSetPatch(models.Model):
     class Meta:
         verbose_name = 'Parameter Set Patch'
         verbose_name_plural = 'Parameter Set Patch'
-        ordering=['id']
+        ordering=['info']
 
     def from_dict(self, new_ps):
         '''
