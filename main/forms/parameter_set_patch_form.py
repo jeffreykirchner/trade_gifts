@@ -22,13 +22,13 @@ class ParameterSetPatchForm(forms.ModelForm):
     info = forms.CharField(label='Info',
                             widget=forms.TextInput(attrs={"v-model":"current_parameter_set_patch.info",}))
 
-    x = forms.IntegerField(label='Starting Location X',
+    x = forms.IntegerField(label='Location X',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_patch.x",
                                                             "step":"1",
                                                             "min":"0"}))
 
-    y = forms.IntegerField(label='Starting Location Y',
+    y = forms.IntegerField(label='Location Y',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_patch.y",
                                                             "step":"1",

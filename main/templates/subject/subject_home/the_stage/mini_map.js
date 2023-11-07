@@ -76,6 +76,8 @@ setup_pixi_minimap: function setup_pixi_minimap()
         temp_patch.drawCircle(patch.x * scale, patch.y * scale, patch.radius * scale);
         temp_patch.endFill();
 
+        // temp_patch.pivot.set(temp_patch.width/2, temp_patch.height/2);
+
         mini_map.container.addChild(temp_patch);
     }
 
@@ -91,15 +93,24 @@ setup_pixi_minimap: function setup_pixi_minimap()
         {
             temp_house.beginFill(app.field_color);
         }
+        
+        let p1 = {x:(parameter_set_player.house_x) * scale,
+                  y:(parameter_set_player.house_y - app.session.parameter_set.house_height/2) * scale};
 
-        temp_house.moveTo(parameter_set_player.house_x * scale, parameter_set_player.house_y * scale);
-        temp_house.lineTo((parameter_set_player.house_x + app.session.parameter_set.house_width/2) * scale, 
-                          (parameter_set_player.house_y + app.session.parameter_set.house_height) * scale);
-        temp_house.lineTo((parameter_set_player.house_x - app.session.parameter_set.house_width/2) * scale,
-                          (parameter_set_player.house_y + app.session.parameter_set.house_height) * scale);
-        temp_house.lineTo(parameter_set_player.house_x * scale, parameter_set_player.house_y * scale);
+        let p2 = {x:(parameter_set_player.house_x - app.session.parameter_set.house_width/2) * scale,
+                  y:(parameter_set_player.house_y + app.session.parameter_set.house_height/2) * scale};
+
+        let p3 = {x:(parameter_set_player.house_x + app.session.parameter_set.house_width/2) * scale,
+                  y:(parameter_set_player.house_y + app.session.parameter_set.house_height/2) * scale};
+        
+        temp_house.moveTo(p1.x, p1.y);
+
+        temp_house.lineTo(p2.x, p2.y);
+        temp_house.lineTo(p3.x, p3.y);
+        temp_house.lineTo(p1.x, p1.y);
 
         temp_house.endFill();
+        // temp_house.pivot.set(temp_house.width/2, temp_house.height/2);
 
         mini_map.container.addChild(temp_house);
     }
