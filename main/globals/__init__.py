@@ -12,3 +12,4 @@ from .sessions import ExperimentPhase
 from .sessions import Goods
 from .sessions import ChatModes
 from .sessions import GoodModes
+from .sessions import HarvestModes

@@ -16,6 +16,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from main.globals import ChatModes
 from main.globals import GoodModes
+from main.globals import HarvestModes
 
 from main.models import InstructionSet
 
@@ -58,6 +59,7 @@ class ParameterSet(models.Model):
 
     production_effort = models.IntegerField(verbose_name='Production Effort', default=10)                     # the amount of effort a subject can put into production
     max_patch_harvests = models.IntegerField(verbose_name='Max Patch Harvests', default=1)                    #the maximum number of times a subject can harvest from a patch
+    patch_harvest_mode = models.CharField(verbose_name="Patch Harvest Mode", max_length=100, choices=HarvestModes.choices, default=HarvestModes.ANY) #patch harvest mode
 
     interaction_length = models.IntegerField(verbose_name='Interaction Length', default=10)                   #interaction length in seconds
     cool_down_length = models.IntegerField(verbose_name='Cool Down Length', default=10)                       #cool down length in seconds
@@ -143,6 +145,7 @@ class ParameterSet(models.Model):
 
             self.production_effort = new_ps.get("production_effort", 10)
             self.max_patch_harvests = new_ps.get("max_patch_harvests", 1)
+            self.patch_harvest_mode = new_ps.get("patch_harvest_mode", HarvestModes.ANY)
 
             self.interaction_length = new_ps.get("interaction_length", 10)
             self.cool_down_length = new_ps.get("cool_down_length", 10)
@@ -434,6 +437,7 @@ class ParameterSet(models.Model):
 
         self.json_for_session["production_effort"] = self.production_effort
         self.json_for_session["max_patch_harvests"] = self.max_patch_harvests
+        self.json_for_session["patch_harvest_mode"] = self.patch_harvest_mode
 
         self.json_for_session["interaction_length"] = self.interaction_length
         self.json_for_session["cool_down_length"] = self.cool_down_length

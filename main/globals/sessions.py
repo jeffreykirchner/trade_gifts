@@ -36,3 +36,10 @@ class GoodModes(models.TextChoices):
     TWO = 'Two', _('Two')
     THREE = 'Three', _('Three')
 
+class HarvestModes(models.TextChoices):
+    '''
+    harvest modes
+    '''
+    ANY = 'Any', _('Any')
+    ONCE_PER_GROUP = 'Once per Group', _('Once per Group')
+

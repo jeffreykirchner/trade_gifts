@@ -296,6 +296,7 @@ class Session(models.Model):
             v2['health'] = parameter_set["starting_health"]
             v2['sleeping'] = False
             v2['period_patch_harvests'] = 0
+            v2['period_patch_harvests_ids'] = []
             v2['parameter_set_player_id'] = i['parameter_set_player__id']
             v2['parameter_set_hat_id'] = i['parameter_set_player__parameter_set_hat__id']
             for j in main.globals.Goods.choices:
