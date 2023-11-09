@@ -20,6 +20,7 @@ from datetime import datetime, timedelta
 from main.globals import ExperimentPhase
 from main.globals import convert_goods_to_health
 from main.globals import is_positive_integer
+from main.globals import HarvestModes
 
 import main
 
@@ -1233,6 +1234,14 @@ class SubjectUpdatesMixin():
         if status == "success" and avatar["period_patch_harvests"] >= self.parameter_set_local["max_patch_harvests"]:
             status = "fail"
             error_message.append({"id":"patch_harvest", "message": "Wait until next period to harvest again."})
+        
+        #check player has not already harvested in this area
+        if status == "success" and self.parameter_set_local["patch_harvest_mode"] == HarvestModes.ONCE_PER_GROUP:
+            for i in avatar["period_patch_harvests_ids"]:
+                if self.world_state_local['patches'][i]['parameter_set_group'] == patch['parameter_set_group']:
+                    status = "fail"
+                    error_message.append({"id":"patch_harvest", "message": "You have already harvested in this region this period."})
+                    break
 
         if status == "success":
             status = "fail"     

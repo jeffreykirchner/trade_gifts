@@ -351,6 +351,7 @@ take_patch_harvest: function take_patch_harvest(message_data)
         avatar = app.session.world_state.avatars[player_id];
         avatar[patch.good] = message_data.avatar[patch.good];
         avatar.period_patch_harvests = message_data.avatar.period_patch_harvests;
+        avatar.period_patch_harvests_ids = message_data.avatar.period_patch_harvests_ids;
 
         app.update_avatar_inventory();
         app.update_patch_inventory();

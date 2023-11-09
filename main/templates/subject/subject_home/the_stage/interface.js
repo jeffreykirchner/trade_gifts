@@ -259,13 +259,31 @@ take_target_location_update: function take_target_location_update(message_data)
                                                 0xFFFFFF,
                                                 28,
                                                 null);
+                        return;
                     }
-                    else
+                    else if(app.session.parameter_set.patch_harvest_mode=="Once per Group")
                     {
-                        app.subject_patch_click(i);
+                        for(j in avatar.period_patch_harvests_ids)
+                        {
+                            let temp_patch_id = avatar.period_patch_harvests_ids[j];
+                            if(app.session.parameter_set.parameter_set_patches[temp_patch_id].parameter_set_group == 
+                               app.session.parameter_set.parameter_set_patches[patch.id].parameter_set_group)
+                            {
+                                app.add_text_emitters("You have already harvested from this region this period.", 
+                                                patch.x, 
+                                                patch.y,
+                                                patch.x,
+                                                patch.y-100,
+                                                0xFFFFFF,
+                                                28,
+                                                null);
+                                return;
+                            }
+                        }
                     }
                     
-                    return
+                    app.subject_patch_click(i);
+                    return;
                 }
             }
         }
