@@ -301,6 +301,7 @@ class SessionPeriod(models.Model):
         for i in world_state["avatars"]:
             avatar = world_state["avatars"][str(i)]
             avatar["period_patch_harvests"] = 0
+            avatar["period_patch_harvests_ids"] = []
 
         return world_state
 

@@ -9,6 +9,7 @@ from main.models import ParameterSet
 
 from main.globals import ChatModes
 from main.globals import GoodModes
+from main.globals import HarvestModes
 
 import  main
 
@@ -258,6 +259,10 @@ class ParameterSetForm(forms.ModelForm):
                                                                             "step":"1",
                                                                             "min":"1"}))
     
+    patch_harvest_mode = forms.ChoiceField(label='Patch Harvest Mode',
+                                  choices=HarvestModes.choices,
+                                  widget=forms.Select(attrs={"v-model":"parameter_set.patch_harvest_mode",}))
+    
     chat_mode = forms.ChoiceField(label='Chat Mode',
                                   choices=ChatModes.choices,
                                   widget=forms.Select(attrs={"v-model":"parameter_set.chat_mode",}))
@@ -287,7 +292,7 @@ class ParameterSetForm(forms.ModelForm):
                  'interaction_length', 'interaction_range', 'cool_down_length', 'starting_health', 'health_loss_per_second', 'heath_gain_per_sleep_second',
                  'consumption_alpha', 'consumption_beta', 'consumption_multiplier', 'cents_per_second', 'allow_attacks', 'attack_damage', 'attack_cost', 'allow_stealing', 'enable_hats', 'world_width', 'world_height',
                  'field_width', 'field_height', 'house_width', 'house_height', 'avatar_scale', 'avatar_bound_box_percent', 'avatar_move_speed', 'avatar_animation_speed',
-                 'production_effort', 'max_patch_harvests',
+                 'production_effort', 'max_patch_harvests', 'patch_harvest_mode',
                  'chat_mode', 'enable_emoji', 'chat_rules_word_list', 'good_mode', 'test_mode']
                  
     def clean_survey_link(self):
