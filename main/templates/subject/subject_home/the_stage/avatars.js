@@ -181,7 +181,7 @@ setup_pixi_subjects: function setup_pixi_subjects()
         if(app.session.parameter_set.good_mode == "Three")
         {
             good_one_container.position.set(-gear_sprite.width/2-5+25, -gear_sprite.height/2 - 30);
-            good_two_container.position.set(0+25, -gear_sprite.height/2 - 15);
+            good_two_container.position.set(0+25, -gear_sprite.height/2 - 30);
             good_three_container.position.set(gear_sprite.width/2+5+25, -gear_sprite.height/2 - 30);
         }
         else
