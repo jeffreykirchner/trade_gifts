@@ -499,6 +499,7 @@ move_player: function move_player(delta)
         }
     }
 
+    //update interaction ranges
     for(let i in app.session.world_state_avatars.session_players)
     {
         let obj = app.session.world_state_avatars.session_players[i];

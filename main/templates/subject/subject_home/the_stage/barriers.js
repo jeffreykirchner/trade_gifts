@@ -51,13 +51,14 @@ setup_pixi_barrier()
 /**
  * check barrier intersection
  */
-check_barriers_intersection(rect1, parameter_set_group)
+check_barriers_intersection(rect1, parameter_set_group, parameter_set_player)
 {
     for(let i in app.session.parameter_set.parameter_set_barriers)
     {        
         let temp_barrier = app.session.parameter_set.parameter_set_barriers[i];
 
-        if(temp_barrier.parameter_set_groups.includes(parameter_set_group) && 
+        if((temp_barrier.parameter_set_groups.includes(parameter_set_group) ||
+            temp_barrier.parameter_set_players.includes(parameter_set_player)) && 
            app.session.world_state.current_period >= temp_barrier.period_on &&
            app.session.world_state.current_period < temp_barrier.period_off)
         {
