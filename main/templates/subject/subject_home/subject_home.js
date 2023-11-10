@@ -605,6 +605,7 @@ var app = Vue.createApp({
             app.end_game_modal.toggle();
 
             app.end_game_modal_visible = true;
+            app.working = false;
         },
 
         /** take refresh screen
