@@ -106,7 +106,7 @@ process_instruction_page: function process_instruction_page(){
            
             return;      
             break; 
-        case app.instructions.action_page_harvest: 
+        case app.instructions.action_page_harvest:             
             return;      
             break;  
         case app.instructions.action_page_house: 
@@ -141,7 +141,11 @@ process_instruction_page: function process_instruction_page(){
             app.update_notices();
             return;      
             break;
-        case app.instructions.action_page_attacks:           
+        case app.instructions.action_page_attacks:    
+            for(i in app.session.world_state_avatars.session_players)
+            {
+                app.session.world_state_avatars.session_players[i].cool_down = 0;
+            }       
             return;      
             break;
         case app.instructions.action_page_chat:           
