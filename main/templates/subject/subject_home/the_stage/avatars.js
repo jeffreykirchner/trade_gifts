@@ -1309,3 +1309,25 @@ do_avatar_sleep_emitters: function do_avatar_sleep_emitters()
         }
     }
 },
+
+/**
+ * truce hat eligible
+ */
+ check_truce_hat_eligible: function check_truce_hat_eligible(player_id)
+ {
+    //hats are disabled
+    if(app.session.parameter_set.enable_hats !='True') return false;
+
+    let target_player_group = app.get_parameter_set_group_from_player_id(player_id);
+    let local_player_group = app.get_parameter_set_group_from_player_id(app.session_player.id);
+
+    //same group
+    if(target_player_group == local_player_group) return false;
+
+
+    
+    // && 
+    //                                   selected_avatar.parameter_set_player.parameter_set_group != session_player.parameter_set_group
+    
+    return true;
+},
