@@ -29,6 +29,25 @@ get_session_player_from_world_state_house: function get_session_player_from_worl
 },
 
 /**
+ * get ground element player is over
+ */
+get_ground_element_player_is_over: function get_ground_element_player_is_over(player_id)
+{
+    if(!player_id) return null;
+    
+    let player_location = app.session.world_state_avatars.session_players[player_id].current_location
+    
+    for(i in app.session.parameter_set.parameter_set_grounds)
+    {
+        let ground = app.session.parameter_set.parameter_set_grounds[i];
+        let rect = {x:ground.x, y:ground.y, width:ground.width, height:ground.height};
+        if(app.check_point_in_rectagle(player_location, rect)) return ground;
+    }
+
+    return null;
+},
+
+/**
  * return true if input is an integer greatere than or equal to zero
  */
 is_positive_integer: function is_positive_integer(input) {

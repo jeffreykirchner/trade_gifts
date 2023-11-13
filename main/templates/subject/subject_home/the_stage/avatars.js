@@ -1315,6 +1315,8 @@ do_avatar_sleep_emitters: function do_avatar_sleep_emitters()
  */
  check_truce_hat_eligible: function check_truce_hat_eligible(player_id)
  {
+    if(!player_id) return false;
+
     //hats are disabled
     if(app.session.parameter_set.enable_hats !='True') return false;
 
@@ -1322,12 +1324,14 @@ do_avatar_sleep_emitters: function do_avatar_sleep_emitters()
     let local_player_group = app.get_parameter_set_group_from_player_id(app.session_player.id);
 
     //same group
-    if(target_player_group == local_player_group) return false;
+    if(target_player_group.id == local_player_group.id) return false;
 
+    //in home region
+    let local_player_region = app.get_ground_element_player_is_over(app.session_player.id);
 
-    
-    // && 
-    //                                   selected_avatar.parameter_set_player.parameter_set_group != session_player.parameter_set_group
+    if(!local_player_region) return false;
+
+    if(local_player_region.parameter_set_group != local_player_group.id) return false;
     
     return true;
 },

@@ -282,7 +282,13 @@ class ParameterSet(models.Model):
 
             for i in new_parameter_set_grounds:
                 p = main.models.ParameterSetGround.objects.create(parameter_set=self)
-                p.from_dict(new_parameter_set_grounds[i])
+                v = new_parameter_set_players[i]
+                p.from_dict(v)
+
+                if v.get("parameter_set_group", None) != None:
+                    p.parameter_set_group_id=new_parameter_set_groups_map[str(v["parameter_set_group"])]
+                    
+                p.save()
 
             #parameter set field types
             self.parameter_set_field_types.all().delete()

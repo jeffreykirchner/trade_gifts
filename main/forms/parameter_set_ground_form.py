@@ -3,9 +3,9 @@ parameterset ground edit form
 '''
 
 from django import forms
-from django.db.models.query import RawQuerySet
 
 from main.models import ParameterSetGround
+from main.models import ParameterSetGroup
 
 class ParameterSetGroundForm(forms.ModelForm):
     '''
@@ -15,6 +15,11 @@ class ParameterSetGroundForm(forms.ModelForm):
     info = forms.CharField(label='Info',
                            required=False,
                            widget=forms.TextInput(attrs={"v-model":"current_parameter_set_ground.info",}))
+
+    parameter_set_group = forms.ModelChoiceField(label='Group',
+                                                 required=False,
+                                                 queryset=ParameterSetGroup.objects.none(),
+                                                 widget=forms.Select(attrs={"v-model":"current_parameter_set_ground.parameter_set_group",}))
     
     x = forms.IntegerField(label='X Location',
                                  min_value=0,
@@ -67,5 +72,5 @@ class ParameterSetGroundForm(forms.ModelForm):
 
     class Meta:
         model=ParameterSetGround
-        fields =['info', 'x', 'y', 'width', 'height', 'tint', 'texture', 'rotation', 'scale']
+        fields =['info', 'parameter_set_group', 'x', 'y', 'width', 'height', 'tint', 'texture', 'rotation', 'scale']
     

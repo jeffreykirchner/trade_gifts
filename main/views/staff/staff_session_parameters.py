@@ -65,6 +65,7 @@ class StaffSessionParametersView(SingleObjectMixin, View):
         parameter_set_barrier_form.fields["parameter_set_groups"].queryset = session.parameter_set.parameter_set_groups.all()
         parameter_set_barrier_form.fields["parameter_set_players"].queryset = session.parameter_set.parameter_set_players.all()
         parameter_set_patch_form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
+        parameter_set_ground_form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
 
         parameter_set_form_ids=[]
         for i in parameter_set_form:
