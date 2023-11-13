@@ -12,7 +12,12 @@
         <div class="modal-content">
             <div class="modal-header fw-bold">
                 <span v-if="selected_avatar.avatar">
-                    Trade Hats with [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
+                    <span v-if="hat_trade_status=='open'">
+                        Send Truce Hat to [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
+                    </span>
+                    <span v-else>
+                        Accept Truce Hat from [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
+                    </span>
                 </span>
                 <span class="float-end">
 
@@ -28,26 +33,17 @@
 
                     <div class="col text-center">
                         <div class="col text-center">
-                           Your Hat
+                           Truce Hat
                         </div>
                         <div class="col text-center">
                             <img class="field_modal_icons" 
                                  v-bind:src="'/static/' + session.parameter_set.parameter_set_hats[session.world_state.avatars[session_player.id].parameter_set_hat_id].texture + '.png'" />
                         </div>                        
                     </div>
-                    <div class="col text-center">
-                        <div>
-                            Their Hat
-                        </div>
-                        <div class="col text-center">
-                            <img class="field_modal_icons" 
-                                v-bind:src="'/static/' + session.parameter_set.parameter_set_hats[selected_avatar.avatar.parameter_set_hat_id].texture + '.png'" />
-                        </div>
-                    </div>
                 </div>           
                 
                 <div class="row mt-4 border-top pt-3">
-                    <div class="col text-end" v-if="selected_avatar.avatar && selected_avatar.avatar.parameter_set_hat_id">    
+                    <div class="col text-end" v-if="selected_avatar.avatar">    
                         <button type="button"
                                 class="btn btn-outline-danger me-2"
                                 v-on:click = "send_hat_avatar_cancel()"                    
@@ -74,7 +70,7 @@
                                                      !session.world_state_avatars.session_players[session_player.id].frozen) || 
                                                     selected_avatar.avatar.sleeping">
                             <span v-if="hat_trade_status=='open' || hat_trade_status=='proposal'">
-                                Propose <i class="fab fa-redhat"></i> <i class="fas fa-exchange-alt"></i> <i class="fab fa-redhat"></i>
+                                Propose <i class="fab fa-redhat"></i>
                             </span>
 
                             <span v-if="hat_trade_status=='proposal_received'">
