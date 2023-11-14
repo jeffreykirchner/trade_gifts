@@ -6,6 +6,7 @@ from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
 
 from main.models import ParameterSet
+from main.models import ParameterSetHat
 
 import main
 
@@ -15,6 +16,7 @@ class ParameterSetGroup(models.Model):
     '''
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_groups")
+    parameter_set_hat = models.ForeignKey(ParameterSetHat, on_delete=models.SET_NULL, related_name="parameter_set_groups_b", blank=True, null=True)
 
     name = models.CharField(default="Name Here", max_length=255, blank=True, null=True)
     
@@ -67,6 +69,7 @@ class ParameterSetGroup(models.Model):
         return{
 
             "id" : self.id,
+            "parameter_set_hat" : self.parameter_set_hat.id if self.parameter_set_hat else None,
             "name" : self.name,
 
         }

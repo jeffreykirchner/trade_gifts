@@ -10,8 +10,8 @@ from .instruction import Instruction
 from .help_docs_subject import HelpDocsSubject
 
 from .parameter_set import ParameterSet
-from .parameter_set_group import ParameterSetGroup
 from .parameter_set_hat import ParameterSetHat
+from .parameter_set_group import ParameterSetGroup
 from .parameter_set_player import ParameterSetPlayer
 from .parameter_set_wall import ParameterSetWall
 from .parameter_set_ground import ParameterSetGround

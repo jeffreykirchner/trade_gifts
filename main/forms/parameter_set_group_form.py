@@ -24,5 +24,5 @@ class ParameterSetGroupForm(forms.ModelForm):
 
     class Meta:
         model=ParameterSetGroup
-        fields =['name',]
+        fields =['name', 'parameter_set_hat']
     
