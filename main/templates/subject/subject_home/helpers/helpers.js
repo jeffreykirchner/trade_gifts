@@ -53,3 +53,17 @@ get_ground_element_player_is_over: function get_ground_element_player_is_over(pl
 is_positive_integer: function is_positive_integer(input) {
     return Number.isInteger(input) && input >= 0;
 },
+
+/**
+ * get group hat for player
+ */
+get_group_hat_for_player: function get_group_hat_for_player(player_id) 
+{
+    let parameter_set_group = app.get_parameter_set_group_from_player_id(player_id);
+
+    if(!parameter_set_group) return null;
+    if(!parameter_set_group.parameter_set_hat) return null;
+
+    let group_hat = app.session.parameter_set.parameter_set_hats[parameter_set_group.parameter_set_hat];
+    return group_hat;
+},

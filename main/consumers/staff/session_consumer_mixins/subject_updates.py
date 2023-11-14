@@ -1383,16 +1383,19 @@ class SubjectUpdatesMixin():
                 source_player = self.world_state_avatars_local['session_players'][str(player_id)]
                 target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
 
-                source_avatar = self.world_state_local['avatars'][str(player_id)]
-                target_avatar = self.world_state_local['avatars'][str(target_player_id)]
+                # source_avatar = self.world_state_local['avatars'][str(player_id)]
+                # target_avatar = self.world_state_local['avatars'][str(target_player_id)]
 
-                result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
-                result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
+                # result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
+                # result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
                 
-                v = await self.tractor_beam(event)
+                #v = await self.tractor_beam(event)
 
-                result["status"] = v["status"]
-                result["error_message"] = v["error_message"]
+                # result["status"] = v["status"]
+                # result["error_message"] = v["error_message"]
+
+                result["status"] ="success"
+                result["error_message"] = []
 
             await SessionEvent.objects.acreate(session_id=self.session_id, 
                                                session_player_id=player_id,

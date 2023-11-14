@@ -586,6 +586,7 @@ subject_avatar_click: function subject_avatar_click(target_player_id)
 
     app.selected_avatar.avatar = app.session.world_state.avatars[target_player_id];
     app.selected_avatar.target_player_id = target_player_id;
+    app.selected_avatar.source_player_id = app.session_player.id;
     app.selected_avatar.parameter_set_player = app.session.parameter_set.parameter_set_players[app.selected_avatar.avatar.parameter_set_player_id];
 
     app.selected_avatar.good_one_move = 0;
@@ -1059,12 +1060,14 @@ send_hat_avatar: function send_hat_avatar()
     else
     {
         app.working = true;
+        app.avatar_hat_modal.hide();
+        
         // app.hat_trade_status = "proposal";
         
         app.send_message("hat_avatar", 
                         {"target_player_id" : app.selected_avatar.target_player_id,
                          "type":app.hat_trade_status,},
-                        "group"); 
+                         "group"); 
     }
 },
 
@@ -1098,7 +1101,8 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                 if(target_player_id == app.session_player.id)
                 {
                     app.selected_avatar.avatar = app.session.world_state.avatars[source_player_id];
-                    app.selected_avatar.target_player_id = source_player_id;
+                    app.selected_avatar.source_player_id = source_player_id;
+                    app.selected_avatar.target_player_id = target_player_id;
                     app.selected_avatar.parameter_set_player = app.session.parameter_set.parameter_set_players[app.selected_avatar.avatar.parameter_set_player_id];
                     
                     app.selected_avatar.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
@@ -1116,12 +1120,6 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                     app.avatar_hat_modal.show();
                     app.avatar_hat_modal_open = true;
 
-                    app.working = false;
-                }
-                else if(source_player_id == app.session_player.id)
-                {
-                    app.hat_trade_status = "proposal";
-                    app.avatar_hat_modal_open = true;
                     app.working = false;
                 }
             }

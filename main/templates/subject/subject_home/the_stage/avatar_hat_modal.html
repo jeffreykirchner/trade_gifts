@@ -11,34 +11,34 @@
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header fw-bold">
-                <span v-if="selected_avatar.avatar">
-                    <span v-if="hat_trade_status=='open'">
-                        Send Truce Hat to [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
-                    </span>
-                    <span v-else>
-                        Accept Truce Hat from [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
-                    </span>
+                <span>
+                    
                 </span>
                 <span class="float-end">
 
                     <button type="button" class="btn btn-link" title="Show Help" v-on:click="send_load_help_doc_subject('Avatar hat')">
                         <i class="far fa-question-circle"></i> 
                     </button>
+
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" v-on:click="send_hat_avatar_cancel()"></button>
                 </span>
             </div>
-            <div class="modal-body" v-if="session">              
+            <div class="modal-body" v-if="session">   
+                <div class="row align-items-center text-center fw-bold mb-2" v-if="selected_avatar.avatar">
+                    <div class="col text-center"> 
+                        <span v-if="hat_trade_status=='open'">
+                            Send a Truce Hat to [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
+                        </span>
+                        <span v-else>
+                            Accept Truce Hat from [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
+                        </span>
+                    </div>
+                </div>
                 
-                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar && selected_avatar.avatar.parameter_set_hat_id">
-
-                    <div class="col text-center">
-                        <div class="col text-center">
-                           Truce Hat
-                        </div>
-                        <div class="col text-center">
-                            <img class="field_modal_icons" 
-                                 v-bind:src="'/static/' + session.parameter_set.parameter_set_hats[session.world_state.avatars[session_player.id].parameter_set_hat_id].texture + '.png'" />
-                        </div>                        
+                <div class="row align-items-center text-center fw-bold" v-if="selected_avatar.avatar">
+                    <div class="col text-center">                        
+                        <img class="field_modal_icons" 
+                             v-bind:src="'/static/' + session.parameter_set.parameter_set_hats[get_group_hat_for_player(selected_avatar.source_player_id).id].texture + '.png'" />                     
                     </div>
                 </div>           
                 
@@ -46,15 +46,12 @@
                     <div class="col text-end" v-if="selected_avatar.avatar">    
                         <button type="button"
                                 class="btn btn-outline-danger me-2"
+                                v-if="hat_trade_status=='proposal_received'"
                                 v-on:click = "send_hat_avatar_cancel()"                    
                                 v-bind:disabled="reconnecting || 
-                                                    working ">
-                            <span v-if="hat_trade_status=='open' || hat_trade_status=='proposal'">
-                                Cancel <i class="fas fa-ban"></i>
-                            </span>
-                            <span v-if="hat_trade_status=='proposal_received'">
+                                                 working ">
+                                                 
                                 Reject <i class="fas fa-ban"></i>
-                            </span>
                         </button>
                                         
                         <button type="button"
@@ -69,37 +66,17 @@
                                                     (session.world_state_avatars.session_players[selected_avatar.target_player_id].interaction>0 &&
                                                      !session.world_state_avatars.session_players[session_player.id].frozen) || 
                                                     selected_avatar.avatar.sleeping">
+
                             <span v-if="hat_trade_status=='open' || hat_trade_status=='proposal'">
-                                Propose <i class="fab fa-redhat"></i>
+                                Propose Truce <i class="fab fa-redhat"></i>
                             </span>
 
                             <span v-if="hat_trade_status=='proposal_received'">
-                                Accept <i class="fab fa-redhat"></i> <i class="fas fa-exchange-alt"></i> <i class="fab fa-redhat"></i>
+                                Accept Truce <i class="fab fa-redhat"></i>
                             </span>
                         
                         </button>
                         
-                    </div>
-                </div>
-
-                <div class="row mt-4" v-if="selected_avatar.avatar && selected_avatar.avatar.parameter_set_hat_id">
-                    <div class="col text-center fw-bold">
-                        <div v-if="hat_trade_status == 'proposal'">
-                            Waiting for a response from [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]].
-                        </div>
-                        <div v-if="hat_trade_status == 'proposal_received'">
-                           Accept trade proposal?
-                        </div>
-                        <div v-if = "session.world_state_avatars.session_players[session_player.id].cool_down>0">
-                            You are cooling down ... [[session.world_state_avatars.session_players[session_player.id].cool_down]]
-                        </div>
-                        <div v-if = "session.world_state_avatars.session_players[selected_avatar.target_player_id].cool_down>0">
-                            They are cooling down ... [[session.world_state_avatars.session_players[selected_avatar.target_player_id].cool_down]]
-                        </div>
-                        <div v-if = "session.world_state_avatars.session_players[selected_avatar.target_player_id].interaction>0 &&
-                                    !session.world_state_avatars.session_players[session_player.id].frozen">
-                            Already interacting ... [[session.world_state_avatars.session_players[selected_avatar.target_player_id].interaction]]
-                        </div>
                     </div>
                 </div>
 
