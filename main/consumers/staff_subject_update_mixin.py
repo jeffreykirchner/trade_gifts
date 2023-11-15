@@ -24,7 +24,21 @@ class StaffSubjectUpdateMixin():
         '''
         help doc request
         '''
-        result = await sync_to_async(take_help_doc)(event["message_text"])
+        logger = logging.getLogger(__name__) 
+        # result = await sync_to_async(take_help_doc)(event["message_text"])
+
+        data = event["message_text"]
+        result = {}
+
+        try:
+            help_doc = await HelpDocs.objects.aget(title=data["title"])
+
+            result = {"value" : "success",
+                      "result" : {"help_doc" : await help_doc.ajson()}}
+        except ObjectDoesNotExist:
+            logger.warning(f"take_help_doc not found : {data}")
+            result = {"value" : "fail", 
+                      "message" : "Document Not Found."}
 
         message_data = {}
         message_data["status"] = result
@@ -35,24 +49,6 @@ class StaffSubjectUpdateMixin():
 
         # Send reply to sending channel
         await self.send(text_data=json.dumps({'message': message}, cls=DjangoJSONEncoder))
-
-def take_help_doc(data):
-    '''
-    help doc text request
-    '''
-
-    logger = logging.getLogger(__name__) 
-    logger.info(f"Take help doc: {data}")
-
-    try:
-
-        help_doc = HelpDocs.objects.get(title=data["title"])
-    except ObjectDoesNotExist:
-        logger.warning(f"take_help_doc not found : {data}")
-        return {"value" : "fail", "message" : "Document Not Found."}
-
-    return {"value" : "success",
-            "result" : {"help_doc" : help_doc.json()}}
 
 
     

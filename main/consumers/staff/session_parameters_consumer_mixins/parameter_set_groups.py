@@ -76,6 +76,7 @@ def take_update_parameter_set_group(data):
     logger.info(f'form_data_dict : {form_data_dict}')
 
     form = ParameterSetGroupForm(form_data_dict, instance=parameter_set_group)
+    form.fields["parameter_set_hat"].queryset = session.parameter_set.parameter_set_hats.all()
     
     if form.is_valid():         
         form.save()              

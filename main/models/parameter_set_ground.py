@@ -6,6 +6,7 @@ from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
 
 from main.models import ParameterSet
+from main.models import ParameterSetGroup
 
 import main
 
@@ -15,6 +16,7 @@ class ParameterSetGround(models.Model):
     '''
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_grounds")
+    parameter_set_group = models.ForeignKey(ParameterSetGroup, on_delete=models.SET_NULL, related_name="parameter_set_grounds_b", blank=True, null=True)
 
     info = models.CharField(verbose_name='Info', blank=True, null=True, max_length=100, default="Info Here")
 
@@ -88,6 +90,7 @@ class ParameterSetGround(models.Model):
         return{
 
             "id" : self.id,
+            "parameter_set_group" : self.parameter_set_group.id if self.parameter_set_group else None,
             "info" : self.info,
             "x" : self.x,
             "y" : self.y,

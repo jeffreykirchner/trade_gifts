@@ -65,6 +65,7 @@ def take_update_parameter_set_notice(data):
     form_data = data["form_data"]
 
     try:        
+        session = Session.objects.get(id=session_id)
         parameter_set_notice = ParameterSetNotice.objects.get(id=parameterset_notice_id)
     except ObjectDoesNotExist:
         logger.warning(f"take_update_parameter_set_notice parameterset_notice, not found ID: {parameterset_notice_id}")
@@ -75,6 +76,7 @@ def take_update_parameter_set_notice(data):
     logger.info(f'form_data_dict : {form_data_dict}')
 
     form = ParameterSetNoticeForm(form_data_dict, instance=parameter_set_notice)
+    form.fields["help_doc"].queryset = session.parameter_set.instruction_set.help_docs_subject.all()
 
     if form.is_valid():         
         form.save()              

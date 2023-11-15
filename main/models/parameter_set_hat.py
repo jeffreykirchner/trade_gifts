@@ -30,7 +30,7 @@ class ParameterSetHat(models.Model):
     class Meta:
         verbose_name = 'Parameter Set Hat'
         verbose_name_plural = 'Parameter Set Hats'
-        ordering = ['id']
+        ordering = ['info']
 
     def from_dict(self, new_ps):
         '''

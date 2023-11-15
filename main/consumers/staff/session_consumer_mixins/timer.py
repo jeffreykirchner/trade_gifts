@@ -289,15 +289,15 @@ def sync_continue_timer(event, session_id, world_state, parameter_set):
             #store data for last period
             for i in world_state["avatars"]:
                 sd_player = summary_data_last[i]
+                avatar = world_state["avatars"][i]
 
                 #health at end
-                sd_player["end_health"] = world_state["avatars"][i]["health"]        
+                sd_player["end_health"] = avatar["health"]        
 
                 #hat
-                sd_player["hat_at_end"] = world_state["avatars"][i]["parameter_set_hat_id"]          
+                sd_player["hat_at_end"] = avatar["parameter_set_hat_id"]          
                 
-                #inventory
-                avatar = world_state["avatars"][i]
+                #inventory                
                 for k in main.globals.Goods.choices:                       
                     sd_player["house_" + k[0]] = world_state["houses"][str(avatar["parameter_set_player_id"])][k[0]]
                     sd_player["avatar_" + k[0]] =  avatar[k[0]]
@@ -312,16 +312,19 @@ def sync_continue_timer(event, session_id, world_state, parameter_set):
             current_session_period = session.get_current_session_period()
             summary_data_current = current_session_period.summary_data
             
+            #store data for last period
             for i in world_state["avatars"]:
                 sd_player = summary_data_current[i]
-                # session.world_state["session_players"][i]["earnings"] += session.world_state["session_players"][i]["inventory"][current_period_id]
-
-                # earnings[i] = {}
-                # earnings[i]["total_earnings"] = 0
-                # earnings[i]["period_earnings"] = 0
+                avatar = world_state["avatars"][i]
                 
                 #store starting health
-                sd_player["start_health"] = world_state["avatars"][i]["health"]
+                sd_player["start_health"] = avatar["health"]
+            
+            #reset hats
+            if current_period % parameter_set["break_frequency"] == 0:
+                for i in world_state["avatars"]:
+                    avatar = world_state["avatars"][i]
+                    avatar["parameter_set_hat_id"] = None
                 
             current_session_period.save()
             # session.save()

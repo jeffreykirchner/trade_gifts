@@ -76,12 +76,30 @@ setup_pixi_subjects: function setup_pixi_subjects()
         //hat
         
         let hat_sprite = null;
-        if(avatar.parameter_set_hat_id)
+        if(app.session.parameter_set.enable_hats=="True")
         {
-            let hat_texture = app.session.parameter_set.parameter_set_hats[avatar.parameter_set_hat_id].texture;
+            let hat_id = null;
+
+            if(avatar.parameter_set_hat_id)
+            {
+                hat_id = avatar.parameter_set_hat_id;
+            }
+            else
+            {
+                let group_hat = app.get_group_hat_for_player(i);
+                hat_id = group_hat.id;
+            }
+
+            hat_texture = app.session.parameter_set.parameter_set_hats[hat_id].texture;
+
             hat_sprite = PIXI.Sprite.from(app.pixi_textures[hat_texture]);
             hat_sprite.anchor.set(0.5);
             hat_sprite.eventMode = 'passive';
+
+            if(!avatar.parameter_set_hat_id)
+            {
+                hat_sprite.visible=false;
+            }
         }
 
         //good one
@@ -569,6 +587,11 @@ update_avatar_inventory : function update_avatar_inventory()
         {
             let hat_texture = app.session.parameter_set.parameter_set_hats[avatar.parameter_set_hat_id].texture;
             pixi_avatars[i].hat_sprite.texture = app.pixi_textures[hat_texture];
+            pixi_avatars[i].hat_sprite.visible = true;
+        }
+        else if(app.session.parameter_set.enable_hats=="True")
+        {
+            pixi_avatars[i].hat_sprite.visible = false;
         }
     }
 
@@ -578,7 +601,7 @@ update_avatar_inventory : function update_avatar_inventory()
 /**
  * subject avatar click
  */
-subject_avatar_click: function subject_avatar_click(target_player_id)
+subject_avatar_click: function subject_avatar_click(target_player_id, local_pos)
 {
     if(target_player_id == app.session_player.id) return;
 
@@ -586,6 +609,7 @@ subject_avatar_click: function subject_avatar_click(target_player_id)
 
     app.selected_avatar.avatar = app.session.world_state.avatars[target_player_id];
     app.selected_avatar.target_player_id = target_player_id;
+    app.selected_avatar.source_player_id = app.session_player.id;
     app.selected_avatar.parameter_set_player = app.session.parameter_set.parameter_set_players[app.selected_avatar.avatar.parameter_set_player_id];
 
     app.selected_avatar.good_one_move = 0;
@@ -600,11 +624,50 @@ subject_avatar_click: function subject_avatar_click(target_player_id)
     app.selected_avatar.good_two_available = app.session.world_state.avatars[app.session_player.id][app.selected_avatar.good_two];
     app.selected_avatar.good_three_available = app.session.world_state.avatars[app.session_player.id][app.selected_avatar.good_three];
 
-    app.clear_main_form_errors();
-    app.avatar_modal.show();
-    app.avatar_modal_open = true;
+    app.clear_main_form_errors();    
     app.working = false;
     app.avatar_error = null;
+
+    //break phase open truce hat modal
+    if(app.session.world_state.time_remaining > app.session.parameter_set.period_length &&
+       app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
+    {
+        let v = app.check_truce_hat_eligible(target_player_id)
+
+        if(!v.value)
+        {
+            app.add_text_emitters(v.message, 
+                                 local_pos.x, 
+                                 local_pos.y,
+                                 local_pos.x,
+                                 local_pos.y-100,
+                                 0xFFFFFF,
+                                 28,
+                                 null);
+            return;
+        }
+
+        // <button type="button"
+        //         class="btn btn-outline-success me-2"
+        //         v-on:click = "show_hat_avatar()"
+        //         title="Propose hat trade?"          
+        //         v-if="check_truce_hat_eligible(selected_avatar.target_player_id)"             
+        //         v-bind:disabled="reconnecting || 
+        //                         working ||
+        //                         (session.world_state.current_experiment_phase == 'Instructions' && 
+        //                         session_player.current_instruction != instructions.action_page_attacks)">
+            
+        //     Send Truce Hat <i class="fab fa-redhat"></i>
+        // </button>
+
+        app.avatar_hat_modal.show();
+        app.avatar_hat_modal_open = true;
+    }
+    else
+    {
+        app.avatar_modal.show();
+        app.avatar_modal_open = true;
+    }
 },
 
 /**
@@ -1030,6 +1093,7 @@ show_hat_avatar: function show_hat_avatar()
     app.avatar_hat_modal.show();
     app.avatar_hat_modal_open = true;
     app.working = false;
+    app.avatar_hat_error = null;
 },
 
 /**
@@ -1059,12 +1123,15 @@ send_hat_avatar: function send_hat_avatar()
     else
     {
         app.working = true;
+        //app.avatar_hat_modal.hide();
+        
         // app.hat_trade_status = "proposal";
         
         app.send_message("hat_avatar", 
                         {"target_player_id" : app.selected_avatar.target_player_id,
+                         "source_player_id" : app.selected_avatar.source_player_id,
                          "type":app.hat_trade_status,},
-                        "group"); 
+                         "group"); 
     }
 },
 
@@ -1084,13 +1151,13 @@ send_hat_avatar_instructions: function send_hat_avatar_instructions()
 */
 take_update_hat_avatar: function take_update_hat_avatar(message_data)
 {
+    let source_player_id = parseInt(message_data.source_player_id);
+    let target_player_id = parseInt(message_data.target_player_id);
+
     if(message_data.status == "success")
     {
         type = message_data.type;
-
-        source_player_id = parseInt(message_data.source_player_id);
-        target_player_id = parseInt(message_data.target_player_id);
-       
+   
         if(type == "open")
         {
             if(app.is_subject)
@@ -1098,7 +1165,8 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                 if(target_player_id == app.session_player.id)
                 {
                     app.selected_avatar.avatar = app.session.world_state.avatars[source_player_id];
-                    app.selected_avatar.target_player_id = source_player_id;
+                    app.selected_avatar.source_player_id = source_player_id;
+                    app.selected_avatar.target_player_id = target_player_id;
                     app.selected_avatar.parameter_set_player = app.session.parameter_set.parameter_set_players[app.selected_avatar.avatar.parameter_set_player_id];
                     
                     app.selected_avatar.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
@@ -1120,18 +1188,6 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                 }
                 else if(source_player_id == app.session_player.id)
                 {
-                    app.hat_trade_status = "proposal";
-                    app.avatar_hat_modal_open = true;
-                    app.working = false;
-                }
-            }
-        }
-        else if(type == "cancel")
-        {
-            if(app.is_subject)
-            {
-                if(target_player_id == app.session_player.id)
-                {
                     app.avatar_hat_modal.hide();
                     app.working = false;
                 }
@@ -1141,7 +1197,7 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
         {
             if(app.is_subject)
             {
-                if(target_player_id == app.session_player.id || source_player_id == app.session_player.id)
+                if(target_player_id == app.session_player.id)
                 {
                     app.avatar_hat_modal.hide();
                     app.hat_trade_status = "open";
@@ -1149,7 +1205,6 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                 }
             }
 
-            app.session.world_state.avatars[source_player_id.toString()].parameter_set_hat_id = message_data.source_player.parameter_set_hat_id;
             app.session.world_state.avatars[target_player_id.toString()].parameter_set_hat_id = message_data.target_player.parameter_set_hat_id;
 
             let target_player = app.session.world_state_avatars.session_players[target_player_id];
@@ -1158,37 +1213,14 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
             target_player.cool_down = app.session.parameter_set.cool_down_length;
             source_player.cool_down = app.session.parameter_set.cool_down_length;
 
-            source_player.interaction = 0
-            target_player.interaction = 0
-
-            source_player.frozen = false
-            target_player.frozen = false
-
-            target_player.tractor_beam_target = null;
-                
             app.update_avatar_inventory();
 
-            let source_hat_texture = app.session.parameter_set.parameter_set_hats[message_data.source_player.parameter_set_hat_id].texture;
             let target_hat_texture = app.session.parameter_set.parameter_set_hats[message_data.target_player.parameter_set_hat_id].texture;
 
-            //target -> source
+            //transfer beam
             let elements = [];
             element = {source_change:"",
-                       target_change:"", 
-                       texture:app.pixi_textures[source_hat_texture]}
-
-            elements.push(element);
-            
-            app.add_transfer_beam(target_player.current_location, 
-                                  source_player.current_location,
-                                  elements,
-                                  show_source_emitter=false,
-                                  show_target_emitter=true);
-            
-            //source -> target
-            elements = [];
-            element = {source_change:"",
-                       target_change:"", 
+                       target_change:"Truce Accepted", 
                        texture:app.pixi_textures[target_hat_texture]}
 
             elements.push(element);
@@ -1199,7 +1231,14 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                                   show_source_emitter=false,
                                   show_target_emitter=true);
         }
-
+    }
+    else
+    {
+        if(app.is_subject && source_player_id == app.session_player.id)
+        {
+            app.avatar_hat_error = message_data.error_message[0];
+            // app.working = false;
+        }
     }
 },
 
@@ -1214,6 +1253,7 @@ send_hat_avatar_cancel: function send_hat_avatar_cancel()
     app.working = true;    
     app.send_message("hat_avatar_cancel", 
                         {"target_player_id" : app.selected_avatar.target_player_id,
+                         "source_player_id" : app.selected_avatar.source_player_id,
                          "type":app.hat_trade_status,},
                         "group"); 
 },
@@ -1232,33 +1272,44 @@ take_update_hat_avatar_cancel: function take_update_hat_avatar_cancel(message_da
 
         if(app.is_subject)
         {
-            if(target_player_id == app.session_player.id || source_player_id == app.session_player.id)
+            if(target_player_id == app.session_player.id)
             {
-                if(app.avatar_hat_modal_open)
-                {
-                    let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
 
-                    app.avatar_hat_modal.hide();
-                    app.hat_trade_status = "open";
+                let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
 
-                    app.add_text_emitters("Trade Rejected.", 
-                        local_player.current_location.x, 
-                        local_player.current_location.y,
-                        local_player.current_location.x,
-                        local_player.current_location.y-100,
-                        0xFFFFFF,
-                        28,
-                        null);
-                }
+                app.avatar_hat_modal.hide();
+                app.hat_trade_status = "open";
+
+                app.add_text_emitters("Trade Rejected.", 
+                                        local_player.current_location.x, 
+                                        local_player.current_location.y,
+                                        local_player.current_location.x,
+                                        local_player.current_location.y-100,
+                                        0xFFFFFF,
+                                        28,
+                                        null);
 
                 app.working = false;
+            }
+            else if(source_player_id == app.session_player.id)
+            {
+                let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
+
+                app.add_text_emitters("Trade Rejected.", 
+                                        local_player.current_location.x, 
+                                        local_player.current_location.y,
+                                        local_player.current_location.x,
+                                        local_player.current_location.y-100,
+                                        0xFFFFFF,
+                                        28,
+                                        null);
             }
         }
 
         let target_player = app.session.world_state_avatars.session_players[target_player_id];
         let source_player = app.session.world_state_avatars.session_players[source_player_id];
 
-        // source_player.cool_down = app.session.parameter_set.cool_down_length
+        source_player.cool_down = app.session.parameter_set.cool_down_length
 
         source_player.interaction = 0
         target_player.interaction = 0
@@ -1308,4 +1359,36 @@ do_avatar_sleep_emitters: function do_avatar_sleep_emitters()
                                     health_sprite);
         }
     }
+},
+
+/**
+ * truce hat eligible
+ */
+ check_truce_hat_eligible: function check_truce_hat_eligible(player_id)
+ {
+    //test code
+    //return {value:true, message:""};
+
+    if(!player_id) return {value:false, message:"Invalid Player."};
+
+    //hats are disabled
+    if(app.session.parameter_set.enable_hats !='True') return {value:false, message:"No interactions during break."};
+
+    let target_player_group = app.get_parameter_set_group_from_player_id(player_id);
+    let local_player_group = app.get_parameter_set_group_from_player_id(app.session_player.id);
+
+    //same group
+    if(target_player_group.id == local_player_group.id) return {value:false, message: "No truces with your own group."};
+
+    //in home region
+    let local_player_region = app.get_ground_element_player_is_over(app.session_player.id);
+
+    if(!local_player_region) return {value:false, message: "You can only propose a truce when you are in your home region."};
+
+    if(local_player_region.parameter_set_group != local_player_group.id) return {value:false, message:"You can only propose a truce when you are in your home region."};
+    
+    //You already have a hat
+    if(app.session.world_state.avatars[player_id].parameter_set_hat_id) return {value:false, message:"You are already in a truce."};
+
+    return {value:true, message:""};
 },

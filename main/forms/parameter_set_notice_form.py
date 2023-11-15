@@ -5,6 +5,7 @@ parameterset notice edit form
 from django import forms
 
 from main.models import ParameterSetNotice
+from main.models import HelpDocsSubject
 
 class ParameterSetNoticeForm(forms.ModelForm):
     '''
@@ -38,8 +39,13 @@ class ParameterSetNoticeForm(forms.ModelForm):
                                     widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_notice.end_time",
                                                                     "step":"1",
                                                                     "min":"0"}))
+    
+    help_doc = forms.ModelChoiceField(label='Optional Help Doc Pop-Up',
+                                             required=False,
+                                             queryset=HelpDocsSubject.objects.none(),
+                                             widget=forms.Select(attrs={"v-model":"current_parameter_set_notice.help_doc",}))
 
     class Meta:
         model=ParameterSetNotice
-        fields =[ 'text', 'start_period', 'start_time', 'end_period', 'end_time']
+        fields =[ 'text', 'start_period', 'start_time', 'end_period', 'end_time', 'help_doc']
     

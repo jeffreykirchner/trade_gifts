@@ -139,6 +139,7 @@ var app = Vue.createApp({
                     house_error : null,
                     avatar_error : null,
                     attack_error : null,
+                    avatar_hat_error : null,
                 }},
     methods: {
 
@@ -501,9 +502,16 @@ var app = Vue.createApp({
                 //add break notice
                 if(app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
                 {
-                    app.add_notice("Break Time: Interactions are disabled. Chat is enabled.", 
-                                    app.session.world_state.current_period,
-                                    app.session.parameter_set.period_length);
+                    let notice_text = "Break Time: Interactions are disabled. Chat is enabled.";
+
+                    if(app.session.parameter_set.enable_hats == "True")
+                    {
+                        notice_text += " Truces are enabled.";
+                    }
+
+                    app.add_notice(notice_text,
+                                   app.session.world_state.current_period,
+                                   app.session.parameter_set.period_length);
                 }
             }
 
@@ -571,7 +579,19 @@ var app = Vue.createApp({
                 {
                     app.add_notice(notice.text, notice.end_period, notice.end_time);
                     app.notices_seen.push(notice.id);
+
+                    //notice help pop up
+                    if(notice.help_doc)
+                    {
+                        app.send_load_help_doc_subject(notice.help_doc_title);
+                    }
                 }
+            }
+
+            //close hat modal if not on break
+            if(app.session.world_state.time_remaining <= app.session.parameter_set.period_length)
+            {
+                app.avatar_hat_modal.hide();
             }
 
             //update any notices on screen

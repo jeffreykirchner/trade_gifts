@@ -43,7 +43,10 @@
                                 </th>
                                 <th scope="col" class = "m-1 p-1">
                                     Scale
-                                </th>             
+                                </th> 
+                                <th scope="col" class = "m-1 p-1">
+                                    Group
+                                </th>            
                             </tr>
                         </thead>
                         <tbody id="ground_list">
@@ -83,6 +86,13 @@
                                     class="player_table_cell">
                                     [[temp_p.scale]]
                                 </td>
+                                <td v-on:click="show_edit_parameter_set_ground(p)" 
+                                class="player_table_cell">
+                                <span v-if="temp_p.parameter_set_group && 
+                                            temp_p.parameter_set_group in parameter_set.parameter_set_groups">
+                                    [[parameter_set.parameter_set_groups[temp_p.parameter_set_group].name]]
+                                </span>
+                            </td>
                             </tr>
                         </tbody>
                         

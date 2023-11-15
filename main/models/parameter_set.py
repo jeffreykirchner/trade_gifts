@@ -190,16 +190,6 @@ class ParameterSet(models.Model):
             if self.chat_rules_letters["letters"] == None:
                 self.setup_letter_map()
 
-            #parameter set groups
-            self.parameter_set_groups.all().delete()
-            new_parameter_set_groups = new_ps.get("parameter_set_groups")
-            new_parameter_set_groups_map = {}
-
-            for i in new_parameter_set_groups:
-                p = main.models.ParameterSetGroup.objects.create(parameter_set=self)
-                p.from_dict(new_parameter_set_groups[i])
-                new_parameter_set_groups_map[i] = p.id
-
             #parameter set hats
             self.parameter_set_hats.all().delete()
             new_parameter_set_hats = new_ps.get("parameter_set_hats")
@@ -207,8 +197,25 @@ class ParameterSet(models.Model):
 
             for i in new_parameter_set_hats:
                 p = main.models.ParameterSetHat.objects.create(parameter_set=self)
-                p.from_dict(new_parameter_set_hats[i])
+                v = new_parameter_set_hats[i]
+                p.from_dict(v)
+
                 new_parameter_set_hats_map[i] = p.id
+
+            #parameter set groups
+            self.parameter_set_groups.all().delete()
+            new_parameter_set_groups = new_ps.get("parameter_set_groups")
+            new_parameter_set_groups_map = {}
+
+            for i in new_parameter_set_groups:
+                p = main.models.ParameterSetGroup.objects.create(parameter_set=self)
+                v = new_parameter_set_groups[i]
+                p.from_dict(v)
+
+                new_parameter_set_groups_map[i] = p.id
+
+                if v.get("parameter_set_hat", None) != None:
+                    p.parameter_set_hat_id=new_parameter_set_hats_map[str(v["parameter_set_hat"])]
 
             #parameter set players
             self.parameter_set_players.all().delete()
@@ -282,7 +289,13 @@ class ParameterSet(models.Model):
 
             for i in new_parameter_set_grounds:
                 p = main.models.ParameterSetGround.objects.create(parameter_set=self)
-                p.from_dict(new_parameter_set_grounds[i])
+                v = new_parameter_set_grounds[i]
+                p.from_dict(v)
+
+                if v.get("parameter_set_group", None) != None:
+                    p.parameter_set_group_id=new_parameter_set_groups_map[str(v["parameter_set_group"])]
+                    
+                p.save()
 
             #parameter set field types
             self.parameter_set_field_types.all().delete()

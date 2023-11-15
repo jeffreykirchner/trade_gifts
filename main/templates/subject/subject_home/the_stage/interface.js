@@ -119,22 +119,7 @@ take_target_location_update: function take_target_location_update(message_data)
                             null);
             return;
         }
-
-        //check rest period
-        if(app.session.world_state.time_remaining > app.session.parameter_set.period_length &&
-           app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
-        {
-            app.add_text_emitters("No iteractions while on break.", 
-                                local_pos.x, 
-                                local_pos.y,
-                                local_pos.x,
-                                local_pos.y-100,
-                                0xFFFFFF,
-                                28,
-                                null);
-            return;
-        }
-         
+  
         //check if click on another player
         for(i in app.session.world_state_avatars.session_players)
         {
@@ -154,7 +139,7 @@ take_target_location_update: function take_target_location_update(message_data)
                     {
                         if(!session_player.sleeping)
                         {
-                            app.subject_avatar_click(i);
+                            app.subject_avatar_click(i, local_pos);
                         }
                         else
                         {
@@ -174,6 +159,21 @@ take_target_location_update: function take_target_location_update(message_data)
             }
             
         }
+
+         //check rest period
+         if(app.session.world_state.time_remaining > app.session.parameter_set.period_length &&
+            app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
+         {
+             app.add_text_emitters("No iteractions while on break.", 
+                                 local_pos.x, 
+                                 local_pos.y,
+                                 local_pos.x,
+                                 local_pos.y-100,
+                                 0xFFFFFF,
+                                 28,
+                                 null);
+             return;
+         }
 
         //check if click on a field
         for(i in app.session.world_state.fields)

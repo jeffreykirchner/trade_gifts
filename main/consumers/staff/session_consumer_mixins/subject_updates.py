@@ -1325,7 +1325,8 @@ class SubjectUpdatesMixin():
         error_mesage = ""
 
         try:
-            player_id = self.session_players_local[event["player_key"]]["id"]        
+            player_id = self.session_players_local[event["player_key"]]["id"]      
+            source_player_id = event["message_text"]["source_player_id"]  
             target_player_id = event["message_text"]["target_player_id"]
             type = event["message_text"]["type"]
         except:
@@ -1340,35 +1341,24 @@ class SubjectUpdatesMixin():
             result["type"] = type
   
             if type == "proposal_received":
-                result["source_player_id"] = target_player_id
-                result["target_player_id"] = player_id
+                result["source_player_id"] = source_player_id
+                result["target_player_id"] = target_player_id
 
-                source_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
-                target_player = self.world_state_avatars_local['session_players'][str(player_id)]
+                source_player = self.world_state_avatars_local['session_players'][str(source_player_id)]
+                target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
 
-                source_avatar = self.world_state_local['avatars'][str(target_player_id)]
-                target_avatar = self.world_state_local['avatars'][str(player_id)]
+                target_avatar = self.world_state_local['avatars'][str(target_player_id)]
 
-                result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
-                result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
+                #source player group
+                source_player_group_id = self.parameter_set_local["parameter_set_players"][str(source_player["parameter_set_player_id"])]["parameter_set_group"]
+                source_group = self.parameter_set_local["parameter_set_groups"][str(source_player_group_id)]
 
-                # v = await sync_to_async(sync_hat_avatar)(self.session_id, player_id, target_player_id)
-
-                #swap values
-                source_avatar["parameter_set_hat_id"], target_avatar["parameter_set_hat_id"] = target_avatar["parameter_set_hat_id"], source_avatar["parameter_set_hat_id"]
+                #target avatar receives truce hat
+                target_avatar["parameter_set_hat_id"] =  source_group["parameter_set_hat"]
 
                 source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
                 target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
-                    
-                source_player['interaction'] = 0
-                target_player['interaction'] = 0
 
-                source_player['frozen'] = False
-                target_player['frozen'] = False
-
-                target_player['tractor_beam_target'] = None
-
-                result["source_player"] = self.world_state_local["avatars"][str(target_player_id)] 
                 result["target_player"] = self.world_state_local["avatars"][str(player_id)]
 
                 await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
@@ -1377,22 +1367,38 @@ class SubjectUpdatesMixin():
                 result["error_message"] = []
 
             else:
-                result["source_player_id"] = player_id
+                status = "success"
+                error_mesage = []
+
+                result["source_player_id"] = source_player_id
                 result["target_player_id"] = target_player_id
             
-                source_player = self.world_state_avatars_local['session_players'][str(player_id)]
+                source_player = self.world_state_avatars_local['session_players'][str(source_player_id)]
                 target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
 
-                source_avatar = self.world_state_local['avatars'][str(player_id)]
-                target_avatar = self.world_state_local['avatars'][str(target_player_id)]
+                source_player_group_id = self.parameter_set_local["parameter_set_players"][str(source_player["parameter_set_player_id"])]["parameter_set_group"]
+                target_player_group_id = self.parameter_set_local["parameter_set_players"][str(target_player["parameter_set_player_id"])]["parameter_set_group"]
 
-                result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
-                result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
+                source_group = self.parameter_set_local["parameter_set_groups"][str(source_player_group_id)]
+                target_group = self.parameter_set_local["parameter_set_groups"][str(target_player_group_id)]
+
+                if source_group["parameter_set_hat"] == target_group["parameter_set_hat"]:
+                    status = "fail"
+                    error_mesage.append("You cannot have a truce with your own group.")
+
+                # source_avatar = self.world_state_local['avatars'][str(player_id)]
+                # target_avatar = self.world_state_local['avatars'][str(target_player_id)]
+
+                # result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
+                # result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
                 
-                v = await self.tractor_beam(event)
+                #v = await self.tractor_beam(event)
 
-                result["status"] = v["status"]
-                result["error_message"] = v["error_message"]
+                # result["status"] = v["status"]
+                # result["error_message"] = v["error_message"]
+
+                result["status"] = status
+                result["error_message"] = error_mesage
 
             await SessionEvent.objects.acreate(session_id=self.session_id, 
                                                session_player_id=player_id,
@@ -1429,7 +1435,8 @@ class SubjectUpdatesMixin():
         error_mesage = ""
 
         try:
-            player_id = self.session_players_local[event["player_key"]]["id"]        
+            player_id = self.session_players_local[event["player_key"]]["id"]     
+            source_player_id = event["message_text"]["source_player_id"]   
             target_player_id = event["message_text"]["target_player_id"]
             type = event["message_text"]["type"]
         except:
@@ -1437,20 +1444,20 @@ class SubjectUpdatesMixin():
             status = "fail"
             error_mesage = "Invalid trade."
 
-        if type == "proposal":
-            source_player = self.world_state_avatars_local['session_players'][str(player_id)]
-            target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
+        # if type == "proposal":
+        source_player = self.world_state_avatars_local['session_players'][str(source_player_id)]
+        target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
 
-            source_avatar = self.world_state_local['avatars'][str(player_id)]
-            target_avatar = self.world_state_local['avatars'][str(target_player_id)]
+        # source_avatar = self.world_state_local['avatars'][str(source_player_id)]
+        # target_avatar = self.world_state_local['avatars'][str(target_player_id)]
 
-            # self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
-        else:
-            source_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
-            target_player = self.world_state_avatars_local['session_players'][str(player_id)]
+        #     # self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+        # else:
+        #     source_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
+        #     target_player = self.world_state_avatars_local['session_players'][str(player_id)]
 
-            source_avatar = self.world_state_local['avatars'][str(target_player_id)]
-            target_avatar = self.world_state_local['avatars'][str(player_id)]
+        #     source_avatar = self.world_state_local['avatars'][str(target_player_id)]
+        #     target_avatar = self.world_state_local['avatars'][str(player_id)]
 
             # self.world_state_avatars_local["session_players"][str(target_player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
 
@@ -1465,11 +1472,12 @@ class SubjectUpdatesMixin():
         source_player['tractor_beam_target'] = None
 
         result = {"status" : status, "error_message" : error_mesage}
-        result["source_player_id"] = player_id
+
+        result["source_player_id"] = source_player_id
         result["target_player_id"] = target_player_id
 
-        result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
-        result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
+        # result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
+        # result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
 
         result["type"] = type
        

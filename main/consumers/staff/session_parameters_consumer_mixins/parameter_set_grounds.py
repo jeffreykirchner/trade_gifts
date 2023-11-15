@@ -65,6 +65,7 @@ def take_update_parameter_set_ground(data):
     form_data = data["form_data"]
 
     try:        
+        session = Session.objects.get(id=session_id)
         parameter_set_ground = ParameterSetGround.objects.get(id=parameterset_ground_id)
     except ObjectDoesNotExist:
         logger.warning(f"take_update_parameter_set_ground, not found ID: {parameterset_ground_id}")
@@ -75,6 +76,7 @@ def take_update_parameter_set_ground(data):
     logger.info(f'form_data_dict : {form_data_dict}')
 
     form = ParameterSetGroundForm(form_data_dict, instance=parameter_set_ground)
+    form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
 
     if form.is_valid():         
         form.save()              
