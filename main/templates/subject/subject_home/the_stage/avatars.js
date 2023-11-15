@@ -1042,34 +1042,35 @@ take_update_attack_avatar: function take_update_attack_avatar(message_data)
                 app.avatar_attack_modal.hide();
                 app.working = false;
             }
-
-            //transfer beam
-            let elements = [];
-
-            let fist_texture = app.pixi_textures["fist_left_tex"];
-
-            if(app.session.world_state_avatars.session_players[source_player_id].current_location.x < 
-               app.session.world_state_avatars.session_players[target_player_id].current_location.x)
-            {
-                fist_texture = app.pixi_textures["fist_right_tex"];
-            }
-  
-            let element = {source_change:"",
-                           target_change:"", 
-                           texture: fist_texture}
-
-            elements.push(element);
-
-            element = {source_change:"-" + app.session.parameter_set.attack_cost,
-                           target_change:"-" + app.session.parameter_set.attack_damage, 
-                           texture:app.pixi_textures["health_tex"]  }
-
-            elements.push(element);
-            
-            app.add_transfer_beam(app.session.world_state_avatars.session_players[source_player_id].current_location, 
-                                  app.session.world_state_avatars.session_players[target_player_id].current_location,
-            elements);
         }
+
+        //transfer beam
+        let elements = [];
+
+        let fist_texture = app.pixi_textures["fist_left_tex"];
+
+        if(app.session.world_state_avatars.session_players[source_player_id].current_location.x < 
+            app.session.world_state_avatars.session_players[target_player_id].current_location.x)
+        {
+            fist_texture = app.pixi_textures["fist_right_tex"];
+        }
+
+        let element = {source_change:"",
+                        target_change:"", 
+                        texture: fist_texture}
+
+        elements.push(element);
+
+        element = {source_change:"-" + app.session.parameter_set.attack_cost,
+                        target_change:"-" + app.session.parameter_set.attack_damage, 
+                        texture:app.pixi_textures["health_tex"]  }
+
+        elements.push(element);
+        
+        app.add_transfer_beam(app.session.world_state_avatars.session_players[source_player_id].current_location, 
+                                app.session.world_state_avatars.session_players[target_player_id].current_location,
+        elements);
+       
 
     }
     else
