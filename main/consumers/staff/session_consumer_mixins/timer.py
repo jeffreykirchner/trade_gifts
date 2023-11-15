@@ -321,9 +321,10 @@ def sync_continue_timer(event, session_id, world_state, parameter_set):
                 sd_player["start_health"] = avatar["health"]
             
             #reset hats
-            for i in world_state["avatars"]:
-                avatar = world_state["avatars"][i]
-                avatar["parameter_set_hat_id"] = None
+            if current_period % parameter_set["break_frequency"] == 0:
+                for i in world_state["avatars"]:
+                    avatar = world_state["avatars"][i]
+                    avatar["parameter_set_hat_id"] = None
                 
             current_session_period.save()
             # session.save()

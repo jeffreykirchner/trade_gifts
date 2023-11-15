@@ -34,6 +34,9 @@
                                 </th>  
                                 <th scope="col" class = "m-1 p-1">
                                     End Time
+                                </th> 
+                                <th scope="col" class = "m-1 p-1">
+                                    Help Pop-Up
                                 </th>              
                             </tr>
                         </thead>
@@ -61,6 +64,10 @@
                                 <td v-on:click="show_edit_parameter_set_notice(p)" 
                                     class="player_table_cell">
                                     [[temp_p.end_time]]
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_notice(p)" 
+                                    class="player_table_cell">
+                                    [[temp_p.help_doc_title]]
                                 </td>
                             </tr>
                         </tbody>

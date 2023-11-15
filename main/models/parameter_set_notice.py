@@ -6,6 +6,7 @@ from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
 
 from main.models import ParameterSet
+from main.models import HelpDocsSubject
 
 import main
 
@@ -15,6 +16,7 @@ class ParameterSetNotice(models.Model):
     '''
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_notices")
+    help_doc = models.ForeignKey(HelpDocsSubject, on_delete=models.CASCADE, related_name="parameter_set_notices", blank=True, null=True)
 
     text = models.CharField(verbose_name='Info', blank=True, null=True, max_length=200, default="Info Here")
 
@@ -33,7 +35,7 @@ class ParameterSetNotice(models.Model):
     class Meta:
         verbose_name = 'Parameter Set Notice'
         verbose_name_plural = 'Parameter Set Notices'
-        ordering = ['id']
+        ordering = ['start_period', '-start_time']
 
     def from_dict(self, new_ps):
         '''
@@ -78,6 +80,8 @@ class ParameterSetNotice(models.Model):
         return{
 
             "id" : self.id,
+            "help_doc" : self.help_doc.id if self.help_doc else None,
+            "help_doc_title" : self.help_doc.title if self.help_doc else None,
             "text" : self.text,
             "start_period" : self.start_period,
             "start_time" : self.start_time,
