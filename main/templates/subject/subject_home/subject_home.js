@@ -139,6 +139,7 @@ var app = Vue.createApp({
                     house_error : null,
                     avatar_error : null,
                     attack_error : null,
+                    avatar_hat_error : null,
                 }},
     methods: {
 

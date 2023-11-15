@@ -20,8 +20,6 @@ class ParameterSetGroupForm(forms.ModelForm):
                                                queryset=ParameterSetHat.objects.none(),
                                                widget=forms.Select(attrs={"v-model":"current_parameter_set_group.parameter_set_hat",}))
 
-
-
     class Meta:
         model=ParameterSetGroup
         fields =['name', 'parameter_set_hat']
