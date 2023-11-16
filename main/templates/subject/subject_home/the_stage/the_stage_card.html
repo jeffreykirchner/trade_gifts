@@ -82,13 +82,13 @@
         </div>
 
         <div class="row justify-content-center mt-2" v-show="session.started" v-if="pixi_mode=='subject'">
-            <div class="col-md-2 text-end">
+            <div class="col-md-4 text-end">
                 <button type="button" class="btn btn-link" title="Show Help" v-on:click="send_load_help_doc_subject('Chat')">
                     <i class="far fa-question-circle"></i> 
                 </button>
             </div>
 
-            <div class="col-md-8">                 
+            <div class="col-md-4">                 
                 <span class="input-group">
                     <input type="text" 
                            class="form-control" 
@@ -111,7 +111,7 @@
                 </span>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-4">
                 <button class="btn btn-outline-primary me-1"
                         type="button" 
                         id="send_chat_happy"
