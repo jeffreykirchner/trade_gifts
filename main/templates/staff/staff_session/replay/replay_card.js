@@ -115,7 +115,7 @@ reset_replay: function reset_replay()
 /**
  * process replay events
  */
-process_replay_events: function process_replay_events()
+process_replay_events: function process_replay_events(update_current_location = false)
 {
     let current_period = app.replay_current_period;
     let time_remaining = app.replay_time_remaining;
@@ -129,6 +129,11 @@ process_replay_events: function process_replay_events()
             for(i in event.data.target_locations)
             {
                 app.session.world_state_avatars.session_players[i].target_location = JSON.parse(JSON.stringify(event.data.target_locations[i]));
+
+                if(update_current_location)
+                {
+                    app.session.world_state_avatars.session_players[i].current_location = JSON.parse(JSON.stringify(event.data.current_locations[i]));
+                }
             }
         }
         else
@@ -141,6 +146,20 @@ process_replay_events: function process_replay_events()
     app.session.world_state["current_experiment_phase"] = "Done";
     app.session.world_state["time_remaining"] = app.replay_time_remaining;
     app.session.world_state["current_period"] = app.replay_current_period;
+},
+
+move_avatars_to_current_location: function move_avatars_to_current_location()
+{
+    let current_period = app.replay_current_period;
+    let time_remaining = app.replay_time_remaining;
+
+    let event = app.session_events[current_period][time_remaining].target_locations;
+
+    for(i in event.data.current_locations)
+    {
+        app.session.world_state_avatars.session_players[i].current_location = JSON.parse(JSON.stringify(event.data.current_locations[i]));
+    }
+    
 },
 
 /**
@@ -170,5 +189,5 @@ advance_period: function advance_period(direction)
         app.replay_time_remaining += app.session.parameter_set.break_length;
     }
 
-    app.process_replay_events();
+    app.process_replay_events(true);
 },
