@@ -1325,6 +1325,7 @@ class SubjectUpdatesMixin():
         error_mesage = ""
 
         try:
+            session = await Session.objects.aget(id=self.session_id)
             player_id = self.session_players_local[event["player_key"]]["id"]      
             source_player_id = event["message_text"]["source_player_id"]  
             target_player_id = event["message_text"]["target_player_id"]
@@ -1341,13 +1342,17 @@ class SubjectUpdatesMixin():
             result["type"] = type
   
             if type == "proposal_received":
+
+                source_player_id_s = str(source_player_id)
+                target_player_id_s = str(target_player_id)
+
                 result["source_player_id"] = source_player_id
                 result["target_player_id"] = target_player_id
 
-                source_player = self.world_state_avatars_local['session_players'][str(source_player_id)]
-                target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
+                source_player = self.world_state_avatars_local['session_players'][source_player_id_s]
+                target_player = self.world_state_avatars_local['session_players'][target_player_id_s]
 
-                target_avatar = self.world_state_local['avatars'][str(target_player_id)]
+                target_avatar = self.world_state_local['avatars'][target_player_id_s]
 
                 #source player group
                 source_player_group_id = self.parameter_set_local["parameter_set_players"][str(source_player["parameter_set_player_id"])]["parameter_set_group"]
@@ -1362,6 +1367,17 @@ class SubjectUpdatesMixin():
                 result["target_player"] = self.world_state_local["avatars"][str(player_id)]
 
                 await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+
+                #store data
+                current_period = await session.aget_current_session_period()
+                
+                summary_data_source = current_period.summary_data[source_player_id_s]
+                summary_data_target = current_period.summary_data[target_player_id_s]
+
+                summary_data_source["hat_accept_to_" + target_player_id_s] += 1
+                summary_data_target["hat_accept_from_" + source_player_id_s] += 1
+
+                await current_period.asave()
 
                 result["status"] ="success"
                 result["error_message"] = []
@@ -1435,6 +1451,7 @@ class SubjectUpdatesMixin():
         error_mesage = ""
 
         try:
+            session = await Session.objects.aget(id=self.session_id)
             player_id = self.session_players_local[event["player_key"]]["id"]     
             source_player_id = event["message_text"]["source_player_id"]   
             target_player_id = event["message_text"]["target_player_id"]
@@ -1446,30 +1463,22 @@ class SubjectUpdatesMixin():
 
         # if type == "proposal":
         source_player = self.world_state_avatars_local['session_players'][str(source_player_id)]
-        target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
 
-        # source_avatar = self.world_state_local['avatars'][str(source_player_id)]
-        # target_avatar = self.world_state_local['avatars'][str(target_player_id)]
-
-        #     # self.world_state_avatars_local["session_players"][str(player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
-        # else:
-        #     source_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
-        #     target_player = self.world_state_avatars_local['session_players'][str(player_id)]
-
-        #     source_avatar = self.world_state_local['avatars'][str(target_player_id)]
-        #     target_avatar = self.world_state_local['avatars'][str(player_id)]
-
-            # self.world_state_avatars_local["session_players"][str(target_player_id)]["cool_down"] = self.parameter_set_local["cool_down_length"]
+        source_player_id_s = str(source_player_id)
+        target_player_id_s = str(target_player_id)
 
         source_player['cool_down'] = self.parameter_set_local["cool_down_length"]
 
-        source_player['interaction'] = 0
-        target_player['interaction'] = 0
+        #store data
+        current_period = await session.aget_current_session_period()
+        
+        summary_data_source = current_period.summary_data[source_player_id_s]
+        summary_data_target = current_period.summary_data[target_player_id_s]
 
-        source_player['frozen'] = False
-        target_player['frozen'] = False
+        summary_data_source["hat_reject_to_" + target_player_id_s] += 1
+        summary_data_target["hat_reject_from_" + source_player_id_s] += 1
 
-        source_player['tractor_beam_target'] = None
+        await current_period.asave()
 
         result = {"status" : status, "error_message" : error_mesage}
 
