@@ -429,10 +429,11 @@ class Session(models.Model):
                 for k in main.globals.Goods.choices:
                     temp_header.append("Send " + k[0] + " to House " + str(player_number+1))
 
-                temp_header.append("Hat To " + str(player_number+1) + ' Accept')
-                temp_header.append("Hat To " + str(player_number+1) + ' Reject')
-                temp_header.append("Hat From " + str(player_number+1) + ' Accept')
-                temp_header.append("Hat From " + str(player_number+1) + ' Reject')
+                if parameter_set["enable_hats"]=="True":
+                    temp_header.append("Hat To " + str(player_number+1) + ' Accept')
+                    temp_header.append("Hat To " + str(player_number+1) + ' Reject')
+                    temp_header.append("Hat From " + str(player_number+1) + ' Accept')
+                    temp_header.append("Hat From " + str(player_number+1) + ' Reject')
                 
             #patch harvests
             for patch_number, patch in enumerate(world_state["patches"]):
@@ -486,11 +487,12 @@ class Session(models.Model):
                         for l in main.globals.Goods.choices:
                             temp_row.append(temp_p["send_avatar_to_house_" + parameter_set_player_id + "_good_" + l[0]])
 
-                        temp_row.append(temp_p["hat_accept_to_" + k])
-                        temp_row.append(temp_p["hat_reject_to_" + k])
+                        if parameter_set["enable_hats"]=="True":
+                            temp_row.append(temp_p.get("hat_accept_to_" + k,""))
+                            temp_row.append(temp_p.get("hat_reject_to_" + k,""))
 
-                        temp_row.append(temp_p["hat_accept_from_" + k])
-                        temp_row.append(temp_p["hat_reject_from_" + k])
+                            temp_row.append(temp_p.get("hat_accept_from_" + k,""))
+                            temp_row.append(temp_p.get("hat_reject_from_" + k,""))
                                             
                     #patch harvests
                     for patch_number, patch in enumerate(world_state["patches"]):
