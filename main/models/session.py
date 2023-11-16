@@ -182,6 +182,12 @@ class Session(models.Model):
                 v["attacks_from_" + k_s] = 0
                 v["attacks_cost_at_" + k_s] = 0
                 v["attacks_damage_from_" + k_s] = 0
+ 
+                v["hat_accept_to_" + k_s] = 0
+                v["hat_reject_to_" + k_s] = 0
+
+                v["hat_accept_from_" + k_s] = 0
+                v["hat_reject_from_" + k_s] = 0
 
                 for l in main.globals.Goods.choices:
                     v["send_avatar_to_avatar_" + k_s + "_good_" + l[0]] = 0
@@ -422,8 +428,12 @@ class Session(models.Model):
                 
                 for k in main.globals.Goods.choices:
                     temp_header.append("Send " + k[0] + " to House " + str(player_number+1))
-                
 
+                temp_header.append("Hat To " + str(player_number+1) + ' Accept')
+                temp_header.append("Hat To " + str(player_number+1) + ' Reject')
+                temp_header.append("Hat From " + str(player_number+1) + ' Accept')
+                temp_header.append("Hat From " + str(player_number+1) + ' Reject')
+                
             #patch harvests
             for patch_number, patch in enumerate(world_state["patches"]):
                 temp_header.append("Patch Harvests Count " + str(patch_number+1))
@@ -475,8 +485,13 @@ class Session(models.Model):
                         
                         for l in main.globals.Goods.choices:
                             temp_row.append(temp_p["send_avatar_to_house_" + parameter_set_player_id + "_good_" + l[0]])
-                                            
 
+                        temp_row.append(temp_p["hat_accept_to_" + k])
+                        temp_row.append(temp_p["hat_reject_to_" + k])
+
+                        temp_row.append(temp_p["hat_accept_from_" + k])
+                        temp_row.append(temp_p["hat_reject_from_" + k])
+                                            
                     #patch harvests
                     for patch_number, patch in enumerate(world_state["patches"]):
                         temp_row.append(temp_p["patch_harvests_count_" + patch])
