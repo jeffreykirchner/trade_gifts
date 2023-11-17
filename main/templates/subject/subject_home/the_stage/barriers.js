@@ -24,7 +24,7 @@ setup_pixi_barrier()
         outline.beginTextureFill({texture: app.pixi_textures['barrier_tex'], matrix:matrix});  //, 
         outline.drawRect(0, 0, barrier.width, barrier.height);
        
-        let label = new PIXI.Text(barrier.text, {
+        let label = new PIXI.Text(barrier.text.replace('\\n', '\n'), {
             fontFamily: 'Arial',
             fontSize: 40,
             fill: 'white',
