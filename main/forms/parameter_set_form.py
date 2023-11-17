@@ -143,7 +143,7 @@ class ParameterSetForm(forms.ModelForm):
                                              widget=forms.Textarea(attrs={"v-model":"parameter_set.consumption_multiplier",
                                                                           "rows":"5",}))
     
-    cents_per_second = forms.DecimalField(label='Cents Per Second',
+    cents_per_second = forms.DecimalField(label='Earnings Per Second($)',
                                           max_digits=7,
                                           decimal_places=5,
                                           min_value=0.01,
