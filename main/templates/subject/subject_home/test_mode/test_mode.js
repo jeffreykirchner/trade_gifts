@@ -330,10 +330,6 @@ do_test_mode_avatar: function do_test_mode_avatar()
     {
         app.show_attack_avatar();
     }
-    else if(v==2 && app.session.parameter_set.enable_hats=='True')
-    {
-        app.show_hat_avatar();
-    }
     else 
     {
         app.selected_avatar.good_one_move = app.random_number(0, app.selected_avatar.good_one_available);
