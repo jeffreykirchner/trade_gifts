@@ -50,6 +50,8 @@ class ParameterSetNotice(models.Model):
         self.end_period = new_ps.get("end_period", 1)
         self.end_time = new_ps.get("end_time", 0)
 
+        self.help_doc_id = new_ps.get("help_doc", None)
+
         self.save()
         
         message = "Parameters loaded successfully."
