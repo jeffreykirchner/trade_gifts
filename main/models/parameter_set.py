@@ -217,6 +217,8 @@ class ParameterSet(models.Model):
                 if v.get("parameter_set_hat", None) != None:
                     p.parameter_set_hat_id=new_parameter_set_hats_map[str(v["parameter_set_hat"])]
 
+                p.save()
+
             #parameter set players
             self.parameter_set_players.all().delete()
 
