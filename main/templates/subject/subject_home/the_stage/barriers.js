@@ -18,13 +18,25 @@ setup_pixi_barrier()
         //outline
         let outline = new PIXI.Graphics();
         //outline.lineStyle(1, 0x000000);
-        scale = 100 / app.pixi_textures.barrier_tex.width;
         let matrix = new PIXI.Matrix(1,0,0,1,0,0);
+        
+        let scale_y = 1;
+        if(rotation == 0)
+        {
+            scale_y = barrier.height / app.pixi_textures.barrier_tex.height;
+        }
+        else
+        {
+            scale_y = barrier.width / app.pixi_textures.barrier_tex.height;
+        }
+        matrix.scale(1,scale_y);
+
         matrix.rotate(rotation);
+        
         outline.beginTextureFill({texture: app.pixi_textures['barrier_tex'], matrix:matrix});  //, 
         outline.drawRect(0, 0, barrier.width, barrier.height);
        
-        let label = new PIXI.Text(barrier.text, {
+        let label = new PIXI.Text(barrier.text.replace('\\n', '\n'), {
             fontFamily: 'Arial',
             fontSize: 40,
             fill: 'white',
