@@ -11,7 +11,7 @@ from main.models import SessionEvent
 
 import main
 
-class GetHelpDocSubject():
+class GetHelpDocSubjectMixin():
     '''
     Get help doc subject mixin for subject home consumer
     '''
