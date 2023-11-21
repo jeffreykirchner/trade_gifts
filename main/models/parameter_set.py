@@ -269,6 +269,11 @@ class ParameterSet(models.Model):
 
                 p.parameter_set_groups.set(groups)
 
+                players = []
+                for g in new_parameter_set_barriers[i]["parameter_set_players"]:
+                    players.append(new_parameter_set_players_map[str(g)])
+                p.parameter_set_players.set(players)
+
             #parameter set walls
             self.parameter_set_walls.all().delete()
             new_parameter_set_walls = new_ps.get("parameter_set_walls")
@@ -283,7 +288,8 @@ class ParameterSet(models.Model):
 
             for i in new_parameter_set_notices:
                 p = main.models.ParameterSetNotice.objects.create(parameter_set=self)
-                p.from_dict(new_parameter_set_notices[i])
+                v = new_parameter_set_notices[i]
+                p.from_dict(v)
 
             #parameter set grounds
             self.parameter_set_grounds.all().delete()
