@@ -27,10 +27,10 @@
                 <div class="row align-items-center text-center fw-bold mb-2" v-if="selected_avatar.avatar">
                     <div class="col text-center"> 
                         <span v-if="hat_trade_status=='open'">
-                            Send a Truce Hat to [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
+                            Offer Hat to [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
                         </span>
                         <span v-else>
-                            Accept Truce Hat from [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
+                            Accept Hat from [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]]?
                         </span>
                     </div>
                 </div>
@@ -66,11 +66,11 @@
                                                     selected_avatar.avatar.parameter_set_hat_id">
 
                             <span v-if="hat_trade_status=='open' || hat_trade_status=='proposal'">
-                                Propose Truce <i class="fab fa-redhat"></i>
+                                Offer Hat <i class="fab fa-redhat"></i>
                             </span>
 
                             <span v-if="hat_trade_status=='proposal_received'">
-                                Accept Truce <i class="fab fa-redhat"></i>
+                                Accept Hat <i class="fab fa-redhat"></i>
                             </span>
                         
                         </button>
@@ -86,7 +86,7 @@
                                 They are cooling down ... [[session.world_state_avatars.session_players[selected_avatar.target_player_id].cool_down]]
                             </div> 
                             <div v-if = "selected_avatar.avatar.parameter_set_hat_id">
-                                The truce has been accepted.
+                                The hat was accepted.
                             </div>                           
                         </div>
                     </div>

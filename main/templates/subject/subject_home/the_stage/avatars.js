@@ -647,19 +647,6 @@ subject_avatar_click: function subject_avatar_click(target_player_id, local_pos)
             return;
         }
 
-        // <button type="button"
-        //         class="btn btn-outline-success me-2"
-        //         v-on:click = "show_hat_avatar()"
-        //         title="Propose hat trade?"          
-        //         v-if="check_truce_hat_eligible(selected_avatar.target_player_id)"             
-        //         v-bind:disabled="reconnecting || 
-        //                         working ||
-        //                         (session.world_state.current_experiment_phase == 'Instructions' && 
-        //                         session_player.current_instruction != instructions.action_page_attacks)">
-            
-        //     Send Truce Hat <i class="fab fa-redhat"></i>
-        // </button>
-
         app.avatar_hat_modal.show();
         app.avatar_hat_modal_open = true;
     }
@@ -1221,7 +1208,7 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
             //transfer beam
             let elements = [];
             element = {source_change:"",
-                       target_change:"Truce Accepted", 
+                       target_change:"Hat Accepted", 
                        texture:app.pixi_textures[target_hat_texture]}
 
             elements.push(element);
@@ -1281,7 +1268,7 @@ take_update_hat_avatar_cancel: function take_update_hat_avatar_cancel(message_da
                 app.avatar_hat_modal.hide();
                 app.hat_trade_status = "open";
 
-                app.add_text_emitters("Trade Rejected.", 
+                app.add_text_emitters("Hat Rejected.", 
                                         local_player.current_location.x, 
                                         local_player.current_location.y,
                                         local_player.current_location.x,
@@ -1296,7 +1283,7 @@ take_update_hat_avatar_cancel: function take_update_hat_avatar_cancel(message_da
             {
                 let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
 
-                app.add_text_emitters("Trade Rejected.", 
+                app.add_text_emitters("Hat Rejected.", 
                                         local_player.current_location.x, 
                                         local_player.current_location.y,
                                         local_player.current_location.x,
@@ -1379,17 +1366,17 @@ do_avatar_sleep_emitters: function do_avatar_sleep_emitters()
     let local_player_group = app.get_parameter_set_group_from_player_id(app.session_player.id);
 
     //same group
-    if(target_player_group.id == local_player_group.id) return {value:false, message: "No truces with your own group."};
+    if(target_player_group.id == local_player_group.id) return {value:false, message: "No interactions during break."};
 
     //in home region
     let local_player_region = app.get_ground_element_player_is_over(app.session_player.id);
 
-    if(!local_player_region) return {value:false, message: "You can only propose a truce when you are in your home region."};
+    if(!local_player_region) return {value:false, message: "You can only offer a hat in your own region."};
 
-    if(local_player_region.parameter_set_group != local_player_group.id) return {value:false, message:"You can only propose a truce when you are in your home region."};
+    if(local_player_region.parameter_set_group != local_player_group.id) return {value:false, message:"You can only offer a hat in your own region."};
     
     //You already have a hat
-    if(app.session.world_state.avatars[player_id].parameter_set_hat_id) return {value:false, message:"You are already in a truce."};
+    if(app.session.world_state.avatars[player_id].parameter_set_hat_id) return {value:false, message:"They already have a hat."};
 
     return {value:true, message:""};
 },

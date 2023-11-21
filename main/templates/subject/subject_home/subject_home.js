@@ -504,11 +504,6 @@ var app = Vue.createApp({
                 {
                     let notice_text = "Break Time: Interactions are disabled. Chat is enabled.";
 
-                    if(app.session.parameter_set.enable_hats == "True")
-                    {
-                        notice_text += " Truces are enabled.";
-                    }
-
                     app.add_notice(notice_text,
                                    app.session.world_state.current_period,
                                    app.session.parameter_set.period_length);

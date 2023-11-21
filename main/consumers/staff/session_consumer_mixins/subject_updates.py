@@ -1400,7 +1400,7 @@ class SubjectUpdatesMixin():
 
                 if source_group["parameter_set_hat"] == target_group["parameter_set_hat"]:
                     status = "fail"
-                    error_mesage.append("You cannot have a truce with your own group.")
+                    error_mesage.append("No interactions during break.")
 
                 # source_avatar = self.world_state_local['avatars'][str(player_id)]
                 # target_avatar = self.world_state_local['avatars'][str(target_player_id)]
