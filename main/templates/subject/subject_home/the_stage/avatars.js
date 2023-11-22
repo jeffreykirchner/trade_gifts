@@ -1375,8 +1375,25 @@ do_avatar_sleep_emitters: function do_avatar_sleep_emitters()
 
     if(local_player_region.parameter_set_group != local_player_group.id) return {value:false, message:"You can only offer a hat in your own region."};
     
-    //You already have a hat
+    //They already have a hat
     if(app.session.world_state.avatars[player_id].parameter_set_hat_id) return {value:false, message:"They already have a hat."};
 
     return {value:true, message:""};
+},
+
+/**
+ * check truce hat binding
+ */
+check_truce_hat_binding: function check_truce_hat_binding(target_group_id)
+{
+    let local_player_hat = app.session.world_state.avatars[app.session_player.id].parameter_set_hat_id;
+
+    if(!local_player_hat) return false;
+    if(app.session.parameter_set.hat_mode != "Binding") return false;
+
+    let target_group = app.session.parameter_set.parameter_set_groups[target_group_id];
+   
+    if(target_group.parameter_set_hat == local_player_hat) return true;
+
+    return false;
 },
