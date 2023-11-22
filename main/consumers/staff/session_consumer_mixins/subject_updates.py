@@ -963,14 +963,6 @@ class SubjectUpdatesMixin():
             logger.info(f"attack_avatar: invalid data, {event['message_text']}")
             return
 
-        # check cooling status
-      
-        
-        # v = await sync_to_async(sync_attack_avatar)(self.session_id, player_id, target_player_id, self.parameter_set_local)
-
-        # session = Session.objects.select_for_update().get(id=session_id)
-        # current_period = session.get_current_session_period()
-        # parameter_set = session.parameter_set.json()
         error_message = []
         status = "success"
         
@@ -1007,6 +999,12 @@ class SubjectUpdatesMixin():
             logger.info(f"attack_avatar: cooling, {event['message_text']}")
             status = "fail"
             error_message.append({"id":"attack_avatar_button", "message": "You are cooling down."})
+        
+        #check for binding truce hat
+        if await self.check_truce_hat_binding(player_id, self.parameter_set_local["parameter_set_players"][str(target_player["parameter_set_player_id"])]["parameter_set_group"]):
+            logger.info(f"attack_avatar: truce hat, {event['message_text']}")
+            status = "fail"
+            error_message.append({"id":"attack_avatar_button", "message": "You have their hat."})
 
         if status == "success":
             #data for summary
@@ -1069,6 +1067,27 @@ class SubjectUpdatesMixin():
                     
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
+
+    async def check_truce_hat_binding(self, source_player_id, target_group_id):
+        '''
+        check if truce hat binding is valid
+        '''
+
+        local_player_hat = self.world_state_local["avatars"][str(source_player_id)]["parameter_set_hat_id"]
+
+        if(not local_player_hat):
+            return False
+
+        if(self.parameter_set_local["hat_mode"] != "Binding"):
+            return False
+
+        target_group = self.parameter_set_local["parameter_set_groups"][str(target_group_id)];
+    
+        if(target_group["parameter_set_hat"] == local_player_hat):
+            return True
+
+        return False
+
     
     async def update_attack_avatar(self, event):
         '''
@@ -1242,7 +1261,14 @@ class SubjectUpdatesMixin():
                     status = "fail"
                     error_message.append({"id":"patch_harvest", "message": "You have already harvested in this region this period."})
                     break
-
+        
+        if status == "success":
+            #check for binding truce hat
+            if await self.check_truce_hat_binding(player_id, patch["parameter_set_group"]):
+                logger.info(f"patch_harvest: truce hat, {event['message_text']}")
+                status = "fail"
+                error_message.append({"id":"patch_harvest", "message": "You have their hat."})
+    
         if status == "success":
             status = "fail"     
 

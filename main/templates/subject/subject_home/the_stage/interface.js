@@ -221,7 +221,7 @@ take_target_location_update: function take_target_location_update(message_data)
                     }
                     else
                     {
-                        app.add_text_emitters("This house is not in your group.", 
+                        app.add_text_emitters("This house is not in your region.", 
                                                 parameter_set_player.house_x, 
                                                 parameter_set_player.house_y,
                                                 parameter_set_player.house_x,

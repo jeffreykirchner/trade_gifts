@@ -50,7 +50,12 @@ class ParameterSetNotice(models.Model):
         self.end_period = new_ps.get("end_period", 1)
         self.end_time = new_ps.get("end_time", 0)
 
-        self.help_doc_id = new_ps.get("help_doc", None)
+        help_doc_id = new_ps.get("help_doc", None)
+        if help_doc_id:
+            help_doc = main.models.HelpDocsSubject.objects.filter(id=help_doc_id).first()
+            self.help_doc = help_doc
+        else:
+            self.help_doc = None
 
         self.save()
         

@@ -46,7 +46,10 @@
                     <div class="col text-end" v-if="selected_avatar.avatar">    
                         <span class="me-4 " v-if="session.world_state_avatars.session_players[session_player.id].cool_down>0">
                             <strong>Cooling ... [[session.world_state_avatars.session_players[session_player.id].cool_down]]</strong>
-                        </span>     
+                        </span>                        
+                        <span class="me-4 " v-else-if="check_truce_hat_binding(selected_avatar.parameter_set_player.parameter_set_group)">
+                            <strong>You have their hat.</strong>
+                        </span>
                         
                         <span v-if="working" class="me-2">
                             <i class="fas fa-spinner fa-spin"></i>
@@ -59,6 +62,7 @@
                                 v-bind:disabled="reconnecting || 
                                                  working || 
                                                  session.world_state_avatars.session_players[session_player.id].cool_down>0 ||
+                                                 check_truce_hat_binding(selected_avatar.parameter_set_player.parameter_set_group) ||
                                                  selected_avatar.avatar.sleeping">
                             Attack <i class="fas fa-fist-raised"></i>
                         </button>

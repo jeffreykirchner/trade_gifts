@@ -12,6 +12,7 @@ from main.models import Session
 from main.models import SessionEvent
 
 from main.globals import ExperimentPhase
+from main.globals import HatModes
 
 import main
 
@@ -321,10 +322,11 @@ def sync_continue_timer(event, session_id, world_state, parameter_set):
                 sd_player["start_health"] = avatar["health"]
             
             #reset hats
-            if current_period % parameter_set["break_frequency"] == 0:
-                for i in world_state["avatars"]:
-                    avatar = world_state["avatars"][i]
-                    avatar["parameter_set_hat_id"] = None
+            if parameter_set["hat_mode"] == HatModes.NON_BINDING:
+                if current_period % parameter_set["break_frequency"] == 0:
+                    for i in world_state["avatars"]:
+                        avatar = world_state["avatars"][i]
+                        avatar["parameter_set_hat_id"] = None
                 
             current_session_period.save()
             # session.save()
