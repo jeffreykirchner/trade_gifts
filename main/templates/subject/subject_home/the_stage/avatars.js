@@ -76,7 +76,7 @@ setup_pixi_subjects: function setup_pixi_subjects()
         //hat
         
         let hat_sprite = null;
-        if(app.session.parameter_set.enable_hats=="True")
+        if(app.session.parameter_set.hat_mode!="No Hats")
         {
             let hat_id = null;
 
@@ -583,13 +583,13 @@ update_avatar_inventory : function update_avatar_inventory()
 
         //update hats
         
-        if(avatar.parameter_set_hat_id && app.session.parameter_set.enable_hats=="True")
+        if(avatar.parameter_set_hat_id && app.session.parameter_set.hat_mode != "No Hats")
         {
             let hat_texture = app.session.parameter_set.parameter_set_hats[avatar.parameter_set_hat_id].texture;
             pixi_avatars[i].hat_sprite.texture = app.pixi_textures[hat_texture];
             pixi_avatars[i].hat_sprite.visible = true;
         }
-        else if(app.session.parameter_set.enable_hats=="True")
+        else if(app.session.parameter_set.hat_mode != "No Hats")
         {
             pixi_avatars[i].hat_sprite.visible = false;
         }
@@ -1360,7 +1360,7 @@ do_avatar_sleep_emitters: function do_avatar_sleep_emitters()
     if(!player_id) return {value:false, message:"Invalid Player."};
 
     //hats are disabled
-    if(app.session.parameter_set.enable_hats !='True') return {value:false, message:"No interactions during break."};
+    if(app.session.parameter_set.hat_mode == "No Hats") return {value:false, message:"No interactions during break."};
 
     let target_player_group = app.get_parameter_set_group_from_player_id(player_id);
     let local_player_group = app.get_parameter_set_group_from_player_id(app.session_player.id);

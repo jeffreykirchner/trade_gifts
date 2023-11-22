@@ -43,3 +43,11 @@ class HarvestModes(models.TextChoices):
     ANY = 'Any', _('Any')
     ONCE_PER_GROUP = 'Once per Group', _('Once per Group')
 
+class HatModes(models.TextChoices):
+    '''
+    hat modes
+    '''
+    NO_HATS = 'No Hats', _('No Hats')
+    NON_BINDING = 'Non-Binding', _('Non-Binding')
+    BINDING = 'Binding', _('Binding')
+

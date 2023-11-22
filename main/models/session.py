@@ -30,6 +30,7 @@ import main
 from main.models import ParameterSet
 
 from main.globals import ExperimentPhase
+from main.globals import HatModes
 
 #experiment sessoin
 class Session(models.Model):
@@ -429,7 +430,7 @@ class Session(models.Model):
                 for k in main.globals.Goods.choices:
                     temp_header.append("Send " + k[0] + " to House " + str(player_number+1))
 
-                if parameter_set["enable_hats"]=="True":
+                if parameter_set["hat_mode"] != HatModes.NO_HATS:
                     temp_header.append("Hat To " + str(player_number+1) + ' Accept')
                     temp_header.append("Hat To " + str(player_number+1) + ' Reject')
                     temp_header.append("Hat From " + str(player_number+1) + ' Accept')
@@ -487,7 +488,7 @@ class Session(models.Model):
                         for l in main.globals.Goods.choices:
                             temp_row.append(temp_p["send_avatar_to_house_" + parameter_set_player_id + "_good_" + l[0]])
 
-                        if parameter_set["enable_hats"]=="True":
+                        if parameter_set["hat_mode"] != HatModes.NO_HATS:
                             temp_row.append(temp_p.get("hat_accept_to_" + k,""))
                             temp_row.append(temp_p.get("hat_reject_to_" + k,""))
 
