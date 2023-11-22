@@ -1261,7 +1261,14 @@ class SubjectUpdatesMixin():
                     status = "fail"
                     error_message.append({"id":"patch_harvest", "message": "You have already harvested in this region this period."})
                     break
-
+        
+        if status == "success":
+            #check for binding truce hat
+            if await self.check_truce_hat_binding(player_id, patch["parameter_set_group"]):
+                logger.info(f"patch_harvest: truce hat, {event['message_text']}")
+                status = "fail"
+                error_message.append({"id":"patch_harvest", "message": "You have their hat."})
+    
         if status == "success":
             status = "fail"     
 

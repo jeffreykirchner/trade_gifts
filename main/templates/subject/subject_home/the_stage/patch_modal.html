@@ -34,11 +34,15 @@
                     </div>                    
                 </div> 
                 
-                <div class="row mt-4" v-if="selected_patch.patch">
+                <div class="row mt-4 border-top pt-3" v-if="selected_patch.patch">
 
                     <div class="col text-end">
                         <span v-if="working" class="me-2">
                             <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+
+                        <span class="me-4 " v-if="check_truce_hat_binding(selected_patch.patch.parameter_set_group)">
+                            <strong>You have their hat.</strong>
                         </span>
 
                         <button type="button"
@@ -48,6 +52,7 @@
                                 v-bind:disabled="reconnecting || 
                                                  working || 
                                                  selected_patch.harvest_amount==0 ||
+                                                 check_truce_hat_binding(selected_patch.patch.parameter_set_group) ||
                                                  (session.world_state.current_experiment_phase == 'Instructions' && session_player.current_instruction != instructions.action_page_harvest)">
                             Harvest <i class="fas fa-sign-in-alt"></i>
                         </button>
