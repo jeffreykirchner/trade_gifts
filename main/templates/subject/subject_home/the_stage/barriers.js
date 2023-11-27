@@ -1,7 +1,7 @@
 /**
  * setup barrier objects
  */
-setup_pixi_barrier()
+setup_pixi_barrier: function setup_pixi_barrier()
 {
     for(const i in app.session.parameter_set.parameter_set_barriers)
     {
@@ -63,7 +63,7 @@ setup_pixi_barrier()
 /**
  * check barrier intersection
  */
-check_barriers_intersection(rect1, parameter_set_group, parameter_set_player)
+check_barriers_intersection: function check_barriers_intersection(rect1, parameter_set_group, parameter_set_player)
 {
     for(let i in app.session.parameter_set.parameter_set_barriers)
     {        
@@ -92,7 +92,7 @@ check_barriers_intersection(rect1, parameter_set_group, parameter_set_player)
 /**
  * update barriers
  */
-update_barriers()
+update_barriers: function()
 {
     for(let i in app.session.parameter_set.parameter_set_barriers)
     {

@@ -1,7 +1,7 @@
 /**
  * add scroll buttons to staff screen
  */
-add_scroll_button(button_size, name, text)
+add_scroll_button: function add_scroll_button(button_size, name, text)
 {
     let g = new PIXI.Graphics();
     g.lineStyle(1, 0x000000);
@@ -37,7 +37,7 @@ add_scroll_button(button_size, name, text)
 /**
  * update zoom level on staff screen
  */
-update_zoom()
+update_zoom: function update_zoom()
 {
     if(app.pixi_mode == "subject") return;
     if(app.pixi_scale == app.pixi_scale_range_control) return;
@@ -56,7 +56,7 @@ update_zoom()
 /**
  * fit staff display to screen
  */
-fit_to_screen()
+fit_to_screen: function fit_to_screen()
 {
     if(app.pixi_mode == "subject") return;
     
@@ -73,7 +73,7 @@ fit_to_screen()
 /**
  * manaully scroll staff screen
  */
-scroll_staff(delta)
+scroll_staff: function scroll_staff(delta)
 {
     app.current_location.x += app.scroll_direction.x;
     app.current_location.y += app.scroll_direction.y;
@@ -82,7 +82,7 @@ scroll_staff(delta)
 /**
  * staff screen offset from origin
  */
-get_offset_staff()
+get_offset_staff: function get_offset_staff()
 {
     if(app.follow_subject != -1 && app.session.started)
     {
@@ -97,7 +97,7 @@ get_offset_staff()
 /**
  *scroll control for staff
  */
- staff_screen_scroll_button_over(event)
+ staff_screen_scroll_button_over: function staff_screen_scroll_button_over(event)
  {
      event.currentTarget.alpha = 1;  
      app.scroll_direction = event.currentTarget.name.scroll_direction;
@@ -106,7 +106,7 @@ get_offset_staff()
  /**
   *scroll control for staff
   */
- staff_screen_scroll_button_out(event)
+ staff_screen_scroll_button_out: function staff_screen_scroll_button_out(event)
  {
      event.currentTarget.alpha = 0.5;
      app.scroll_direction = {x:0, y:0};
@@ -115,7 +115,7 @@ get_offset_staff()
 /**
  * update the amount of shift needed for the staff view
  */
-update_offsets_staff(delta)
+update_offsets_staff: function update_offsets_staff(delta)
 {
     let offset = app.get_offset_staff();
 

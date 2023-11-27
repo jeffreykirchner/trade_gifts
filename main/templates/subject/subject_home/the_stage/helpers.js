@@ -1,7 +1,7 @@
 /**
  * check for rectangle intersection
  */
-check_for_rect_intersection(rect1, rect2)
+check_for_rect_intersection: function check_for_rect_intersection(rect1, rect2)
 {
    if(rect1.x < rect2.x + rect2.width &&
       rect1.x + rect1.width > rect2.x &&
@@ -18,7 +18,7 @@ check_for_rect_intersection(rect1, rect2)
 /**
  * check for circle and rectangle intersection
  */
-check_for_circle_rect_intersection(circle, rect)
+check_for_circle_rect_intersection: function check_for_circle_rect_intersection(circle, rect)
 {
     if(app.check_point_in_rectagle({x:circle.x, y:circle.y}, rect)) return true;
 
@@ -38,7 +38,7 @@ check_for_circle_rect_intersection(circle, rect)
 /**
  * check if point is in rectangle
  */
-check_point_in_rectagle(point, rect)
+check_point_in_rectagle: function check_point_in_rectagle(point, rect)
 {
     if(point.x >= rect.x && point.x <= rect.x + rect.width &&
          point.y >= rect.y && point.y <= rect.y + rect.height)
@@ -52,7 +52,7 @@ check_point_in_rectagle(point, rect)
 /**
  * check if line intersects circle
  */
-check_line_circle_intersection(line, circle)
+check_line_circle_intersection: function check_line_circle_intersection(line, circle)
 {
     let a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
 
@@ -93,7 +93,7 @@ check_line_circle_intersection(line, circle)
 /**
  * get distance in pixels between two points
  */
-get_distance(point1, point2) 
+get_distance: function get_distance(point1, point2) 
 {
     // Get the difference between the x-coordinates of the two points.
     const dx = point2.x - point1.x;
@@ -114,7 +114,7 @@ get_distance(point1, point2)
 /**
  * degrees to radians
  */
-degrees_to_radians(degrees)
+degrees_to_radians: function degrees_to_radians(degrees)
 {
     let pi = Math.PI;
     return degrees * (pi/180);
@@ -123,7 +123,7 @@ degrees_to_radians(degrees)
 /**
  * find point on circle
  */
-find_point_on_circle(center, radius, angle)
+find_point_on_circle: function find_point_on_circle(center, radius, angle)
 {
     let point = {};
     point.x = center.x + radius * Math.cos(angle);
@@ -134,7 +134,7 @@ find_point_on_circle(center, radius, angle)
 /**
  * check if circles intersect
  */
-check_circle_intersection(circle1, circle2)
+check_circle_intersection: function check_circle_intersection(circle1, circle2)
 {
     let distance = app.get_distance(circle1.center, circle2.center);
     if(distance <= circle1.radius + circle2.radius) return true;
@@ -144,7 +144,7 @@ check_circle_intersection(circle1, circle2)
 /**
  * check if point is in circle
  */
-check_point_in_circle(point, circle)
+check_point_in_circle: function check_point_in_circle(point, circle)
 {
     let distance = app.get_distance(point, circle.center);
     if(distance <= circle.radius) return true;
@@ -155,7 +155,7 @@ check_point_in_circle(point, circle)
 /**
  * find point given angle and distance
  **/
-get_point_from_angle_distance(start_x, start_y, width, height, distance)
+get_point_from_angle_distance: function get_point_from_angle_distance(start_x, start_y, width, height, distance)
 {
     let angle = app.get_angle(start_x, start_y, width, height);
     return {x:start_x + distance * Math.cos(angle), 
@@ -165,7 +165,7 @@ get_point_from_angle_distance(start_x, start_y, width, height, distance)
 /**
  * find the angle between two points
  */
-get_angle(x1, y1, x2, y2)
+get_angle: function get_angle(x1, y1, x2, y2)
 {
     return Math.atan2(y2 - y1, x2 - x1);
 },

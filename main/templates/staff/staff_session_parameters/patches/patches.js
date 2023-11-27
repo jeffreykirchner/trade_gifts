@@ -1,6 +1,6 @@
 /**show edit parameter set patch
  */
-show_edit_parameter_set_patch(index){
+show_edit_parameter_set_patch: function show_edit_parameter_set_patch(index){
     
     if(app.session.started) return;
     if(app.working) return;
@@ -33,7 +33,7 @@ show_edit_parameter_set_patch(index){
 
 /** update parameterset patch
 */
-send_update_parameter_set_patch(){
+send_update_parameter_set_patch: function send_update_parameter_set_patch(){
     
     app.working = true;
 
@@ -44,7 +44,7 @@ send_update_parameter_set_patch(){
 
 /** remove the selected parameterset patch
 */
-send_remove_parameter_set_patch(){
+send_remove_parameter_set_patch: function send_remove_parameter_set_patch(){
 
     app.working = true;
     app.send_message("remove_parameterset_patch", {"session_id" : app.session.id,
@@ -54,7 +54,7 @@ send_remove_parameter_set_patch(){
 
 /** add a new parameterset patch
 */
-send_add_parameter_set_patch(patch_id){
+send_add_parameter_set_patch: function send_add_parameter_set_patch(patch_id){
     app.working = true;
     app.send_message("add_parameterset_patch", {"session_id" : app.session.id});
                                                    

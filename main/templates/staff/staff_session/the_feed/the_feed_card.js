@@ -1,7 +1,7 @@
 /**
  * process incoming message for the feed
  */
-process_the_feed(message_type, message_data)
+process_the_feed: function process_the_feed(message_type, message_data)
 {
     if(message_data.status != "success") return;
     
