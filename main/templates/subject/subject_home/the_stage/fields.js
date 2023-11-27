@@ -1,7 +1,7 @@
 /**
  * setup field objects
  */
-setup_pixi_fields()
+setup_pixi_fields: function setup_pixi_fields()
 {
     for(const i in app.session.parameter_set.parameter_set_fields_order)
     {
@@ -135,7 +135,7 @@ setup_pixi_fields()
 /**
  * update field inventory
  */
-update_field_inventory()
+update_field_inventory: function update_field_inventory()
 {
     if(!app.session.world_state["started"]) return;
     
@@ -157,7 +157,7 @@ update_field_inventory()
 /**
  * handle field click
  */
-subject_field_click(field_id)
+subject_field_click: function subject_field_click(field_id)
 {
     let field = app.session.world_state.fields[field_id];
 
@@ -214,7 +214,7 @@ subject_field_click(field_id)
 /**
  * handle field modal hide
  */
-hide_field_modal()
+hide_field_modal: function hide_field_modal()
 {
     app.selected_field.field = null;
     app.selected_field.field_type = null;
@@ -225,7 +225,7 @@ hide_field_modal()
 /**
  * handle update to effort slider
  */
-update_effort_slider()
+update_effort_slider: function update_effort_slider()
 {
     let total_effort = app.session.parameter_set.production_effort;
     let effort_slider = parseInt(app.selected_field.effort_slider);
@@ -249,7 +249,7 @@ update_effort_slider()
 /**
  * send harvest field requst
  */
-send_field_harvest()
+send_field_harvest: function send_field_harvest()
 {
     if(!app.session.world_state["started"]) return;
     if(!app.selected_field.field) return;
@@ -295,7 +295,7 @@ send_field_harvest()
  * take field harvest response
 */
 
-take_field_harvest(message_data)
+take_field_harvest: function take_field_harvest(message_data)
 {
 
     if(message_data.status == "success")
@@ -353,7 +353,7 @@ take_field_harvest(message_data)
 /**
  * select all fruit for harvest
  */
-select_all_fruit()
+select_all_fruit: function select_all_fruit()
 {
     field_type = app.session.parameter_set.parameter_set_field_types[app.selected_field.field.parameter_set_field_type];
 
@@ -364,7 +364,7 @@ select_all_fruit()
 /**
  * send field effort update
  */
-send_field_effort()
+send_field_effort: function send_field_effort()
 {
     app.working = true;
     
@@ -378,7 +378,7 @@ send_field_effort()
 /**
  * take field effort update
  */
-take_field_effort(message_data)
+take_field_effort: function take_field_effort(message_data)
 {
     field = app.session.world_state.fields[message_data.field.id];
 

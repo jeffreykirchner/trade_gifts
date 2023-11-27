@@ -1,7 +1,7 @@
 /**
  * setup night
  */
-setup_pixi_night()
+setup_pixi_night: function setup_pixi_night()
 {
     pixi_night.container = new PIXI.Container();
     pixi_night.container.eventMode = 'none';
@@ -39,7 +39,7 @@ setup_pixi_night()
 /**
  * update night overlay
  */
-update_pixi_night()
+update_pixi_night: function update_pixi_night()
 {
     if(!pixi_night.container) return;
     

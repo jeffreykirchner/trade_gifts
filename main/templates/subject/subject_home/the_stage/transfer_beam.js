@@ -1,7 +1,7 @@
 /**
  * create transfer beam between two points
  */
-add_transfer_beam(source_location, target_location, elements, show_source_emitter=true, show_target_emitter=true) //beam_texture, source_amount, target_amount
+add_transfer_beam: function add_transfer_beam(source_location, target_location, elements, show_source_emitter=true, show_target_emitter=true) //beam_texture, source_amount, target_amount
 {
     if(elements.length == 0) return;
 
@@ -78,7 +78,7 @@ add_transfer_beam(source_location, target_location, elements, show_source_emitte
 /**
  * animate the transfer beam
  */
-animate_transfer_beams(delta)
+animate_transfer_beams: function animate_transfer_beams(delta)
 {
     let completed = [];
     let speed = 0.05;

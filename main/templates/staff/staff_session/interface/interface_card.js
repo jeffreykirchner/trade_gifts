@@ -1,7 +1,7 @@
 /**
  * take update from client for new location target
  */
-take_target_location_update(message_data)
+take_target_location_update: function take_target_location_update(message_data)
 {
     if(message_data.value == "success")
     {
@@ -13,7 +13,7 @@ take_target_location_update(message_data)
     }
 },
 
-take_update_tractor_beam(message_data)
+take_update_tractor_beam: function take_update_tractor_beam(message_data)
 {
     let player_id = message_data.player_id;
     let target_player_id = message_data.target_player_id;
@@ -25,13 +25,5 @@ take_update_tractor_beam(message_data)
 
     app.session.world_state_avatars.session_players[player_id].interaction = app.session.parameter_set.interaction_length;
     app.session.world_state_avatars.session_players[target_player_id].interaction = app.session.parameter_set.interaction_length;
-},
-
-/**
- * take update from server about move fruit between avatars
- */
-take_update_move_fruit_to_avatar(message_data)
-{
-    
 },
 

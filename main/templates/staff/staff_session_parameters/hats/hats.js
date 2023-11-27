@@ -1,6 +1,6 @@
 /**show edit parameter set hat
  */
-show_edit_parameter_set_hat(index){
+show_edit_parameter_set_hat: function show_edit_parameter_set_hat(index){
     
     if(app.session.started) return;
     if(app.working) return;
@@ -13,7 +13,7 @@ show_edit_parameter_set_hat(index){
 
 /** update parameterset hat
 */
-send_update_parameter_set_hat(){
+send_update_parameter_set_hat: function send_update_parameter_set_hat(){
     
     app.working = true;
 
@@ -24,7 +24,7 @@ send_update_parameter_set_hat(){
 
 /** remove the selected parameterset hat
 */
-send_remove_parameter_set_hat(){
+send_remove_parameter_set_hat: function send_remove_parameter_set_hat(){
 
     app.working = true;
     app.send_message("remove_parameterset_hat", {"session_id" : app.session.id,
@@ -34,7 +34,7 @@ send_remove_parameter_set_hat(){
 
 /** add a new parameterset hat
 */
-send_add_parameter_set_hat(hat_id){
+send_add_parameter_set_hat: function send_add_parameter_set_hat(hat_id){
     app.working = true;
     app.send_message("add_parameterset_hat", {"session_id" : app.session.id});
                                                    

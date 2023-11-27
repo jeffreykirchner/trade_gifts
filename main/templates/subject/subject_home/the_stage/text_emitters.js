@@ -1,7 +1,7 @@
 /**
  * add text emitters to the screen
  */
-add_text_emitters(text, start_x, start_y, width, height, font_color, font_size, emitter_image)
+add_text_emitters: function add_text_emitters(text, start_x, start_y, width, height, font_color, font_size, emitter_image)
 {
     let emitter_container = new PIXI.Container();
     emitter_container.position.set(start_x, start_y);
@@ -38,7 +38,7 @@ add_text_emitters(text, start_x, start_y, width, height, font_color, font_size, 
 /**
  * move text emitters
  */
-move_text_emitters(delta)
+move_text_emitters: function move_text_emitters(delta)
 {
     let completed = [];
 
