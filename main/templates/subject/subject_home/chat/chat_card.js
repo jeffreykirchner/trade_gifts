@@ -51,19 +51,22 @@ send_chat_instructions: function send_chat_instructions()
     app.take_chat(message_data);
 },
 
-/** take result of moving goods
+/** take result of chat message
 */
 take_chat: function take_chat(message_data){
     //app.cancel_modal=false;
     //app.clear_main_form_errors();
 
-    if(message_data.value == "success")
+    if(message_data.status == "success")
     {
         app.take_update_chat(message_data);                        
     } 
     else
     {
-        
+        if(app.is_subject && message_data.sender_id == app.session_player.id)
+        {
+            app.working = false;
+        }
     }
 },
 
@@ -72,26 +75,36 @@ take_chat: function take_chat(message_data){
 */
 take_update_chat: function take_update_chat(message_data){
     
-    let text = message_data.text;
-
-    if(app.session.parameter_set.chat_mode == "Limited")
+    if(message_data.status == "success")
     {
-        let parameter_set_group_sender = app.session.session_players[message_data.sender_id].parameter_set_player.parameter_set_group;
-        let parameter_set_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
+        let text = message_data.text;
 
-        if(parameter_set_group != parameter_set_group_sender)
+        if(app.session.parameter_set.chat_mode == "Limited")
         {
-            text =  message_data.text_limited;
+            let parameter_set_group_sender = app.session.session_players[message_data.sender_id].parameter_set_player.parameter_set_group;
+            let parameter_set_group = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].parameter_set_group;
+
+            if(parameter_set_group != parameter_set_group_sender)
+            {
+                text =  message_data.text_limited;
+            }
+        }
+
+        app.session.world_state_avatars.session_players[message_data.sender_id].show_chat = true;    
+        app.session.world_state_avatars.session_players[message_data.sender_id].chat_time = Date.now();
+        pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text = text;
+
+        if(message_data.sender_id == app.session_player.id)
+        {
+        app.working = false;
         }
     }
-
-    app.session.world_state_avatars.session_players[message_data.sender_id].show_chat = true;    
-    app.session.world_state_avatars.session_players[message_data.sender_id].chat_time = Date.now();
-    pixi_avatars[message_data.sender_id].chat_container.getChildAt(1).text = text;
-
-    if(message_data.sender_id == app.session_player.id)
+    else
     {
-       app.working = false;
+        if(app.is_subject && message_data.sender_id == app.session_player.id)
+        {
+            app.working = false;
+        }
     }
 },
 
