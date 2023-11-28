@@ -41,14 +41,8 @@ class SubjectUpdatesMixin():
         
         status = "success"
         error_message = ""
+        player_id = None
 
-        if not self.world_state_local["started"] or \
-           self.world_state_local["finished"] or \
-           self.world_state_local["current_experiment_phase"] != ExperimentPhase.RUN:
-            logger.info(f"take chat: failed, session not started, finished, or not in run phase {self.world_state_local}")
-            status = "fail"
-            error_message = "Session not started."
-        
         if status == "success":
             try:
                 player_id = self.session_players_local[event["player_key"]]["id"]
@@ -59,7 +53,16 @@ class SubjectUpdatesMixin():
                 status = "fail"
                 error_message = "Invalid data."
         
+        if status == "success":
+            if not self.world_state_local["started"] or \
+            self.world_state_local["finished"] or \
+            self.world_state_local["current_experiment_phase"] != ExperimentPhase.RUN:
+                logger.info(f"take chat: failed, session not started, finished, or not in run phase")
+                status = "fail"
+                error_message = "Session not started."
+        
         result = {"status": status, "error_message": error_message}
+        result["sender_id"] = player_id
 
         #update location 
         if status == "success":
@@ -68,7 +71,6 @@ class SubjectUpdatesMixin():
             
             result["text"] = event_data["text"]
             result["text_limited"] = await self.do_limited_chat(event_data["text"])
-            result["sender_id"] = player_id
             result["nearby_players"] = []
 
             #format text for chat bubbles
@@ -610,6 +612,10 @@ class SubjectUpdatesMixin():
         logger = logging.getLogger(__name__)
         error_message = []
         status = "success"
+        player_id = None
+        good_one = None
+        good_two = None
+        good_three = None
 
         try:
             player_id = self.session_players_local[event["player_key"]]["id"]        
@@ -621,46 +627,42 @@ class SubjectUpdatesMixin():
                 good_three_move = event["message_text"]["good_three_move"]
             else:
                 good_three_move = 0
-           
         except:
             logger.info(f"move_fruit_to_avatar: invalid data, {event['message_text']}")
             status = "fail"
             error_message.append({"id":"good_one_move", "message": "Invalid amount."})
         
-        #check that goods are positive integers
-        if not is_positive_integer(good_one_move) or not is_positive_integer(good_two_move):
-            status = "fail"
-            error_message.append({"id":"good_one_move", "message": "Invalid amount."})
-        else:
-            good_one_move = int(good_one_move)
-            good_two_move = int(good_two_move)
-        
-        if self.parameter_set_local["good_mode"] == "Three":
-            if not is_positive_integer(good_three_move):
+        if status=="success":
+            #check that goods are positive integers
+            if not is_positive_integer(good_one_move) or not is_positive_integer(good_two_move):
                 status = "fail"
-                error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+                error_message.append({"id":"good_one_move", "message": "Invalid amount."})
             else:
-                good_three_move = int(good_three_move)
+                good_one_move = int(good_one_move)
+                good_two_move = int(good_two_move)
+            
+            if self.parameter_set_local["good_mode"] == "Three":
+                if not is_positive_integer(good_three_move):
+                    status = "fail"
+                    error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+                else:
+                    good_three_move = int(good_three_move)
 
-        player_id_s = str(player_id)
+            player_id_s = str(player_id)
 
-        session = await Session.objects.aget(id=self.session_id)
-        current_period = await session.aget_current_session_period()
-        summary_data = current_period.summary_data[player_id_s]
-        
-        # v = await sync_to_async(sync_move_fruit_to_avatar)(self.session_id, player_id, target_player_id, good_one_move, good_two_move, good_three_move)
+            session = await Session.objects.aget(id=self.session_id)
+            current_period = await session.aget_current_session_period()
+            summary_data = current_period.summary_data[player_id_s]
+            
+            parameter_set_player_id = str(self.world_state_local['avatars'][str(player_id)]['parameter_set_player_id'])
 
-        #  session = Session.objects.select_for_update().get(id=session_id)
-        
-        parameter_set_player_id = str(self.world_state_local['avatars'][str(player_id)]['parameter_set_player_id'])
+            summary_data = current_period.summary_data[str(player_id)]
 
-        summary_data = current_period.summary_data[str(player_id)]
+            good_one = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_one']
+            good_two =  self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_two']
 
-        good_one = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_one']
-        good_two =  self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_two']
-
-        if self.parameter_set_local["good_mode"] == "Three":
-            good_three =  self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_three']
+            if self.parameter_set_local["good_mode"] == "Three":
+                good_three =  self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_three']
 
         if status=="success" and self.world_state_local['avatars'][str(player_id)][good_one] < good_one_move:
             status = "fail"
@@ -675,12 +677,12 @@ class SubjectUpdatesMixin():
                 status = "fail"
                 error_message.append({"id":"good_three_move", "message": "Invalid amount."})
 
-        if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
-           self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
+        if status == "success":
+            if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
+            self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
 
-            logger.info(f"move_fruit_house: on break, {event['message_text']}")
-            status = "fail"
-            error_message.append({"id":"good_one_move", "message": "Break time, no interactions."})
+                status = "fail"
+                error_message.append({"id":"good_one_move", "message": "Break time, no interactions."})
 
         if status == "success":
             self.world_state_local['avatars'][str(player_id)][good_one] -= good_one_move
@@ -711,7 +713,6 @@ class SubjectUpdatesMixin():
             goods = {"good_one" : good_one, "good_two" : good_two}
 
         result = {"status" : status, "error_message" : error_message}
-
         result["source_player_id"] = player_id
 
         if status=="success":
@@ -732,7 +733,7 @@ class SubjectUpdatesMixin():
                                            data=result)
             
         else:
-            logger.warning(f"move_fruit_to_avatar: invalid amounts from sync, {event['message_text']}")
+            logger.warning(f"move_fruit_to_avatar: invalid amounts, {event['message_text']}, {error_message}")
 
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -759,6 +760,10 @@ class SubjectUpdatesMixin():
 
         error_message = []
         status = "success"
+        player_id = None
+        good_one = None
+        good_two = None
+        good_three = None
 
         try:
             player_id = self.session_players_local[event["player_key"]]["id"]        
@@ -770,64 +775,65 @@ class SubjectUpdatesMixin():
                 good_three_move = event["message_text"]["good_three_move"]
             else:
                 good_three_move = 0
+
             direction = event["message_text"]["direction"]
         except:
             logger.info(f"move_fruit_house: invalid data, {event['message_text']}")
             status = "fail"
             error_message.append({"id":"good_one_move", "message": "Invalid amounts."})
 
-        player_id_s = str(player_id)
+        if status == "success":
+            player_id_s = str(player_id)
 
-        session = await Session.objects.aget(id=self.session_id)
-        current_period = await session.aget_current_session_period()
-        summary_data = current_period.summary_data[player_id_s]
-        
-        # parameter_set = session.parameter_set.json()
-        parameter_set_player_id = str(self.world_state_local['avatars'][str(player_id)]['parameter_set_player_id'])
+            session = await Session.objects.aget(id=self.session_id)
+            current_period = await session.aget_current_session_period()
+            summary_data = current_period.summary_data[player_id_s]
+            
+            # parameter_set = session.parameter_set.json()
+            parameter_set_player_id = str(self.world_state_local['avatars'][str(player_id)]['parameter_set_player_id'])
 
-        avatar =  self.world_state_local['avatars'][str(player_id)]
+            avatar =  self.world_state_local['avatars'][str(player_id)]
 
-        house = self.world_state_local['houses'][str(target_house_id)]
-        parameter_set_player_id_house = str(self.world_state_local['avatars'][str(house['session_player'])]['parameter_set_player_id'])
-        
-        source_group = self.parameter_set_local["parameter_set_players"][parameter_set_player_id]["parameter_set_group"]
-        target_group = self.parameter_set_local["parameter_set_players"][parameter_set_player_id_house]["parameter_set_group"]
-        
-        good_one = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_one']
-        good_two = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_two']
+            house = self.world_state_local['houses'][str(target_house_id)]
+            parameter_set_player_id_house = str(self.world_state_local['avatars'][str(house['session_player'])]['parameter_set_player_id'])
+            
+            source_group = self.parameter_set_local["parameter_set_players"][parameter_set_player_id]["parameter_set_group"]
+            target_group = self.parameter_set_local["parameter_set_players"][parameter_set_player_id_house]["parameter_set_group"]
+            
+            good_one = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_one']
+            good_two = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_two']
 
-        if self.parameter_set_local["good_mode"] == "Three":
-            good_three = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_three']
-        else:
-            good_three = 0
-
-        #check if on break
-        if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
-           self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
-
-            logger.info(f"move_fruit_house: on break, {event['message_text']}")
-            status = "fail"
-            error_message.append({"id":"good_one_move", "message": "Break time, no interactions."})
-
-        #house must be in same group as avatar
-        if source_group != target_group:
-            status = "fail"
-            error_message.append({"id":"good_one_move", "message": "You cannot interact with other group's houses."})
-
-        #check that goods are positive integers
-        if not is_positive_integer(good_one_move) or not is_positive_integer(good_two_move):
-            status = "fail"
-            error_message.append({"id":"good_one_move", "message": "Invalid amount."})
-        else:
-            good_one_move = int(good_one_move)
-            good_two_move = int(good_two_move)
-
-        if self.parameter_set_local["good_mode"] == "Three":
-            if not is_positive_integer(good_three_move):
-                status = "fail"
-                error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+            if self.parameter_set_local["good_mode"] == "Three":
+                good_three = self.parameter_set_local['parameter_set_players'][parameter_set_player_id]['good_three']
             else:
-                good_three_move = int(good_three_move)
+                good_three = 0
+
+            #check if on break
+            if self.world_state_local["current_period"] % self.parameter_set_local["break_frequency"] == 0 and \
+            self.world_state_local["time_remaining"] > self.parameter_set_local["period_length"]:
+
+                status = "fail"
+                error_message.append({"id":"good_one_move", "message": "Break time, no interactions."})
+
+            #house must be in same group as avatar
+            if source_group != target_group:
+                status = "fail"
+                error_message.append({"id":"good_one_move", "message": "You cannot interact with other group's houses."})
+
+            #check that goods are positive integers
+            if not is_positive_integer(good_one_move) or not is_positive_integer(good_two_move):
+                status = "fail"
+                error_message.append({"id":"good_one_move", "message": "Invalid amount."})
+            else:
+                good_one_move = int(good_one_move)
+                good_two_move = int(good_two_move)
+
+            if self.parameter_set_local["good_mode"] == "Three":
+                if not is_positive_integer(good_three_move):
+                    status = "fail"
+                    error_message.append({"id":"good_three_move", "message": "Invalid amount."})
+                else:
+                    good_three_move = int(good_three_move)
 
         if status == "success":
             if direction == "avatar_to_house":
@@ -928,7 +934,7 @@ class SubjectUpdatesMixin():
                                            data=result)
             
         else:
-            logger.warning(f"move_fruit_house: invalid amounts from sync, {event['message_text']}")
+            logger.warning(f"move_fruit_house: invalid amounts, {event['message_text']}, {error_message}")
             
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -1108,24 +1114,25 @@ class SubjectUpdatesMixin():
             return
 
         logger = logging.getLogger(__name__)
+        error_message = []
+        status = "success"
+        player_id = None
 
         try:
             player_id = self.session_players_local[event["player_key"]]["id"]       
-            
         except:
             logger.info(f"sleep: invalid data, {event['message_text']}")
-            return
+            status = "fail"
+            error_message.append({"id":"send_sleep_button", "message": "Try again."})
         
         # v = await sync_to_async(sync_sleep)(self.session_id, player_id, self.parameter_set_local)
 
         # session = Session.objects.select_for_update().get(id=session_id)
         # parameter_set = session.parameter_set.json()
-
-        error_message = []
-        status = "success"
         
-        player_id_s = str(player_id)
-        source_player = self.world_state_local['avatars'][player_id_s]
+        if status == "success":
+            player_id_s = str(player_id)
+            source_player = self.world_state_local['avatars'][player_id_s]
 
         if self.world_state_local['time_remaining'] > self.parameter_set_local["night_length"]+5:
             status = "fail"
@@ -1137,10 +1144,10 @@ class SubjectUpdatesMixin():
             await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
        
         result = {"status" : status, "error_message" : error_message}
+        result["source_player_id"] = player_id
 
         if status=="success":
             
-            result["source_player_id"] = player_id
             result["source_player"] = self.world_state_local["avatars"][str(player_id)]
 
             await SessionEvent.objects.acreate(session_id=self.session_id, 
@@ -1151,7 +1158,7 @@ class SubjectUpdatesMixin():
                                                 data=result)
                        
         else:
-            logger.warning(f"sleep: invalid amounts from sync, {event['message_text']}")
+            logger.warning(f"sleep: invalid amounts, {event['message_text']}, {error_message}")
         
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
@@ -1235,6 +1242,7 @@ class SubjectUpdatesMixin():
 
         error_message = []
         status = "success"
+        player_id = None
 
         try:
             player_id = self.session_players_local[event["player_key"]]["id"]        
@@ -1244,11 +1252,12 @@ class SubjectUpdatesMixin():
             status = "fail"
             error_message.append({"id":"patch_harvest", "message": "Invalid data, try again."})
 
-        player_id_s = str(player_id)
-        patch_id_s = str(patch_id)
+        if status == "success":
+            player_id_s = str(player_id)
+            patch_id_s = str(patch_id)
 
-        avatar = self.world_state_local['avatars'][player_id_s]
-        patch = self.world_state_local['patches'][patch_id_s]
+            avatar = self.world_state_local['avatars'][player_id_s]
+            patch = self.world_state_local['patches'][patch_id_s]
        
         #check player has enough harvests remaining
         if status == "success" and avatar["period_patch_harvests"] >= self.parameter_set_local["max_patch_harvests"]:
@@ -1323,7 +1332,7 @@ class SubjectUpdatesMixin():
                                             data=result)         
 
         else:
-            logger.warning(f"patch_harvest: invalid amounts from sync, {event['message_text']} player id {player_id}")
+            logger.warning(f"patch_harvest: invalid amounts, {event['message_text']}, player id {player_id}, {error_message}")
         
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
