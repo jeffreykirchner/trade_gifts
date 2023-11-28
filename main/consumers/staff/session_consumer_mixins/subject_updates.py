@@ -1151,7 +1151,7 @@ class SubjectUpdatesMixin():
                                                 data=result)
                        
         else:
-            logger.warning(f"sleep: invalid amounts from sync, {event['message_text']}")
+            logger.warning(f"sleep: invalid amounts, {event['message_text']}")
         
         await self.send_message(message_to_self=None, message_to_group=result,
                                 message_type=event['type'], send_to_client=False, send_to_group=True)
