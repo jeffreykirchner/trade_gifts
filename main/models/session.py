@@ -589,7 +589,7 @@ class Session(models.Model):
             source_label = session_players[str(data["source_player_id"])]["parameter_set_player__id_label"]
             target_label = session_players[str(data["target_player_id"])]["parameter_set_player__id_label"]
             
-            return f'{source_label} rejects hat trade with {target_label}'
+            return f'{target_label} rejects hat trade with {source_label}'
 
         return ""
     
