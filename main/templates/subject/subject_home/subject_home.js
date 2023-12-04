@@ -616,6 +616,7 @@ var app = Vue.createApp({
             app.house_modal.hide();
             app.avatar_hat_modal.hide();
             app.patch_modal.hide();
+            app.help_modal.hide();
    
             app.end_game_modal.toggle();
 
