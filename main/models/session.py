@@ -581,21 +581,15 @@ class Session(models.Model):
             source_label = session_players[str(data["source_player_id"])]["parameter_set_player__id_label"]
             target_label = session_players[str(data["target_player_id"])]["parameter_set_player__id_label"]
 
-            source_hat = self.parameter_set.parameter_set_hats.get(id=data["source_player_hat_id"]).info
-            target_hat = self.parameter_set.parameter_set_hats.get(id=data["target_player_hat_id"]).info
-
             if data["type"] == "open":               
-                return f'{source_label} proposes hat trade to {target_label} : {source_hat} for {target_hat}'
+                return f'{source_label} proposes hat trade to {target_label}'
             else:
-                return f'{target_label} accepts hat trade with {source_label}: {target_hat} for {source_hat}'
+                return f'{target_label} accepts hat trade with {source_label}'
         elif type =="hat_avatar_cancel":
             source_label = session_players[str(data["source_player_id"])]["parameter_set_player__id_label"]
             target_label = session_players[str(data["target_player_id"])]["parameter_set_player__id_label"]
-
-            source_hat = self.parameter_set.parameter_set_hats.get(id=data["source_player_hat_id"]).info
-            target_hat = self.parameter_set.parameter_set_hats.get(id=data["target_player_hat_id"]).info
             
-            return f'{source_label} rejects hat trade with {target_label}: {source_hat} for {target_hat}'
+            return f'{target_label} rejects hat trade with {source_label}'
 
         return ""
     
