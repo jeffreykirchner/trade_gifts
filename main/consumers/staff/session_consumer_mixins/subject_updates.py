@@ -64,7 +64,6 @@ class SubjectUpdatesMixin():
         result = {"status": status, "error_message": error_message}
         result["sender_id"] = player_id
 
-        #update location 
         if status == "success":
             session_player = self.world_state_avatars_local["session_players"][str(player_id)]
             session_player["current_location"] = current_location
