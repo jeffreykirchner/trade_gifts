@@ -96,7 +96,7 @@ take_update_chat: function take_update_chat(message_data){
 
         if(message_data.sender_id == app.session_player.id)
         {
-        app.working = false;
+            app.working = false;
         }
     }
     else
