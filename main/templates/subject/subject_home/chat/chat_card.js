@@ -41,34 +41,34 @@ send_chat_instructions: function send_chat_instructions()
     // }
 
     let message_data = {
-        "value": "success",
+        "status": "success",
         "text": app.chat_text.trim(),
         "text_limited": app.chat_text.trim(),
         "sender_id": app.session_player.id,       
         "nearby_players": [],
     };
 
-    app.take_chat(message_data);
+    app.take_update_chat(message_data);
 },
 
-/** take result of chat message
-*/
-take_chat: function take_chat(message_data){
-    //app.cancel_modal=false;
-    //app.clear_main_form_errors();
+// /** take result of chat message
+// */
+// take_chat: function take_chat(message_data){
+//     //app.cancel_modal=false;
+//     //app.clear_main_form_errors();
 
-    if(message_data.status == "success")
-    {
-        app.take_update_chat(message_data);                        
-    } 
-    else
-    {
-        if(app.is_subject && message_data.sender_id == app.session_player.id)
-        {
-            app.working = false;
-        }
-    }
-},
+//     if(message_data.status == "success")
+//     {
+//         app.take_update_chat(message_data);                        
+//     } 
+//     else
+//     {
+//         if(app.is_subject && message_data.sender_id == app.session_player.id)
+//         {
+//             app.working = false;
+//         }
+//     }
+// },
 
 /** take updated data from goods being moved by another player
 *    @param message_data {json} session day in json format

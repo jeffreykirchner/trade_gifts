@@ -349,6 +349,15 @@ class Session(models.Model):
             return None
 
         return self.session_periods.get(period_number=self.world_state["current_period"])
+    
+    def get_session_period(self, period_number):
+        '''
+        return session period by period number
+        '''
+        if not self.started:
+            return None
+
+        return self.session_periods.filter(period_number=period_number).first()
 
     async def aget_current_session_period(self):
         '''
@@ -499,8 +508,6 @@ class Session(models.Model):
                     for patch_number, patch in enumerate(world_state["patches"]):
                         temp_row.append(temp_p["patch_harvests_count_" + patch])
                         temp_row.append(temp_p["patch_harvests_total_" + patch])
-
-                    # temp_row.append(Decimal(temp_p["start_health"]) - Decimal(temp_p["end_health"]))
 
                     writer.writerow(temp_row)
                     
