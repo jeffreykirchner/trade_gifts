@@ -306,6 +306,10 @@ def sync_continue_timer(event, session_id, world_state, parameter_set):
             last_period.save()
 
             world_state = last_period.do_consumption(world_state, parameter_set)
+
+            session.world_state = world_state
+            session.save()
+            
             world_state = session.get_current_session_period().do_timer_actions(time_remaining, world_state, parameter_set)
             world_state = session.get_current_session_period().do_production(world_state, parameter_set)
             world_state = session.get_current_session_period().do_patch_growth(world_state, parameter_set)
@@ -329,13 +333,10 @@ def sync_continue_timer(event, session_id, world_state, parameter_set):
                         avatar["parameter_set_hat_id"] = None
                 
             current_session_period.save()
-            # session.save()
 
         else:
             world_state = session.get_current_session_period().do_timer_actions(time_remaining, world_state, parameter_set)
           
-        # world_state = session.world_state
-
     return {"status" : status, 
             "error_message" : error_message, 
             "world_state" : world_state, 
