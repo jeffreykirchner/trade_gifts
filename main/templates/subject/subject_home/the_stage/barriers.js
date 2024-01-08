@@ -3,6 +3,12 @@
  */
 setup_pixi_barrier: function setup_pixi_barrier()
 {
+    //destory old barriers
+    for(const i in pixi_barriers)
+    {
+        if(pixi_barriers[i].barrier_container) pixi_barriers[i].barrier_container.destroy();
+    }
+
     for(const i in app.session.parameter_set.parameter_set_barriers)
     {
         pixi_barriers[i] = {};
