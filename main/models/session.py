@@ -409,12 +409,12 @@ class Session(models.Model):
             parameter_set = self.parameter_set.json()
            
             parameter_set_players = {}
-            for i in self.session_players.all().values('id','parameter_set_player__id_label'):
+            for i in self.session_players.all().values('id','parameter_set_player__id_label','parameter_set_player__parameter_set_group__name'):
                 parameter_set_players[str(i['id'])] = i
 
             writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
             
-            temp_header = ["Session ID", "Period", "Client #", "Label", "Period Earnings ¢", "Hat at End", "Start Health", "End Health", "Health From Sleep", "Health From House"]
+            temp_header = ["Session ID", "Period", "Client #", "Label", "Group", "Period Earnings ¢", "Hat at End", "Start Health", "End Health", "Health From Sleep", "Health From House"]
 
             #good totals
             for k in main.globals.Goods.choices:
@@ -464,6 +464,7 @@ class Session(models.Model):
                                     period_number+1, 
                                     player_number+1,
                                     parameter_set_players[str(player)]["parameter_set_player__id_label"], 
+                                    parameter_set_players[str(player)]["parameter_set_player__parameter_set_group__name"], 
                                     temp_p["period_earnings"],
                                     parameter_set["parameter_set_hats"][str(temp_p["hat_at_end"])]["info"] if temp_p["hat_at_end"] else "",
                                     temp_p["start_health"],
