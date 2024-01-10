@@ -420,6 +420,8 @@ class Session(models.Model):
             for k in main.globals.Goods.choices:
                 temp_header.append("Harvest Total " + k[0])
             
+            temp_header.append("Harvest Total")
+            
             for k in main.globals.Goods.choices:
                 temp_header.append("House Final " + k[0])
             
@@ -474,8 +476,12 @@ class Session(models.Model):
                                     ]
                     
                     #good totals
+                    total_harvest = 0
                     for k in main.globals.Goods.choices:
                         temp_row.append(temp_p["harvest_total_" + k[0]])
+                        total_harvest += temp_p["harvest_total_" + k[0]]
+                    
+                    temp_row.append(total_harvest)
 
                     for k in main.globals.Goods.choices:
                         temp_row.append(temp_p["house_" + k[0]])
