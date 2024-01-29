@@ -21,7 +21,7 @@ process_the_feed: function process_the_feed(message_type, message_data)
             for(i in message_data.nearby_players) {
                 if(receiver_label != "") receiver_label += ", ";
                 group_label = app.get_parameter_set_group_from_player_id(message_data.nearby_players[i]).name;
-                receiver_label += "<b>" + app.get_parameter_set_player_from_player_id(message_data.nearby_players[i]).id_label + "</b>(" + source_player_group_label + ")";
+                receiver_label += "<b>" + app.get_parameter_set_player_from_player_id(message_data.nearby_players[i]).id_label + "</b>(" + group_label + ")";
             }
 
             html_text = "<b>" + sender_label + "</b>(" + source_player_group_label + ") @ " + receiver_label + ": " +  message_data.text;
