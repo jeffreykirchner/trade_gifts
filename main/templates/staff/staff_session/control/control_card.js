@@ -40,13 +40,6 @@ reset_experiment: function reset_experiment(){
     app.send_message("reset_experiment", {});
 },
 
-/** take reset experiment response
- * @param message_data {json}
-*/
-take_reset_experiment: function take_reset_experiment(message_data){
-    app.take_get_session(message_data);
-},
-
 reset_connections: function reset_connections(){
     if (!confirm('Reset connection status?.')) {
         return;

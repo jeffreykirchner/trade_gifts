@@ -133,9 +133,6 @@ var app = Vue.createApp({
                 case "update_start_experiment":
                     app.take_update_start_experiment(message_data);
                     break;
-                case "reset_experiment":
-                    app.take_reset_experiment(message_data);
-                    break;
                 case "next_phase":
                     app.take_next_phase(message_data);
                     break; 
