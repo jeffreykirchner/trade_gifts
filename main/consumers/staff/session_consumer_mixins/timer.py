@@ -310,20 +310,20 @@ def sync_continue_timer(event, session_id, world_state, parameter_set):
             session.world_state = world_state
             session.save()
             
-            world_state = session.get_current_session_period().do_timer_actions(time_remaining, world_state, parameter_set)
-            world_state = session.get_current_session_period().do_production(world_state, parameter_set)
-            world_state = session.get_current_session_period().do_patch_growth(world_state, parameter_set)
-
             current_session_period = session.get_current_session_period()
             summary_data_current = current_session_period.summary_data
             
-            #store data for last period
+            #store starting data for current period
             for i in world_state["avatars"]:
                 sd_player = summary_data_current[i]
                 avatar = world_state["avatars"][i]
                 
                 #store starting health
                 sd_player["start_health"] = avatar["health"]
+                
+            world_state = session.get_current_session_period().do_timer_actions(time_remaining, world_state, parameter_set)
+            world_state = session.get_current_session_period().do_production(world_state, parameter_set)
+            world_state = session.get_current_session_period().do_patch_growth(world_state, parameter_set)
             
             #reset hats
             if parameter_set["hat_mode"] == HatModes.NON_BINDING:
