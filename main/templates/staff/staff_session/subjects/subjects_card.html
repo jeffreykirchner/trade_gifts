@@ -184,7 +184,19 @@
                             </td>                           
                         </tr>
                     </tbody>
-                    
+                    <tfoot>
+                        <tr>
+                            <td colspan="7" class="text-end">
+                               Average
+                            </td>
+                            <td class="text-center">
+                                [[get_average_earnings()]]
+                            </td>
+                            <td colspan="2" class="text-end">
+
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
                 </div>
             </div>
@@ -202,7 +214,7 @@
                     Next available connection:
                 </div>
                 <div class="col-md-auto text-center">
-                    <a href='{%url "subject_home_auto_connect" session.session_key%}' class = 'link-primary'>{{parameters.site_url}}{%url "subject_home_auto_connect" session.session_key%}</a>
+                    <a href='{%url "subject_home_auto_connect" session.id_string%}' class = 'link-primary'>{{parameters.site_url}}{%url "subject_home_auto_connect" session.id_string%}</a>
                 </div>
             </div>
             <div class="row justify-content-center">
@@ -210,7 +222,7 @@
                     Login by client number:
                 </div>
                 <div class="col-md-auto text-center">
-                    <a href='{%url "subject_home_auto_connect" session.session_key%}[client_number]' class = 'link-primary'>{{parameters.site_url}}{%url "subject_home_auto_connect" session.session_key%}[client_number]</a>
+                    <a href='{%url "subject_home_auto_connect" session.id_string%}[client_number]' class = 'link-primary'>{{parameters.site_url}}{%url "subject_home_auto_connect" session.id_string%}[client_number]</a>
                 </div>
             </div>
         </div>
@@ -222,7 +234,7 @@
                     Prolific auto-login link:
                 </div>
                 <div class="col-md-9 text-start">
-                    {{parameters.site_url}}{%url "subject_home_auto_connect_prolific" session.session_key%}{% verbatim %}?PROLIFIC_PID={{%PROLIFIC_PID%}}&SESSION_ID={{%SESSION_ID%}}{% endverbatim %}
+                    {{parameters.site_url}}{%url "subject_home_auto_connect_prolific" session.id_string%}{% verbatim %}?PROLIFIC_PID={{%PROLIFIC_PID%}}&SESSION_ID={{%SESSION_ID%}}{% endverbatim %}
                 </div>
             </div>
             <div class="row justify-content-center">
