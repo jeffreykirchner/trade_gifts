@@ -21,6 +21,7 @@ from django.conf import settings
 from django.dispatch import receiver
 from django.db import models
 from django.db.models.signals import post_delete
+from django.db.models.signals import post_save
 from django.utils.timezone import now
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers.json import DjangoJSONEncoder
@@ -46,6 +47,8 @@ class Session(models.Model):
 
     channel_key = models.UUIDField(default=uuid.uuid4, editable=False, verbose_name = 'Channel Key')     #unique channel to communicate on
     session_key = models.UUIDField(default=uuid.uuid4, editable=False, verbose_name = 'Session Key')     #unique key for session to auto login subjects by id
+
+    id_string = models.CharField(max_length=6, unique=True, null=True, blank=True)                       #unique string for session to auto login subjects by id
 
     controlling_channel = models.CharField(max_length = 300, default="")         #channel controlling session
 
@@ -670,6 +673,7 @@ class Session(models.Model):
             "locked":self.locked,
             "start_date":self.get_start_date_string(),
             "started":self.started,
+            "id_string":self.id_string,
             "parameter_set":self.parameter_set.json(),
             "session_periods":{i.id : i.json() for i in self.session_periods.all()},
             "session_periods_order" : list(self.session_periods.all().values_list('id', flat=True)),
@@ -732,3 +736,16 @@ def post_delete_parameterset(sender, instance, *args, **kwargs):
     '''
     if instance.parameter_set:
         instance.parameter_set.delete()
+
+@receiver(post_save, sender=Session)
+def post_save_session(sender, instance, created, *args, **kwargs):
+    '''
+    after session is initialized
+    '''
+    if created:
+        id_string = ''.join(random.choices(string.ascii_lowercase, k=6))
+
+        while Session.objects.filter(id_string=id_string).exists():
+            id_string = ''.join(random.choices(string.ascii_lowercase, k=6))
+
+        instance.id_string = id_string
