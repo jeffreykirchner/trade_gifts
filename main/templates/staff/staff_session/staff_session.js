@@ -23,6 +23,8 @@ var pixi_patches = {};                          //patches
 var wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
 var wall_search_objects = [];
 
+var worker = null;
+
 //vue app
 var app = Vue.createApp({
     delimiters: ["[[", "]]"],
@@ -37,7 +39,6 @@ var app = Vue.createApp({
                     session_key : "{{session.session_key}}",
                     field_color : 'BlanchedAlmond',
                     session : null,
-                    timer_pulse : null,
 
                     the_feed : [],
 
@@ -104,7 +105,7 @@ var app = Vue.createApp({
         */
         handle_socket_connection_try: function handle_socket_connection_try(){         
             app.session.world_state.timer_running = false;
-            if(app.timer_pulse != null) clearTimeout(app.timer_pulse);   
+            if(worker) worker.terminate();   
             return true;
         },
 
