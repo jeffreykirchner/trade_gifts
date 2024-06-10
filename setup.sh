@@ -1,14 +1,8 @@
-echo "setup template"
+echo "setup trade_gifts"
 sudo service postgresql restart
 echo "drop template db: enter db password"
-dropdb trade_gifts -U dbadmin -h localhost -i
+dropdb trade_gifts -U dbadmin -h localhost -i -p 5433
 echo "create database: enter db password"
-createdb -h localhost -U dbadmin -O dbadmin trade_gifts
-source _trade_gifts_env/bin/activate
-python manage.py migrate
-echo "create super user"
-python manage.py createsuperuser 
-echo "load fixtures"
-python manage.py loaddata main.json
-echo "setup done"
-python manage.py runserver
+createdb -h localhost -p 5433 -U dbadmin -O dbadmin trade_gifts
+echo "restore database: enter db password"
+pg_restore -v --no-owner --role=dbowner --host=localhost --port=5433 --username=dbadmin --dbname=trade_gifts database_dumps/trade_gifts.sql

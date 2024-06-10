@@ -44,7 +44,7 @@ class StaffSessionParametersView(SingleObjectMixin, View):
         '''
         handle get requests
         '''
-        session = self.get_object()
+        session = Session.objects.only("id", "parameter_set").get(id=self.kwargs['pk'])
 
         parameter_set_form = ParameterSetForm()
         parameter_set_player_form = ParameterSetPlayerForm()

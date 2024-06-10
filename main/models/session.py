@@ -66,6 +66,8 @@ class Session(models.Model):
 
     # summary_data = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Summary Data")       #summary data for session
 
+    replay_data = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="Replay Data")              #replay data for session
+
     soft_delete =  models.BooleanField(default=False)                             #hide session if true
 
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -327,6 +329,7 @@ class Session(models.Model):
         #self.timer_running = False
         self.world_state ={}
         self.world_state_avatars ={}
+        self.replay_data = None
         self.save()
 
         for p in self.session_players.all():
