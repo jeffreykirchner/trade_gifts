@@ -17,8 +17,10 @@ class GetSessionMixin():
         return the session
         '''
 
+        # time_start = datetime.now()
+
         logger = logging.getLogger(__name__)
-        logger.info(f"get_session, thread sensitive {self.thread_sensitive}")
+        #logger.info(f"get_session, thread sensitive {self.thread_sensitive}")
 
         self.connection_uuid = event["message_text"]["session_key"]
         self.connection_type = "staff"
@@ -32,7 +34,7 @@ class GetSessionMixin():
         if self.controlling_channel == self.channel_name and result["started"]:
             self.world_state_local["timer_history"].append({"time": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
                                                             "count": 0})
-            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+            await Session.objects.only("id").filter(id=self.session_id).aupdate(world_state=self.world_state_local)
 
         for p in result["session_players"]:
             session_player = result["session_players"][p]
@@ -51,6 +53,8 @@ class GetSessionMixin():
 
         await self.send_message(message_to_self=result, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
+        
+        # logger.info(f"get_session, time: {datetime.now() - time_start}")
 
 #local sync functions    
 def take_get_session(session_key):
