@@ -52,7 +52,7 @@ class SocketConsumerMixin(AsyncWebsocketConsumer):
 
         result = await sync_to_async(take_handle_dis_connect, thread_sensitive=self.thread_sensitive)(self.player_key, True)
 
-        session = await Session.objects.filter(channel_key=room_name).afirst()
+        session = await Session.objects.only("id").filter(channel_key=room_name).afirst()
 
         #send updated connection status to all users
         await self.channel_layer.group_send(
