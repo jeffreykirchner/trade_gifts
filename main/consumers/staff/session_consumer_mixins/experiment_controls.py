@@ -294,6 +294,9 @@ def take_refresh_screens(session_id, data):
         session = Session.objects.get(id=session_id)
         session.parameter_set.json(update_required=True)
 
+        session.replay_data = None
+        session.save()
+
     except ObjectDoesNotExist:
         logger.warning(f"take_refresh_screens session not found: {session_id}")
         return {"status":"fail", 
