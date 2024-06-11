@@ -53,8 +53,7 @@ setup_pixi_fields: function setup_pixi_fields()
             fontFamily: 'Arial',
             fontSize: 60,
             fill: 'white',
-            stroke: 'black',
-            strokeThickness: 2,
+            stroke: {color:'black', width: 2},
         });
         good_one_label.eventMode = 'passive'; 
         good_one_label.anchor.set(0, 0.5);
@@ -76,8 +75,7 @@ setup_pixi_fields: function setup_pixi_fields()
             fontFamily: 'Arial',
             fontSize: 60,
             fill: 'white',
-            stroke: 'black',
-            strokeThickness: 2,
+            stroke: {color:'black', width: 2},
         });
         good_two_label.eventMode = 'passive'; 
         good_two_label.anchor.set(0, 0.5);

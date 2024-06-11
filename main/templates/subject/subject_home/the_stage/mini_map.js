@@ -17,7 +17,7 @@ setup_pixi_minimap: function setup_pixi_minimap()
     let obj = app.session.world_state_avatars.session_players[app.session_player.id]
 
     mini_map.container = new PIXI.Container();
-    mini_map.container.eventMode = 'none';
+    // mini_map.container.eventMode = 'none';
     mini_map.container.zIndex = 9998;
 
     //mini map background
@@ -25,10 +25,11 @@ setup_pixi_minimap: function setup_pixi_minimap()
     
     mini_map_bg.width = app.stage_width * scale;
     mini_map_bg.height =  app.stage_height * scale;
-    mini_map_bg.lineStyle(1, 0x000000);
-    mini_map_bg.beginFill('00BFFF');
+   
     mini_map_bg.drawRect(0, 0, app.stage_width * scale, app.stage_height * scale);
-    mini_map_bg.endFill();
+    
+    mini_map_bg.fill({color:'00BFFF'});
+    mini_map_bg.stroke({width:1, color:0x000000});
     
     mini_map.container.addChild(mini_map_bg);
 
@@ -71,12 +72,9 @@ setup_pixi_minimap: function setup_pixi_minimap()
         const patch = app.session.world_state.patches[i];
 
         let temp_patch = new PIXI.Graphics();
-        temp_patch.beginFill(app.field_color);
-        // temp_patch.lineStyle(0.75, "black");
+       
         temp_patch.drawCircle(patch.x * scale, patch.y * scale, patch.radius * scale);
-        temp_patch.endFill();
-
-        // temp_patch.pivot.set(temp_patch.width/2, temp_patch.height/2);
+        temp_patch.fill({color:app.field_color});
 
         mini_map.container.addChild(temp_patch);
     }
@@ -144,10 +142,12 @@ setup_pixi_minimap: function setup_pixi_minimap()
     let mini_map_vp = new PIXI.Graphics();
     mini_map_vp.width = pixi_app.screen.width * scale;
     mini_map_vp.height = pixi_app.screen.height * scale;
-    mini_map_vp.lineStyle({width:2,color:0x000000,alignment:0});
-    mini_map_vp.beginFill(0xFFFFFF,0);
+    
     mini_map_vp.drawRect(0, 0, pixi_app.screen.width * scale, pixi_app.screen.height * scale);
-    mini_map_vp.endFill();    
+    
+    mini_map_vp.beginFill({color:0xFFFFFF, alpha:0});
+    mini_map_vp.stroke({width:2,color:0x000000,alignment:0});
+
     mini_map_vp.pivot.set(mini_map_vp.width/2, mini_map_vp.height/2);
     mini_map_vp.position.set(obj.current_location.x * scale, obj.current_location.y * scale);
 

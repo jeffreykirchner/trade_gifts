@@ -48,8 +48,7 @@ setup_pixi_houses: function setup_pixi_houses()
             fontFamily: 'Arial',
             fontSize: 60,
             fill: 'white',
-            stroke: 'black',
-            strokeThickness: 2,
+            stroke: {color:'black', width: 2},
         });
         good_one_label.eventMode = 'passive'; 
         good_one_label.anchor.set(0, 0.5);
@@ -63,8 +62,7 @@ setup_pixi_houses: function setup_pixi_houses()
             fontFamily: 'Arial',
             fontSize: 60,
             fill: 'white',
-            stroke: 'black',
-            strokeThickness: 2,
+            stroke: {color:'black', with: 2},
         });
         good_two_label.eventMode = 'passive'; 
         good_two_label.anchor.set(0, 0.5);
@@ -80,8 +78,7 @@ setup_pixi_houses: function setup_pixi_houses()
                 fontFamily: 'Arial',
                 fontSize: 60,
                 fill: 'white',
-                stroke: 'black',
-                strokeThickness: 2,
+                stroke: {color:'black', width: 2},
             });
             good_three_label.eventMode = 'passive'; 
             good_three_label.anchor.set(0, 0.5);

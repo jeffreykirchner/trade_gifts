@@ -4,12 +4,11 @@
 add_scroll_button: function add_scroll_button(button_size, name, text)
 {
     let g = new PIXI.Graphics();
-    g.lineStyle(1, 0x000000);
-    g.beginFill(0xffffff);
+    
     g.drawRect(0, 0, button_size.w, button_size.h);
     g.pivot.set(button_size.w/2, button_size.h/2);
-    g.endFill();
-    g.lineStyle(1, 0x000000);
+    g.fill({color:0xffffff});
+    g.stroke({width:1, color:0x000000});
     g.x=button_size.x;
     g.y=button_size.y;
     g.eventMode='static';

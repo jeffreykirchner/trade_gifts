@@ -37,8 +37,7 @@ update_notices: function update_notices()
                 fontSize: 40,
                 fill: 'white',
                 align: 'center',
-                stroke: 'black',
-                strokeThickness: 2,
+                stroke: {color:'black', width: 2},
             });
             label.eventMode = 'passive';    
             label.anchor.set(0.5);

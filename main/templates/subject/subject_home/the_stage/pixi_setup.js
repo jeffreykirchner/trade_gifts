@@ -6,26 +6,26 @@
 setup_pixi: function setup_pixi(){    
     app.reset_pixi_app();
 
-    PIXI.Assets.add('sprite_sheet', '{% static "gear_3_animated.json" %}');
-    PIXI.Assets.add('sprite_sheet_2', '{% static "sprite_sheet_trade_gifts.json" %}');
-    PIXI.Assets.add('sprite_sheet_hf', '{% static "sprite_sheet_hf_trade_gifts.json" %}');
-    PIXI.Assets.add('grass_tex', '{% static "background_tile_low.jpg"%}');
-    PIXI.Assets.add('wall_tex', '{% static "wall.png"%}');
-    PIXI.Assets.add('barrier_tex', '{% static "barrier.png"%}');
-    PIXI.Assets.add('water_tex', '{% static "water_tile.jpg"%}');
-    PIXI.Assets.add('bridge_tex', '{% static "bridge.jpg"%}');
-    PIXI.Assets.add('Blueberry_tex', '{% static "blueberry.png"%}');
-    PIXI.Assets.add('Pineapple_tex', '{% static "pineapple.png"%}');
-    PIXI.Assets.add('Cherry_tex', '{% static "cherry.png"%}');
-    PIXI.Assets.add('field_tex', '{% static "field.png"%}');
-    PIXI.Assets.add('house_tex', '{% static "house.png"%}');
-    PIXI.Assets.add('health_tex', '{% static "health_2.png"%}');
-    PIXI.Assets.add('fist_left_tex', '{% static "fist_left.png"%}');
-    PIXI.Assets.add('fist_right_tex', '{% static "fist_right.png"%}');
-    PIXI.Assets.add('face_sleep_tex', '{% static "face_sleep_1.png"%}');
-    PIXI.Assets.add('happy_emoji_tex', '{% static "happy_emoji.png"%}');
-    PIXI.Assets.add('sad_emoji_tex', '{% static "sad_emoji.png"%}');
-    PIXI.Assets.add('angry_emoji_tex', '{% static "angry_emoji.png"%}');
+    PIXI.Assets.add({alias:'sprite_sheet', src:'{% static "gear_3_animated.json" %}'});
+    PIXI.Assets.add({alias:'sprite_sheet_2', src:'{% static "sprite_sheet_trade_gifts.json" %}'});
+    PIXI.Assets.add({alias:'sprite_sheet_hf', src:'{% static "sprite_sheet_hf_trade_gifts.json" %}'});
+    PIXI.Assets.add({alias:'grass_tex', src:'{% static "background_tile_low.jpg"%}'});
+    PIXI.Assets.add({alias:'wall_tex', src:'{% static "wall.png"%}'});
+    PIXI.Assets.add({alias:'barrier_tex', src:'{% static "barrier.png"%}'});
+    PIXI.Assets.add({alias:'water_tex', src:'{% static "water_tile.jpg"%}'});
+    PIXI.Assets.add({alias:'bridge_tex', src:'{% static "bridge.jpg"%}'});
+    PIXI.Assets.add({alias:'Blueberry_tex', src:'{% static "blueberry.png"%}'});
+    PIXI.Assets.add({alias:'Pineapple_tex', src:'{% static "pineapple.png"%}'});
+    PIXI.Assets.add({alias:'Cherry_tex', src:'{% static "cherry.png"%}'});
+    PIXI.Assets.add({alias:'field_tex', src:'{% static "field.png"%}'});
+    PIXI.Assets.add({alias:'house_tex', src:'{% static "house.png"%}'});
+    PIXI.Assets.add({alias:'health_tex', src:'{% static "health_2.png"%}'});
+    PIXI.Assets.add({alias:'fist_left_tex', src:'{% static "fist_left.png"%}'});
+    PIXI.Assets.add({alias:'fist_right_tex', src:'{% static "fist_right.png"%}'});
+    PIXI.Assets.add({alias:'face_sleep_tex', src:'{% static "face_sleep_1.png"%}'});
+    PIXI.Assets.add({alias:'happy_emoji_tex', src:'{% static "happy_emoji.png"%}'});
+    PIXI.Assets.add({alias:'sad_emoji_tex', src:'{% static "sad_emoji.png"%}'});
+    PIXI.Assets.add({alias:'angry_emoji_tex', src:'{% static "angry_emoji.png"%}'});
 
     let asset_names = ['sprite_sheet', 'sprite_sheet_hf', 'grass_tex', 'wall_tex', 'barrier_tex', 'water_tex',
                        'bridge_tex', 'sprite_sheet_2', 'Blueberry_tex', 'Pineapple_tex',
@@ -35,7 +35,7 @@ setup_pixi: function setup_pixi(){
     for(i in app.session.parameter_set.parameter_set_hats)
     {
         let texture_name = app.session.parameter_set.parameter_set_hats[i].texture;
-        PIXI.Assets.add(texture_name, '/static/' + texture_name + '.png');
+        PIXI.Assets.add({alias:texture_name, src:'/static/' + texture_name + '.png'});
         asset_names.push(texture_name);
     }
 
@@ -74,28 +74,30 @@ setup_pixi: function setup_pixi(){
     pixi_transfer_beams_key = 0;
 },
 
-reset_pixi_app: function reset_pixi_app(){    
+reset_pixi_app: async function reset_pixi_app(){    
 
     app.stage_width = app.session.parameter_set.world_width;
     app.stage_height = app.session.parameter_set.world_height;
 
     let canvas = document.getElementById('sd_graph_id');
 
-    pixi_app = new PIXI.Application({resizeTo : canvas,
-                                        backgroundColor : 0xFFFFFF,
-                                        autoResize: true,
-                                        antialias: true,
-                                        resolution: 1,
-                                        view: canvas });
+    pixi_app = new PIXI.Application()
+
+    await pixi_app.init({resizeTo : canvas,
+                         backgroundColor : 0xFFFFFF,
+                         autoResize: true,
+                         antialias: true,
+                         resolution: 1,
+                         canvas: canvas });
 
     // The stage will handle the move events
-    pixi_app.stage.eventMode = 'static';
-    pixi_app.stage.hitArea = pixi_app.screen;
+    // pixi_app.stage.eventMode = 'static';
+    // pixi_app.stage.hitArea = pixi_app.screen;
 
     app.canvas_width = canvas.width;
     app.canvas_height = canvas.height;
 
-    app.last_collision_check = Date.now();
+    // app.last_collision_check = Date.now();
 },
 
 /** load pixi sprite sheets
@@ -111,11 +113,11 @@ setup_pixi_sheets: function setup_pixi_sheets(textures){
 
     pixi_app.stage.addChild(pixi_container_main);
    
-    let tiling_sprite = new PIXI.TilingSprite(
-        app.pixi_textures["water_tex"],
-        app.stage_width,
-        app.stage_height,
-    );
+    let tiling_sprite = new PIXI.TilingSprite({
+        texture:app.pixi_textures["water_tex"],
+        width:app.stage_width,
+        height:app.stage_height,
+    });
     tiling_sprite.position.set(0,0);
     pixi_container_main.addChild(tiling_sprite);
 
@@ -126,9 +128,10 @@ setup_pixi_sheets: function setup_pixi_sheets(textures){
         tiling_sprite.on("pointerup", app.subject_pointer_up);        
                
         pixi_target = new PIXI.Graphics();
-        pixi_target.lineStyle(3, 0x000000);
+        
         pixi_target.alpha = 0.33;
         pixi_target.drawCircle(0, 0, 10);
+        pixi_target.stroke({width:3, color:0x000000});
         pixi_target.eventMode='static';
         pixi_target.zIndex = 100;
 
@@ -169,7 +172,7 @@ setup_pixi_sheets: function setup_pixi_sheets(textures){
         align: 'left',
     };
     let fps_label = new PIXI.Text("0 fps", text_style);
-    fps_label.eventMode = 'none';
+    // fps_label.eventMode = 'none';
 
     pixi_fps_label = fps_label;
     pixi_fps_label.position.set(10, app.canvas_height-25);

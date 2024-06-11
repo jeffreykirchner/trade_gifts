@@ -35,7 +35,7 @@ setup_subject_status_overlay: function setup_subject_status_overlay()
     if(subject_status_overlay_container) subject_status_overlay_container.destroy();
 
     subject_status_overlay_container = new PIXI.Container();
-    subject_status_overlay_container.eventMode = 'none';
+    // subject_status_overlay_container.eventMode = 'none';
     subject_status_overlay_container.zIndex = 9999
 
     temp_y = 0;
@@ -45,14 +45,13 @@ setup_subject_status_overlay: function setup_subject_status_overlay()
         fontSize: 28,
         fill: 'white',
         align: 'left',
-        stroke: 'black',
-        strokeThickness: 2,
+        stroke: {color:'black', width: 2},
     };
 
     //labels
     //current period
     let current_period_text = new PIXI.Text('Current Period:', text_style);
-    current_period_text.eventMode = 'none';   
+    // current_period_text.eventMode = 'none';   
 
     subject_status_overlay_container.addChild(current_period_text);
     current_period_text.position.set(0, temp_y);
@@ -61,7 +60,7 @@ setup_subject_status_overlay: function setup_subject_status_overlay()
 
     //time remaining
     let time_remaining_text = new PIXI.Text('Time Remaining:', text_style);
-    time_remaining_text.eventMode = 'none';   
+    // time_remaining_text.eventMode = 'none';   
 
     subject_status_overlay_container.addChild(time_remaining_text);
     time_remaining_text.position.set(0, temp_y);
@@ -70,7 +69,7 @@ setup_subject_status_overlay: function setup_subject_status_overlay()
 
     //profit
     let profit_text = new PIXI.Text('Total Profit (¢):', text_style);
-    profit_text.eventMode = 'none';   
+    // profit_text.eventMode = 'none';   
 
     subject_status_overlay_container.addChild(profit_text);
     profit_text.position.set(0, temp_y);
@@ -79,7 +78,7 @@ setup_subject_status_overlay: function setup_subject_status_overlay()
     temp_y = 0;
     //current period 
     let current_period_label = new PIXI.Text('NN', text_style);
-    current_period_label.eventMode = 'none';   
+    // current_period_label.eventMode = 'none';   
 
     subject_status_overlay_container.addChild(current_period_label);
     current_period_label.position.set(time_remaining_text.width+10, temp_y);
@@ -88,7 +87,7 @@ setup_subject_status_overlay: function setup_subject_status_overlay()
 
     //time remaining 
     let time_remaining_label = new PIXI.Text('00:00', text_style);
-    time_remaining_label.eventMode = 'none';   
+    // time_remaining_label.eventMode = 'none';   
 
     subject_status_overlay_container.addChild(time_remaining_label);
     time_remaining_label.position.set(time_remaining_text.width+10, temp_y);
@@ -97,7 +96,7 @@ setup_subject_status_overlay: function setup_subject_status_overlay()
 
     //profit
     let profit_label = new PIXI.Text('0000', text_style);
-    profit_label.eventMode = 'none';   
+    // profit_label.eventMode = 'none';   
 
     subject_status_overlay_container.addChild(profit_label);
     profit_label.position.set(time_remaining_text.width+10, temp_y);

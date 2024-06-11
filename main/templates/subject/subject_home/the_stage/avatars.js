@@ -50,7 +50,7 @@ setup_pixi_subjects: function setup_pixi_subjects()
             fill: 'black',
             // align: 'left',
             // stroke: 'black',
-            strokeThickness: 1,
+            stroke:{width:1},
         };
 
         let text_style_2 = {
@@ -58,8 +58,7 @@ setup_pixi_subjects: function setup_pixi_subjects()
             fontSize: 40,
             fill: 'white',
             // align: 'left',
-            stroke: 'black',
-            strokeThickness: 3,
+            stroke: {color:'black', width:1},
         };
 
         //id label
@@ -226,11 +225,11 @@ setup_pixi_subjects: function setup_pixi_subjects()
         //bounding box with avatar scaller        
         let bounding_box = new PIXI.Graphics();
     
-        bounding_box.lineStyle(2, "orchid");
+        
         //bounding_box.beginFill(0xBDB76B);
         bounding_box.drawRect(0, 0, avatar_container.width * app.session.parameter_set.avatar_bound_box_percent * app.session.parameter_set.avatar_scale, 
                                     avatar_container.height * app.session.parameter_set.avatar_bound_box_percent * app.session.parameter_set.avatar_scale);
-        bounding_box.endFill();
+        bounding_box.stroke({});
         bounding_box.pivot.set(bounding_box.width/2, bounding_box.height/2);
         bounding_box.position.set(0, 0);
         bounding_box.visible = false;
@@ -241,11 +240,11 @@ setup_pixi_subjects: function setup_pixi_subjects()
         //bound box view
         let bounding_box_view = new PIXI.Graphics();
     
-        bounding_box_view.lineStyle(2, "orchid");
         //bounding_box.beginFill(0xBDB76B);
         bounding_box_view.drawRect(0, 0, avatar_container.width * app.session.parameter_set.avatar_bound_box_percent, 
                                     avatar_container.height * app.session.parameter_set.avatar_bound_box_percent);
-        bounding_box_view.endFill();
+        bounding_box_view.fill();
+        bounding_box_view.stroke({width:2, color:"orchid"})
         bounding_box_view.pivot.set(bounding_box_view.width/2, bounding_box_view.height/2);
         bounding_box_view.position.set(0, 0);
 
@@ -266,7 +265,7 @@ setup_pixi_subjects: function setup_pixi_subjects()
         
         let chat_bubble_sprite = PIXI.Sprite.from(app.pixi_textures.sprite_sheet_2.textures["chat_bubble.png"]);
         chat_bubble_sprite.anchor.set(0.5);
-        chat_bubble_sprite.eventMode = 'none';
+        // chat_bubble_sprite.eventMode = 'none';
 
         let chat_bubble_text = new PIXI.Text('', {
                 fontFamily: 'Arial',
@@ -311,11 +310,10 @@ setup_pixi_subjects: function setup_pixi_subjects()
 
         let interaction_range = new PIXI.Graphics();
         let interaction_range_radius = app.session.parameter_set.interaction_range;
-
-        interaction_range.lineStyle({width:1, color:"dimgrey", alignment:0}); //parameter_set_player.hex_color
-        interaction_range.beginFill(0xFFFFFF,0);
+        
         interaction_range.drawCircle(0, 0, interaction_range_radius);
-        interaction_range.endFill();    
+        interaction_range.fill(0xFFFFFF,0);
+         interaction_range.stroke({width:1, color:"dimgrey", alignment:0});
         interaction_range.zIndex = 100;
 
         interaction_container.addChild(interaction_range);
@@ -329,10 +327,9 @@ setup_pixi_subjects: function setup_pixi_subjects()
             view_container.position.set(subject.current_location.x, subject.current_location.y);
 
             let view_range = new PIXI.Graphics();
-            // view_range.lineStyle({width:2, color:parameter_set_player.hex_color, alignment:0});
-            view_range.beginFill(parameter_set_player.hex_color,0.1);
+            
             view_range.drawRect(0, 0, 1850, 800);
-            view_range.endFill();    
+            view_range.fill({color:parameter_set_player.hex_color, alpha:0.1});    
             view_range.zIndex = 75;
             view_range.pivot.set(1850/2, 800/2);
             view_range.position.set(0, 0);

@@ -73,19 +73,20 @@ setup_pixi_patches: function setup_pixi_patches()
 
             //level before harvest           
             let patch_circle = new PIXI.Graphics();
-            patch_circle.beginFill(patch.hex_color);
-            patch_circle.lineStyle(2, "black");
+           
             patch_circle.drawCircle(0, 0, temp_size/2);
-            patch_circle.endFill();
+            patch_circle.fill({color:patch.hex_color});
+            patch_circle.stroke({width:2, color:"black"});
             patch_circle.alpha = 1/max_patch_size;
             patch_circle.eventMode = 'passive';
 
             //level after harvest
             let patch_circle_outline = new PIXI.Graphics();
-            patch_circle_outline.beginFill("white");
-            patch_circle_outline.lineStyle(2, "black");
+           
             patch_circle_outline.drawCircle(0, 0, temp_size/2);
-            patch_circle_outline.endFill();
+            patch_circle_outline.fill({color:"white"});
+            patch_circle_outline.stroke({width:2, color:"black"});
+
             patch_circle_outline.eventMode = 'passive';
             patch_circle_outline.alpha = 1/max_patch_size;
             patch_circle_outline.visible = false;
@@ -124,8 +125,7 @@ setup_pixi_patches: function setup_pixi_patches()
             fontFamily: 'Arial',
             fontSize: 40,
             fill: 'white',
-            stroke: 'black',
-            strokeThickness: 2,
+            stroke: {color:'black', width: 2},
         });
         good_label.eventMode = 'passive'; 
         good_label.anchor.set(0.5,0);
