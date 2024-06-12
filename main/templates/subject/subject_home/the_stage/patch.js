@@ -43,7 +43,7 @@ setup_pixi_patches: function setup_pixi_patches()
         pixi_patches[i] = {};
 
         let patch_container = new PIXI.Container();
-        patch_container.eventMode = 'passive';
+        // patch_container.eventMode = 'passive';
         patch_container.zIndex = 80;
         
         patch_container.position.set(parameter_set_patch.x, parameter_set_patch.y);
@@ -59,14 +59,14 @@ setup_pixi_patches: function setup_pixi_patches()
             let patch_level = patch.levels[j];
 
             //value of level
-            let good_label = new PIXI.Text(patch_level.value, {
+            let good_label = new PIXI.Text({text:patch_level.value, style:{
                 fontFamily: 'Arial',
                 fontSize: 14,
                 fill: 'black',
                 // stroke: 'black',
                 // strokeThickness: 2,
-            });
-            good_label.eventMode = 'passive'; 
+            }});
+            // good_label.eventMode = 'passive'; 
             good_label.anchor.set(1, 0.5);
             good_label_position = app.find_point_on_circle({x:0, y:0}, temp_size/2, 0);
             good_label.position.set(good_label_position.x-5, good_label_position.y);
@@ -74,20 +74,20 @@ setup_pixi_patches: function setup_pixi_patches()
             //level before harvest           
             let patch_circle = new PIXI.Graphics();
            
-            patch_circle.drawCircle(0, 0, temp_size/2);
+            patch_circle.circle(0, 0, temp_size/2);
             patch_circle.fill({color:patch.hex_color});
             patch_circle.stroke({width:2, color:"black"});
             patch_circle.alpha = 1/max_patch_size;
-            patch_circle.eventMode = 'passive';
+            // patch_circle.eventMode = 'passive';
 
             //level after harvest
             let patch_circle_outline = new PIXI.Graphics();
            
-            patch_circle_outline.drawCircle(0, 0, temp_size/2);
+            patch_circle_outline.circle(0, 0, temp_size/2);
             patch_circle_outline.fill({color:"white"});
             patch_circle_outline.stroke({width:2, color:"black"});
 
-            patch_circle_outline.eventMode = 'passive';
+            // patch_circle_outline.eventMode = 'passive';
             patch_circle_outline.alpha = 1/max_patch_size;
             patch_circle_outline.visible = false;
             
@@ -106,11 +106,11 @@ setup_pixi_patches: function setup_pixi_patches()
         //add base circle
         temp_size -= ring_size;
         let patch_base = new PIXI.Graphics();
-        patch_base.beginFill("lightgrey");
+        
         //add line style
-        patch_base.drawCircle(0, 0, temp_size/2);
-        patch_base.endFill();
-        patch_base.eventMode = 'passive';
+        patch_base.circle(0, 0, temp_size/2);
+        patch_base.fill("lightgrey");
+        // patch_base.eventMode = 'passive';
 
         patch_container.addChildAt(patch_base, 0);
 
@@ -118,16 +118,16 @@ setup_pixi_patches: function setup_pixi_patches()
         let good_sprite = PIXI.Sprite.from(app.pixi_textures[patch.good +"_tex"]);
         good_sprite.anchor.set(0.5, 1);
         good_sprite.scale.set(0.6);
-        good_sprite.eventMode = 'passive';
+        // good_sprite.eventMode = 'passive';
 
         //good label
-        let good_label = new PIXI.Text("NN", {
+        let good_label = new PIXI.Text({text:"NN", style:{
             fontFamily: 'Arial',
             fontSize: 40,
             fill: 'white',
             stroke: {color:'black', width: 2},
-        });
-        good_label.eventMode = 'passive'; 
+        }});
+        // good_label.eventMode = 'passive'; 
         good_label.anchor.set(0.5,0);
 
         pixi_patches[i].good_label = good_label;

@@ -244,11 +244,8 @@ search_for_path_around_walls: function search_for_path_around_walls(starting_rec
             let box = new PIXI.Graphics();
             let rect = search_grid.rect;
         
-           
-            //bounding_box.beginFill(0xBDB76B);
-            box.drawRect(rect.x, rect.y, rect.width, rect.height);
+            box.rect(rect.x, rect.y, rect.width, rect.height);
             box.stroke({width:1, color:"black"});
-            // box.endFill();
             
             wall_search_objects.push(box);
             pixi_container_main.addChild(box);

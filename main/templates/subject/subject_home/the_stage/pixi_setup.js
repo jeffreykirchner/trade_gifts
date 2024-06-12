@@ -109,7 +109,7 @@ setup_pixi_sheets: function setup_pixi_sheets(textures){
 
     pixi_container_main = new PIXI.Container();
     pixi_container_main.sortableChildren = true;
-    pixi_container_main.eventMode = 'passive';
+    // pixi_container_main.eventMode = 'passive';
 
     pixi_app.stage.addChild(pixi_container_main);
    
@@ -130,9 +130,9 @@ setup_pixi_sheets: function setup_pixi_sheets(textures){
         pixi_target = new PIXI.Graphics();
         
         pixi_target.alpha = 0.33;
-        pixi_target.drawCircle(0, 0, 10);
+        pixi_target.circle(0, 0, 10);
         pixi_target.stroke({width:3, color:0x000000});
-        pixi_target.eventMode='static';
+        // pixi_target.eventMode='static';
         pixi_target.zIndex = 100;
 
         //pixi_target.scale.set(app.pixi_scale, app.pixi_scale);
@@ -171,7 +171,7 @@ setup_pixi_sheets: function setup_pixi_sheets(textures){
         fill: 'black',
         align: 'left',
     };
-    let fps_label = new PIXI.Text("0 fps", text_style);
+    let fps_label = new PIXI.Text({text:"0 fps", style:text_style});
     // fps_label.eventMode = 'none';
 
     pixi_fps_label = fps_label;
@@ -188,21 +188,21 @@ setup_pixi_sheets: function setup_pixi_sheets(textures){
  */
 game_loop: function game_loop(delta)
 {
-    app.move_player(delta);
-    app.move_text_emitters(delta);
-    app.animate_transfer_beams(delta);
+    app.move_player(delta.deltaTime);
+    app.move_text_emitters(delta.deltaTime);
+    app.animate_transfer_beams(delta.deltaTime);
 
     if(app.pixi_mode=="subject" && app.session.started)
     {   
-        app.update_offsets_player(delta);
-        app.update_mini_map(delta);
+        app.update_offsets_player(delta.deltaTime);
+        app.update_mini_map(delta.deltaTime);
         // app.check_for_collisions();
     }
     
     if(app.pixi_mode=="staff")
     {
-        app.update_offsets_staff(delta);
-        app.scroll_staff(delta);
+        app.update_offsets_staff(delta.deltaTime);
+        app.scroll_staff(delta.deltaTime);
     }  
     
     {%if DEBUG or session.parameter_set.test_mode%}
