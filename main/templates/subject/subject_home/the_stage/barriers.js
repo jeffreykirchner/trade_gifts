@@ -19,11 +19,10 @@ setup_pixi_barrier: function setup_pixi_barrier()
         let rotation = app.degrees_to_radians(barrier.rotation);
         
         barrier_container.position.set(barrier.start_x,barrier.start_y)
-        barrier_container.eventMode = 'none';
+        // barrier_container.eventMode = 'none';
 
         //outline
         let outline = new PIXI.Graphics();
-        //outline.lineStyle(1, 0x000000);
         let matrix = new PIXI.Matrix(1,0,0,1,0,0);
         
         let scale_y = 1;
@@ -39,17 +38,18 @@ setup_pixi_barrier: function setup_pixi_barrier()
 
         matrix.rotate(rotation);
         
-        outline.beginTextureFill({texture: app.pixi_textures['barrier_tex'], matrix:matrix});  //, 
-        outline.drawRect(0, 0, barrier.width, barrier.height);
+        
+        outline.rect(0, 0, barrier.width, barrier.height);
+        outline.fill({texture: app.pixi_textures['barrier_tex'], matrix:matrix});
        
-        let label = new PIXI.Text(barrier.text.replace('\\n', '\n'), {
-            fontFamily: 'Arial',
-            fontSize: 40,
-            fill: 'white',
-            align: 'center',
-            stroke: 'black',
-            strokeThickness: 2,
-        });
+        let label = new PIXI.Text({text:barrier.text.replace('\\n', '\n'), 
+                                   style:{
+                                        fontFamily: 'Arial',
+                                        fontSize: 40,
+                                        fill: 'white',
+                                        align: 'center',
+                                        stroke: {color:'black', width: 2},
+                                    }});
            
         label.anchor.set(0.5);   
         label.position.set(barrier.width/2, barrier.height/2);
