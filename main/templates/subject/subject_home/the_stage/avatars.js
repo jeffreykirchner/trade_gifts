@@ -136,16 +136,19 @@ setup_pixi_subjects: function setup_pixi_subjects()
         good_two_sprite.position.set(-5,0);
 
         //good three
+        let good_three_container = null;
+        let good_three_label = null;
+        let good_three_sprite = null;
         if(app.session.parameter_set.good_mode == "Three")
         {
-            var good_three_container = new PIXI.Container();
+            good_three_container = new PIXI.Container();
             // good_three_container.eventMode = 'passive';
             good_three_container.alpha = 0.75;
-            var good_three_label = new PIXI.Text({text:"000", style:text_style_2});
+            good_three_label = new PIXI.Text({text:"000", style:text_style_2});
             // good_three_label.eventMode = 'passive';
             good_three_label.anchor.set(0, 0.5);
 
-            var good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
+            good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
             good_three_sprite.anchor.set(1, 0.5);
             // good_three_sprite.eventMode = 'passive';
 
@@ -805,7 +808,7 @@ send_move_fruit_to_avatar_instructions: function send_move_fruit_to_avatar_instr
  */
 take_update_move_fruit_to_avatar: function take_update_move_fruit_to_avatar(message_data)
 {
-    var source_player_id = message_data.source_player_id;
+    let source_player_id = message_data.source_player_id;
 
     if(message_data.status == "success")
     {   
@@ -1000,7 +1003,7 @@ send_attack_avatar_instructions : function send_attack_avatar_instructions()
 */
 take_update_attack_avatar: function take_update_attack_avatar(message_data)
 {
-    var source_player_id = message_data.source_player_id;
+    let source_player_id = message_data.source_player_id;
 
     if(message_data.status == "success")
     {

@@ -68,13 +68,15 @@ setup_pixi_houses: function setup_pixi_houses()
         good_two_label.anchor.set(0, 0.5);
 
         //good three       
+        let good_three_sprite = null;
+        let good_three_label = null;
         if(app.session.parameter_set.good_mode == "Three")
         { 
-            var good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
+            good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
             good_three_sprite.anchor.set(1, 0.5);
             // good_three_sprite.eventMode = 'passive';
 
-            var good_three_label = new PIXI.Text({text:"000", style:{
+            good_three_label = new PIXI.Text({text:"000", style:{
                 fontFamily: 'Arial',
                 fontSize: 60,
                 fill: 'white',
@@ -448,7 +450,7 @@ calc_health_value: function calc_health_value(good_one, good_two, good_three)
  */
 take_update_move_fruit_house: function take_update_move_fruit_house(message_data)
 {
-    var source_player_id = message_data.source_player_id;
+    let source_player_id = message_data.source_player_id;
 
     if(message_data.status == "success")
     {

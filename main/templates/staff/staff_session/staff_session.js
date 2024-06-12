@@ -4,29 +4,29 @@
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
-//var app.session.world_state = {};
-var pixi_app = null;
-var pixi_container_main = null;
-var pixi_text_emitter = {};
-var pixi_text_emitter_key = 0;
-var pixi_transfer_beams = {};
-var pixi_transfer_beams_key = 0;
-var pixi_fps_label = null;                     //fps label
-var pixi_avatars = {};                         //avatars
-var pixi_walls = {};                           //walls
-var pixi_barriers = {};                        //barriers
-var pixi_grounds = {};                         //grounds
-var pixi_fields = {};                          //fields
-var pixi_houses = {};                          //houses
-var pixi_night = {};                           //night
-var pixi_patches = {};                          //patches
-var wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
-var wall_search_objects = [];
+//let app.session.world_state = {};
+let pixi_app = null;
+let pixi_container_main = null;
+let pixi_text_emitter = {};
+let pixi_text_emitter_key = 0;
+let pixi_transfer_beams = {};
+let pixi_transfer_beams_key = 0;
+let pixi_fps_label = null;                     //fps label
+let pixi_avatars = {};                         //avatars
+let pixi_walls = {};                           //walls
+let pixi_barriers = {};                        //barriers
+let pixi_grounds = {};                         //grounds
+let pixi_fields = {};                          //fields
+let pixi_houses = {};                          //houses
+let pixi_night = {};                           //night
+let pixi_patches = {};                          //patches
+let wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
+let wall_search_objects = [];
 
-var worker = null;
+let worker = null;
 
 //vue app
-var app = Vue.createApp({
+let app = Vue.createApp({
     delimiters: ["[[", "]]"],
 
     data() {return {chat_socket : "",
