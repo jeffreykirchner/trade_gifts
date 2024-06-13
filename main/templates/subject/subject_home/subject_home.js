@@ -7,28 +7,15 @@ axios.defaults.xsrfCookieName = "csrftoken";
 //global letiables
 //let world_state = {};
 let subject_status_overlay_container = null;
-let pixi_app = null;                           //pixi app   
-let pixi_container_main = null;                //main container for pixi
 let pixi_target = null;                        //target sprite for your avatar
-let pixi_text_emitter = {};                    //text emitter json
-let pixi_text_emitter_key = 0;
-let pixi_transfer_beams = {};                  //transfer beam json
-let pixi_transfer_beams_key = 0;
-let pixi_fps_label = null;                     //fps label
 let mini_map = {container:null};               //mini map container
-let pixi_avatars = {};                         //avatars
-let pixi_walls = {};                           //walls
-let pixi_barriers = {};                        //barriers
-let pixi_grounds = {};                         //grounds
-let pixi_fields = {};                          //fields
-let pixi_houses = {};                          //houses
-let pixi_patches = {};                         //patches
 let pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
-                  text_night_coming : "Night is approching ... "};                                        //night
+                  text_night_coming : "Night is approching ... "};        
+                                                  //night
 let pixi_notices = {container:null, notices:{}};                         //notices
 let pixi_notices_key = 0;
-let wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
-let wall_search_objects = [];
+
+{%include "subject/subject_home/the_stage/pixi_globals.js"%}
 
 //prevent right click
 document.addEventListener('contextmenu', event => event.preventDefault());
