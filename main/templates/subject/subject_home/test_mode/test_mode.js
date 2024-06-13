@@ -31,6 +31,9 @@ random_string: function random_string(min_length, max_length){
  * do test mode
  */
 do_test_mode: function do_test_mode(){
+    
+    if(worker) worker.terminate();
+
     {%if DEBUG%}
     console.log("Do Test Mode");
     {%endif%}
@@ -52,7 +55,6 @@ do_test_mode: function do_test_mode(){
 
     if(app.session.started &&
        app.test_mode
-       && app.working == false
        )
     {
         
@@ -69,7 +71,14 @@ do_test_mode: function do_test_mode(){
        
     }
 
-    setTimeout(app.do_test_mode, app.random_number(500 , 600));
+    // setTimeout(app.do_test_mode, app.random_number(1000 , 1500));
+    worker = new Worker("/static/js/worker_test_mode.js");
+
+    worker.onmessage = function (evt) {   
+        app.do_test_mode();
+    };
+
+    worker.postMessage(0);
 },
 
 /**

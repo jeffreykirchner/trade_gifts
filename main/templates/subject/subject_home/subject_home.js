@@ -33,6 +33,8 @@ let wall_search_objects = [];
 //prevent right click
 document.addEventListener('contextmenu', event => event.preventDefault());
 
+let worker = null;
+
 //vue app
 let app = Vue.createApp({
     delimiters: ["[[", "]]"],
