@@ -338,7 +338,7 @@ send_patch_harvest_instructions: function send_patch_harvest_instructions()
 */
 take_patch_harvest: function take_patch_harvest(message_data)
 {
-    var player_id = message_data.player_id;
+    let player_id = message_data.player_id;
 
     if(message_data.status == "success")
     {

@@ -12,6 +12,9 @@ add_notice: function add_notice(text, end_period, end_time)
  */
 update_notices: function update_notices()
 {
+    if(!pixi_app) return;
+    // if(!pixi_app.hasOwnProperty('screen')) return;
+
     if(pixi_notices.container)
     {
         pixi_notices.container.destroy();
@@ -56,10 +59,16 @@ update_notices: function update_notices()
     }
 
     // container.pivot.set(container.width/2, container.height/2);
-    container.position.set(pixi_app.screen.width/2, pixi_app.screen.height-30);
+    try{
+        container.position.set(pixi_app.screen.width/2, pixi_app.screen.height-30);
 
-    pixi_notices.container = container;
-    pixi_app.stage.addChild( pixi_notices.container);
+        pixi_notices.container = container;
+        pixi_app.stage.addChild(pixi_notices.container);
+    }
+    catch(e){
+        // console.log(e);
+    }
+    
 },
 
 /**

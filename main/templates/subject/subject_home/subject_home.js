@@ -4,37 +4,37 @@
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
-//global variables
-//var world_state = {};
-var subject_status_overlay_container = null;
-var pixi_app = null;                           //pixi app   
-var pixi_container_main = null;                //main container for pixi
-var pixi_target = null;                        //target sprite for your avatar
-var pixi_text_emitter = {};                    //text emitter json
-var pixi_text_emitter_key = 0;
-var pixi_transfer_beams = {};                  //transfer beam json
-var pixi_transfer_beams_key = 0;
-var pixi_fps_label = null;                     //fps label
-var mini_map = {container:null};               //mini map container
-var pixi_avatars = {};                         //avatars
-var pixi_walls = {};                           //walls
-var pixi_barriers = {};                        //barriers
-var pixi_grounds = {};                         //grounds
-var pixi_fields = {};                          //fields
-var pixi_houses = {};                          //houses
-var pixi_patches = {};                         //patches
-var pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
+//global letiables
+//let world_state = {};
+let subject_status_overlay_container = null;
+let pixi_app = null;                           //pixi app   
+let pixi_container_main = null;                //main container for pixi
+let pixi_target = null;                        //target sprite for your avatar
+let pixi_text_emitter = {};                    //text emitter json
+let pixi_text_emitter_key = 0;
+let pixi_transfer_beams = {};                  //transfer beam json
+let pixi_transfer_beams_key = 0;
+let pixi_fps_label = null;                     //fps label
+let mini_map = {container:null};               //mini map container
+let pixi_avatars = {};                         //avatars
+let pixi_walls = {};                           //walls
+let pixi_barriers = {};                        //barriers
+let pixi_grounds = {};                         //grounds
+let pixi_fields = {};                          //fields
+let pixi_houses = {};                          //houses
+let pixi_patches = {};                         //patches
+let pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
                   text_night_coming : "Night is approching ... "};                                        //night
-var pixi_notices = {container:null, notices:{}};                         //notices
-var pixi_notices_key = 0;
-var wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
-var wall_search_objects = [];
+let pixi_notices = {container:null, notices:{}};                         //notices
+let pixi_notices_key = 0;
+let wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
+let wall_search_objects = [];
 
 //prevent right click
 document.addEventListener('contextmenu', event => event.preventDefault());
 
 //vue app
-var app = Vue.createApp({
+let app = Vue.createApp({
     delimiters: ["[[", "]]"],
 
     data() {return {chat_socket : "",
@@ -587,7 +587,9 @@ var app = Vue.createApp({
             }
 
             //update any notices on screen
-            app.update_notices();
+            Vue.nextTick(() => {
+             app.update_notices();
+            });
 
             //update barriers
             app.update_barriers();
