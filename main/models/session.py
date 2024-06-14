@@ -33,6 +33,7 @@ from main.models import ParameterSet
 
 from main.globals import ExperimentPhase
 from main.globals import HatModes
+from main.globals import round_up
 
 #experiment sessoin
 class Session(models.Model):
@@ -628,7 +629,7 @@ class Session(models.Model):
 
             for p in self.world_state["avatars"]:
                 writer.writerow([parameter_set_players[p]["student_id"],
-                                 self.world_state["avatars"][p]["earnings"]])
+                                round_up(Decimal(self.world_state["avatars"][p]["earnings"])/100,2)])
 
             v = output.getvalue()
             output.close()
