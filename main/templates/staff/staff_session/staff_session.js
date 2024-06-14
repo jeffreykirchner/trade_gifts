@@ -4,29 +4,11 @@
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
-//var app.session.world_state = {};
-var pixi_app = null;
-var pixi_container_main = null;
-var pixi_text_emitter = {};
-var pixi_text_emitter_key = 0;
-var pixi_transfer_beams = {};
-var pixi_transfer_beams_key = 0;
-var pixi_fps_label = null;                     //fps label
-var pixi_avatars = {};                         //avatars
-var pixi_walls = {};                           //walls
-var pixi_barriers = {};                        //barriers
-var pixi_grounds = {};                         //grounds
-var pixi_fields = {};                          //fields
-var pixi_houses = {};                          //houses
-var pixi_night = {};                           //night
-var pixi_patches = {};                          //patches
-var wall_search = {counter:0, current_location:{x:-1,y:-1}, target_location:{x:-1,y:-1}};
-var wall_search_objects = [];
-
-var worker = null;
+{%include "subject/subject_home/the_stage/pixi_globals.js"%}
+let worker = null;
 
 //vue app
-var app = Vue.createApp({
+let app = Vue.createApp({
     delimiters: ["[[", "]]"],
 
     data() {return {chat_socket : "",

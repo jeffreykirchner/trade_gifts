@@ -10,7 +10,7 @@ setup_pixi_houses: function setup_pixi_houses()
         let parameter_set_player = app.session.parameter_set.parameter_set_players[i];
 
         let house_container = new PIXI.Container();
-        house_container.eventMode = 'passive';
+        // house_container.eventMode = 'passive';
         house_container.zIndex = 80;
         
         house_container.position.set(parameter_set_player.house_x, parameter_set_player.house_y)
@@ -18,72 +18,71 @@ setup_pixi_houses: function setup_pixi_houses()
         //house background
         let house_sprite = PIXI.Sprite.from(app.pixi_textures["house_tex"]);
         house_sprite.anchor.set(0.5);
-        house_sprite.eventMode = 'passive';
+        // house_sprite.eventMode = 'passive';
         house_sprite.tint = parameter_set_player.hex_color //'BlanchedAlmond';
 
         //owner label
-        let owner_label = new PIXI.Text(parameter_set_player.id_label, {
+        let owner_label = new PIXI.Text({text:parameter_set_player.id_label, style:{
             fontFamily: 'Arial',
             fontSize: 30,
             fill: 'black',
-        });
-        owner_label.eventMode = 'passive'; 
+        }});
+        // owner_label.eventMode = 'passive'; 
         owner_label.anchor.set(.5, 1);
 
         //health label
-        let health_label = new PIXI.Text("Health: +000", {
+        let health_label = new PIXI.Text({text:"Health: +000", style:{
             fontFamily: 'Arial',
             fontSize: 30,
             fill: 'black',
-        });
-        health_label.eventMode = 'passive'; 
+        }});
+        // health_label.eventMode = 'passive'; 
         health_label.anchor.set(.5, 1);
 
         //good one        
         let good_one_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_one+"_tex"]);
         good_one_sprite.anchor.set(1, 0.5);
-        good_one_sprite.eventMode = 'passive';
+        // good_one_sprite.eventMode = 'passive';
 
-        let good_one_label = new PIXI.Text("000", {
+        let good_one_label = new PIXI.Text({text:"000", style:{
             fontFamily: 'Arial',
             fontSize: 60,
             fill: 'white',
-            stroke: 'black',
-            strokeThickness: 2,
-        });
-        good_one_label.eventMode = 'passive'; 
+            stroke: {color:'black', width: 2},
+        }});
+        // good_one_label.eventMode = 'passive'; 
         good_one_label.anchor.set(0, 0.5);
 
         //good two        
         let good_two_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_two+"_tex"]);
         good_two_sprite.anchor.set(1, 0.5);
-        good_two_sprite.eventMode = 'passive';
+        // good_two_sprite.eventMode = 'passive';
 
-        let good_two_label = new PIXI.Text("000", {
+        let good_two_label = new PIXI.Text({text:"000", style:{
             fontFamily: 'Arial',
             fontSize: 60,
             fill: 'white',
-            stroke: 'black',
-            strokeThickness: 2,
-        });
-        good_two_label.eventMode = 'passive'; 
+            stroke: {color:'black', with: 2},
+        }});
+        // good_two_label.eventMode = 'passive'; 
         good_two_label.anchor.set(0, 0.5);
 
         //good three       
+        let good_three_sprite = null;
+        let good_three_label = null;
         if(app.session.parameter_set.good_mode == "Three")
         { 
-            var good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
+            good_three_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_player.good_three+"_tex"]);
             good_three_sprite.anchor.set(1, 0.5);
-            good_three_sprite.eventMode = 'passive';
+            // good_three_sprite.eventMode = 'passive';
 
-            var good_three_label = new PIXI.Text("000", {
+            good_three_label = new PIXI.Text({text:"000", style:{
                 fontFamily: 'Arial',
                 fontSize: 60,
                 fill: 'white',
-                stroke: 'black',
-                strokeThickness: 2,
-            });
-            good_three_label.eventMode = 'passive'; 
+                stroke: {color:'black', width: 2},
+            }});
+            // good_three_label.eventMode = 'passive'; 
             good_three_label.anchor.set(0, 0.5);
         }
 
@@ -451,7 +450,7 @@ calc_health_value: function calc_health_value(good_one, good_two, good_three)
  */
 take_update_move_fruit_house: function take_update_move_fruit_house(message_data)
 {
-    var source_player_id = message_data.source_player_id;
+    let source_player_id = message_data.source_player_id;
 
     if(message_data.status == "success")
     {

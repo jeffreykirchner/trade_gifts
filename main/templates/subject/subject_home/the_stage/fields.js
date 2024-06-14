@@ -15,7 +15,7 @@ setup_pixi_fields: function setup_pixi_fields()
         let parameter_set_player = app.session.parameter_set.parameter_set_players[field.parameter_set_player];
 
         let field_container = new PIXI.Container();
-        field_container.eventMode = 'passive';
+        // field_container.eventMode = 'passive';
         field_container.zIndex = 80;
         
         field_container.position.set(field.x, field.y)
@@ -23,71 +23,69 @@ setup_pixi_fields: function setup_pixi_fields()
         //field background
         let field_sprite = PIXI.Sprite.from(app.pixi_textures["field_tex"]);
         field_sprite.anchor.set(0.5);
-        field_sprite.eventMode = 'passive';
+        // field_sprite.eventMode = 'passive';
         field_sprite.tint = parameter_set_player.hex_color; //app.field_color;
 
         //owner label
-        let owner_label = new PIXI.Text(parameter_set_player.id_label, {
+        let owner_label = new PIXI.Text({text:parameter_set_player.id_label, style:{
             fontFamily: 'Arial',
             fontSize: 30,
             fill: 'black',
-        });
-        owner_label.eventMode = 'passive'; 
+        }});
+        // owner_label.eventMode = 'passive'; 
         owner_label.anchor.set(0.5, 0);
 
         //info label       
-        let info_label = new PIXI.Text(parameter_set_field_type.display_text, {
+        let info_label = new PIXI.Text({text:parameter_set_field_type.display_text, style:{
             fontFamily: 'Arial',
             fontSize: 30,
             fill: 'black',
-        });
-        info_label.eventMode = 'passive'; 
+        }});
+        // info_label.eventMode = 'passive'; 
         info_label.anchor.set(.5, 1);
 
         //good one        
         let good_one_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_one_ft+"_tex"]);
         good_one_sprite.anchor.set(1, 0.5);
-        good_one_sprite.eventMode = 'passive';
+        // good_one_sprite.eventMode = 'passive';
 
-        let good_one_label = new PIXI.Text("000", {
+        let good_one_label = new PIXI.Text({text:"000", style:{
             fontFamily: 'Arial',
             fontSize: 60,
             fill: 'white',
-            stroke: 'black',
-            strokeThickness: 2,
-        });
-        good_one_label.eventMode = 'passive'; 
+            stroke: {color:'black', width: 2},
+        }});
+        // good_one_label.eventMode = 'passive'; 
         good_one_label.anchor.set(0, 0.5);
 
-        let good_one_effort_label = new PIXI.Text("00 Effort Pts", {
+        let good_one_effort_label = new PIXI.Text({text:"00 Effort Pts", style:{
             fontFamily: 'Arial',
             fontSize: 30,
             fill: 'black',
-        });
-        good_one_effort_label.eventMode = 'passive'; 
+        }});
+        // good_one_effort_label.eventMode = 'passive'; 
         good_one_effort_label.anchor.set(0.5, 1);
 
         //good two        
         let good_two_sprite = PIXI.Sprite.from(app.pixi_textures[parameter_set_field_type.good_two_ft+"_tex"]);
         good_two_sprite.anchor.set(1, 0.5);
-        good_two_sprite.eventMode = 'passive';
+        // good_two_sprite.eventMode = 'passive';
 
-        let good_two_label = new PIXI.Text("000", {
+        let good_two_label = new PIXI.Text({text:"000", style:{
             fontFamily: 'Arial',
             fontSize: 60,
             fill: 'white',
-            stroke: 'black',
-            strokeThickness: 2,
-        });
-        good_two_label.eventMode = 'passive'; 
+            stroke: {color:'black', width: 2},
+        }});
+        // good_two_label.eventMode = 'passive'; 
         good_two_label.anchor.set(0, 0.5);
 
-        let good_two_effort_label = new PIXI.Text("00 Effort Pts", {
+        let good_two_effort_label = new PIXI.Text({text:"00 Effort Pts", style:{
             fontFamily: 'Arial',
             fontSize: 30,
             fill: 'black',
-        });
-        good_two_effort_label.eventMode = 'passive'; 
+        }});
+        // good_two_effort_label.eventMode = 'passive'; 
         good_two_effort_label.anchor.set(0.5, 0);
 
         //add to container
