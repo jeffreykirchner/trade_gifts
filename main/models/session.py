@@ -35,6 +35,10 @@ from main.globals import ExperimentPhase
 from main.globals import HatModes
 from main.globals import round_up
 
+class SessionManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().defer("replay_data")
+
 #experiment sessoin
 class Session(models.Model):
     '''
@@ -81,10 +85,13 @@ class Session(models.Model):
         return self.creator.email
     creator_string.short_description = 'Creator'
 
+    objects = SessionManager()
+
     class Meta:
         verbose_name = 'Session'
         verbose_name_plural = 'Sessions'
         ordering = ['-start_date']
+        base_manager_name = "objects"
 
     def get_start_date_string(self):
         '''
