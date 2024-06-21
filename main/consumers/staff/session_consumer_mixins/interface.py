@@ -27,7 +27,7 @@ class InterfaceMixin():
         '''
         load session for replay
         '''
-        session = await Session.objects.aget(id=self.session_id)
+        session = await Session.objects.only("replay_data").aget(id=self.session_id)
         session_events_local = {}
 
         if session.replay_data:
