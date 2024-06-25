@@ -77,8 +77,21 @@ class ParameterSetBarrierForm(forms.ModelForm):
                                     widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_barrier.period_off",
                                                                     "step":"1",
                                                                     "min":"2"}))
+    
+    period_on_modulus = forms.IntegerField(label='Period On Modulus',
+                                           min_value=1,
+                                           widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_barrier.period_on_modulus",
+                                                                           "step":"1",
+                                                                           "min":"1"}))
+
+    period_on_modulus_answer = forms.IntegerField(label='Period On Modulus Answer',
+                                                    min_value=0,
+                                                    widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_barrier.period_on_modulus_answer",
+                                                                                    "step":"1",
+                                                                                    "min":"0"}))
 
     class Meta:
         model=ParameterSetBarrier
-        fields =['info', 'text', 'rotation', 'parameter_set_groups', 'parameter_set_players', 'start_x', 'start_y', 'width', 'height', 'period_on', 'period_off']
+        fields =['info', 'text', 'rotation', 'parameter_set_groups', 'parameter_set_players', 'start_x', 'start_y', 
+                 'width', 'height', 'period_on', 'period_off', 'period_on_modulus', 'period_on_modulus_answer']
     

@@ -34,6 +34,9 @@ class ParameterSetBarrier(models.Model):
     period_on = models.IntegerField(verbose_name='Period On', default=1)                #period when barrier is on
     period_off = models.IntegerField(verbose_name='Period Off', default=14)             #period when barrier is off
 
+    period_on_modulus = models.IntegerField(verbose_name='Period On Modulus', default=100)               #if current period mod period_on_modulus == period_on_modulus_answer, barrier is on
+    period_on_modulus_answer = models.IntegerField(verbose_name='Period On Modulus Answer', default=0)   #if current period mod period_on_modulus == period_on_modulus_answer, barrier is on
+
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
 
@@ -63,6 +66,9 @@ class ParameterSetBarrier(models.Model):
 
         self.period_on = new_ps.get("period_on", 1)
         self.period_off = new_ps.get("period_off", 14)
+
+        self.period_on_modulus = new_ps.get("period_on_modulus", 1)
+        self.period_on_modulus_answer = new_ps.get("period_on_modulus_answer", 0)
 
         self.save()
         
@@ -105,6 +111,8 @@ class ParameterSetBarrier(models.Model):
             "parameter_set_players" : [player.id for player in self.parameter_set_players.all()],
             "period_on" : self.period_on,
             "period_off" : self.period_off,
+            "period_on_modulus" : self.period_on_modulus,
+            "period_on_modulus_answer" : self.period_on_modulus_answer,
         }
     
     def get_json_for_subject(self, update_required=False):
