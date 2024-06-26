@@ -157,6 +157,7 @@ class SessionPeriod(models.Model):
             avatar["health"] = str(Decimal(avatar["health"]) + Decimal(house["health_value"]))
 
             summary_data[session_player_id]["health_from_house"] = house["health_value"]
+            summary_data[session_player_id]["health_generated_by_house"] = house["health_value"]
 
             if Decimal(avatar["health"]) > 100:
                 health_overage = Decimal(avatar["health"]) - 100
