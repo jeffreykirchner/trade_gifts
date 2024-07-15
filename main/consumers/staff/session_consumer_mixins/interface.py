@@ -49,8 +49,8 @@ class InterfaceMixin():
                 v = {"type" : i.type, "data" : i.data}
                 session_events_local[str(i.period_number)][str(i.time_remaining)].append(v)
 
-            session.replay_data = session_events_local
-            await session.asave()
+            # session.replay_data = session_events_local
+            # await session.asave()
 
         result = {"session_events": session_events_local}
 
