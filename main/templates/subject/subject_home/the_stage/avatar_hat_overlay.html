@@ -1,0 +1,63 @@
+<div class="row align-items-center text-center fw-bold mb-2 mt-2">
+    <div class="col text-center h4"> 
+        [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]] has offered you a hat.
+    </div>
+</div>
+
+<div class="row align-items-center text-center">
+    <div class="col text-center">
+        <img class="field_modal_icons"  
+             v-bind:src="'/static/' + session.parameter_set.parameter_set_hats[get_group_hat_for_player(selected_avatar.source_player_id).id].texture + '.png'" />                     
+    </div>
+</div>
+
+<div class="row mt-4 mb-2">
+    <div class="col text-center" v-if="selected_avatar.avatar">    
+        <button type="button"
+                class="btn btn-outline-danger me-2"
+                v-if="hat_trade_status=='proposal_received'"
+                v-on:click = "send_hat_avatar_cancel()"                    
+                v-bind:disabled="reconnecting || 
+                                 working ">
+                                 
+                Reject <i class="fas fa-ban"></i>
+        </button>
+                        
+        <button type="button"
+                class="btn btn-outline-success"
+                v-on:click = "send_hat_avatar()"                   
+                v-bind:disabled="reconnecting || 
+                                    working">
+
+            <span v-if="hat_trade_status=='open' || hat_trade_status=='proposal'">
+                Offer Hat <i class="fab fa-redhat"></i>
+            </span>
+
+            <span v-if="hat_trade_status=='proposal_received'">
+                Accept Hat <i class="fab fa-redhat"></i>
+            </span>
+        
+        </button>
+        
+    </div>
+
+    <!-- <div class="row mt-4" v-if="selected_avatar.avatar">
+        <div class="col text-center fw-bold">
+            <div v-if = "session.world_state_avatars.session_players[session_player.id].cool_down>0">
+                You are cooling down ... [[session.world_state_avatars.session_players[session_player.id].cool_down]]
+            </div>
+            <div v-if = "session.world_state_avatars.session_players[selected_avatar.target_player_id].cool_down>0">
+                They are cooling down ... [[session.world_state_avatars.session_players[selected_avatar.target_player_id].cool_down]]
+            </div> 
+            <div v-if = "selected_avatar.avatar.parameter_set_hat_id">
+                The hat was accepted.
+            </div>                           
+        </div>
+    </div> -->
+
+    <!-- <div class="row mt-4 fw-bold" v-if="avatar_hat_error">
+        <div class="col text-center">                  
+            Error: [[avatar_hat_error]]  
+        </div>
+    </div> -->
+</div>

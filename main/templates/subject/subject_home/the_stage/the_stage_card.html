@@ -27,12 +27,24 @@
         
         <!-- the pixi stage -->
         <div class="row">
-            <div class="col">           
-                <canvas class="field" 
-                        key="sd_graph" 
-                        id="sd_graph_id" 
-                        style="border-style: solid;border-width: 1px;"
-                        ></canvas>                
+            <div class="col">  
+               
+
+                <div id='stage_container'>
+                    <div id="hat_overlay" v-if="is_subject && avatar_hat_modal_open">
+                        {%include "subject/subject_home/the_stage/avatar_hat_overlay.html"%}
+                    </div>
+
+                    <div id="pixi_stage">
+                        <canvas class="field" 
+                                key="sd_graph" 
+                                id="sd_graph_id" 
+                                style="border-style: solid;border-width: 1px;"
+                                >
+                        </canvas> 
+                    </div>
+
+                </div>      
             </div>
         </div>
 

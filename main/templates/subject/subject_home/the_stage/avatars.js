@@ -1100,7 +1100,6 @@ send_hat_avatar: function send_hat_avatar()
     let target_avatar = app.session.world_state.avatars[app.selected_avatar.target_player_id];
     let source_player = app.session.world_state.avatars[app.session_player.id];
 
-
     if(app.session.world_state.current_experiment_phase == 'Instructions')
     {
         app.send_hat_avatar_instructions();
@@ -1158,15 +1157,15 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                     app.selected_avatar.good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
                     app.selected_avatar.good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
 
-                    app.avatar_modal.hide();
-                    app.avatar_attack_modal.hide();
-                    app.field_modal.hide();
-                    app.house_modal.hide();
+                    // app.avatar_modal.hide();
+                    // app.avatar_attack_modal.hide();
+                    // app.field_modal.hide();
+                    // app.house_modal.hide();
                     // app.avatar_hat_modal.hide();
-                    app.patch_modal.hide();
+                    // app.patch_modal.hide();
 
                     app.hat_trade_status = "proposal_received";
-                    app.avatar_hat_modal.show();
+                    // app.avatar_hat_modal.show();
                     app.avatar_hat_modal_open = true;
 
                     app.working = false;
