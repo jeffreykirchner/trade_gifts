@@ -122,6 +122,8 @@
                                 title="Attack the slected player?"     
                                 v-bind:disabled="reconnecting || 
                                                  working ||
+                                                 (session.world_state.time_remaining > session.parameter_set.period_length &&
+                                                 session.world_state.current_period % session.parameter_set.break_frequency == 0) ||
                                                  (session.world_state.current_experiment_phase == 'Instructions' && 
                                                   session_player.current_instruction != instructions.action_page_attacks)">
                                

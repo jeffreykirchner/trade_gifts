@@ -626,32 +626,32 @@ subject_avatar_click: function subject_avatar_click(target_player_id, local_pos)
     app.avatar_error = null;
 
     //break phase open truce hat modal
-    if(app.session.world_state.time_remaining > app.session.parameter_set.period_length &&
-       app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
-    {
-        let v = app.check_truce_hat_eligible(target_player_id)
+    // if(app.session.world_state.time_remaining > app.session.parameter_set.period_length &&
+    //    app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
+    // {
+    //     let v = app.check_truce_hat_eligible(target_player_id)
 
-        if(!v.value)
-        {
-            app.add_text_emitters(v.message, 
-                                 local_pos.x, 
-                                 local_pos.y,
-                                 local_pos.x,
-                                 local_pos.y-100,
-                                 0xFFFFFF,
-                                 28,
-                                 null);
-            return;
-        }
+    //     if(!v.value)
+    //     {
+    //         app.add_text_emitters(v.message, 
+    //                              local_pos.x, 
+    //                              local_pos.y,
+    //                              local_pos.x,
+    //                              local_pos.y-100,
+    //                              0xFFFFFF,
+    //                              28,
+    //                              null);
+    //         return;
+    //     }
 
-        app.avatar_hat_modal.show();
-        app.avatar_hat_modal_open = true;
-    }
-    else
-    {
+    //     app.avatar_hat_modal.show();
+    //     app.avatar_hat_modal_open = true;
+    // }
+    // else
+    // {
         app.avatar_modal.show();
         app.avatar_modal_open = true;
-    }
+    // }
 },
 
 /**
@@ -1221,6 +1221,16 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                 {
                     app.avatar_modal.hide();
                     app.working = false;
+
+                    let target_player = app.session.world_state_avatars.session_players[target_player_id];
+                    app.add_text_emitters("Hat offer sent.", 
+                        target_player.current_location.x, 
+                        target_player.current_location.y,
+                        target_player.current_location.x,
+                        target_player.current_location.y-100,
+                        0xFFFFFF,
+                        28,
+                        null);
                     
                 }
             }

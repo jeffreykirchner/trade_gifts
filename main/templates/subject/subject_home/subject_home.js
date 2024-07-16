@@ -489,6 +489,7 @@ let app = Vue.createApp({
                 // app.avatar_hat_modal.hide();
                 app.patch_modal.hide();
                 app.working = false;
+                app.avatar_hat_modal_open = false;
 
                 //add break notice
                 if(app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
