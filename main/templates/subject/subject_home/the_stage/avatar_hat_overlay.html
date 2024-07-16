@@ -1,18 +1,18 @@
 <div class="row align-items-center text-center fw-bold mb-2 mt-2">
     <div class="col text-center h4"> 
-        [[session.parameter_set.parameter_set_players[selected_avatar.avatar.parameter_set_player_id].id_label]] has offered you a hat.
+        [[session.parameter_set.parameter_set_players[incoming_hat_offer.avatar.parameter_set_player_id].id_label]] offered you their hat.
     </div>
 </div>
 
 <div class="row align-items-center text-center">
     <div class="col text-center">
         <img class="field_modal_icons"  
-             v-bind:src="'/static/' + session.parameter_set.parameter_set_hats[get_group_hat_for_player(selected_avatar.source_player_id).id].texture + '.png'" />                     
+             v-bind:src="'/static/' + session.parameter_set.parameter_set_hats[get_group_hat_for_player(incoming_hat_offer.source_player_id).id].texture + '.png'" />                     
     </div>
 </div>
 
 <div class="row mt-4 mb-2">
-    <div class="col text-center" v-if="selected_avatar.avatar">    
+    <div class="col text-center" v-if="incoming_hat_offer.avatar">    
         <button type="button"
                 class="btn btn-outline-danger me-2"
                 v-if="hat_trade_status=='proposal_received'"
@@ -25,9 +25,9 @@
                         
         <button type="button"
                 class="btn btn-outline-success"
-                v-on:click = "send_hat_avatar()"                   
+                v-on:click = "send_hat_avatar_response()"                   
                 v-bind:disabled="reconnecting || 
-                                    working">
+                                 working">
 
             <span v-if="hat_trade_status=='open' || hat_trade_status=='proposal'">
                 Offer Hat <i class="fab fa-redhat"></i>
@@ -41,15 +41,15 @@
         
     </div>
 
-    <!-- <div class="row mt-4" v-if="selected_avatar.avatar">
+    <!-- <div class="row mt-4" v-if="incoming_hat_offer.avatar">
         <div class="col text-center fw-bold">
             <div v-if = "session.world_state_avatars.session_players[session_player.id].cool_down>0">
                 You are cooling down ... [[session.world_state_avatars.session_players[session_player.id].cool_down]]
             </div>
-            <div v-if = "session.world_state_avatars.session_players[selected_avatar.target_player_id].cool_down>0">
-                They are cooling down ... [[session.world_state_avatars.session_players[selected_avatar.target_player_id].cool_down]]
+            <div v-if = "session.world_state_avatars.session_players[incoming_hat_offer.target_player_id].cool_down>0">
+                They are cooling down ... [[session.world_state_avatars.session_players[incoming_hat_offer.target_player_id].cool_down]]
             </div> 
-            <div v-if = "selected_avatar.avatar.parameter_set_hat_id">
+            <div v-if = "incoming_hat_offer.avatar.parameter_set_hat_id">
                 The hat was accepted.
             </div>                           
         </div>

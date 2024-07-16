@@ -1394,7 +1394,8 @@ class SubjectUpdatesMixin():
                 source_group = self.parameter_set_local["parameter_set_groups"][str(source_player_group_id)]
 
                 #target avatar receives truce hat
-                target_avatar["parameter_set_hat_id"] =  source_group["parameter_set_hat"]
+                target_avatar["parameter_set_hat_id"] = source_group["parameter_set_hat"]
+                target_avatar["open_hat_offer"] = False
 
                 source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
                 target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
@@ -1437,16 +1438,11 @@ class SubjectUpdatesMixin():
                     status = "fail"
                     error_mesage.append("No interactions during break.")
 
-                # source_avatar = self.world_state_local['avatars'][str(player_id)]
-                # target_avatar = self.world_state_local['avatars'][str(target_player_id)]
-
-                # result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
-                # result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
-                
-                #v = await self.tractor_beam(event)
-
-                # result["status"] = v["status"]
-                # result["error_message"] = v["error_message"]
+                if target_player["open_hat_offer"]:
+                    status = "fail"
+                    error_mesage.append("They already have an offer.")
+                else:
+                    target_player["open_hat_offer"] = True
 
                 result["status"] = status
                 result["error_message"] = error_mesage
@@ -1498,6 +1494,9 @@ class SubjectUpdatesMixin():
 
         # if type == "proposal":
         source_player = self.world_state_avatars_local['session_players'][str(source_player_id)]
+        target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
+
+        target_player["open_hat_offer"] = False
 
         source_player_id_s = str(source_player_id)
         target_player_id_s = str(target_player_id)

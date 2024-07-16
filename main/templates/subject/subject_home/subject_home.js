@@ -75,6 +75,11 @@ let app = Vue.createApp({
                     selected_patch : {patch:null,
                                     },
 
+                    incoming_hat_offer : {avatar:null,
+                                          source_player_id:null,
+                                          target_player_id:null,
+                                          parameter_set_player:null,},
+
                     hat_trade_status : "open",
 
                     end_game_modal_visible : false,

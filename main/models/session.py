@@ -309,6 +309,7 @@ class Session(models.Model):
             v['frozen'] = False
             v['cool_down'] = 0
             v['interaction'] = 0     
+            v['open_hat_offer'] = False
             v['parameter_set_player_id'] = i['parameter_set_player__id']       
 
             self.world_state_avatars["session_players"][str(i["id"])] = v
