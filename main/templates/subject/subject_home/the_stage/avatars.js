@@ -1172,8 +1172,9 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                 }
                 else if(source_player_id == app.session_player.id)
                 {
-                    app.avatar_hat_modal.hide();
+                    app.avatar_modal.hide();
                     app.working = false;
+                    
                 }
             }
         }
@@ -1183,8 +1184,9 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
             {
                 if(target_player_id == app.session_player.id)
                 {
-                    app.avatar_hat_modal.hide();
+                    // app.avatar_hat_modal.hide();
                     app.hat_trade_status = "open";
+                    app.avatar_hat_modal_open = false;
                     app.working = false;
                 }
             }
@@ -1261,7 +1263,8 @@ take_update_hat_avatar_cancel: function take_update_hat_avatar_cancel(message_da
 
                 let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
 
-                app.avatar_hat_modal.hide();
+                // app.avatar_hat_modal.hide();
+                app.avatar_hat_modal_open = false;
                 app.hat_trade_status = "open";
 
                 app.add_text_emitters("Hat Rejected.", 
