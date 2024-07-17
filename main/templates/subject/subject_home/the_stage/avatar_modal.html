@@ -108,7 +108,14 @@
 
                 <div class="row text-end mt-3">
                     <div class="col text-end">
- 
+                        <button type="button"
+                                class="btn btn-outline-success me-2"
+                                v-on:click = "send_hat_avatar()"                   
+                                v-bind:disabled="reconnecting || 
+                                                 working"
+                                v-if="session.parameter_set.hat_mode != 'No Hats'">
+                                Offer Hat <i class="fab fa-redhat"></i>
+                        </button>
                         <button type="button"
                                 class="btn btn-outline-danger"
                                 v-on:click = "show_attack_avatar()"
@@ -116,6 +123,8 @@
                                 title="Attack the slected player?"     
                                 v-bind:disabled="reconnecting || 
                                                  working ||
+                                                 (session.world_state.time_remaining > session.parameter_set.period_length &&
+                                                 session.world_state.current_period % session.parameter_set.break_frequency == 0) ||
                                                  (session.world_state.current_experiment_phase == 'Instructions' && 
                                                   session_player.current_instruction != instructions.action_page_attacks)">
                                

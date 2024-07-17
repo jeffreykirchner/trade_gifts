@@ -171,6 +171,14 @@ class SubjectUpdatesMixin():
         event_data["result"]["survey_complete"] = session_player.survey_complete
         event_data["result"]["instructions_finished"] = session_player.instructions_finished
 
+        #clear hat status on reconnect
+        if self.channel_name == self.controlling_channel:
+            try:
+                session_player = self.world_state_avatars_local["session_players"][str(subject_id)]
+                session_player["open_hat_offer"] = False
+            except KeyError:
+                pass
+           
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
 
@@ -1365,6 +1373,9 @@ class SubjectUpdatesMixin():
             source_player_id = event["message_text"]["source_player_id"]  
             target_player_id = event["message_text"]["target_player_id"]
             type = event["message_text"]["type"]
+
+            source_player_id_s = str(source_player_id)
+            target_player_id_s = str(target_player_id)
         except:
             logger.info(f"hat_avatar: invalid data, {event['message_text']}")
             status = "fail"
@@ -1377,9 +1388,6 @@ class SubjectUpdatesMixin():
             result["type"] = type
   
             if type == "proposal_received":
-
-                source_player_id_s = str(source_player_id)
-                target_player_id_s = str(target_player_id)
 
                 result["source_player_id"] = source_player_id
                 result["target_player_id"] = target_player_id
@@ -1394,7 +1402,8 @@ class SubjectUpdatesMixin():
                 source_group = self.parameter_set_local["parameter_set_groups"][str(source_player_group_id)]
 
                 #target avatar receives truce hat
-                target_avatar["parameter_set_hat_id"] =  source_group["parameter_set_hat"]
+                target_avatar["parameter_set_hat_id"] = source_group["parameter_set_hat"]
+                target_avatar["open_hat_offer"] = False
 
                 source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
                 target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
@@ -1435,18 +1444,24 @@ class SubjectUpdatesMixin():
 
                 if source_group["parameter_set_hat"] == target_group["parameter_set_hat"]:
                     status = "fail"
-                    error_mesage.append("No interactions during break.")
+                    error_mesage.append("You may not offer a hat to your own group.")
 
-                # source_avatar = self.world_state_local['avatars'][str(player_id)]
-                # target_avatar = self.world_state_local['avatars'][str(target_player_id)]
+                if target_player["open_hat_offer"]:
+                    status = "fail"
+                    error_mesage.append("They already have an offer.")
+                else:
+                    target_player["open_hat_offer"] = True
 
-                # result["source_player_hat_id"] = source_avatar["parameter_set_hat_id"]
-                # result["target_player_hat_id"] = target_avatar["parameter_set_hat_id"]
+                if status == "success":
+                    current_period = await session.aget_current_session_period()
                 
-                #v = await self.tractor_beam(event)
+                    summary_data_source = current_period.summary_data[source_player_id_s]
+                    summary_data_target = current_period.summary_data[target_player_id_s]
 
-                # result["status"] = v["status"]
-                # result["error_message"] = v["error_message"]
+                    summary_data_source["hat_offer_to_" + target_player_id_s] += 1
+                    summary_data_target["hat_offer_from_" + source_player_id_s] += 1
+
+                    await current_period.asave()
 
                 result["status"] = status
                 result["error_message"] = error_mesage
@@ -1498,6 +1513,9 @@ class SubjectUpdatesMixin():
 
         # if type == "proposal":
         source_player = self.world_state_avatars_local['session_players'][str(source_player_id)]
+        target_player = self.world_state_avatars_local['session_players'][str(target_player_id)]
+
+        target_player["open_hat_offer"] = False
 
         source_player_id_s = str(source_player_id)
         target_player_id_s = str(target_player_id)

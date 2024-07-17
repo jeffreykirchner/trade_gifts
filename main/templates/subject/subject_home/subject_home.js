@@ -75,6 +75,11 @@ let app = Vue.createApp({
                     selected_patch : {patch:null,
                                     },
 
+                    incoming_hat_offer : {avatar:null,
+                                          source_player_id:null,
+                                          target_player_id:null,
+                                          parameter_set_player:null,},
+
                     hat_trade_status : "open",
 
                     end_game_modal_visible : false,
@@ -354,6 +359,8 @@ let app = Vue.createApp({
             app.session = message_data.session;
             app.session_player = message_data.session_player;
 
+            app.avatar_hat_modal_open = false;
+
             if(app.session.started)
             {
                
@@ -484,6 +491,7 @@ let app = Vue.createApp({
                 // app.avatar_hat_modal.hide();
                 app.patch_modal.hide();
                 app.working = false;
+                app.avatar_hat_modal_open = false;
 
                 //add break notice
                 if(app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)

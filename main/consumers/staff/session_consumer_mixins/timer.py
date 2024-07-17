@@ -110,6 +110,11 @@ class TimerMixin():
                 for i in self.world_state_local["patches"]:
                     patch = self.world_state_local["patches"][i]
                     result["patches"][i] = {"levels":patch["levels"], "max_levels":patch["max_levels"]}
+
+                #remove hat offers
+                for p in self.world_state_avatars_local["session_players"]:
+                    session_player = self.world_state_avatars_local["session_players"][str(p)]
+                    session_player["open_hat_offer"] = False
                    
             #current locations
             result["current_locations"] = {}
@@ -326,11 +331,10 @@ def sync_continue_timer(event, session_id, world_state, parameter_set):
             world_state = session.get_current_session_period().do_patch_growth(world_state, parameter_set)
             
             #reset hats
-            if parameter_set["hat_mode"] == HatModes.NON_BINDING:
-                if current_period % parameter_set["break_frequency"] == 0:
-                    for i in world_state["avatars"]:
-                        avatar = world_state["avatars"][i]
-                        avatar["parameter_set_hat_id"] = None
+            if current_period % parameter_set["break_frequency"] == 0:
+                for i in world_state["avatars"]:
+                    avatar = world_state["avatars"][i]
+                    avatar["parameter_set_hat_id"] = None
                 
             current_session_period.save()
 

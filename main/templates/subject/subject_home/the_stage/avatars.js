@@ -626,32 +626,32 @@ subject_avatar_click: function subject_avatar_click(target_player_id, local_pos)
     app.avatar_error = null;
 
     //break phase open truce hat modal
-    if(app.session.world_state.time_remaining > app.session.parameter_set.period_length &&
-       app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
-    {
-        let v = app.check_truce_hat_eligible(target_player_id)
+    // if(app.session.world_state.time_remaining > app.session.parameter_set.period_length &&
+    //    app.session.world_state.current_period % app.session.parameter_set.break_frequency == 0)
+    // {
+    //     let v = app.check_truce_hat_eligible(target_player_id)
 
-        if(!v.value)
-        {
-            app.add_text_emitters(v.message, 
-                                 local_pos.x, 
-                                 local_pos.y,
-                                 local_pos.x,
-                                 local_pos.y-100,
-                                 0xFFFFFF,
-                                 28,
-                                 null);
-            return;
-        }
+    //     if(!v.value)
+    //     {
+    //         app.add_text_emitters(v.message, 
+    //                              local_pos.x, 
+    //                              local_pos.y,
+    //                              local_pos.x,
+    //                              local_pos.y-100,
+    //                              0xFFFFFF,
+    //                              28,
+    //                              null);
+    //         return;
+    //     }
 
-        app.avatar_hat_modal.show();
-        app.avatar_hat_modal_open = true;
-    }
-    else
-    {
+    //     app.avatar_hat_modal.show();
+    //     app.avatar_hat_modal_open = true;
+    // }
+    // else
+    // {
         app.avatar_modal.show();
         app.avatar_modal_open = true;
-    }
+    // }
 },
 
 /**
@@ -1098,8 +1098,26 @@ send_hat_avatar: function send_hat_avatar()
 {
     
     let target_avatar = app.session.world_state.avatars[app.selected_avatar.target_player_id];
-    let source_player = app.session.world_state.avatars[app.session_player.id];
+    let source_avatar = app.session.world_state.avatars[app.session_player.id];
 
+    let target_player = app.session.world_state_avatars.session_players[app.selected_avatar.target_player_id];
+
+    let v = app.check_truce_hat_eligible(app.selected_avatar.target_player_id)
+
+    if(!v.value)
+    {
+        app.add_text_emitters(v.message, 
+                             target_player.current_location.x, 
+                             target_player.current_location.y,
+                             target_player.current_location.x,
+                             target_player.current_location.y-100,
+                             0xFFFFFF,
+                             28,
+                             null);
+
+        app.avatar_modal.hide();
+        return;
+    }
 
     if(app.session.world_state.current_experiment_phase == 'Instructions')
     {
@@ -1115,6 +1133,34 @@ send_hat_avatar: function send_hat_avatar()
         app.send_message("hat_avatar", 
                         {"target_player_id" : app.selected_avatar.target_player_id,
                          "source_player_id" : app.selected_avatar.source_player_id,
+                         "type":app.hat_trade_status,},
+                         "group"); 
+    }
+},
+
+/**
+ * send hat avatar offer response to server
+ */
+send_hat_avatar_response: function send_hat_avatar_response()
+{
+    
+    let target_avatar = app.session.world_state.avatars[app.incoming_hat_offer.target_player_id];
+    let source_player = app.session.world_state.avatars[app.session_player.id];
+
+    if(app.session.world_state.current_experiment_phase == 'Instructions')
+    {
+        app.send_hat_avatar_instructions();
+    }
+    else
+    {
+        app.working = true;
+        //app.avatar_hat_modal.hide();
+        
+        // app.hat_trade_status = "proposal";
+        
+        app.send_message("hat_avatar", 
+                        {"target_player_id" : app.incoming_hat_offer.target_player_id,
+                         "source_player_id" : app.incoming_hat_offer.source_player_id,
                          "type":app.hat_trade_status,},
                          "group"); 
     }
@@ -1149,32 +1195,43 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
             {
                 if(target_player_id == app.session_player.id)
                 {
-                    app.selected_avatar.avatar = app.session.world_state.avatars[source_player_id];
-                    app.selected_avatar.source_player_id = source_player_id;
-                    app.selected_avatar.target_player_id = target_player_id;
-                    app.selected_avatar.parameter_set_player = app.session.parameter_set.parameter_set_players[app.selected_avatar.avatar.parameter_set_player_id];
+                    app.incoming_hat_offer.avatar = app.session.world_state.avatars[source_player_id];
+                    app.incoming_hat_offer.source_player_id = source_player_id;
+                    app.incoming_hat_offer.target_player_id = target_player_id;
+                    app.incoming_hat_offer.parameter_set_player = app.session.parameter_set.parameter_set_players[app.incoming_hat_offer.avatar.parameter_set_player_id];
                     
-                    app.selected_avatar.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
-                    app.selected_avatar.good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
-                    app.selected_avatar.good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
+                    // app.selected_avatar.good_one = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_one;
+                    // app.selected_avatar.good_two = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_two;
+                    // app.selected_avatar.good_three = app.session.parameter_set.parameter_set_players[app.session_player.parameter_set_player_id].good_three;
 
-                    app.avatar_modal.hide();
-                    app.avatar_attack_modal.hide();
-                    app.field_modal.hide();
-                    app.house_modal.hide();
+                    // app.avatar_modal.hide();
+                    // app.avatar_attack_modal.hide();
+                    // app.field_modal.hide();
+                    // app.house_modal.hide();
                     // app.avatar_hat_modal.hide();
-                    app.patch_modal.hide();
+                    // app.patch_modal.hide();
 
                     app.hat_trade_status = "proposal_received";
-                    app.avatar_hat_modal.show();
+                    // app.avatar_hat_modal.show();
                     app.avatar_hat_modal_open = true;
 
                     app.working = false;
                 }
                 else if(source_player_id == app.session_player.id)
                 {
-                    app.avatar_hat_modal.hide();
+                    app.avatar_modal.hide();
                     app.working = false;
+
+                    let target_player = app.session.world_state_avatars.session_players[target_player_id];
+                    app.add_text_emitters("Hat offer sent.", 
+                        target_player.current_location.x, 
+                        target_player.current_location.y,
+                        target_player.current_location.x,
+                        target_player.current_location.y-100,
+                        0xFFFFFF,
+                        28,
+                        null);
+                    
                 }
             }
         }
@@ -1184,8 +1241,9 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
             {
                 if(target_player_id == app.session_player.id)
                 {
-                    app.avatar_hat_modal.hide();
+                    // app.avatar_hat_modal.hide();
                     app.hat_trade_status = "open";
+                    app.avatar_hat_modal_open = false;
                     app.working = false;
                 }
             }
@@ -1221,8 +1279,8 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
     {
         if(app.is_subject && source_player_id == app.session_player.id)
         {
-            app.avatar_hat_error = message_data.error_message[0];
-            // app.working = false;
+            app.avatar_error = message_data.error_message[0];
+            app.working = false;
         }
     }
 },
@@ -1231,16 +1289,16 @@ send_hat_avatar_cancel: function send_hat_avatar_cancel()
 {
     if(app.hat_trade_status=='open')
     {
-        app.avatar_hat_modal.hide();
+        // app.avatar_hat_modal.hide();
         return;
     }
 
     app.working = true;    
     app.send_message("hat_avatar_cancel", 
-                        {"target_player_id" : app.selected_avatar.target_player_id,
-                         "source_player_id" : app.selected_avatar.source_player_id,
+                        {"target_player_id" : app.incoming_hat_offer.target_player_id,
+                         "source_player_id" : app.incoming_hat_offer.source_player_id,
                          "type":app.hat_trade_status,},
-                        "group"); 
+                         "group"); 
 },
 
 /**
@@ -1262,7 +1320,8 @@ take_update_hat_avatar_cancel: function take_update_hat_avatar_cancel(message_da
 
                 let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
 
-                app.avatar_hat_modal.hide();
+                // app.avatar_hat_modal.hide();
+                app.avatar_hat_modal_open = false;
                 app.hat_trade_status = "open";
 
                 app.add_text_emitters("Hat Rejected.", 
@@ -1357,25 +1416,32 @@ do_avatar_sleep_emitters: function do_avatar_sleep_emitters()
     if(!player_id) return {value:false, message:"Invalid Player."};
 
     //hats are disabled
-    if(app.session.parameter_set.hat_mode == "No Hats") return {value:false, message:"No interactions during break."};
+    if(app.session.parameter_set.hat_mode == "No Hats") return {value:false, message:"Hats are disabled."};
 
     let target_player_group = app.get_parameter_set_group_from_player_id(player_id);
     let local_player_group = app.get_parameter_set_group_from_player_id(app.session_player.id);
 
     //same group
-    if(target_player_group.id == local_player_group.id) return {value:false, message: "No interactions during break."};
+    if(target_player_group.id == local_player_group.id) return {value:false, message: "No hat offers to your own group."};
 
     //in home region
     let local_player_region = app.get_ground_element_player_is_over(app.session_player.id);
 
-    if(!local_player_region) return {value:false, message: "You can only offer a hat in your own region."};
+    if(!local_player_region) return {value:false, message: "You can only offer a hat when in your own region."};
 
-    if(local_player_region.parameter_set_group != local_player_group.id) return {value:false, message:"You can only offer a hat in your own region."};
+    if(local_player_region.parameter_set_group != local_player_group.id) return {value:false, message:"You can only offer a hat when in your own region."};
     
     //They already have a hat
     if(app.session.world_state.avatars[player_id].parameter_set_hat_id) return {value:false, message:"They already have a hat."};
 
     return {value:true, message:""};
+},
+
+check_truce_hat_eligible_b: function check_truce_hat_eligible_b(player_id)
+{
+    if(!player_id) return false;
+
+    return app.check_truce_hat_eligible(player_id).value;
 },
 
 /**
