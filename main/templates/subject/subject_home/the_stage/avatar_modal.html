@@ -112,7 +112,8 @@
                                 class="btn btn-outline-success me-2"
                                 v-on:click = "send_hat_avatar()"                   
                                 v-bind:disabled="reconnecting || 
-                                                working">
+                                                 working"
+                                v-if="session.parameter_set.hat_mode != 'No Hats'">
                                 Offer Hat <i class="fab fa-redhat"></i>
                         </button>
                         <button type="button"

@@ -198,10 +198,12 @@ class Session(models.Model):
                 v["attacks_from_" + k_s] = 0
                 v["attacks_cost_at_" + k_s] = 0
                 v["attacks_damage_from_" + k_s] = 0
- 
+
+                v["hat_offer_to_" + k_s] = 0
                 v["hat_accept_to_" + k_s] = 0
                 v["hat_reject_to_" + k_s] = 0
 
+                v["hat_offer_from_" + k_s] = 0
                 v["hat_accept_from_" + k_s] = 0
                 v["hat_reject_from_" + k_s] = 0
 
@@ -459,8 +461,11 @@ class Session(models.Model):
                     temp_header.append("Send " + k[0] + " to House " + str(player_number+1))
 
                 if parameter_set["hat_mode"] != HatModes.NO_HATS:
-                    temp_header.append("Hat To " + str(player_number+1) + ' Accept')
-                    temp_header.append("Hat To " + str(player_number+1) + ' Reject')
+                    temp_header.append("Hat Offer To " + str(player_number+1))
+                    temp_header.append("Hat Offer From " + str(player_number+1))
+
+                    temp_header.append("Hat Sent To " + str(player_number+1) + ' Accept')
+                    temp_header.append("Hat Sent To " + str(player_number+1) + ' Reject')
                     temp_header.append("Hat From " + str(player_number+1) + ' Accept')
                     temp_header.append("Hat From " + str(player_number+1) + ' Reject')
                 
@@ -523,6 +528,9 @@ class Session(models.Model):
                             temp_row.append(temp_p["send_avatar_to_house_" + parameter_set_player_id + "_good_" + l[0]])
 
                         if parameter_set["hat_mode"] != HatModes.NO_HATS:
+                            temp_row.append(temp_p.get("hat_offer_to_" + k,""))
+                            temp_row.append(temp_p.get("hat_offer_from_" + k,""))
+
                             temp_row.append(temp_p.get("hat_accept_to_" + k,""))
                             temp_row.append(temp_p.get("hat_reject_to_" + k,""))
 

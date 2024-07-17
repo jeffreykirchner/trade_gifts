@@ -1373,6 +1373,9 @@ class SubjectUpdatesMixin():
             source_player_id = event["message_text"]["source_player_id"]  
             target_player_id = event["message_text"]["target_player_id"]
             type = event["message_text"]["type"]
+
+            source_player_id_s = str(source_player_id)
+            target_player_id_s = str(target_player_id)
         except:
             logger.info(f"hat_avatar: invalid data, {event['message_text']}")
             status = "fail"
@@ -1385,9 +1388,6 @@ class SubjectUpdatesMixin():
             result["type"] = type
   
             if type == "proposal_received":
-
-                source_player_id_s = str(source_player_id)
-                target_player_id_s = str(target_player_id)
 
                 result["source_player_id"] = source_player_id
                 result["target_player_id"] = target_player_id
@@ -1444,13 +1444,24 @@ class SubjectUpdatesMixin():
 
                 if source_group["parameter_set_hat"] == target_group["parameter_set_hat"]:
                     status = "fail"
-                    error_mesage.append("No interactions during break.")
+                    error_mesage.append("You may not offer a hat to your own group.")
 
                 if target_player["open_hat_offer"]:
                     status = "fail"
                     error_mesage.append("They already have an offer.")
                 else:
                     target_player["open_hat_offer"] = True
+
+                if status == "success":
+                    current_period = await session.aget_current_session_period()
+                
+                    summary_data_source = current_period.summary_data[source_player_id_s]
+                    summary_data_target = current_period.summary_data[target_player_id_s]
+
+                    summary_data_source["hat_offer_to_" + target_player_id_s] += 1
+                    summary_data_target["hat_offer_from_" + source_player_id_s] += 1
+
+                    await current_period.asave()
 
                 result["status"] = status
                 result["error_message"] = error_mesage
