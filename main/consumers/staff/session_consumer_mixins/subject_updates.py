@@ -171,6 +171,14 @@ class SubjectUpdatesMixin():
         event_data["result"]["survey_complete"] = session_player.survey_complete
         event_data["result"]["instructions_finished"] = session_player.instructions_finished
 
+        #clear hat status on reconnect
+        if self.channel_name == self.controlling_channel:
+            try:
+                session_player = self.world_state_avatars_local["session_players"][str(subject_id)]
+                session_player["open_hat_offer"] = False
+            except KeyError:
+                pass
+           
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
 

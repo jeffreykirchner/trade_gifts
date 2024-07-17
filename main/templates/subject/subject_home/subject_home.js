@@ -359,6 +359,8 @@ let app = Vue.createApp({
             app.session = message_data.session;
             app.session_player = message_data.session_player;
 
+            app.avatar_hat_modal_open = false;
+
             if(app.session.started)
             {
                
