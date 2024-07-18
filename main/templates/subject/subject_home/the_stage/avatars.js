@@ -1119,6 +1119,21 @@ send_hat_avatar: function send_hat_avatar()
         return;
     }
 
+    if(app.session.world_state_avatars.session_players[app.session_player.id].cool_down>0)
+    {
+        app.add_text_emitters("Wait until your cool down is complete.", 
+                                target_player.current_location.x, 
+                                target_player.current_location.y,
+                                target_player.current_location.x,
+                                target_player.current_location.y-100,
+                                0xFFFFFF,
+                                28,
+                                null);
+
+        app.avatar_modal.hide();
+        return;
+    }
+
     if(app.session.world_state.current_experiment_phase == 'Instructions')
     {
         app.send_hat_avatar_instructions();
@@ -1185,6 +1200,9 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
     let source_player_id = parseInt(message_data.source_player_id);
     let target_player_id = parseInt(message_data.target_player_id);
 
+    let target_player = app.session.world_state_avatars.session_players[target_player_id];
+    let source_player = app.session.world_state_avatars.session_players[source_player_id];
+
     if(message_data.status == "success")
     {
         type = message_data.type;
@@ -1233,6 +1251,8 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                         null);
                     
                 }
+
+                source_player.cool_down = app.session.parameter_set.cool_down_length;
             }
         }
         else if(type == "proposal_received")
@@ -1249,12 +1269,6 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
             }
 
             app.session.world_state.avatars[target_player_id.toString()].parameter_set_hat_id = message_data.target_player.parameter_set_hat_id;
-
-            let target_player = app.session.world_state_avatars.session_players[target_player_id];
-            let source_player = app.session.world_state_avatars.session_players[source_player_id];
-
-            target_player.cool_down = app.session.parameter_set.cool_down_length;
-            source_player.cool_down = app.session.parameter_set.cool_down_length;
 
             app.update_avatar_inventory();
 

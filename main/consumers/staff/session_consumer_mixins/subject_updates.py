@@ -1388,7 +1388,8 @@ class SubjectUpdatesMixin():
             result["type"] = type
   
             if type == "proposal_received":
-
+                #accept hat offer
+                
                 result["source_player_id"] = source_player_id
                 result["target_player_id"] = target_player_id
 
@@ -1405,8 +1406,8 @@ class SubjectUpdatesMixin():
                 target_avatar["parameter_set_hat_id"] = source_group["parameter_set_hat"]
                 target_avatar["open_hat_offer"] = False
 
-                source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
-                target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+                #source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+                # target_player["cool_down"] = self.parameter_set_local["cool_down_length"]
 
                 result["target_player"] = self.world_state_local["avatars"][str(player_id)]
 
@@ -1427,6 +1428,8 @@ class SubjectUpdatesMixin():
                 result["error_message"] = []
 
             else:
+
+                #send hat offer
                 status = "success"
                 error_mesage = []
 
@@ -1453,6 +1456,8 @@ class SubjectUpdatesMixin():
                     target_player["open_hat_offer"] = True
 
                 if status == "success":
+                    source_player["cool_down"] = self.parameter_set_local["cool_down_length"]
+
                     current_period = await session.aget_current_session_period()
                 
                     summary_data_source = current_period.summary_data[source_player_id_s]
