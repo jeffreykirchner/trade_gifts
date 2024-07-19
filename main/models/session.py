@@ -232,6 +232,7 @@ class Session(models.Model):
                             "houses":{},
                             "avatars":{},
                             "patches":{},
+                            "group_gates":{},
                             "current_period":1,
                             "current_experiment_phase":ExperimentPhase.INSTRUCTIONS if self.parameter_set.show_instructions else ExperimentPhase.RUN,
                             "time_remaining":self.parameter_set.period_length,
@@ -285,7 +286,7 @@ class Session(models.Model):
         #houses
         for i in parameter_set["parameter_set_players"]:
             v = {}
-            v["id"] =  parameter_set["parameter_set_players"][i]["id"]
+            v["id"] = parameter_set["parameter_set_players"][i]["id"]
 
             session_player = main.models.SessionPlayer.objects.get(parameter_set_player_id= v["id"])
             v["session_player"] = session_player.id
@@ -295,7 +296,18 @@ class Session(models.Model):
                 v[j[0]] = 0
             
             self.world_state["houses"][str(v["id"])] = v
-        
+
+        #group gates
+        for i in parameter_set["parameter_set_group_gates"]:
+            v = {}
+            v["id"] = parameter_set["parameter_set_group_gates"][i]["id"]
+
+            v["allowed_players"] = []
+            # for j in parameter_set["parameter_set_group_gates"][i]["parameter_set_allowed_groups"]:
+            #     v["allowed_players"][str(j)] = []
+
+            self.world_state["group_gates"][str(v["id"])] = v
+
         #session players
         for i in self.session_players.prefetch_related('parameter_set_player').all().values('id', 
                                                                                             'parameter_set_player__start_x',

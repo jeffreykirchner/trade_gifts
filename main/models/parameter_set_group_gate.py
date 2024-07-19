@@ -18,8 +18,7 @@ class ParameterSetGroupGate(models.Model):
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_group_gates_a")
     parameter_set_allowed_groups = models.ManyToManyField(ParameterSetGroup, related_name="parameter_set_group_gates_b")
-    parameter_set_allowed_players = models.ManyToManyField(ParameterSetPlayer, related_name="parameter_set_group_gates_c")
-
+    
     info = models.CharField(verbose_name='Info', blank=True, null=True, max_length=100, default="Info Here")
 
     start_x = models.IntegerField(verbose_name='Location X', default=50)            #location x and y
@@ -102,7 +101,6 @@ class ParameterSetGroupGate(models.Model):
             "text" : self.text,
             "rotation" : self.rotation,
             "parameter_set_allowed_groups" : [group.id for group in self.parameter_set_allowed_groups.all()],
-            "parameter_set_allowed_players" : [player.id for player in self.parameter_set_allowed_players.all()],
             "period_on" : self.period_on,
             "period_off" : self.period_off,
         }

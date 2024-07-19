@@ -276,7 +276,7 @@ class ParameterSet(models.Model):
                 p.parameter_set_players.set(players)
 
             #parameter set group gates
-            self.parameter_set_group_gates.all().delete()
+            self.parameter_set_group_gates_a.all().delete()
             new_parameter_set_group_gates = new_ps.get("parameter_set_group_gates")
 
             for i in new_parameter_set_group_gates:

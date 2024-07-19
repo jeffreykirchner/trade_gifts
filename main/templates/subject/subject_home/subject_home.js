@@ -453,7 +453,6 @@ let app = Vue.createApp({
 
             if(message_data.period_is_over)
             {
-
                 //update fields.
                 for(let i in message_data.fields)
                 {
@@ -708,6 +707,7 @@ let app = Vue.createApp({
         {%include "subject/subject_home/the_stage/move_objects.js"%}
         {%include "subject/subject_home/the_stage/notices.js"%}
         {%include "subject/subject_home/the_stage/barriers.js"%}
+        {%include "subject/subject_home/the_stage/group_gates.js"%}
         {%include "subject/subject_home/the_stage/emoji.js"%}
         {%include "subject/subject_home/the_stage/patch.js"%}
         {%include "subject/subject_home/help_doc_subject.js"%}

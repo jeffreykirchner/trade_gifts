@@ -523,6 +523,7 @@ let app = Vue.createApp({
         {%include "subject/subject_home/the_stage/night.js"%}
         {%include "subject/subject_home/the_stage/move_objects.js"%}
         {%include "subject/subject_home/the_stage/barriers.js"%}
+        {%include "subject/subject_home/the_stage/group_gates.js"%}
         {%include "subject/subject_home/the_stage/emoji.js"%}
         {%include "subject/subject_home/the_stage/patch.js"%}      
         {%include "subject/subject_home/helpers/helpers.js"%}   

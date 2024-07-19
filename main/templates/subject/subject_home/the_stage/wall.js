@@ -1,7 +1,7 @@
 /**
  * setup wall objects
  */
-setup_pixi_wall: function setup_pixi_wall()
+setup_pixi_walls: function setup_pixi_walls()
 {
     for(const i in app.session.parameter_set.parameter_set_walls_order)
     {
