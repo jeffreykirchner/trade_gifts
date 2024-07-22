@@ -238,6 +238,9 @@ let app = Vue.createApp({
                 case "update_hat_avatar_cancel":
                     app.take_update_hat_avatar_cancel(message_data);
                     break;
+                case "update_group_gate_access_request":
+                    app.take_group_gate_access_request(message_data);
+                    break;
             }
 
             app.first_load_done = true;

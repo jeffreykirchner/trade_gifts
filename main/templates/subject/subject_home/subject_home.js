@@ -252,6 +252,9 @@ let app = Vue.createApp({
                 case "update_hat_avatar_cancel":
                     app.take_update_hat_avatar_cancel(message_data);
                     break;
+                case "update_group_gate_access_request":
+                    app.take_group_gate_access_request(message_data);
+                    break;
                 
             }
 
@@ -589,6 +592,7 @@ let app = Vue.createApp({
 
             //update barriers
             app.update_barriers();
+            app.check_send_group_gate_access_request();
 
             {%if session.parameter_set.test_mode%} 
             //test mode race condition test
