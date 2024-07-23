@@ -90,6 +90,7 @@ class TimerMixin():
             result["current_experiment_phase"] = self.world_state_local["current_experiment_phase"]
             result["period_is_over"] = v["period_is_over"]
             result["avatars"] = self.world_state_local["avatars"]
+            result["group_gates"] = self.world_state_local["group_gates"]
 
             if v["period_is_over"]:
                 

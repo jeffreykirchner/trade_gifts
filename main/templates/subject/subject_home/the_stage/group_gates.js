@@ -174,73 +174,98 @@ check_send_group_gate_access_request: function send_group_gate_intersection()
 /**
  * take group gate access request
  */
-take_group_gate_access_request: function take_group_gate_access_request(message_data)
-{
-    if(message_data.status == "success")
-    {
-        app.session.world_state.group_gates[message_data.group_gate_id] = message_data.group_gate;
+// take_group_gate_access_request: function take_group_gate_access_request(message_data)
+// {
+//     if(message_data.status == "success")
+//     {
+//         app.session.world_state.group_gates[message_data.group_gate_id] = message_data.group_gate;
 
-        if(message_data.player_id == app.session_player.id)
-        {
-            let target_player = app.session.world_state_avatars.session_players[app.session_player.id];
+//         if(message_data.player_id == app.session_player.id)
+//         {
+//             let target_player = app.session.world_state_avatars.session_players[app.session_player.id];
 
-            app.add_text_emitters("Access Granted", 
-                                target_player.current_location.x, 
-                                target_player.current_location.y,
-                                target_player.current_location.x,
-                                target_player.current_location.y-100,
-                                0xFFFFFF,
-                                28,
-                                null);
-        }
+//             app.add_text_emitters("Access Granted", 
+//                                 target_player.current_location.x, 
+//                                 target_player.current_location.y,
+//                                 target_player.current_location.x,
+//                                 target_player.current_location.y-100,
+//                                 0xFFFFFF,
+//                                 28,
+//                                 null);
+//         }
 
-        app.update_group_gates();
-    }
-},
+//         app.update_group_gates();
+//     }
+// },
 
 /**
  * send group gate access revoke
 */
-send_group_gate_access_revoke : function send_group_gate_access_revoke(message_data)
+send_group_gate_access_revoke : function send_group_gate_access_revoke()
 {
     //check if player is in home region
     let player_in_home_region = false;
-    let parameter_set_player = app.session.parameter_set.parameter_set_players[message_data.player_id];
+
+    let session_player = app.session.world_state_avatars.session_players[app.session_player.id];
+    let parameter_set_player = app.session.parameter_set.parameter_set_players[session_player.parameter_set_player_id];
+    
     for(let i in app.session.parameter_set.parameter_set_grounds)
     {
         let parameter_set_ground = app.session.parameter_set.parameter_set_grounds[i];
         if(parameter_set_ground.parameter_set_group == parameter_set_player.parameter_set_group)
         {
-            
+            let rect = {x:parameter_set_ground.x, 
+                        y:parameter_set_ground.y, 
+                        width:parameter_set_ground.width, 
+                        height:parameter_set_ground.height};
+                
+            if(app.check_point_in_rectagle(session_player.current_location, rect))
+            {
+                player_in_home_region = true;
+                break;
+            }
         }
     }
 
-    let home_region = app.session.parameter_set.parameter_set_regions[app.session.parameter_set.parameter_set_groups[message_data.group_gate_id].region_id];
+    if(!player_in_home_region) return;
+
+    //check if player as access to group gate
+    let player_in_group_gate = false;
+    for(let i in app.session.world_state.group_gates)
+    {
+        let group_gate = app.session.world_state.group_gates[i];
+        if(group_gate.allowed_players.includes(app.session_player.id))
+        {
+            player_in_group_gate = true;
+            break;
+        }
+    }
+
+    if(!player_in_group_gate) return;
 
     app.send_message("group_gate_access_revoke", 
-                     {"player_id" : message_data.player_id,
-                      "group_gate_id" : message_data.group_gate_id,},
+                     {"player_id" : app.session_player.id,},
                       "group");
-}
+},
 
 /**
  * take group gate access request
  */
-take_group_gate_access_revoke: function take_group_gate_access_request(message_data)
-{
-    if(message_data.status == "success")
-    {
-        let player_id = message_data.player_id;
-        for(i in app.session.world_state.group_gates)
-        {
-            let group_gate = app.session.world_state.group_gates[i];
-            const index = myArray.indexOf(player_id);
+// take_group_gate_access_revoke: function take_group_gate_access_revoke(message_data)
+// {
+//     if(message_data.status == "success")
+//     {
+//         let player_id = message_data.player_id;
+//         for(i in app.session.world_state.group_gates)
+//         {
+//             let group_gate = app.session.world_state.group_gates[i];
+//             const index = group_gate.allowed_players.indexOf(player_id);
 
-            if(index > -1) group_gate.allowed_players.splice(index, 1);
-        }
-        app.update_group_gates();
-    }
-},
+//             if(index > -1) group_gate.allowed_players.splice(index, 1);
+//         }
+//         app.update_group_gates();
+//     }
+// },
 
 /**
  * update group_gates

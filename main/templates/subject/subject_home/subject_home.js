@@ -252,10 +252,6 @@ let app = Vue.createApp({
                 case "update_hat_avatar_cancel":
                     app.take_update_hat_avatar_cancel(message_data);
                     break;
-                case "update_group_gate_access_request":
-                    app.take_group_gate_access_request(message_data);
-                    break;
-                
             }
 
             app.first_load_done = true;
@@ -282,7 +278,7 @@ let app = Vue.createApp({
             app.end_game_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('end_game_modal'), {keyboard: false})   
             app.avatar_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_modal'), {keyboard: false})  
             app.avatar_attack_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_attack_modal'), {keyboard: false})  
-            app.avatar_hat_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('avatar_hat_modal'), {keyboard: false})       
+            
             app.field_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('field_modal'), {keyboard: false})
             app.house_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('house_modal'), {keyboard: false})
             app.patch_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('patch_modal'), {keyboard: false})
@@ -291,7 +287,7 @@ let app = Vue.createApp({
             document.getElementById('end_game_modal').addEventListener('hidden.bs.modal', app.hide_end_game_modal);
             document.getElementById('avatar_modal').addEventListener('hidden.bs.modal', app.hide_avatar_modal);
             document.getElementById('avatar_attack_modal').addEventListener('hidden.bs.modal', app.hide_avatar_attack_modal);
-            document.getElementById('avatar_hat_modal').addEventListener('hidden.bs.modal', app.hide_avatar_hat_modal);
+
             document.getElementById('field_modal').addEventListener('hidden.bs.modal', app.hide_field_modal);
             document.getElementById('house_modal').addEventListener('hidden.bs.modal', app.hide_house_modal);
             document.getElementById('patch_modal').addEventListener('hidden.bs.modal', app.hide_patch_modal);
@@ -418,7 +414,6 @@ let app = Vue.createApp({
             app.avatar_attack_modal.hide();
             app.field_modal.hide();
             app.house_modal.hide();
-            app.avatar_hat_modal.hide();
             app.patch_modal.hide();
 
             app.notices_seen = [];
@@ -453,6 +448,7 @@ let app = Vue.createApp({
             app.session.world_state.finished = message_data.finished;
             app.session.world_state.current_experiment_phase = message_data.current_experiment_phase;
             app.session.world_state.avatars = message_data.avatars;
+            app.session.world_state.group_gates = message_data.group_gates;
 
             if(message_data.period_is_over)
             {
@@ -490,7 +486,6 @@ let app = Vue.createApp({
                 app.avatar_attack_modal.hide();
                 app.field_modal.hide();
                 app.house_modal.hide();
-                // app.avatar_hat_modal.hide();
                 app.patch_modal.hide();
                 app.working = false;
                 app.avatar_hat_modal_open = false;
@@ -504,6 +499,8 @@ let app = Vue.createApp({
                                    app.session.world_state.current_period,
                                    app.session.parameter_set.period_length);
                 }
+
+                app.send_group_gate_access_revoke();
             }
 
             //sleep 
@@ -579,12 +576,6 @@ let app = Vue.createApp({
                 }
             }
 
-            //close hat modal if not on break
-            if(app.session.world_state.time_remaining <= app.session.parameter_set.period_length)
-            {
-                app.avatar_hat_modal.hide();
-            }
-
             //update any notices on screen
             Vue.nextTick(() => {
              app.update_notices();
@@ -593,6 +584,7 @@ let app = Vue.createApp({
             //update barriers
             app.update_barriers();
             app.check_send_group_gate_access_request();
+            app.update_group_gates();
 
             {%if session.parameter_set.test_mode%} 
             //test mode race condition test
@@ -613,7 +605,6 @@ let app = Vue.createApp({
             app.avatar_attack_modal.hide();
             app.field_modal.hide();
             app.house_modal.hide();
-            app.avatar_hat_modal.hide();
             app.patch_modal.hide();
             app.help_modal.hide();
    

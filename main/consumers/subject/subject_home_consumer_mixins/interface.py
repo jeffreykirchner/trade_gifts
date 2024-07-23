@@ -185,7 +185,17 @@ class InterfaceMixin():
     
     async def update_group_gate_access_request(self, event):
         '''
-        update hat cancel 
+        request gate access
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_subjects=None, message_to_staff=None, 
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+    
+    async def update_group_gate_access_revoke(self, event):
+        '''
+        remove gate access
         '''
 
         event_data = event["group_data"]

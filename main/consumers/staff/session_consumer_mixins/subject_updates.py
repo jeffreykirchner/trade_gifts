@@ -1666,25 +1666,26 @@ class SubjectUpdatesMixin():
         try:
             session = await Session.objects.aget(id=self.session_id)
             player_id = self.session_players_local[event["player_key"]]["id"]     
-            group_gate_id = event["message_text"]["group_gate_id"]   
+            # group_gate_id = event["message_text"]["group_gate_id"]   
             
         except:
             logger.info(f"group_gate_access_revoke: invalid data, {event['message_text']}")
             status = "fail"
-            error_mesage = "Access denied."
+            error_mesage = "Not found."
 
-        group_gate = self.world_state_local['group_gates'][str(group_gate_id)]
-        session_player = self.world_state_avatars_local['session_players'][str(player_id)]
-       
-        if status == "success":
-            group_gate["allowed_players"].remove(player_id)
-            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+        for i in self.world_state_local['group_gates']:
+            group_gate = self.world_state_local['group_gates'][i]
+            if player_id in group_gate["allowed_players"]:
+                try:
+                    group_gate["allowed_players"].remove(player_id)
+                except ValueError:
+                    pass
+           
+        await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
 
         result = {"status" : status, 
                   "error_message" : error_mesage,
-                  "player_id" : player_id,
-                  "group_gate_id" : group_gate_id,
-                  "group_gate" : group_gate}
+                  "player_id" : player_id,}
        
         await SessionEvent.objects.acreate(session_id=self.session_id, 
                                            session_player_id=player_id,
