@@ -241,6 +241,9 @@ let app = Vue.createApp({
                 case "update_group_gate_access_request":
                     app.take_group_gate_access_request(message_data);
                     break;
+                case "update_group_gate_access_revoke":
+                    app.take_group_gate_access_revoke(message_data);
+                    break;
             }
 
             app.first_load_done = true;

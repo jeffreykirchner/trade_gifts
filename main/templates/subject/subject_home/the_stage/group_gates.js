@@ -37,6 +37,8 @@ setup_pixi_group_gates: function setup_pixi_group_gates()
         matrix.scale(1,scale_y);
 
         matrix.rotate(rotation);
+
+        let labels_container = new PIXI.Container();
         
         outline.rect(0, 0, group_gate.width, group_gate.height);
         outline.fill({texture: app.pixi_textures['barrier_tex'], matrix:matrix});
@@ -51,9 +53,10 @@ setup_pixi_group_gates: function setup_pixi_group_gates()
                                         stroke: "black",                                        
                                     }});
            
-        label.anchor.set(0.5, 1);   
-        label.position.set(group_gate.width/2-20, group_gate.height/2);
-        label.rotation = rotation;
+        label.anchor.set(0.5);   
+        label.position.set(group_gate.width/2, group_gate.height/2-10);
+        labels_container.addChild(label);
+        // label.rotation = rotation;
 
         //player labels
         let label2_text = "Allowed: ---";
@@ -67,13 +70,26 @@ setup_pixi_group_gates: function setup_pixi_group_gates()
                                             stroke: "black",                                        
                                         }});
 
-        label2.anchor.set(0.5, 0);   
-        label2.position.set(group_gate.width/2-15, group_gate.height/2);
-        label2.rotation = rotation;
+        label2.anchor.set(0.5);   
+        label2.position.set(group_gate.width/2, group_gate.height/2+35);
+        labels_container.addChild(label2);
 
         group_gate_container.addChild(outline);
-        group_gate_container.addChild(label);
-        group_gate_container.addChild(label2);
+        group_gate_container.addChild(labels_container);
+        // group_gate_container.addChild(label2);
+        // 
+        labels_container.position.set(outline.width/2, outline.height/2);
+        labels_container.pivot.set(outline.width/2, outline.height/2);
+        labels_container.rotation = rotation;
+        
+        
+        //point marker
+        // let pivot_point = new PIXI.Graphics();
+    
+        // pivot_point.rect(0, 0, 10, 10);
+        // pivot_point.stroke({color:"purple", width:2});
+        // pivot_point.position.set(labels_container.pivot.x, labels_container.pivot.y);
+        // group_gate_container.addChild(pivot_point);
 
         pixi_group_gates[i].group_gate_container = group_gate_container;
         pixi_group_gates[i].label2 = label2;
@@ -183,11 +199,55 @@ take_group_gate_access_request: function take_group_gate_access_request(message_
 },
 
 /**
+ * send group gate access revoke
+*/
+send_group_gate_access_revoke : function send_group_gate_access_revoke(message_data)
+{
+    //check if player is in home region
+    let player_in_home_region = false;
+    let parameter_set_player = app.session.parameter_set.parameter_set_players[message_data.player_id];
+    for(let i in app.session.parameter_set.parameter_set_grounds)
+    {
+        let parameter_set_ground = app.session.parameter_set.parameter_set_grounds[i];
+        if(parameter_set_ground.parameter_set_group == parameter_set_player.parameter_set_group)
+        {
+            
+        }
+    }
+
+    let home_region = app.session.parameter_set.parameter_set_regions[app.session.parameter_set.parameter_set_groups[message_data.group_gate_id].region_id];
+
+    app.send_message("group_gate_access_revoke", 
+                     {"player_id" : message_data.player_id,
+                      "group_gate_id" : message_data.group_gate_id,},
+                      "group");
+}
+
+/**
+ * take group gate access request
+ */
+take_group_gate_access_revoke: function take_group_gate_access_request(message_data)
+{
+    if(message_data.status == "success")
+    {
+        let player_id = message_data.player_id;
+        for(i in app.session.world_state.group_gates)
+        {
+            let group_gate = app.session.world_state.group_gates[i];
+            const index = myArray.indexOf(player_id);
+
+            if(index > -1) group_gate.allowed_players.splice(index, 1);
+        }
+        app.update_group_gates();
+    }
+},
+
+/**
  * update group_gates
  */
 update_group_gates: function update_group_gates()
 {
-    for(let i in app.session.parameter_set.parameter_set_group_gates)
+    for(let i in app.session.world_state.group_gates)
     {
         let parameter_set_group_gate = app.session.parameter_set.parameter_set_group_gates[i];
         let group_gate = app.session.world_state.group_gates[i];

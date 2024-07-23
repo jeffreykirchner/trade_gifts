@@ -1597,11 +1597,12 @@ class SubjectUpdatesMixin():
         session_player = self.world_state_avatars_local['session_players'][str(player_id)]
         parameter_set_player = self.parameter_set_local["parameter_set_players"][str(session_player["parameter_set_player_id"])]
        
-        #check if player already in
-        if player_id in group_gate["allowed_players"]:
-            status = "fail"
-            error_mesage = "You already have access."
-            return
+        #check if player already allowed through a gate
+        for i in self.world_state_local['group_gates']:
+            if player_id in self.world_state_local['group_gates'][i]["allowed_players"]:
+                status = "fail"
+                error_mesage = "You already have access to a gate."
+                return
         
         #check if player is in allowed group
         if parameter_set_player["parameter_set_group"] not in parameter_set_group_gate["parameter_set_allowed_groups"]:
@@ -1647,7 +1648,64 @@ class SubjectUpdatesMixin():
 
         await self.send_message(message_to_self=event_data, message_to_group=None,
                                 message_type=event['type'], send_to_client=True, send_to_group=False)
+    
+    async def group_gate_access_revoke(self, event):
+        '''
+        revoke access to group gate
+        '''
 
+        if self.controlling_channel != self.channel_name:
+            return
+        
+        logger = logging.getLogger(__name__)
+        # logger.info(event)
+
+        status = "success"
+        error_mesage = ""
+
+        try:
+            session = await Session.objects.aget(id=self.session_id)
+            player_id = self.session_players_local[event["player_key"]]["id"]     
+            group_gate_id = event["message_text"]["group_gate_id"]   
+            
+        except:
+            logger.info(f"group_gate_access_revoke: invalid data, {event['message_text']}")
+            status = "fail"
+            error_mesage = "Access denied."
+
+        group_gate = self.world_state_local['group_gates'][str(group_gate_id)]
+        session_player = self.world_state_avatars_local['session_players'][str(player_id)]
+       
+        if status == "success":
+            group_gate["allowed_players"].remove(player_id)
+            await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)
+
+        result = {"status" : status, 
+                  "error_message" : error_mesage,
+                  "player_id" : player_id,
+                  "group_gate_id" : group_gate_id,
+                  "group_gate" : group_gate}
+       
+        await SessionEvent.objects.acreate(session_id=self.session_id, 
+                                           session_player_id=player_id,
+                                           type="group_gate_access_revoke",
+                                           period_number=self.world_state_local["current_period"],
+                                           time_remaining=self.world_state_local["time_remaining"],
+                                           data=result)
+
+        await self.send_message(message_to_self=None, message_to_group=result,
+                                message_type=event['type'], send_to_client=False, send_to_group=True)
+        
+    async def update_group_gate_access_revoke(self, event):
+        '''
+        subject update group gate access revoke
+        '''
+
+        event_data = event["group_data"]
+
+        await self.send_message(message_to_self=event_data, message_to_group=None,
+                                message_type=event['type'], send_to_client=True, send_to_group=False)
+        
 def sync_field_harvest(session_id, player_id, field_id, good_one_harvest, good_two_harvest, parameter_set):
     '''
     harvest from field
