@@ -1636,8 +1636,8 @@ class SubjectUpdatesMixin():
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
 
-        await self.send_message(message_to_self=None, message_to_group=result,
-                                message_type=event['type'], send_to_client=False, send_to_group=True)
+        # await self.send_message(message_to_self=None, message_to_group=result,
+        #                         message_type=event['type'], send_to_client=False, send_to_group=True)
 
     async def update_group_gate_access_request(self, event):
         '''
@@ -1694,8 +1694,8 @@ class SubjectUpdatesMixin():
                                            time_remaining=self.world_state_local["time_remaining"],
                                            data=result)
 
-        await self.send_message(message_to_self=None, message_to_group=result,
-                                message_type=event['type'], send_to_client=False, send_to_group=True)
+        # await self.send_message(message_to_self=None, message_to_group=result,
+        #                         message_type=event['type'], send_to_client=False, send_to_group=True)
         
     async def update_group_gate_access_revoke(self, event):
         '''
