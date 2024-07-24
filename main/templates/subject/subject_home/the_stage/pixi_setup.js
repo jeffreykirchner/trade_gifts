@@ -48,8 +48,9 @@ setup_pixi: function setup_pixi(){
         app.setup_pixi_patches();
         app.setup_pixi_houses();
         app.setup_pixi_subjects();       
-        app.setup_pixi_wall();       
-        app.setup_pixi_barrier();
+        app.setup_pixi_walls();       
+        app.setup_pixi_barriers();
+        app.setup_pixi_group_gates();
        
         if(app.pixi_mode!="subject")
         {

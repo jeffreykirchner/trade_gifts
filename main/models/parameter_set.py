@@ -275,6 +275,42 @@ class ParameterSet(models.Model):
                     players.append(new_parameter_set_players_map[str(g)])
                 p.parameter_set_players.set(players)
 
+            #parameter set grounds
+            self.parameter_set_grounds.all().delete()
+            new_parameter_set_grounds = new_ps.get("parameter_set_grounds")
+            new_parameter_set_grounds_map = {}
+
+            for i in new_parameter_set_grounds:
+                p = main.models.ParameterSetGround.objects.create(parameter_set=self)
+                v = new_parameter_set_grounds[i]
+                p.from_dict(v)
+
+                new_parameter_set_grounds_map[i] = p.id
+
+                if v.get("parameter_set_group", None) != None:
+                    p.parameter_set_group_id=new_parameter_set_groups_map[str(v["parameter_set_group"])]
+                    
+                p.save()
+
+            #parameter set group gates
+            self.parameter_set_group_gates_a.all().delete()
+            new_parameter_set_group_gates = new_ps.get("parameter_set_group_gates")
+
+            for i in new_parameter_set_group_gates:
+                p = main.models.ParameterSetGroupGate.objects.create(parameter_set=self)
+                v = new_parameter_set_group_gates[i]
+                p.from_dict(v)
+
+                groups = []
+                for g in v["parameter_set_allowed_groups"]:
+                    groups.append(new_parameter_set_groups_map[str(g)])
+
+                p.parameter_set_allowed_groups.set(groups)
+
+                if v.get("parameter_set_ground", None) != None:
+                    p.parameter_set_ground_id=new_parameter_set_grounds_map[str(v["parameter_set_ground"])]
+                p.save()
+
             #parameter set walls
             self.parameter_set_walls.all().delete()
             new_parameter_set_walls = new_ps.get("parameter_set_walls")
@@ -292,19 +328,7 @@ class ParameterSet(models.Model):
                 v = new_parameter_set_notices[i]
                 p.from_dict(v)
 
-            #parameter set grounds
-            self.parameter_set_grounds.all().delete()
-            new_parameter_set_grounds = new_ps.get("parameter_set_grounds")
-
-            for i in new_parameter_set_grounds:
-                p = main.models.ParameterSetGround.objects.create(parameter_set=self)
-                v = new_parameter_set_grounds[i]
-                p.from_dict(v)
-
-                if v.get("parameter_set_group", None) != None:
-                    p.parameter_set_group_id=new_parameter_set_groups_map[str(v["parameter_set_group"])]
-                    
-                p.save()
+           
 
             #parameter set field types
             self.parameter_set_field_types.all().delete()
@@ -506,6 +530,7 @@ class ParameterSet(models.Model):
                              update_groups=False,
                              update_notices=False,
                              update_barriers=False,
+                             update_group_gates=False,
                              update_patches=False,
                              update_hats=False):
         '''
@@ -543,6 +568,10 @@ class ParameterSet(models.Model):
             self.json_for_session["parameter_set_barriers_order"] = list(self.parameter_set_barriers_a.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_barriers"] = {str(p.id) : p.json() for p in self.parameter_set_barriers_a.all()}
 
+        if update_group_gates:
+            self.json_for_session["parameter_set_group_gates_order"] = list(self.parameter_set_group_gates_a.all().values_list('id', flat=True))
+            self.json_for_session["parameter_set_group_gates"] = {str(p.id) : p.json() for p in self.parameter_set_group_gates_a.all()}
+
         if update_patches:
             self.json_for_session["parameter_set_patches_order"] = list(self.parameter_set_patches_a.all().values_list('id', flat=True))
             self.json_for_session["parameter_set_patches"] = {str(p.id) : p.json() for p in self.parameter_set_patches_a.all()}
@@ -569,6 +598,7 @@ class ParameterSet(models.Model):
                                 update_groups=True,
                                 update_notices=True,
                                 update_barriers=True,
+                                update_group_gates=True,
                                 update_patches=True,
                                 update_hats=True)
 

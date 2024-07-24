@@ -9,6 +9,7 @@ let pixi_fps_label = null;                     //fps label
 let pixi_avatars = {};                         //avatars
 let pixi_walls = {};                           //walls
 let pixi_barriers = {};                        //barriers
+let pixi_group_gates = {};                     //group gates
 let pixi_grounds = {};                         //grounds
 let pixi_fields = {};                          //fields
 let pixi_houses = {};                          //houses
