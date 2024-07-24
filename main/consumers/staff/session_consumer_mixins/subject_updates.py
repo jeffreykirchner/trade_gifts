@@ -1610,15 +1610,19 @@ class SubjectUpdatesMixin():
             error_mesage = "You group does not have access."
             return
         
-        #check if another player in your group already has access.
+        #check already at max for group access
+        group_counter = 0
         for i in group_gate["allowed_players"]:
             temp_parameter_set_player = self.world_state_avatars_local['session_players'][str(i)]["parameter_set_player_id"]
 
             if self.parameter_set_local["parameter_set_players"][str(temp_parameter_set_player)]["parameter_set_group"] == parameter_set_player["parameter_set_group"]:
-                status = "fail"
-                error_mesage = "Another player in your group already has access."
-                return
-            
+                group_counter += 1
+        
+        if group_counter >= parameter_set_group_gate["max_players_per_group"]:
+            status = "fail"
+            error_mesage = "Max players reached."
+            return
+
         if status == "success":
             group_gate["allowed_players"].append(player_id)
             await Session.objects.filter(id=self.session_id).aupdate(world_state=self.world_state_local)

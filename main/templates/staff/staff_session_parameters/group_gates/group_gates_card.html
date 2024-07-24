@@ -40,7 +40,13 @@
                                 </th> 
                                 <th scope="col" class = "m-1 p-1">
                                     Period On/Off
-                                </th>             
+                                </th>
+                                <th scope="col" class = "m-1 p-1">
+                                    Players per Group
+                                </th>          
+                                <th scope="col" class = "m-1 p-1">
+                                    Bridge
+                                </th>   
                             </tr>
                         </thead>
                         <tbody id="group_gate_list">
@@ -66,8 +72,7 @@
                                         <span v-if="g in parameter_set.parameter_set_groups">
                                             [[parameter_set.parameter_set_groups[g].name]]
                                         </span>
-                                    </div>
-                                    
+                                    </div>                                    
                                 </td>
                                 <td v-on:click="show_edit_parameter_set_group_gate(p)" 
                                    class="player_table_cell">
@@ -80,6 +85,16 @@
                                 <td v-on:click="show_edit_parameter_set_group_gate(p)" 
                                     class="player_table_cell">
                                     [[temp_p.period_on]], [[temp_p.period_off]]
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_group_gate(p)" 
+                                    class="player_table_cell">
+                                    [[temp_p.max_players_per_group]]
+                                </td>
+                                <td v-on:click="show_edit_parameter_set_group_gate(p)" 
+                                    class="player_table_cell">
+                                        <span v-if="temp_p.parameter_set_ground">
+                                            [[parameter_set.parameter_set_grounds[temp_p.parameter_set_ground].info]]
+                                        </span>                                   
                                 </td>
                             </tr>
                         </tbody>

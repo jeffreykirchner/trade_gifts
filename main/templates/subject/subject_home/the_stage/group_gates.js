@@ -152,15 +152,18 @@ check_send_group_gate_access_request: function send_group_gate_intersection()
     let parameter_set_player = app.session.parameter_set.parameter_set_players[obj.parameter_set_player_id];
     let container = pixi_avatars[player_id].bounding_box
 
-    let rect1={x:obj.current_location.x - container.width/2 - 100,
-               y:obj.current_location.y - container.height/2 - 100,
-               width:container.width + 200,
-               height:container.height + 200};
-
-
     for(let i in app.session.parameter_set.parameter_set_group_gates)
     {
-        if(app.check_group_gate_intersection(rect1, parameter_set_player.parameter_set_group, player_id, i))
+        let parameter_set_group_gate = app.session.parameter_set.parameter_set_group_gates[i];
+        let parameter_set_ground = app.session.parameter_set.parameter_set_grounds[parameter_set_group_gate.parameter_set_ground];
+        
+        let rect={x:parameter_set_ground.x,
+                  y:parameter_set_ground.y,
+                  width:parameter_set_ground.width,
+                  height:parameter_set_ground.height};
+
+        if(parameter_set_group_gate.parameter_set_allowed_groups.includes(parameter_set_player.parameter_set_group) &&
+           app.check_point_in_rectagle(obj.current_location, rect))
         {
             app.send_message("group_gate_access_request", 
                              {"player_id" : player_id,

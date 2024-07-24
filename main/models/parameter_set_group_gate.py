@@ -8,6 +8,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from main.models import ParameterSet
 from main.models import ParameterSetGroup
 from main.models import ParameterSetPlayer
+from main.models import ParameterSetGround
 
 import main
 
@@ -18,6 +19,7 @@ class ParameterSetGroupGate(models.Model):
 
     parameter_set = models.ForeignKey(ParameterSet, on_delete=models.CASCADE, related_name="parameter_set_group_gates_a")
     parameter_set_allowed_groups = models.ManyToManyField(ParameterSetGroup, related_name="parameter_set_group_gates_b")
+    parameter_set_ground = models.ForeignKey(ParameterSetGround, on_delete=models.CASCADE, related_name="parameter_set_group_gates_c", blank=True, null=True)
     
     info = models.CharField(verbose_name='Info', blank=True, null=True, max_length=100, default="Info Here")
 
@@ -32,6 +34,8 @@ class ParameterSetGroupGate(models.Model):
 
     period_on = models.IntegerField(verbose_name='Period On', default=1)                #period when barrier is on
     period_off = models.IntegerField(verbose_name='Period Off', default=14)             #period when barrier is off
+
+    max_players_per_group = models.IntegerField(verbose_name='Max Players Per Group', default=1) #max players per group
 
     timestamp = models.DateTimeField(auto_now_add=True)
     updated= models.DateTimeField(auto_now=True)
@@ -62,6 +66,8 @@ class ParameterSetGroupGate(models.Model):
 
         self.period_on = new_ps.get("period_on", 1)
         self.period_off = new_ps.get("period_off", 14)
+
+        self.max_players_per_group = new_ps.get("max_players_per_group", 1)
 
         self.save()
         
@@ -101,8 +107,10 @@ class ParameterSetGroupGate(models.Model):
             "text" : self.text,
             "rotation" : self.rotation,
             "parameter_set_allowed_groups" : [group.id for group in self.parameter_set_allowed_groups.all()],
+            "parameter_set_ground" : self.parameter_set_ground.id if self.parameter_set_ground else None,
             "period_on" : self.period_on,
             "period_off" : self.period_off,
+            "max_players_per_group" : self.max_players_per_group,
         }
     
     def get_json_for_subject(self, update_required=False):

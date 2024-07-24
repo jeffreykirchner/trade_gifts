@@ -308,6 +308,12 @@ def sync_continue_timer(event, session_id, world_state, parameter_set):
                 for k in main.globals.Goods.choices:                       
                     sd_player["house_" + k[0]] = world_state["houses"][str(avatar["parameter_set_player_id"])][k[0]]
                     sd_player["avatar_" + k[0]] =  avatar[k[0]]
+                
+                #store group gates
+                for k in world_state["group_gates"]:
+                    group_gate = world_state["group_gates"][k]
+                    if int(i) in group_gate["allowed_players"]:
+                        sd_player["group_gate_" + k] = True
 
             last_period.save()
 

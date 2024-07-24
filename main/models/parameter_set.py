@@ -275,19 +275,41 @@ class ParameterSet(models.Model):
                     players.append(new_parameter_set_players_map[str(g)])
                 p.parameter_set_players.set(players)
 
+            #parameter set grounds
+            self.parameter_set_grounds.all().delete()
+            new_parameter_set_grounds = new_ps.get("parameter_set_grounds")
+            new_parameter_set_grounds_map = {}
+
+            for i in new_parameter_set_grounds:
+                p = main.models.ParameterSetGround.objects.create(parameter_set=self)
+                v = new_parameter_set_grounds[i]
+                p.from_dict(v)
+
+                new_parameter_set_grounds_map[i] = p.id
+
+                if v.get("parameter_set_group", None) != None:
+                    p.parameter_set_group_id=new_parameter_set_groups_map[str(v["parameter_set_group"])]
+                    
+                p.save()
+
             #parameter set group gates
             self.parameter_set_group_gates_a.all().delete()
             new_parameter_set_group_gates = new_ps.get("parameter_set_group_gates")
 
             for i in new_parameter_set_group_gates:
                 p = main.models.ParameterSetGroupGate.objects.create(parameter_set=self)
-                p.from_dict(new_parameter_set_group_gates[i])
+                v = new_parameter_set_group_gates[i]
+                p.from_dict(v)
 
                 groups = []
-                for g in new_parameter_set_group_gates[i]["parameter_set_allowed_groups"]:
+                for g in v["parameter_set_allowed_groups"]:
                     groups.append(new_parameter_set_groups_map[str(g)])
 
                 p.parameter_set_allowed_groups.set(groups)
+
+                if v.get("parameter_set_ground", None) != None:
+                    p.parameter_set_ground_id=new_parameter_set_grounds_map[str(v["parameter_set_ground"])]
+                p.save()
 
             #parameter set walls
             self.parameter_set_walls.all().delete()
@@ -306,19 +328,7 @@ class ParameterSet(models.Model):
                 v = new_parameter_set_notices[i]
                 p.from_dict(v)
 
-            #parameter set grounds
-            self.parameter_set_grounds.all().delete()
-            new_parameter_set_grounds = new_ps.get("parameter_set_grounds")
-
-            for i in new_parameter_set_grounds:
-                p = main.models.ParameterSetGround.objects.create(parameter_set=self)
-                v = new_parameter_set_grounds[i]
-                p.from_dict(v)
-
-                if v.get("parameter_set_group", None) != None:
-                    p.parameter_set_group_id=new_parameter_set_groups_map[str(v["parameter_set_group"])]
-                    
-                p.save()
+           
 
             #parameter set field types
             self.parameter_set_field_types.all().delete()

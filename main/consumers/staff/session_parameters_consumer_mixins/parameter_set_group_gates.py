@@ -77,6 +77,7 @@ def take_update_parameter_set_group_gate(data):
 
     form = ParameterSetGroupGateForm(form_data_dict, instance=parameter_set_group_gate)
     form.fields["parameter_set_allowed_groups"].queryset = session.parameter_set.parameter_set_groups.all()
+    form.fields["parameter_set_ground"].queryset = session.parameter_set.parameter_set_grounds.all()
 
     if form.is_valid():         
         form.save()              

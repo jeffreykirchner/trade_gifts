@@ -6,6 +6,7 @@ from django import forms
 
 from main.models import ParameterSetGroupGate
 from main.models import ParameterSetGroup
+from main.models import ParameterSetGround
 
 class ParameterSetGroupGateForm(forms.ModelForm):
     '''
@@ -69,8 +70,19 @@ class ParameterSetGroupGateForm(forms.ModelForm):
                                                                     "step":"1",
                                                                     "min":"2"}))
 
+    max_players_per_group = forms.IntegerField(label='Max Players Per Group',
+                                                min_value=1,
+                                                widget=forms.NumberInput(attrs={"v-model":"current_parameter_set_group_gate.max_players_per_group",
+                                                                                "step":"1",
+                                                                                "min":"1"}))
+    
+    parameter_set_ground = forms.ModelChoiceField(label='Bridge',
+                                                  queryset=ParameterSetGround.objects.none(),
+                                                  widget=forms.Select(attrs={"v-model":"current_parameter_set_group_gate.parameter_set_ground",
+                                                                            }))
+
     class Meta:
         model=ParameterSetGroupGate
         fields =['info', 'text', 'rotation', 'parameter_set_allowed_groups', 'start_x', 'start_y', 
-                 'width', 'height', 'period_on', 'period_off']
+                 'width', 'height', 'period_on', 'period_off', 'max_players_per_group', 'parameter_set_ground']
     

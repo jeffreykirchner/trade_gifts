@@ -152,6 +152,7 @@ class Session(models.Model):
         
         parameter_set_patches = self.parameter_set.parameter_set_patches_a.values('id').all()
         session_players = self.session_players.values('id','parameter_set_player__id').all()
+        parameter_set_group_gates = self.parameter_set.parameter_set_group_gates_a.values('id').all()
         parameter_set = self.parameter_set.json()
         world_state = self.world_state
         
@@ -190,6 +191,11 @@ class Session(models.Model):
                 k_s = str(k["id"])
                 v["patch_harvests_count_" + k_s] = 0
                 v["patch_harvests_total_" + k_s] = 0
+            
+            #group gates
+            for k in parameter_set_group_gates:
+                k_s = str(k["id"])
+                v["group_gate_" + k_s] = False
 
             #interactions with others
             for k in session_players:
@@ -210,7 +216,6 @@ class Session(models.Model):
                 for l in main.globals.Goods.choices:
                     v["send_avatar_to_avatar_" + k_s + "_good_" + l[0]] = 0
                     v["send_avatar_to_house_" + str(k["parameter_set_player__id"]) + "_good_" + l[0]] = 0
-
 
         self.session_periods.all().update(summary_data=summary_data)
 
@@ -486,6 +491,10 @@ class Session(models.Model):
                 temp_header.append("Patch Harvests Count " + str(patch_number+1))
                 temp_header.append("Patch Harvests Total " + str(patch_number+1))
             
+            #group gate access
+            for i in parameter_set["parameter_set_group_gates"]:
+                temp_header.append("Bridge " + parameter_set["parameter_set_group_gates"][i]["info"] + " Access")
+            
             writer.writerow(temp_header)
 
             # logger.info(parameter_set_players)
@@ -553,6 +562,10 @@ class Session(models.Model):
                     for patch_number, patch in enumerate(world_state["patches"]):
                         temp_row.append(temp_p["patch_harvests_count_" + patch])
                         temp_row.append(temp_p["patch_harvests_total_" + patch])
+                    
+                    #group gate access
+                    for i in parameter_set["parameter_set_group_gates"]:
+                        temp_row.append(temp_p["group_gate_" + i])
 
                     writer.writerow(temp_row)
                     
