@@ -27,6 +27,7 @@ from main.forms import ParameterSetFieldForm
 from main.forms import ParameterSetGroupForm
 from main.forms import ParameterSetNoticeForm
 from main.forms import ParameterSetBarrierForm
+from main.forms import ParameterSetGroupGateForm
 from main.forms import ParameterSetPatchForm
 from main.forms import ParameterSetHatForm
 
@@ -55,6 +56,7 @@ class StaffSessionParametersView(SingleObjectMixin, View):
         parameter_set_group_form = ParameterSetGroupForm()
         parameter_set_notice_form = ParameterSetNoticeForm()
         parameter_set_barrier_form = ParameterSetBarrierForm()
+        parameter_set_group_gate_form = ParameterSetGroupGateForm()
         parameter_set_patch_form = ParameterSetPatchForm()
         parameter_set_hat_form = ParameterSetHatForm()
 
@@ -64,6 +66,8 @@ class StaffSessionParametersView(SingleObjectMixin, View):
         parameter_set_player_form.fields["parameter_set_hat"].queryset = session.parameter_set.parameter_set_hats.all()
         parameter_set_barrier_form.fields["parameter_set_groups"].queryset = session.parameter_set.parameter_set_groups.all()
         parameter_set_barrier_form.fields["parameter_set_players"].queryset = session.parameter_set.parameter_set_players.all()
+        parameter_set_group_gate_form.fields["parameter_set_allowed_groups"].queryset = session.parameter_set.parameter_set_groups.all()
+        parameter_set_group_gate_form.fields["parameter_set_ground"].queryset = session.parameter_set.parameter_set_grounds.all()
         parameter_set_patch_form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
         parameter_set_ground_form.fields["parameter_set_group"].queryset = session.parameter_set.parameter_set_groups.all()
         parameter_set_group_form.fields["parameter_set_hat"].queryset = session.parameter_set.parameter_set_hats.all()
@@ -105,6 +109,10 @@ class StaffSessionParametersView(SingleObjectMixin, View):
         for i in parameter_set_barrier_form:
             parameter_set_barrier_form_ids.append(i.html_name)
 
+        parameter_set_group_gate_form_ids=[]
+        for i in parameter_set_group_gate_form:
+            parameter_set_group_gate_form_ids.append(i.html_name)
+
         parameter_set_patch_form_ids=[]
         for i in parameter_set_patch_form:
             parameter_set_patch_form_ids.append(i.html_name)
@@ -127,6 +135,7 @@ class StaffSessionParametersView(SingleObjectMixin, View):
                                "parameter_set_group_form" : parameter_set_group_form,
                                "parameter_set_notice_form" : parameter_set_notice_form,
                                "parameter_set_barrier_form" : parameter_set_barrier_form,
+                               "parameter_set_group_gate_form" : parameter_set_group_gate_form,
                                "parameter_set_patch_form" : parameter_set_patch_form,
                                "parameter_set_hat_form" : parameter_set_hat_form,
                                "parameter_set_form_ids" : parameter_set_form_ids,
@@ -138,6 +147,7 @@ class StaffSessionParametersView(SingleObjectMixin, View):
                                "parameter_set_group_form_ids" : parameter_set_group_form_ids,
                                "parameter_set_notice_form_ids" : parameter_set_notice_form_ids,
                                "parameter_set_barrier_form_ids" : parameter_set_barrier_form_ids,
+                               "parameter_set_group_gate_form_ids" : parameter_set_group_gate_form_ids,
                                "parameter_set_patch_form_ids" : parameter_set_patch_form_ids,
                                "parameter_set_hat_form_ids" : parameter_set_hat_form_ids,
                                "import_parameters_form" : ImportParametersForm(user=request.user, session_id=session.id),     

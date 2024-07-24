@@ -169,3 +169,28 @@ get_angle: function get_angle(x1, y1, x2, y2)
 {
     return Math.atan2(y2 - y1, x2 - x1);
 },
+
+/**
+ * return html colorized text based on group naes
+ */
+colorize_text: function colorize_text(text)
+{
+    let new_text = text;
+
+    //replace group names with colored text
+    for(let i in app.session.parameter_set.parameter_set_groups)
+    {
+        let parameter_set_group = app.session.parameter_set.parameter_set_groups[i];
+        new_text = new_text.replace(parameter_set_group.name, "<span style='color:"+parameter_set_group.name+"'>"+parameter_set_group.name+"</span>");
+    }
+
+    //replace player names with colored text
+    for(let i in app.session.parameter_set.parameter_set_players)
+    {
+        let parameter_set_player = app.session.parameter_set.parameter_set_players[i];
+        let parameter_set_group = app.session.parameter_set.parameter_set_groups[parameter_set_player.parameter_set_group];
+        new_text = new_text.replace(parameter_set_player.id_label, "<span style='color:"+parameter_set_group.name+"'>"+parameter_set_player.id_label+"</span>");
+    }
+
+    return new_text;
+},

@@ -48,6 +48,10 @@ let app = Vue.createApp({
                         id:0,
                     },
 
+                    current_parameter_set_group_gate : {
+                        id:0,
+                    },
+
                     current_parameter_set_patch : {
                         id:0,
                         levels_input: "",
@@ -65,6 +69,7 @@ let app = Vue.createApp({
                     parameter_set_group_form_ids: {{parameter_set_group_form_ids|safe}},
                     parameter_set_notice_form_ids: {{parameter_set_notice_form_ids|safe}},
                     parameter_set_barrier_form_ids: {{parameter_set_barrier_form_ids|safe}},
+                    parameter_set_group_gate_form_ids: {{parameter_set_barrier_form_ids|safe}},
                     parameter_set_patch_form_ids: {{parameter_set_patch_form_ids|safe}},
                     parameter_set_hat_form_ids: {{parameter_set_hat_form_ids|safe}},
 
@@ -161,6 +166,7 @@ let app = Vue.createApp({
             app.edit_parameterset_group_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_group_modal'), {keyboard: false})
             app.edit_parameterset_notice_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_notice_modal'), {keyboard: false})
             app.edit_parameterset_barrier_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_barrier_modal'), {keyboard: false})
+            app.edit_parameterset_group_gate_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_group_gate_modal'), {keyboard: false})
             app.edit_parameterset_patch_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_patch_modal'), {keyboard: false})
             app.edit_parameterset_hat_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit_parameterset_hat_modal'), {keyboard: false})
 
@@ -209,6 +215,7 @@ let app = Vue.createApp({
         {%include "staff/staff_session_parameters/groups/groups.js"%}
         {%include "staff/staff_session_parameters/notices/notices.js"%}
         {%include "staff/staff_session_parameters/barriers/barriers.js"%}
+        {%include "staff/staff_session_parameters/group_gates/group_gates.js"%}
         {%include "staff/staff_session_parameters/patches/patches.js"%}
         {%include "staff/staff_session_parameters/hats/hats.js"%}
         {%include "js/help_doc.js"%}
@@ -280,6 +287,13 @@ let app = Vue.createApp({
             }
 
             s = app.parameter_set_barrier_form_ids;
+            for(let i in s)
+            {
+                let e = document.getElementById("id_errors_" + s[i]);
+                if(e) e.remove();
+            }
+
+            s = app.parameter_set_group_gate_form_ids;
             for(let i in s)
             {
                 let e = document.getElementById("id_errors_" + s[i]);

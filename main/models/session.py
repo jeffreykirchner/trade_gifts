@@ -152,6 +152,7 @@ class Session(models.Model):
         
         parameter_set_patches = self.parameter_set.parameter_set_patches_a.values('id').all()
         session_players = self.session_players.values('id','parameter_set_player__id').all()
+        parameter_set_group_gates = self.parameter_set.parameter_set_group_gates_a.values('id').all()
         parameter_set = self.parameter_set.json()
         world_state = self.world_state
         
@@ -190,6 +191,11 @@ class Session(models.Model):
                 k_s = str(k["id"])
                 v["patch_harvests_count_" + k_s] = 0
                 v["patch_harvests_total_" + k_s] = 0
+            
+            #group gates
+            for k in parameter_set_group_gates:
+                k_s = str(k["id"])
+                v["group_gate_" + k_s] = False
 
             #interactions with others
             for k in session_players:
@@ -211,7 +217,6 @@ class Session(models.Model):
                     v["send_avatar_to_avatar_" + k_s + "_good_" + l[0]] = 0
                     v["send_avatar_to_house_" + str(k["parameter_set_player__id"]) + "_good_" + l[0]] = 0
 
-
         self.session_periods.all().update(summary_data=summary_data)
 
         session_period_1 = self.session_periods.get(period_number=1)
@@ -232,6 +237,7 @@ class Session(models.Model):
                             "houses":{},
                             "avatars":{},
                             "patches":{},
+                            "group_gates":{},
                             "current_period":1,
                             "current_experiment_phase":ExperimentPhase.INSTRUCTIONS if self.parameter_set.show_instructions else ExperimentPhase.RUN,
                             "time_remaining":self.parameter_set.period_length,
@@ -285,7 +291,7 @@ class Session(models.Model):
         #houses
         for i in parameter_set["parameter_set_players"]:
             v = {}
-            v["id"] =  parameter_set["parameter_set_players"][i]["id"]
+            v["id"] = parameter_set["parameter_set_players"][i]["id"]
 
             session_player = main.models.SessionPlayer.objects.get(parameter_set_player_id= v["id"])
             v["session_player"] = session_player.id
@@ -295,7 +301,18 @@ class Session(models.Model):
                 v[j[0]] = 0
             
             self.world_state["houses"][str(v["id"])] = v
-        
+
+        #group gates
+        for i in parameter_set["parameter_set_group_gates"]:
+            v = {}
+            v["id"] = parameter_set["parameter_set_group_gates"][i]["id"]
+
+            v["allowed_players"] = []
+            # for j in parameter_set["parameter_set_group_gates"][i]["parameter_set_allowed_groups"]:
+            #     v["allowed_players"][str(j)] = []
+
+            self.world_state["group_gates"][str(v["id"])] = v
+
         #session players
         for i in self.session_players.prefetch_related('parameter_set_player').all().values('id', 
                                                                                             'parameter_set_player__start_x',
@@ -474,6 +491,10 @@ class Session(models.Model):
                 temp_header.append("Patch Harvests Count " + str(patch_number+1))
                 temp_header.append("Patch Harvests Total " + str(patch_number+1))
             
+            #group gate access
+            for i in parameter_set["parameter_set_group_gates"]:
+                temp_header.append("Bridge " + parameter_set["parameter_set_group_gates"][i]["info"] + " Access")
+            
             writer.writerow(temp_header)
 
             # logger.info(parameter_set_players)
@@ -541,6 +562,10 @@ class Session(models.Model):
                     for patch_number, patch in enumerate(world_state["patches"]):
                         temp_row.append(temp_p["patch_harvests_count_" + patch])
                         temp_row.append(temp_p["patch_harvests_total_" + patch])
+                    
+                    #group gate access
+                    for i in parameter_set["parameter_set_group_gates"]:
+                        temp_row.append(temp_p["group_gate_" + i])
 
                     writer.writerow(temp_row)
                     

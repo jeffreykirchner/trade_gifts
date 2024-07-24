@@ -238,6 +238,12 @@ let app = Vue.createApp({
                 case "update_hat_avatar_cancel":
                     app.take_update_hat_avatar_cancel(message_data);
                     break;
+                case "update_group_gate_access_request":
+                    app.take_group_gate_access_request(message_data);
+                    break;
+                case "update_group_gate_access_revoke":
+                    app.take_group_gate_access_revoke(message_data);
+                    break;
             }
 
             app.first_load_done = true;
@@ -523,6 +529,7 @@ let app = Vue.createApp({
         {%include "subject/subject_home/the_stage/night.js"%}
         {%include "subject/subject_home/the_stage/move_objects.js"%}
         {%include "subject/subject_home/the_stage/barriers.js"%}
+        {%include "subject/subject_home/the_stage/group_gates.js"%}
         {%include "subject/subject_home/the_stage/emoji.js"%}
         {%include "subject/subject_home/the_stage/patch.js"%}      
         {%include "subject/subject_home/helpers/helpers.js"%}   

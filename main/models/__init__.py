@@ -20,6 +20,7 @@ from .parameter_set_field import ParameterSetField
 from .parameter_set_notice import ParameterSetNotice
 from .parameter_set_barrier import ParameterSetBarrier
 from .parameter_set_patch import ParameterSetPatch
+from .parameter_set_group_gate import ParameterSetGroupGate
 
 from .session import Session
 from .session_period import SessionPeriod

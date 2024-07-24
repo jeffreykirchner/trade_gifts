@@ -644,7 +644,6 @@ subject_avatar_click: function subject_avatar_click(target_player_id, local_pos)
     //         return;
     //     }
 
-    //     app.avatar_hat_modal.show();
     //     app.avatar_hat_modal_open = true;
     // }
     // else
@@ -1075,7 +1074,6 @@ show_hat_avatar: function show_hat_avatar()
 {
     app.clear_main_form_errors();
     app.avatar_modal.hide();
-    app.avatar_hat_modal.show();
     app.avatar_hat_modal_open = true;
     app.working = false;
     app.avatar_hat_error = null;
@@ -1226,11 +1224,9 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
                     // app.avatar_attack_modal.hide();
                     // app.field_modal.hide();
                     // app.house_modal.hide();
-                    // app.avatar_hat_modal.hide();
                     // app.patch_modal.hide();
 
                     app.hat_trade_status = "proposal_received";
-                    // app.avatar_hat_modal.show();
                     app.avatar_hat_modal_open = true;
 
                     app.working = false;
@@ -1261,7 +1257,6 @@ take_update_hat_avatar: function take_update_hat_avatar(message_data)
             {
                 if(target_player_id == app.session_player.id)
                 {
-                    // app.avatar_hat_modal.hide();
                     app.hat_trade_status = "open";
                     app.avatar_hat_modal_open = false;
                     app.working = false;
@@ -1303,7 +1298,6 @@ send_hat_avatar_cancel: function send_hat_avatar_cancel()
 {
     if(app.hat_trade_status=='open')
     {
-        // app.avatar_hat_modal.hide();
         return;
     }
 
@@ -1334,7 +1328,6 @@ take_update_hat_avatar_cancel: function take_update_hat_avatar_cancel(message_da
 
                 let local_player = app.session.world_state_avatars.session_players[app.session_player.id];
 
-                // app.avatar_hat_modal.hide();
                 app.avatar_hat_modal_open = false;
                 app.hat_trade_status = "open";
 

@@ -1,7 +1,7 @@
 /**
  * setup barrier objects
  */
-setup_pixi_barrier: function setup_pixi_barrier()
+setup_pixi_barriers: function setup_pixi_barriers()
 {
     //destory old barriers
     for(const i in pixi_barriers)
