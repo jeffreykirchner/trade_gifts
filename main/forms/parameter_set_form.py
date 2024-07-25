@@ -280,6 +280,10 @@ class ParameterSetForm(forms.ModelForm):
     good_mode = forms.ChoiceField(label='Good Mode',
                                   choices=GoodModes.choices,
                                   widget=forms.Select(attrs={"v-model":"parameter_set.good_mode",}))
+    
+    patch_growth_example = forms.CharField(label='Patch Growth Example',
+                                           required=False,
+                                           widget=forms.TextInput(attrs={"v-model":"parameter_set.patch_growth_example",}))
 
                                                  
     test_mode = forms.ChoiceField(label='Test Mode',
