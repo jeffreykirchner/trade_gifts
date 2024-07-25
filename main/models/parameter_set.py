@@ -90,6 +90,8 @@ class ParameterSet(models.Model):
 
     good_mode = models.CharField(verbose_name="Good Mode", max_length=100, choices=GoodModes.choices, default=GoodModes.THREE)         #two or three good mode
 
+    patch_growth_example = models.TextField(verbose_name='Patch Growth Example', default="0 → 2,2 → 4,4 → 16", null=True, blank=True)             #chat rules for limited mode
+
     reconnection_limit = models.IntegerField(verbose_name='Age Warning', default=25)                        #stop trying to reconnect after this many failed attempts
 
     test_mode = models.BooleanField(default=False, verbose_name='Test Mode')                                #if true subject screens will do random auto testing
@@ -178,6 +180,8 @@ class ParameterSet(models.Model):
             self.enable_emoji = True if new_ps.get("enable_emoji") == "True" else False
 
             self.good_mode = new_ps.get("good_mode", GoodModes.THREE)
+
+            self.patch_growth_example = new_ps.get("patch_growth_example", "0 → 2,2 → 4,4 → 16")
             
             self.reconnection_limit = new_ps.get("reconnection_limit", None)
 
@@ -515,6 +519,7 @@ class ParameterSet(models.Model):
         self.json_for_session["enable_emoji"] = "True" if self.enable_emoji else "False"
 
         self.json_for_session["good_mode"] = self.good_mode
+        self.json_for_session["patch_growth_example"] = self.patch_growth_example
 
         self.json_for_session["reconnection_limit"] = self.reconnection_limit
 

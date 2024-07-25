@@ -74,6 +74,13 @@ setup_subject_status_overlay: function setup_subject_status_overlay()
     subject_status_overlay_container.addChild(profit_text);
     profit_text.position.set(0, temp_y);
 
+    temp_y += profit_text.height+30;
+
+    //ring growth
+    let ring_growth_text = new PIXI.Text({text:'Patch Growth\nper Period:', style:text_style});
+    subject_status_overlay_container.addChild(ring_growth_text);
+    ring_growth_text.position.set(0, temp_y);
+
     //amounts
     temp_y = 0;
     //current period 
@@ -101,6 +108,17 @@ setup_subject_status_overlay: function setup_subject_status_overlay()
     subject_status_overlay_container.addChild(profit_label);
     profit_label.position.set(time_remaining_text.width+10, temp_y);
 
+    temp_y += profit_label.height+30;
+
+    //ring growth
+    let patch_growth_example = app.session.parameter_set.patch_growth_example;
+    let ring_growth_label = new PIXI.Text({text:patch_growth_example.replaceAll(',','\n') , style:text_style});
+    // profit_label.eventMode = 'none';   
+
+    subject_status_overlay_container.addChild(ring_growth_label);
+    ring_growth_label.position.set(time_remaining_text.width+10, temp_y);
+
+
     subject_status_overlay_container.position.set(pixi_app.screen.width - subject_status_overlay_container.width-20, 20);
     
     pixi_app.stage.addChild(subject_status_overlay_container);
@@ -120,9 +138,9 @@ update_subject_status_overlay: function update_subject_status_overlay()
     if(!subject_status_overlay_container) return;
     // subject_status_overlay_container.position.set(pixi_app.screen.width - subject_status_overlay_container.width-20, 20);
 
-    subject_status_overlay_container.getChildAt(3).text = app.session.world_state.current_period;
-    subject_status_overlay_container.getChildAt(4).text = app.session.world_state.time_remaining;
-    subject_status_overlay_container.getChildAt(5).text = Number(app.session.world_state.avatars[app.session_player.id].earnings).toFixed(1);
+    subject_status_overlay_container.getChildAt(4).text = app.session.world_state.current_period;
+    subject_status_overlay_container.getChildAt(5).text = app.session.world_state.time_remaining;
+    subject_status_overlay_container.getChildAt(6).text = Number(app.session.world_state.avatars[app.session_player.id].earnings).toFixed(1);
 },
 
 /**
