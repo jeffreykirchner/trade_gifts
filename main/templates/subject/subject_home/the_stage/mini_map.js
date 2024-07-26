@@ -151,7 +151,7 @@ setup_pixi_minimap: function setup_pixi_minimap()
     mini_map_vp.fill({color:0xFFFFFF, alpha:0});
     mini_map_vp.stroke({width:2,color:0x000000,alignment:0});
 
-    mini_map_vp.pivot.set(mini_map_vp.width/2, mini_map_vp.height/2);
+    mini_map_vp.pivot.set(pixi_app.screen.width * scale / 2, pixi_app.screen.height * scale / 2);
     mini_map_vp.position.set(obj.current_location.x * scale, obj.current_location.y * scale);
 
     mini_map.view_port = mini_map_vp;
