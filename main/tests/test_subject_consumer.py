@@ -70,8 +70,8 @@ class TestSubjectConsumer(TestCase):
             response = await self.communicator_subject[-1].receive_json_from()
             # logger.info(response)
             
-            self.assertEquals(response['message']['message_type'],'get_session')
-            self.assertEquals(response['message']['message_data']['session_player']['id'], i.id)
+            self.assertEqual(response['message']['message_type'],'get_session')
+            self.assertEqual(response['message']['message_data']['session_player']['id'], i.id)
 
         #staff
         self.communicator_staff = WebsocketCommunicator(application, connection_path_staff)
@@ -86,7 +86,7 @@ class TestSubjectConsumer(TestCase):
         response = await self.communicator_staff.receive_json_from()
         #logger.info(response)
         
-        self.assertEquals(response['message']['message_type'],'get_session')
+        self.assertEqual(response['message']['message_type'],'get_session')
     
     async def start_session(self):
         '''
@@ -103,9 +103,9 @@ class TestSubjectConsumer(TestCase):
 
         for i in self.communicator_subject:
             response = await i.receive_json_from()
-            self.assertEquals(response['message']['message_type'],'update_start_experiment')
+            self.assertEqual(response['message']['message_type'],'update_start_experiment')
             message_data = response['message']['message_data']
-            self.assertEquals(message_data['value'],'success')
+            self.assertEqual(message_data['value'],'success')
         
         response = await self.communicator_staff.receive_json_from()
            
@@ -118,9 +118,9 @@ class TestSubjectConsumer(TestCase):
        
         for i in self.communicator_subject:
             response = await i.receive_json_from()
-            self.assertEquals(response['message']['message_type'],'update_next_phase')
+            self.assertEqual(response['message']['message_type'],'update_next_phase')
             message_data = response['message']['message_data']
-            self.assertEquals(message_data['value'],'success')
+            self.assertEqual(message_data['value'],'success')
            
         
         response = await self.communicator_staff.receive_json_from()
@@ -159,9 +159,9 @@ class TestSubjectConsumer(TestCase):
             response = await i.receive_json_from()
             #logger.info(response)
             message_data = response['message']['message_data']
-            self.assertEquals(message_data['status'],'fail')
-            self.assertEquals(message_data['error_message'],'Session not started.')
-            self.assertEquals(response['message']['message_type'],'update_chat')
+            self.assertEqual(message_data['status'],'fail')
+            self.assertEqual(message_data['error_message'],'Session not started.')
+            self.assertEqual(response['message']['message_type'],'update_chat')
         
         #staff response
         response = await self.communicator_staff.receive_json_from()
@@ -180,15 +180,15 @@ class TestSubjectConsumer(TestCase):
         response = await self.communicator_subject[0].receive_json_from()
         message_data = response['message']['message_data']
         #logger.info(message_data)
-        self.assertEquals(message_data['status'],'success')
-        self.assertEquals(message_data['text'],'Hello?')
+        self.assertEqual(message_data['status'],'success')
+        self.assertEqual(message_data['text'],'Hello?')
 
         # #staff response
         response = await self.communicator_staff.receive_json_from()
         #logger.info(response)
         message_data = response['message']['message_data']
-        self.assertEquals(message_data['status'],'success')
-        self.assertEquals(message_data['text'],'Hello?')
+        self.assertEqual(message_data['status'],'success')
+        self.assertEqual(message_data['text'],'Hello?')
     
 
 
