@@ -147,10 +147,11 @@ class TestSubjectConsumerPatch(TestCase):
         communicator_subject, communicator_staff = await self.set_up_communicators(communicator_subject, communicator_staff)
         communicator_subject, communicator_staff = await self.start_session(communicator_subject, communicator_staff)
 
-        patch_1 = self.parameter_set_json["parameter_set_patches_order"][0]
+        patch_1_id = self.parameter_set_json["parameter_set_patches_order"][0]
+        patch_1 = self.parameter_set_json["parameter_set_patches"][str(patch_1_id)]
 
         message = {'message_type' : 'patch_harvest',
-                   'message_text' : {'patch_id': patch_1},
+                   'message_text' : {'patch_id': patch_1_id},
                    'message_target' : 'group', 
                   }
         
@@ -163,20 +164,10 @@ class TestSubjectConsumerPatch(TestCase):
             message_data = response['message']['message_data']
             self.assertEqual(message_data['status'],'success')           
             self.assertEqual(response['message']['message_type'],'update_patch_harvest')
-            self.assertEqual(message_data['harvest_amount'], 8)
+            self.assertEqual(message_data['harvest_amount'], 16)
         
-        #harvest again and fail
+        #test second harvest
         await communicator_subject[0].send_json_to(message)
-
-        for i in communicator_subject:
-            response = await i.receive_json_from()
-            #logger.info(response)
-            message_data = response['message']['message_data']
-            self.assertEqual(message_data['status'],'fail')   
-            self.assertEqual(message_data['error_message'][0]['message'],'Wait until next period to harvest again.')        
-           
-        #harvest next ring
-        await communicator_subject[1].send_json_to(message)
 
         for i in communicator_subject:
             response = await i.receive_json_from()
@@ -186,8 +177,18 @@ class TestSubjectConsumerPatch(TestCase):
             self.assertEqual(response['message']['message_type'],'update_patch_harvest')
             self.assertEqual(message_data['harvest_amount'], 4)
 
-        #harvest next ring
-        await communicator_subject[2].send_json_to(message)
+        #test 3nd harvest and fail
+        await communicator_subject[0].send_json_to(message)
+
+        for i in communicator_subject:
+            response = await i.receive_json_from()
+            #logger.info(response)
+            message_data = response['message']['message_data']
+            self.assertEqual(message_data['status'],'fail')   
+            self.assertEqual(message_data['error_message'][0]['message'],'Wait until next period to harvest again.')        
+           
+        #another subject harvests last ring
+        await communicator_subject[1].send_json_to(message)
 
         for i in communicator_subject:
             response = await i.receive_json_from()
@@ -210,7 +211,7 @@ class TestSubjectConsumerPatch(TestCase):
         session_local = await Session.objects.values("world_state").aget(title="Test 1")
         
         #check all patch levels are harvested
-        for key, value in session_local["world_state"]["patches"][str(patch_1)]["levels"].items():
+        for key, value in session_local["world_state"]["patches"][str(patch_1_id)]["levels"].items():
             self.assertEqual(value["harvested"], True)
 
         await self.close_communicators(communicator_subject, communicator_staff)
