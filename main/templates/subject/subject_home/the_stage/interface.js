@@ -99,7 +99,49 @@ take_target_location_update: function take_target_location_update(message_data)
                             null);
             return;
         }
+
+        //can't move on top of other players
+        for(let i in app.session.world_state_avatars.session_players)
+        {
+            let obj = app.session.world_state_avatars.session_players[i];
         
+            if(i == app.session_player.id) continue;
+    
+            if(app.get_distance(obj.current_location, local_pos) < 100)
+            {            
+                return;
+            }
+        }
+
+        //can't move on top of houses
+        for(i in app.session.world_state.houses)
+        {
+            let obj = pixi_houses[i].house_container;
+            let rect={x:obj.x-obj.width/2, y:obj.y-obj.height/2, width:obj.width, height:obj.height};
+            let pt={x:local_pos.x, y:local_pos.y};    
+            let house = app.session.world_state.houses[i];     
+            let parameter_set_player = app.session.parameter_set.parameter_set_players[i];   
+            
+            if(app.check_point_in_rectagle(pt, rect))
+            {
+                return;
+            }
+        }
+
+        //can't move on top of patches
+        for(i in app.session.world_state.patches)
+        {
+            let patch = app.session.world_state.patches[i];
+            let patch_center = {x:patch.x, y:patch.y};
+            let pt={x:local_pos.x, y:local_pos.y};
+            let local_player_center = {x:local_player.current_location.x, y:local_player.current_location.y};
+
+            if(app.check_point_in_circle(pt, {center:patch_center,radius:patch.radius}))
+            {                        
+                return;
+            }
+        }
+
         local_player.target_location.x = local_pos.x;
         local_player.target_location.y = local_pos.y;
 
