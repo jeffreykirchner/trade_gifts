@@ -10,7 +10,7 @@ let subject_status_overlay_container = null;
 let pixi_target = null;                        //target sprite for your avatar
 let mini_map = {container:null};               //mini map container
 let pixi_night = {text_night : "Night has fallen, replenish your health by sleeping at your house.",
-                  text_night_coming : "Night is approching ... "};        
+                  text_night_coming : "Night is approaching ... "};        
                                                   //night
 let pixi_notices = {container:null, notices:{}};                         //notices
 let pixi_notices_key = 0;
