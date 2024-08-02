@@ -431,6 +431,7 @@ let app = Vue.createApp({
             app.session.world_state.started = message_data.started;
             app.session.world_state.finished = message_data.finished;
             app.session.world_state.avatars = message_data.avatars;
+            app.session.world_state.group_gates = message_data.group_gates;
            
             // app.session.finished = result.finished;
             app.session.world_state.current_experiment_phase = message_data.current_experiment_phase;
@@ -501,6 +502,7 @@ let app = Vue.createApp({
 
             //update barriers
             app.update_barriers();
+            app.update_group_gates();
         },
        
         //do nothing on when enter pressed for post
