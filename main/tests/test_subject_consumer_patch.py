@@ -91,6 +91,20 @@ class TestSubjectConsumerPatch(TestCase):
         '''
         logger = logging.getLogger(__name__)
 
+        #reset session
+        # message = {'message_type' : 'reset_experiment',
+        #            'message_text' : {},
+        #            'message_target' : 'self', }
+        # await communicator_staff.send_json_to(message)
+
+        # for i in communicator_subject:
+        #     response = await i.receive_json_from()
+        #     self.assertEqual(response['message']['message_type'],'update_reset_experiment')
+        #     message_data = response['message']['message_data']
+        #     self.assertEqual(message_data['value'],'success')
+        
+        # response = await communicator_staff.receive_json_from()
+        
         # #start session
         message = {'message_type' : 'start_experiment',
                    'message_text' : {},
@@ -106,20 +120,20 @@ class TestSubjectConsumerPatch(TestCase):
         
         response = await communicator_staff.receive_json_from()
            
-        # #advance past instructions
-        message = {'message_type' : 'next_phase',
-                   'message_text' : {},
-                   'message_target' : 'self',}
+        # # #advance past instructions
+        # message = {'message_type' : 'next_phase',
+        #            'message_text' : {},
+        #            'message_target' : 'self',}
 
-        await communicator_staff.send_json_to(message)
+        # await communicator_staff.send_json_to(message)
        
-        for i in communicator_subject:
-            response = await i.receive_json_from()
-            self.assertEqual(response['message']['message_type'],'update_next_phase')
-            message_data = response['message']['message_data']
-            self.assertEqual(message_data['value'],'success')
+        # for i in communicator_subject:
+        #     response = await i.receive_json_from()
+        #     self.assertEqual(response['message']['message_type'],'update_next_phase')
+        #     message_data = response['message']['message_data']
+        #     self.assertEqual(message_data['value'],'success')
            
-        response = await communicator_staff.receive_json_from()
+        # response = await communicator_staff.receive_json_from()
 
         return communicator_subject, communicator_staff
     
@@ -226,16 +240,13 @@ class TestSubjectConsumerPatch(TestCase):
         communicator_staff = None
 
         logger = logging.getLogger(__name__)
-        logger.info(f"called from test {sys._called_from_test}" )
-
-        #change period length to one second
-        self.parameter_set_json["period_length"] = 1
+        logger.info(f"called from test {sys._called_from_test}")
 
         communicator_subject, communicator_staff = await self.set_up_communicators(communicator_subject, communicator_staff)
         communicator_subject, communicator_staff = await self.start_session(communicator_subject, communicator_staff)
 
         patch_1_id = self.parameter_set_json["parameter_set_patches_order"][0]
-        patch_1 = self.parameter_set_json["parameter_set_patches"][str(patch_1_id)]
+        patch_2_id = self.parameter_set_json["parameter_set_patches_order"][1]
 
         #start timer
         message = {'message_type' : 'start_timer',
@@ -248,7 +259,7 @@ class TestSubjectConsumerPatch(TestCase):
         self.assertEqual(response['message']['message_type'],'start_timer')
         self.assertEqual(message_data['timer_running'],True)           
         
-        #harvest first ring
+        #harvest first ring of patch 1
         message = {'message_type' : 'patch_harvest',
                    'message_text' : {'patch_id': patch_1_id},
                    'message_target' : 'group', 
@@ -261,16 +272,29 @@ class TestSubjectConsumerPatch(TestCase):
         self.assertEqual(response['message']['message_type'],'update_patch_harvest')
         self.assertEqual(message_data['harvest_amount'], 16)
 
-        # for i in communicator_subject:
-        #     response = await i.receive_json_from()
-        #     #logger.info(response)
-        #     message_data = response['message']['message_data']
-        #     self.assertEqual(message_data['status'],'success')           
-        #     self.assertEqual(response['message']['message_type'],'update_patch_harvest')
-        #     self.assertEqual(message_data['harvest_amount'], 16)
+        #harvest two rings of patch 2
+        message = {'message_type' : 'patch_harvest',
+                   'message_text' : {'patch_id': patch_2_id},
+                   'message_target' : 'group', 
+                  }
+        await communicator_subject[1].send_json_to(message)
+        await communicator_subject[2].send_json_to(message)
+
+        response = await communicator_staff.receive_json_from()
+        message_data = response['message']['message_data']
+        self.assertEqual(message_data['status'],'success')           
+        self.assertEqual(response['message']['message_type'],'update_patch_harvest')
+        self.assertEqual(message_data['harvest_amount'], 16)
+
+        response = await communicator_staff.receive_json_from()
+        message_data = response['message']['message_data']
+        self.assertEqual(message_data['status'],'success')           
+        self.assertEqual(response['message']['message_type'],'update_patch_harvest')
+        self.assertEqual(message_data['harvest_amount'], 4)
+
 
         #wait one second
-        await asyncio.sleep(1)
+        await asyncio.sleep(10)
 
         #advance to next period
         message = {'message_type' : 'continue_timer',
@@ -282,6 +306,18 @@ class TestSubjectConsumerPatch(TestCase):
         response = await communicator_staff.receive_json_from()
         message_data = response['message']['message_data']         
         self.assertEqual(response['message']['message_type'],'update_time')
+
+        #check patch 1 growth fully restored
+        patch_1_data = message_data['patches'][str(patch_1_id)]
+        self.assertEqual(patch_1_data['levels']['1']['harvested'], False)
+        self.assertEqual(patch_1_data['levels']['2']['harvested'], False)
+        self.assertEqual(patch_1_data['levels']['3']['harvested'], False)
+
+        #check patch 2 growth partially restored
+        patch_2_data = message_data['patches'][str(patch_2_id)]
+        self.assertEqual(patch_2_data['levels']['1']['harvested'], False)
+        self.assertEqual(patch_2_data['levels']['2']['harvested'], False)
+        self.assertEqual(patch_2_data['levels']['3']['harvested'], True)
 
 
 
