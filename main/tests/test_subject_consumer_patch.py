@@ -292,7 +292,6 @@ class TestSubjectConsumerPatch(TestCase):
         self.assertEqual(response['message']['message_type'],'update_patch_harvest')
         self.assertEqual(message_data['harvest_amount'], 4)
 
-
         #wait one second
         await asyncio.sleep(10)
 
