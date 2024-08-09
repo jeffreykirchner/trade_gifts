@@ -27,6 +27,9 @@ class TestConsumption(TestCase):
         sys._called_from_test = True
         logger = logging.getLogger(__name__)
 
+        #wolfram alpha:
+        #oPower[\(40)β * Power[m,Divide[1,α]] + β * Power[n,Divide[1,α]]\(41),α],β=0.564,m=8,n=8,o=2.2,α=10
+
         logger.info('setup tests')
 
         self.session = Session.objects.get(title="Test 1")    
@@ -70,7 +73,7 @@ class TestConsumption(TestCase):
         self.assertEqual(v, '0.0')
 
         v = convert_goods_to_health(8, 8, 8, self.parameter_set)
-        self.assertEqual(v, '51.2')
+        self.assertEqual(v, '58.7')
 
 
 
