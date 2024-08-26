@@ -278,7 +278,7 @@ setup_pixi_subjects: function setup_pixi_subjects()
         chat_container.addChild(chat_bubble_sprite);
         chat_container.addChild(chat_bubble_text);
 
-        chat_bubble_text.position.set(-14 * app.session.parameter_set.avatar_scale, -chat_container.height*.09)
+        chat_bubble_text.position.set(app.session.parameter_set.avatar_scale, -chat_container.height*.085)
         chat_bubble_text.anchor.set(0.5);
 
         pixi_avatars[i].chat_container = chat_container;
