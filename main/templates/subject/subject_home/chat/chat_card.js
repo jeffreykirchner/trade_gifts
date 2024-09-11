@@ -32,7 +32,7 @@ send_chat: function send_chat(){
     
     if(app.session.world_state.current_experiment_phase == 'Instructions')
     {
-        app.send_chat_instructions();
+        app.send_chat_instructions(chat_text_processed);
     }
     else
     {
@@ -49,7 +49,7 @@ send_chat: function send_chat(){
 /**
  * send chat instructions
  */
-send_chat_instructions: function send_chat_instructions()
+send_chat_instructions: function send_chat_instructions(chat_text_processed)
 {
 
     if(app.session_player.current_instruction != app.instructions.action_page_chat) return;
@@ -67,8 +67,8 @@ send_chat_instructions: function send_chat_instructions()
 
     let message_data = {
         "status": "success",
-        "text": app.chat_text.trim(),
-        "text_limited": app.chat_text.trim(),
+        "text": chat_text_processed,
+        "text_limited": chat_text_processed,
         "sender_id": app.session_player.id,       
         "nearby_players": [],
     };
