@@ -239,10 +239,10 @@ let app = Vue.createApp({
                     app.take_update_hat_avatar_cancel(message_data);
                     break;
                 case "update_group_gate_access_request":
-                    app.take_group_gate_access_request(message_data);
+                    // app.take_group_gate_access_request(message_data);
                     break;
                 case "update_group_gate_access_revoke":
-                    app.take_group_gate_access_revoke(message_data);
+                    // app.take_group_gate_access_revoke(message_data);
                     break;
             }
 
