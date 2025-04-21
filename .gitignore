@@ -4,3 +4,5 @@ _trade_gifts_env/*
 *.pyc
 local_settings.py
 database_dumps/*
+iac/environment_variables.json
+iac/secrets.json
